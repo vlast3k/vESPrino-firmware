@@ -7,7 +7,8 @@
 //String   mqttPass   = "yfT7ax_KDrgG";
 //String   mqttTopic  = "co2Value";
 //cfg_mqtt "m20.cloudmqtt.com", "19749", "vAir_CO2_Monitor", "pndhubpk", "yfT7ax_KDrgG", "co2Value"
-
+// wifi "SAP-Guest","63597688","w6QQckVn"
+//atest_mqtt
 
 void configMQTT(const char *p) {
   char mqttServer[30], mqttPortS[6], mqttClient[20], mqttUser[15], mqttPass[15], mqttTopic[40];
