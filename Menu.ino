@@ -47,6 +47,8 @@ int handleCommand() {
   else if (strstr(line, "otah")) doHttpUpdate(1);
   else if (line[0] == 'o') startOTA();
   else if (strstr(line, "ubi")) testUBI();
+  else if (strstr(line, "cfg_mqtt"))  configMQTT(line);
+  else if (strstr(line, "atest_mqtt")) sendMQTT("556");
   return 0;
 }
 

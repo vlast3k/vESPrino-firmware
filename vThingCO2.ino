@@ -9,6 +9,7 @@
 #include <algorithm>    // std::min
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
+#include <SoftwareSerialESP.h>
 
 #include <Timer.h>
 #include <RunningAverage.h>
@@ -23,7 +24,20 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 #define EE_IOT_PATH_140B 150
 #define EE_IOT_TOKN_40B 290
 #define EE_GENIOT_PATH_140B 330
-//#define EE_LAST 470
+#define EE_MQTT_SERVER_30B  470
+#define EE_MQTT_PORT_4B     500
+#define EE_MQTT_CLIENT_20B  504
+#define EE_MQTT_USER_15B    524
+#define EE_MQTT_PASS_15B    539
+#define EE_MQTT_TOPIC_40B    554
+//#define EE_LAST 594
+
+String   mqttServer = "m20.cloudmqtt.com";
+uint32_t mqttPort   = 19749;
+String   mqttClient = "vAir_CO2_Monitor";
+String   mqttUser   = "pndhubpk";
+String   mqttPass   = "yfT7ax_KDrgG";
+String   mqttTopic  = "co2Value";
 
 //h iotmmsi024148trial.hanatrial.ondemand.com
 //d c5c73d69-6a19-4c7d-9da3-b32198ba71f9
@@ -76,6 +90,7 @@ void setup() {
   tmrCO2RawRead        = new Timer(intCO2RawRead,   onCO2RawRead);
   tmrCO2SendValueTimer = new Timer(intCO2SendValue, sendCO2Value);
   int res = CM1106_read();
+  Serial << "CO2 now: " << res << endl;
   tmrCO2RawRead->Start();
   tmrCO2SendValueTimer->Start();
   Serial << "Completed Setup: " << millis() << endl;
