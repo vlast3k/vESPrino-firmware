@@ -136,6 +136,7 @@ void cfgHCPIOT(const char *p) {
 }
 
 void sndIOT(const char *line) {
+  Serial << "Send Value" << endl;
   char path[140];
   EEPROM.get(EE_IOT_PATH_140B, path);
   if (path[0] && path[0] != 255) {

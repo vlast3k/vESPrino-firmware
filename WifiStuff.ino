@@ -6,7 +6,7 @@ void handleWifi() {
   else if (WiFi.status() == WL_CONNECTED) {
     ip = WiFi.localIP();
     checkSAPAuth();
-    Serial << "IP address: " << WiFi.localIP() << endl << "GOT IP" << endl; 
+    Serial << "IP address: " << WiFi.localIP() << " in " << millis() << " ms" << endl << "GOT IP" << endl; 
   } 
   ip = WiFi.localIP();
 }
