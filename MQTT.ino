@@ -34,6 +34,7 @@ void configMQTT(const char *p) {
   EEPROM.commit();
   Serial << "MQTT Configuration Stored" << endl;
   Serial << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << "," << mqttTopic << endl;
+  Serial << "DONE" << endl;
   
 }
 

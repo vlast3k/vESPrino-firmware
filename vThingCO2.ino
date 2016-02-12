@@ -71,7 +71,7 @@ void onCO2RawRead() {
     raCO2Raw.addValue(res);
     Serial << "CO2: " << raCO2Raw.getAverage()<< " , last: " << lastSentCO2value  << " , " << millis() /1000 <<  endl;
     int diff = raCO2Raw.getAverage() - lastSentCO2value;
-    if (abs(diff) > co2Threshold) sendCO2Value();
+    if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) sendCO2Value();
   }
 }
 

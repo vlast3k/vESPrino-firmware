@@ -48,10 +48,31 @@ int handleCommand() {
   else if (line[0] == 'o') startOTA();
   else if (strstr(line, "ubi")) testUBI();
   else if (strstr(line, "cfg_mqtt"))  configMQTT(line);
-  else if (strstr(line, "cfg_mqval"))  storeToEE(EE_MQTT_VALUE_70B, &line[10]);
+  else if (strstr(line, "cfg_mqval"))  { storeToEE(EE_MQTT_VALUE_70B, &line[10]); Serial << "DONE" << endl; }
   else if (strstr(line, "atest_mqtt")) sendMQTT("556");
+  else if (strstr(line, "set_send_int ")) setSendInterval (line);
+  else if (strstr(line, "set_send_thr ")) setSendThreshold(line);
+  
   return 0;
 }
+
+void setSendInterval (const char *line) {
+  int interval = 120;
+  if (strchr(line, ' ')) {
+    interval = atoi(strchr(line, ' ') + 1) {
+  }
+  intCO2SendValue = (uint32_t)interval * 1000;
+  tmrCO2SendValueTimer.setInterval(intCO2SendValue); 
+}
+
+void setSendThreshold(const char *line) {
+  int thr = 0;
+  if (strchr(line, ' ')) {
+    thr = atoi(strchr(line, ' ') + 1) {
+  }
+  co2Threshold = thr;
+}
+
 
 char atCIPSTART_IP[20];
 void getTS(const char* line) {
