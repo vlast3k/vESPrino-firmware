@@ -27,10 +27,11 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 #define EE_MQTT_SERVER_30B  470
 #define EE_MQTT_PORT_4B     500
 #define EE_MQTT_CLIENT_20B  504
-#define EE_MQTT_USER_15B    524
-#define EE_MQTT_PASS_15B    539
-#define EE_MQTT_TOPIC_40B    554
-//#define EE_LAST 594
+#define EE_MQTT_USER_45B    524
+#define EE_MQTT_PASS_15B    569
+#define EE_MQTT_TOPIC_40B   584
+#define EE_MQTT_VALUE_70B   624
+//#define EE_LAST 694
 
 String   mqttServer = "m20.cloudmqtt.com";
 uint32_t mqttPort   = 19749;
@@ -57,7 +58,7 @@ NeoPixelBus strip = NeoPixelBus(1, D4);
 
 void sendCO2Value() {
   int val = (int)raCO2Raw.getAverage();
-  String s = String("sendiot ") + val;
+  String s = String("sndiot ") + val;
   sndIOT(s.c_str());
   lastSentCO2value = val;
   tmrCO2SendValueTimer->Start();

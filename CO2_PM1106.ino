@@ -1,6 +1,6 @@
 
 
-SoftwareSerial PM1106_swSer(D5, D7, 128);
+SoftwareSerialESP PM1106_swSer(D5, D7, 128);
 uint8_t cmdReadCO2[] = {4, 0x11, 0x01, 0x01, 0xed};
 uint8_t resp[25];
 

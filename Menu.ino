@@ -48,6 +48,7 @@ int handleCommand() {
   else if (line[0] == 'o') startOTA();
   else if (strstr(line, "ubi")) testUBI();
   else if (strstr(line, "cfg_mqtt"))  configMQTT(line);
+  else if (strstr(line, "cfg_mqval"))  storeToEE(EE_MQTT_VALUE_70B, &line[10]);
   else if (strstr(line, "atest_mqtt")) sendMQTT("556");
   return 0;
 }
@@ -148,6 +149,13 @@ void sndIOT(const char *line) {
   EEPROM.get(EE_GENIOT_PATH_140B, path);
   if (path[0] && path[0] != 255) {
     sndGENIOT(line);
+  } 
+
+  EEPROM.get(EE_MQTT_SERVER_30B, path);
+  if (path[0] && path[0] != 255) {
+    //sprintf(str2, str, &line[7]);
+    Serial << "send mqtt: " << (char *) &line[7] << endl;
+    sendMQTT(&line[7]);
   } 
 }
 
