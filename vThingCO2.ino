@@ -74,11 +74,11 @@ void onCO2RawRead() {
     if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) sendCO2Value();
   }
 }
-
+char VERSION[] = "vThing - CO2 Monitor v0.1";
 void setup() {
-  Serial.begin(115200L);
+  Serial.begin(9600);
   Serial << "Start Setup: " << millis() << endl;
-  Serial << "vThing - CO2 Monitor v0.1" << endl;
+  Serial << VERSION << endl;
   EEPROM.begin(1024);
   Serial << endl << "ready" << endl;
   Serial << "Strip begin: " << millis() << endl;

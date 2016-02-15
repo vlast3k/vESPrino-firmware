@@ -28,9 +28,10 @@ byte readLine(int timeout) {
   return i;
 }
 
+String ubik;
 int handleCommand() {
   Serial << "Received command: " << line << endl;
-  if (line[0] == 't') sendTS();
+  if (strstr(line, "tstest")) sendTS();
   else if (line[0] == 'p') sendPing();
   else if (line[0] == 'A') mockATCommand(line);
   else if (line[0] == 'S') httpAuthSAP();
@@ -46,29 +47,34 @@ int handleCommand() {
   else if (strstr(line, "otahtest")) doHttpUpdate(2);
   else if (strstr(line, "otah")) doHttpUpdate(1);
   else if (line[0] == 'o') startOTA();
-  else if (strstr(line, "ubi")) testUBI();
+  else if (strcmp(line, "ubi") == 0) testUBI();
   else if (strstr(line, "cfg_mqtt"))  configMQTT(line);
   else if (strstr(line, "cfg_mqval"))  { storeToEE(EE_MQTT_VALUE_70B, &line[10]); Serial << "DONE" << endl; }
   else if (strstr(line, "atest_mqtt")) sendMQTT("556");
   else if (strstr(line, "set_send_int ")) setSendInterval (line);
   else if (strstr(line, "set_send_thr ")) setSendThreshold(line);
+  else if (strstr(line, "info")) Serial << VERSION << endl;
+  else if (strstr(line, "tskey ")) cfgGENIOT((String("cfggen http://api.thingspeak.com/update?key=") + &line[6] + "&field1=%s").c_str());
+  else if (strstr(line, "ubik "))  ubik = String(&line[5]); 
+  else if (strstr(line, "ubiv "))  cfgGENIOT((String("cfggen http://50.23.124.66/api/postvalue/?token=") + ubik + "&variable=" + &line[5] + "&value=%s").c_str());
   
+  Serial << ">" << endl;
   return 0;
 }
 
 void setSendInterval (const char *line) {
   int interval = 120;
   if (strchr(line, ' ')) {
-    interval = atoi(strchr(line, ' ') + 1) {
+    interval = atoi(strchr(line, ' ') + 1);
   }
   intCO2SendValue = (uint32_t)interval * 1000;
-  tmrCO2SendValueTimer.setInterval(intCO2SendValue); 
+  tmrCO2SendValueTimer->setInterval(intCO2SendValue); 
 }
 
 void setSendThreshold(const char *line) {
   int thr = 0;
   if (strchr(line, ' ')) {
-    thr = atoi(strchr(line, ' ') + 1) {
+    thr = atoi(strchr(line, ' ') + 1);
   }
   co2Threshold = thr;
 }

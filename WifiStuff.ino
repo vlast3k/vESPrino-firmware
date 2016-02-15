@@ -18,11 +18,11 @@ void connectToWifi(const char *s1, const char *s2, const char *s3) {
 
   wifiConnectToStoredSSID();
   Serial << "Connecting to " << s1 << endl;
-  for (int i=0; i<10 && WiFi.status() != WL_CONNECTED; i--) {
-    handleWifi();
-    delay(1000);
-  }
-  handleWifi();
+//  for (int i=0; i<10 && WiFi.status() != WL_CONNECTED; i--) {
+//    handleWifi();
+//    delay(1000);
+//  }
+//  handleWifi();
 //  if (strstr(s1, "SAP-Guest")) {
 //
 //    checkSAPAuth();
