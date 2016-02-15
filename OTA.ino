@@ -1,8 +1,8 @@
 
 void doHttpUpdate(int mode) {
   Serial << "Starting Web update, mode " << mode << endl;
-  char prod[] = "https://raw.githubusercontent.com/vlast3k/ESP8266_SerialOTATS/master/fw/latest.bin";
-  char test[] = "https://raw.githubusercontent.com/vlast3k/ESP8266_SerialOTATS/master/fw/latest_test.bin";
+  char prod[] = "https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest.bin";
+  char test[] = "https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_test.bin";
   t_httpUpdate_return ret = ESPhttpUpdate.update(mode == 1 ? prod : test);
   switch(ret) {
     case HTTP_UPDATE_FAILED:
