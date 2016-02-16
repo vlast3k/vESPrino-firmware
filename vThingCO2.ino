@@ -14,6 +14,9 @@
 #include <Timer.h>
 #include <RunningAverage.h>
 #include <NeoPixelBus.h> 
+extern "C" {
+#include "user_interface.h"
+}
 
 void setSAPAuth(const char *);
 char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
@@ -83,7 +86,7 @@ void setup() {
   Serial << endl << "ready" << endl;
   Serial << "Strip begin: " << millis() << endl;
   strip.Begin();
-  strip.SetPixelColor(0, RgbColor(0, 5,0));
+  strip.SetPixelColor(0, RgbColor(0, 0,0));
   strip.Show();  
   Serial << "Strip end: " << millis() << endl;
   //startWifi();
@@ -95,6 +98,8 @@ void setup() {
   tmrCO2RawRead->Start();
   tmrCO2SendValueTimer->Start();
   Serial << "Completed Setup: " << millis() << endl;
+//WiFi.mode(WIFI_OFF);
+  wifi_set_sleep_type(LIGHT_SLEEP_T);
     //WiFi.begin("vladiHome", "0888414447");
   
 //  while (WiFi.status() != WL_CONNECTED) {
@@ -114,5 +119,5 @@ void loop() {
 
   tmrCO2RawRead->Update();
   tmrCO2SendValueTimer->Update();
-  delay(200);
+  delay(5000);
 }
