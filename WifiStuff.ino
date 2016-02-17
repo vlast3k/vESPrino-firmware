@@ -17,7 +17,7 @@ void connectToWifi(const char *s1, const char *s2, const char *s3) {
   storeToEE(EE_WIFI_P2_30B, s3);
 
   wifiConnectToStoredSSID();
-  Serial << "Connecting to " << s1 << endl;
+  //Serial << "Connecting to " << s1 << endl;
 //  for (int i=0; i<10 && WiFi.status() != WL_CONNECTED; i--) {
 //    handleWifi();
 //    delay(1000);
@@ -33,7 +33,7 @@ int wifiConnectToStoredSSID() {
   char ssid[30], pass[30];
   EEPROM.get(EE_WIFI_SSID_30B, ssid);
   EEPROM.get(EE_WIFI_P1_30B, pass);
-  Serial << "Connecting to: " << ssid << "," << pass << "." << endl;
+  Serial << "Connecting to: \"" << ssid << "\", \"" << pass << "\"" << endl;
   WiFi.disconnect();
   delay(500);
   WiFi.mode(WIFI_STA);

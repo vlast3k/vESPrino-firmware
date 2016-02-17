@@ -48,8 +48,20 @@ void sendMQTT(String msg) {
   EEPROM.get(EE_MQTT_PASS_15B,   mqttPass);
   EEPROM.get(EE_MQTT_TOPIC_40B,  mqttTopic);
   EEPROM.get(EE_MQTT_VALUE_70B,  mqttValue);
-  Serial << "MQTT Configuration: " << endl;
-  Serial << mqttServer << "," << mqttPort << "," << mqttClient << "," << mqttUser << "," << mqttPass << "," << mqttTopic << "," << mqttValue << endl;
+  Serial << "Sending via MQTT: ";
+  delay(10);
+  Serial << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
+  delay(10);
+  Serial << mqttUser;
+  delay(10);
+  Serial << "," << mqttPass << ","; 
+  delay(10);
+  Serial << mqttTopic;
+  delay(10);
+  Serial << ",";
+  delay(10);
+  Serial << mqttValue << endl;
+  delay(10);
   uint32_t st = millis();
   WiFiClient wclient;
   PubSubClient client(wclient, mqttServer, mqttPort);
@@ -61,9 +73,9 @@ void sendMQTT(String msg) {
       //sprintf(ddd, "{\"data\": %s, \"write\": true,  \"ispublic\": true}", msg.c_str());
       char mqttValue2[80];
       sprintf(mqttValue2, mqttValue, msg.c_str());
-      Serial << mqttValue2 << endl;
-      client.publish(mqttTopic, mqttValue2);
-      Serial.println("sent");
+      Serial << "Connected. Will publish: " << mqttValue2 << endl;
+      boolean res = client.publish(mqttTopic, mqttValue2);
+      Serial.println(res ? "Done" : "Falied!");
     } else {
         Serial.println("Could not connect to MQTT server");   
     }     

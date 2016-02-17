@@ -4,7 +4,8 @@ String HTTP_STR = "http://";
 String HTTPS_STR= "https://";
 
 int processResponseCodeATFW(HTTPClient *http, int rc) {
-  Serial << "Response Code: " << rc << endl;
+  if (rc > 0) Serial << "Response Code: " << rc << endl;
+  else Serial << "Error Code: " << rc << " = " << http->errorToString(rc).c_str() << endl;
   if (rc > 0) {
     Serial << "Payload: [" << http->getString() << "]" << endl;
     Serial << "CLOSED" << endl; // for compatibility with AT FW

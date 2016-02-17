@@ -49,6 +49,8 @@ String   mqttTopic  = "co2Value";
 //v co2
 //t 46de4fc404221b32054a8405f602fd
 
+boolean DEBUG = false;
+
 uint32_t intCO2RawRead   =  15000L;
 uint32_t intCO2SendValue = 120000L;
 uint16_t co2Threshold = 1;
@@ -72,7 +74,6 @@ void onCO2RawRead() {
   if (res != 550) startedCO2Monitoring = true;
   if (startedCO2Monitoring) {
     raCO2Raw.addValue(res);
-    Serial << "CO2: " << raCO2Raw.getAverage()<< " , last: " << lastSentCO2value  << " , " << millis() /1000 <<  endl;
     int diff = raCO2Raw.getAverage() - lastSentCO2value;
     if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) sendCO2Value();
   }

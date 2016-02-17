@@ -30,7 +30,7 @@ byte readLine(int timeout) {
 
 String ubik;
 int handleCommand() {
-  Serial << "Received command: " << line << endl;
+  if (DEBUG) Serial << "Received command: " << line << endl;
   if (strstr(line, "tstest")) sendTS();
   else if (line[0] == 'p') sendPing();
   else if (line[0] == 'A') mockATCommand(line);
@@ -166,7 +166,10 @@ void cfgHCPIOT(const char *p) {
 }
 
 void sndIOT(const char *line) {
-  Serial << "Send Value" << endl;
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial << "Cannot send data. No Wifi connection." << endl;
+    return;
+  }
   char path[140];
   EEPROM.get(EE_IOT_PATH_140B, path);
   if (path[0] && path[0] != 255) {
@@ -180,8 +183,6 @@ void sndIOT(const char *line) {
 
   EEPROM.get(EE_MQTT_SERVER_30B, path);
   if (path[0] && path[0] != 255) {
-    //sprintf(str2, str, &line[7]);
-    Serial << "send mqtt: " << (char *) &line[7] << endl;
     sendMQTT(&line[7]);
   } 
 }
@@ -189,15 +190,14 @@ void sndIOT(const char *line) {
 void sndGENIOT(const char *line) {
   char str[140], str2[150];
   EEPROM.get(EE_GENIOT_PATH_140B, str);
-  Serial << "geniot: " << str << endl;
   sprintf(str2, str, &line[7]);
-  Serial << "geniot: " << str2 << endl;
+  Serial << "Sending to URL: \"" << str2 << "\"" << endl;
   
   HTTPClient http;
   http.begin(str2);
   //addHCPIOTHeaders(&http, token);
   int rc = processResponseCodeATFW(&http, http.GET());
-  Serial << "GEN rc: " << rc;
+  //Serial << "Result: " << http.errorToString(rc).c_str();
 }
 
 void sndHCPIOT(const char *line) {
@@ -213,8 +213,8 @@ void sndHCPIOT(const char *line) {
   http.begin(HTTPS_STR + host + path);
   addHCPIOTHeaders(&http, token);
   int rc = processResponseCodeATFW(&http, http.POST(""));
-  Serial << "IOT rc: " << rc;
-  heap("");
+  //Serial << "IOT rc: " << http.errorToString(rc).c_str();
+  //heap("");
 }
 
 void addHCPIOTHeaders(HTTPClient *http, const char *token) {
