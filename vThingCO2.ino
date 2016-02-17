@@ -18,6 +18,44 @@ extern "C" {
 #include "user_interface.h"
 }
 
+void setSendInterval (const char *line);
+void setSendThreshold(const char *line);
+void getTS(const char* line);
+void sendTS();
+void testUBI();
+int setWifi(const char* p);
+void atCIPSTART(const char *p);
+void mockATCommand(const char *line);
+void cfgGENIOT(const char *p);
+void cfgHCPIOT(const char *p);
+void sndIOT(const char *line);
+void sndGENIOT(const char *line);
+void sndHCPIOT(const char *line);
+void addHCPIOTHeaders(HTTPClient *http, const char *token);
+void sndSimple();
+void configMQTT(const char *p);
+void sendMQTT(String msg);
+int processResponseCodeATFW(HTTPClient *http, int rc);
+int CM1106_read();
+void CM1106_init();
+void doHttpUpdate(int mode);
+void handleOTA();
+void startOTA();
+char *extractStringFromQuotes(const char* src, char *dest, int destSize);
+void storeToEE(int address, const char *str);
+void handleWifi();
+void connectToWifi(const char *s1, const char *s2, const char *s3);
+void wifiScanNetworks();
+int wifiConnectToStoredSSID();
+void processUserInput();
+byte readLine(int timeout);
+int handleCommand();
+int sendPing();
+int httpAuthSAP();
+int checkSAPAuth();
+void heap(const char * str);
+
+
 void setSAPAuth(const char *);
 char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 #define EE_WIFI_SSID_30B 0
