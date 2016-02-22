@@ -116,18 +116,18 @@ void onCO2RawRead() {
     if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) sendCO2Value();
   }
 }
-char VERSION[] = "vThing - CO2 Monitor v0.1";
+char VERSION[] = "vThing - CO2 Monitor v1.0";
 void setup() {
   Serial.begin(9600);
-  Serial << "Start Setup: " << millis() << endl;
-  Serial << VERSION << endl;
+//  Serial << "Start Setup: " << millis() << endl;
+  Serial << endl << VERSION << endl;
   EEPROM.begin(1024);
-  Serial << endl << "ready" << endl;
-  Serial << "Strip begin: " << millis() << endl;
+  Serial << "ready" << endl;
+  //Serial << "Strip begin: " << millis() << endl;
   strip.Begin();
-  strip.SetPixelColor(0, RgbColor(0, 0,0));
+  strip.SetPixelColor(0, RgbColor(0, 5,0));
   strip.Show();  
-  Serial << "Strip end: " << millis() << endl;
+  //Serial << "Strip end: " << millis() << endl;
   //startWifi();
   Serial << "Waiting for auto-connect" << endl;
   tmrCO2RawRead        = new Timer(intCO2RawRead,   onCO2RawRead);
@@ -136,9 +136,9 @@ void setup() {
   Serial << "CO2 now: " << res << endl;
   tmrCO2RawRead->Start();
   tmrCO2SendValueTimer->Start();
-  Serial << "Completed Setup: " << millis() << endl;
+  //Serial << "Completed Setup: " << millis() << endl;
 //WiFi.mode(WIFI_OFF);
-  wifi_set_sleep_type(LIGHT_SLEEP_T);
+  //wifi_set_sleep_type(LIGHT_SLEEP_T);
     //WiFi.begin("vladiHome", "0888414447");
   
 //  while (WiFi.status() != WL_CONNECTED) {
