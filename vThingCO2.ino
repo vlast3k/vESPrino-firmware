@@ -74,6 +74,11 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 #define EE_MQTT_VALUE_70B   624
 //#define EE_LAST 694
 
+#define DT_VTHING_CO2 1
+#define DT_VAIR 2
+
+int deviceType = DT_VAIR;
+
 String   mqttServer = "m20.cloudmqtt.com";
 uint32_t mqttPort   = 19749;
 String   mqttClient = "vAir_CO2_Monitor";
@@ -97,7 +102,7 @@ uint32_t lastSentCO2value = 0;
 Timer *tmrCO2RawRead, *tmrCO2SendValueTimer;
 boolean startedCO2Monitoring = false;
 RunningAverage raCO2Raw(4);
-NeoPixelBus strip = NeoPixelBus(1, D4);
+NeoPixelBus *strip;// = NeoPixelBus(1, D4);
 
 void sendCO2Value() {
   int val = (int)raCO2Raw.getAverage();
@@ -120,22 +125,30 @@ char VERSION[] = "vThing - CO2 Monitor v1.0";
 void setup() {
   Serial.begin(9600);
 //  Serial << "Start Setup: " << millis() << endl;
-  Serial << endl << VERSION << endl;
+  switch (deviceType) {
+    case DT_VTHING_CO2:  Serial << endl << "vThing - CO2 Monitor v1.1" << endl; break;
+    case DT_VAIR:        Serial << endl << "vAir - WiFi Module v1.6.1"   << endl; break;
+  }
   EEPROM.begin(1024);
   Serial << "ready" << endl;
   //Serial << "Strip begin: " << millis() << endl;
-  strip.Begin();
-  strip.SetPixelColor(0, RgbColor(0, 5,0));
-  strip.Show();  
   //Serial << "Strip end: " << millis() << endl;
   //startWifi();
   Serial << "Waiting for auto-connect" << endl;
-  tmrCO2RawRead        = new Timer(intCO2RawRead,   onCO2RawRead);
-  tmrCO2SendValueTimer = new Timer(intCO2SendValue, sendCO2Value);
-  int res = CM1106_read();
-  Serial << "CO2 now: " << res << endl;
-  tmrCO2RawRead->Start();
-  tmrCO2SendValueTimer->Start();
+
+  if (deviceType == DT_VTHING_CO2) {
+    if (strip) {
+      strip->Begin();
+      strip->SetPixelColor(0, RgbColor(0, 5,0));
+      strip->Show();  
+    }
+    tmrCO2RawRead        = new Timer(intCO2RawRead,   onCO2RawRead);
+    tmrCO2SendValueTimer = new Timer(intCO2SendValue, sendCO2Value);
+    int res = CM1106_read();
+    Serial << "CO2 now: " << res << endl;
+    tmrCO2RawRead->Start();
+    tmrCO2SendValueTimer->Start();
+  }
   //Serial << "Completed Setup: " << millis() << endl;
 //WiFi.mode(WIFI_OFF);
   //wifi_set_sleep_type(LIGHT_SLEEP_T);
@@ -156,7 +169,9 @@ void loop() {
     processUserInput();
   }
 
-  tmrCO2RawRead->Update();
-  tmrCO2SendValueTimer->Update();
-  delay(5000);
+  if (deviceType == DT_VTHING_CO2) {
+    tmrCO2RawRead->Update();
+    tmrCO2SendValueTimer->Update();
+    delay(5000);
+  }
 }
