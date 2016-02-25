@@ -10,6 +10,7 @@
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
 #include <SoftwareSerialESP.h>
+#include <Si7021.h>
 
 #include <Timer.h>
 #include <RunningAverage.h>
@@ -54,7 +55,13 @@ int sendPing();
 int httpAuthSAP();
 int checkSAPAuth();
 void heap(const char * str);
-
+void onTempRead();
+void handleSAP_IOT_PushService();
+void doSend();
+void attachButton();
+void processMessage(String payload);
+void processCommand(String cmd);
+void initLight();
 
 void setSAPAuth(const char *);
 char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
@@ -76,8 +83,9 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 
 #define DT_VTHING_CO2 1
 #define DT_VAIR 2
+#define DT_VTHING_STARTER 3
 
-int deviceType = DT_VAIR;
+int deviceType = DT_VTHING_STARTER;
 
 String   mqttServer = "m20.cloudmqtt.com";
 uint32_t mqttPort   = 19749;
@@ -85,6 +93,13 @@ String   mqttClient = "vAir_CO2_Monitor";
 String   mqttUser   = "pndhubpk";
 String   mqttPass   = "yfT7ax_KDrgG";
 String   mqttTopic  = "co2Value";
+
+
+String mmsHost = "iotmmsi024148trial.hanatrial.ondemand.com";
+String deviceId = "e46304a8-a410-4979-82f6-ca3da7e43df9";
+String authToken = "8f337a8e54bd352f28c2892743c94b3";
+String colors[] = {"red","pink","lila","violet","blue","mblue","cyan","green","yellow","orange"};
+#define COLOR_COUNT 10
 
 //h iotmmsi024148trial.hanatrial.ondemand.com
 //d c5c73d69-6a19-4c7d-9da3-b32198ba71f9
@@ -99,10 +114,11 @@ uint32_t intCO2SendValue = 120000L;
 uint16_t co2Threshold = 1;
 uint32_t lastSentCO2value = 0;
 
-Timer *tmrCO2RawRead, *tmrCO2SendValueTimer;
+Timer *tmrCO2RawRead, *tmrCO2SendValueTimer, *tmrTempRead;
 boolean startedCO2Monitoring = false;
 RunningAverage raCO2Raw(4);
 NeoPixelBus *strip;// = NeoPixelBus(1, D4);
+SI7021 *si7021;
 
 void sendCO2Value() {
   int val = (int)raCO2Raw.getAverage();
@@ -136,7 +152,20 @@ void setup() {
   //startWifi();
   Serial << "Waiting for auto-connect" << endl;
 
-  if (deviceType == DT_VTHING_CO2) {
+  if (deviceType == DT_VTHING_STARTER) {
+    strip = new NeoPixelBus(1, D4);
+    if (strip) {
+      strip->Begin();
+      strip->SetPixelColor(0, RgbColor(0, 5,0));
+      strip->Show();  
+    }    
+    si7021 = new SI7021();
+    si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
+    si7021->setHumidityRes(8); // Humidity = 12-bit / Temperature = 14-bit
+    tmrTempRead = new Timer(30000L,   onTempRead);
+    tmrTempRead->Start();
+    attachButton();
+  } else if (deviceType == DT_VTHING_CO2 ) {
     if (strip) {
       strip->Begin();
       strip->SetPixelColor(0, RgbColor(0, 5,0));
@@ -172,6 +201,11 @@ void loop() {
   if (deviceType == DT_VTHING_CO2) {
     tmrCO2RawRead->Update();
     tmrCO2SendValueTimer->Update();
+    delay(5000);
+  } else if (deviceType == DT_VTHING_STARTER) {
+    tmrTempRead->Update();
+    handleSAP_IOT_PushService();
+    doSend();
     delay(5000);
   }
 }
