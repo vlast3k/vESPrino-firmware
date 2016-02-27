@@ -1,28 +1,31 @@
-#include <ArduinoJson.h>
 
 
-uint32_t lastSAPCheck = -1000000L;
+//uint32_t lastSAPCheck = -1000000L;
 void handleSAP_IOT_PushService() {
-    if  (millis() - lastSAPCheck < 2000) return;
-    String url = String("https://" + mmsHost + "/com.sap.iotservices.mms/v1/api/http/data/" + deviceId); 
+    if(WiFi.status() != WL_CONNECTED) return;
+  //  if  (millis() - lastSAPCheck < 2000) return;
+    
+    String url = String("https://" + getJSONConfig(SAP_IOT_HOST) + "/com.sap.iotservices.mms/v1/api/http/data/" + getJSONConfig(SAP_IOT_DEVID) ); 
+    //Serial << url << endl;
     HTTPClient http;
     http.begin(url);
     http.addHeader("Content-Type",  "application/json;charset=UTF-8");
-    http.addHeader("Authorization", String("Bearer ") + authToken);  
-    
+//    Serial <<  getJSONConfig(SAP_IOT_TOKEN) << endl;
+    http.addHeader("Authorization", String("Bearer ") + getJSONConfig(SAP_IOT_TOKEN));  
+  //  Serial << "make req" << endl;
     int httpCode = http.GET();
     // httpCode will be negative on error
     if(httpCode > 0) {
         // HTTP header has been send and Server response header has been handled
-        Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+        //Serial.printf("[HTTP] GET... code: %d\n", httpCode);
         String payload = http.getString();
-        Serial.println(payload);          
+        //Serial.println(payload);          
         processMessage(payload);
     } else {
         Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
     }
 
-    lastSAPCheck = millis();
+    //lastSAPCheck = millis();
 }
 
 void httpGET(String url) {
@@ -58,19 +61,28 @@ void processMessage(String msgIn) {
   //[{"messageType":"42c3546a088b3ef8b8d3","sender":"IoT App","messages":[{"command":"switch on"}]}]
 
   if (!root.success()) {
-    Serial.println("parseObject() failed");
+    //if server has returned empyy response
+    Serial << "parseObject() failed: " << msgIn << endl;
     return;
   }
   //Serial.print(root[0].is<JsonObject&>());
   //Serial  << "type:" << root.get(0) << endl;
   if (root[0].is<JsonObject&>()) {
-    Serial << " Received cmd: " << root[0]["messages"][0]["command"].asString() << endl;
-    if (root[0]["messages"][0]["command"].asString()[0]) {
-      processCommand(root[0]["messages"][0]["command"].asString());
-    }
-  } else {
-    Serial << "no cmd" << endl;
-  }
+    Serial << root[0].asObject().containsKey("messages") << endl; 
+    Serial << root[0]["messages"].is<JsonArray&>() << endl;
+    Serial << root[0]["messages"][0].is<JsonObject&>() << endl;
+    Serial << root[0]["messages"][0].asObject().containsKey("color") << endl;
+    Serial << " Received cmd: " << root[0]["messages"][0]["color"].asString() << endl;
+    if (root[0]["messages"][0]["color"].asString()) {
+      Serial << "to process command" << endl;
+      processCommand(root[0]["messages"][0]["color"].asString());
+    } else {
+      Serial << "command not recognized" << endl;
+     }
+  } 
+//  else {
+//    Serial << "no cmd" << endl;
+//  }
 
 }
 

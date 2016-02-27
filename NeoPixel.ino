@@ -21,9 +21,10 @@ void initLight() {
 }
 
 void processCommand(String color) {
-  color.trim();
+  Serial << "color: " << color;
+  //color.trim();
   Serial << "Received Command: " << color << endl;
-  RgbColor c = yellow;
+  RgbColor c;
   if (color == "red")         c = red;
   else if (color == "blue")   c = blue;
   else if (color == "green")  c = green;
@@ -36,6 +37,11 @@ void processCommand(String color) {
   else if (color == "violet") c = violet;
   else if (color == "mblue")  c = mblue;
   else if (color == "cyan")   c = cyan;
+  else {
+    uint32_t data = strtol(color.c_str(), NULL, 0);
+    Serial << " receveid int: " << data << endl;
+    c = RgbColor((data & 0xFF0000) >> 16, (data & 0x00FF00) >> 8, (data & 0x0000FF));    
+  }
 
   strip->SetPixelColor(0, c);
   strip->Show();

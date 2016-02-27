@@ -12,9 +12,9 @@ void handleWifi() {
 }
 
 void connectToWifi(const char *s1, const char *s2, const char *s3) {
-  storeToEE(EE_WIFI_SSID_30B, s1);
-  storeToEE(EE_WIFI_P1_30B, s2);
-  storeToEE(EE_WIFI_P2_30B, s3);
+  storeToEE(EE_WIFI_SSID_30B, s1, 30);
+  storeToEE(EE_WIFI_P1_30B, s2, 30);
+  storeToEE(EE_WIFI_P2_30B, s3, 30);
 
   wifiConnectToStoredSSID();
   //Serial << "Connecting to " << s1 << endl;

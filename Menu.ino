@@ -1,15 +1,18 @@
-#define LINE_LEN 200
+#define LINE_LEN 250
 char line[LINE_LEN];
 
-void processUserInput() {
+boolean processUserInput() {
   Serial.setTimeout(500);
-  if (!Serial.available()) return;
+  if (!Serial.available()) {
+    return false;
+  }
   
   Serial.setTimeout(30000);
   if (readLine(30000) >= 0) {
     Serial.flush();
     handleCommand();
    // Serial << endl << F("OK") << endl;
+   return true;
   }
 }
 
@@ -38,7 +41,8 @@ int handleCommand() {
   else if (line[0] == 'C') checkSAPAuth();
   else if (line[0] == 'G') getTS(line);
   else if (strstr(line, "cfggen")) cfgGENIOT(line);
-  else if (strstr(line, "cfgiot")) cfgHCPIOT(line);
+  else if (strstr(line, "cfgiot1")) cfgHCPIOT1(line);
+  else if (strstr(line, "cfgiot2")) cfgHCPIOT2(line);
   else if (strstr(line, "sndiot")) sndIOT(line);
   //else if (strstr(line, "smp2")) sndSimple2();
   else if (strstr(line, "smp")) sndSimple();
@@ -49,14 +53,17 @@ int handleCommand() {
   else if (line[0] == 'o') startOTA();
   else if (strcmp(line, "ubi") == 0) testUBI();
   else if (strstr(line, "cfg_mqtt"))  configMQTT(line);
-  else if (strstr(line, "cfg_mqval"))  { storeToEE(EE_MQTT_VALUE_70B, &line[10]); Serial << "DONE" << endl; }
+  else if (strstr(line, "cfg_mqval"))  { storeToEE(EE_MQTT_VALUE_70B, &line[10], 70); Serial << "DONE" << endl; }
   else if (strstr(line, "atest_mqtt")) sendMQTT("556");
   else if (strstr(line, "set_send_int ")) setSendInterval (line);
   else if (strstr(line, "set_send_thr ")) setSendThreshold(line);
   else if (strstr(line, "info")) Serial << VERSION << endl;
   else if (strstr(line, "tskey ")) cfgGENIOT((String("cfggen http://api.thingspeak.com/update?key=") + &line[6] + "&field1=%s").c_str());
-  else if (strstr(line, "ubik "))  ubik = String(&line[5]); 
+  else if (strstr(line, "ubik "))  ubik = String(&line[5]);  
   else if (strstr(line, "ubiv "))  cfgGENIOT((String("cfggen http://50.23.124.66/api/postvalue/?token=") + ubik + "&variable=" + &line[5] + "&value=%s").c_str());
+  else if (strstr(line, "jjj")) testJSON();
+  else if (strstr(line, "jscfg")) printJSONConfig();
+  else if (strstr(line, "bttn")) shouldSend=true;
   
   Serial << ">" << endl;
   return 0;
@@ -134,11 +141,11 @@ void cfgGENIOT(const char *p) {
     strncpy(genurl, p+7, sizeof(genurl)-1);
     Serial << "Stored Generic URL: " << genurl << endl;
   }
-  storeToEE(EE_GENIOT_PATH_140B, genurl); // path
+  storeToEE(EE_GENIOT_PATH_140B, genurl, 140); // path
   Serial << "DONE" << endl;
 }
 
-void cfgHCPIOT(const char *p) {
+void cfgHCPIOT1(const char *p) {
   //POST https://iotmmsi024148trial.hanatrial.ondemand.com/com.sap.iotservices.mms/v1/api/http/data/c5c73d69-6a19-4c7d-9da3-b32198ba71f9/2023a0e66f76d20f47d7/sync?co2=34
   // host: iotmmsi024148trial.hanatrial.ondemand.com
   // deviceId: c5c73d69-6a19-4c7d-9da3-b32198ba71f9
@@ -149,21 +156,36 @@ void cfgHCPIOT(const char *p) {
 
   char buf[140], devId[40], msgId[25], varName[20];
   p = extractStringFromQuotes(p, buf, sizeof(buf)); // host
-  storeToEE(EE_IOT_HOST_60B, buf);     //host
+  storeToEE(EE_IOT_HOST_60B, buf, 60);     //host
+  putJSONConfig(SAP_IOT_HOST, buf);
   Serial << "IOT Host: " << buf << endl;
   
   p = extractStringFromQuotes(p, devId, sizeof(devId)); 
+  putJSONConfig(SAP_IOT_DEVID, devId);
   p = extractStringFromQuotes(p, msgId, sizeof(msgId)); 
   p = extractStringFromQuotes(p, varName, sizeof(varName)); 
   sprintf(buf, "/com.sap.iotservices.mms/v1/api/http/data/%s/%s/sync?%s=", devId, msgId, varName);
-  storeToEE(EE_IOT_PATH_140B, buf); // path
-  Serial << "IOT Path: " << buf << endl;
-  
-  p = extractStringFromQuotes(p, buf, sizeof(buf)); // token
-  storeToEE(EE_IOT_TOKN_40B, buf);     // token
-  Serial << "IOT OAuth Token: " << buf << endl;
+  storeToEE(EE_IOT_PATH_140B, buf, 140); // path
+  Serial << "IOT Path: " << buf << endl;  
+
   heap("");
 }
+
+void cfgHCPIOT2(const char *p) {  
+  char buf[140];
+    p = extractStringFromQuotes(p, buf, sizeof(buf)); // token
+  storeToEE(EE_IOT_TOKN_40B, buf, 40);     // token
+  Serial << "IOT OAuth Token: " << buf << endl;
+  putJSONConfig(SAP_IOT_TOKEN, buf);
+
+  p = extractStringFromQuotes(p, buf, sizeof(buf)); // button messageid
+  Serial << "-" << buf << "-" << endl;
+  putJSONConfig(SAP_IOT_BTN_MSGID, buf);
+  
+
+  heap("");
+}
+
 
 void sndIOT(const char *line) {
   if (WiFi.status() != WL_CONNECTED) {
@@ -208,6 +230,7 @@ void sndHCPIOT(const char *line) {
 
   sprintf(path, "%s%s", path, &line[7]);
   Serial << "hcpiot: " << path << endl;
+  Serial << "hcpiot, token: " << token << endl;
   
   HTTPClient http;
   http.begin(HTTPS_STR + host + path);

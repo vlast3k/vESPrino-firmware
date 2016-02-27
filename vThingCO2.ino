@@ -11,6 +11,8 @@
 #include <ESP8266httpUpdate.h>
 #include <SoftwareSerialESP.h>
 #include <Si7021.h>
+#include <ArduinoJson.h>
+
 
 #include <Timer.h>
 #include <RunningAverage.h>
@@ -28,7 +30,8 @@ int setWifi(const char* p);
 void atCIPSTART(const char *p);
 void mockATCommand(const char *line);
 void cfgGENIOT(const char *p);
-void cfgHCPIOT(const char *p);
+void cfgHCPIOT1(const char *p);
+void cfgHCPIOT2(const char *p);
 void sndIOT(const char *line);
 void sndGENIOT(const char *line);
 void sndHCPIOT(const char *line);
@@ -43,12 +46,12 @@ void doHttpUpdate(int mode);
 void handleOTA();
 void startOTA();
 char *extractStringFromQuotes(const char* src, char *dest, int destSize);
-void storeToEE(int address, const char *str);
+void storeToEE(int address, const char *str, int maxLength);
 void handleWifi();
 void connectToWifi(const char *s1, const char *s2, const char *s3);
 void wifiScanNetworks();
 int wifiConnectToStoredSSID();
-void processUserInput();
+boolean processUserInput();
 byte readLine(int timeout);
 int handleCommand();
 int sendPing();
@@ -62,6 +65,11 @@ void attachButton();
 void processMessage(String payload);
 void processCommand(String cmd);
 void initLight();
+void  printJSONConfig();
+void putJSONConfig(char *key, char *value);
+
+String getJSONConfig(char *item);
+void testJSON();
 
 void setSAPAuth(const char *);
 char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
@@ -79,11 +87,17 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 #define EE_MQTT_PASS_15B    569
 #define EE_MQTT_TOPIC_40B   584
 #define EE_MQTT_VALUE_70B   624
+#define EE_JSON_CFG_1000B   1000
 //#define EE_LAST 694
 
 #define DT_VTHING_CO2 1
 #define DT_VAIR 2
 #define DT_VTHING_STARTER 3
+
+#define SAP_IOT_HOST "spHst"
+#define SAP_IOT_DEVID "spDvId"
+#define SAP_IOT_TOKEN "spTok"
+#define SAP_IOT_BTN_MSGID "spBtMID"
 
 int deviceType = DT_VTHING_STARTER;
 
@@ -114,11 +128,14 @@ uint32_t intCO2SendValue = 120000L;
 uint16_t co2Threshold = 1;
 uint32_t lastSentCO2value = 0;
 
-Timer *tmrCO2RawRead, *tmrCO2SendValueTimer, *tmrTempRead;
+Timer *tmrCO2RawRead, *tmrCO2SendValueTimer, *tmrTempRead, *tmrCheckPushMsg;
 boolean startedCO2Monitoring = false;
 RunningAverage raCO2Raw(4);
 NeoPixelBus *strip;// = NeoPixelBus(1, D4);
 SI7021 *si7021;
+
+
+bool shouldSend = false;
 
 void sendCO2Value() {
   int val = (int)raCO2Raw.getAverage();
@@ -145,7 +162,7 @@ void setup() {
     case DT_VTHING_CO2:  Serial << endl << "vThing - CO2 Monitor v1.1" << endl; break;
     case DT_VAIR:        Serial << endl << "vAir - WiFi Module v1.6.1"   << endl; break;
   }
-  EEPROM.begin(1024);
+  EEPROM.begin(3000);
   Serial << "ready" << endl;
   //Serial << "Strip begin: " << millis() << endl;
   //Serial << "Strip end: " << millis() << endl;
@@ -162,8 +179,10 @@ void setup() {
     si7021 = new SI7021();
     si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
     si7021->setHumidityRes(8); // Humidity = 12-bit / Temperature = 14-bit
-    tmrTempRead = new Timer(30000L,   onTempRead);
+    tmrTempRead = new Timer(30000L,    onTempRead);
+    tmrCheckPushMsg = new Timer(5000L, handleSAP_IOT_PushService);
     tmrTempRead->Start();
+    tmrCheckPushMsg->Start();
     attachButton();
   } else if (deviceType == DT_VTHING_CO2 ) {
     if (strip) {
@@ -195,7 +214,7 @@ void loop() {
   handleWifi();
   handleOTA();
   if (!startedOTA) {
-    processUserInput();
+    while (processUserInput()) delay(1000);
   }
 
   if (deviceType == DT_VTHING_CO2) {
@@ -204,8 +223,12 @@ void loop() {
     delay(5000);
   } else if (deviceType == DT_VTHING_STARTER) {
     tmrTempRead->Update();
-    handleSAP_IOT_PushService();
+    //Serial << "\n\n\n------ before push service\n\n\n";
+    tmrCheckPushMsg->Update();
+    //handleSAP_IOT_PushService();
+    //Serial << "\n\n\n------ before do Send\n\n\n";
     doSend();
+    //Serial << "\n\n\n------ before delay 5 sec\n\n\n";
     delay(5000);
   }
 }
