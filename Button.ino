@@ -8,15 +8,19 @@ void onButton() {
 }
 
 void attachButton() {
-  pinMode(BTTN_PIN, INPUT_PULLUP);
+  //pinMode(BTTN_PIN, INPUT_PULLUP);
   attachInterrupt(BTTN_PIN, onButton, CHANGE);
 }
-
+\
 
 
 int clicks = 5;
 void doSend() {
   if (shouldSend == false) return;
+  if (!getJSONConfig(SAP_IOT_HOST)) {
+    Serial << "json iot host: " << getJSONConfig(SAP_IOT_HOST) << "..." << endl;
+    return;
+  }
   shouldSend = false;
   Serial << "Sending button" << endl;
   HTTPClient http;

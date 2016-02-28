@@ -3,10 +3,13 @@
 //uint32_t lastSAPCheck = -1000000L;
 void handleSAP_IOT_PushService() {
     if(WiFi.status() != WL_CONNECTED) return;
-  //  if  (millis() - lastSAPCheck < 2000) return;
-    
-    String url = String("https://" + getJSONConfig(SAP_IOT_HOST) + "/com.sap.iotservices.mms/v1/api/http/data/" + getJSONConfig(SAP_IOT_DEVID) ); 
-    //Serial << url << endl;
+    if (!getJSONConfig(SAP_IOT_HOST)) return;
+    String url = String("https://") + getJSONConfig(SAP_IOT_HOST) + "/com.sap.iotservices.mms/v1/api/http/data/" + getJSONConfig(SAP_IOT_DEVID) ; 
+//    Serial << url << endl;
+//    Serial << getJSONConfig(SAP_IOT_HOST) << endl;
+//    if (getJSONConfig(SAP_IOT_HOST)) Serial << "ok" << endl;
+//    else Serial << "false" << endl;
+    //Serial << (getJSONConfig(SAP_IOT_HOST) == true) << endl;
     HTTPClient http;
     http.begin(url);
     http.addHeader("Content-Type",  "application/json;charset=UTF-8");
@@ -22,36 +25,37 @@ void handleSAP_IOT_PushService() {
         //Serial.println(payload);          
         processMessage(payload);
     } else {
-        Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+      Serial << "Failed to push message to: " << url << ", due to: " <<http.errorToString(httpCode) << endl;
+        //Serial.printf("[HTTP] GET... failed, error: %s, url\n", http.errorToString(httpCode).c_str());
     }
 
     //lastSAPCheck = millis();
 }
 
-void httpGET(String url) {
-    if(WiFi.status() == WL_CONNECTED) {
-        HTTPClient http;
-
-        Serial.print("[HTTP] begin...\n");
-        http.begin(url); //HTTP
-
-        Serial.print("[HTTP] GET...\n");
-        // start connection and send HTTP header
-        int httpCode = http.GET();
-
-        // httpCode will be negative on error
-        if(httpCode > 0) {
-            // HTTP header has been send and Server response header has been handled
-            Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-            String payload = http.getString();
-            Serial.println(payload);          
-        } else {
-            Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
-        }
-
-        http.end();
-    }  
-}
+//void httpGET(String url) {
+//    if(WiFi.status() == WL_CONNECTED) {
+//        HTTPClient http;
+//
+//        Serial.print("[HTTP] begin...\n");
+//        http.begin(url); //HTTP
+//
+//        Serial.print("[HTTP] GET...\n");
+//        // start connection and send HTTP header
+//        int httpCode = http.GET();
+//
+//        // httpCode will be negative on error
+//        if(httpCode > 0) {
+//            // HTTP header has been send and Server response header has been handled
+//            Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+//            String payload = http.getString();
+//            Serial.println(payload);          
+//        } else {
+//            Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+//        }
+//
+//        http.end();
+//    }  
+//}
 
 void processMessage(String msgIn) {
   StaticJsonBuffer<200> jsonBuffer;

@@ -31,7 +31,7 @@ String getJSONConfig(char *item) {
   char data[1000];
   EEPROM.get(EE_JSON_CFG_1000B, data);
   //Serial << "JSON cfg: " << data << endl;
-  if (data[0] == -1 || data[0] == 0) strcpy(data, "{}");
+  if (data[0] == -1 || data[0] == 0 || data[0] == 255) strcpy(data, "{}");
   JsonObject& root = jsonBuffer.parseObject(data);
   return String(root[item].asString());
 }
@@ -40,7 +40,7 @@ void putJSONConfig(char *key, char *value) {
   char data2[1000], data[1000];
 
   EEPROM.get(EE_JSON_CFG_1000B, data);
-  if (data[0] == -1 || data[0] == 0) strcpy(data, "{}");
+  if (data[0] == -1 || data[0] == 0 || data[0] == 255) strcpy(data, "{}");
   JsonObject& root = jsonBuffer.parseObject(data);
   
   root[key] = value;
@@ -54,6 +54,8 @@ void testJSON() {
   EEPROM.put(EE_JSON_CFG_1000B, ddd);
   EEPROM.commit();
   
+  EEPROM.write(EE_JSON_CFG_1000B, -1);
+  EEPROM.commit();
   Serial << "Testing JSON" << endl;
   Serial << getJSONConfig("vladi") << endl;
   putJSONConfig("vladi", "sadsa");
@@ -61,6 +63,8 @@ void testJSON() {
   putJSONConfig("vladi", "sadsa");
   Serial << "2 " << getJSONConfig("vladi") << endl;  
   Serial << endl;
+  EEPROM.write(EE_JSON_CFG_1000B, -1);
+  EEPROM.commit();
 }
 
  void printJSONConfig() {

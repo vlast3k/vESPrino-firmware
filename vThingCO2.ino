@@ -154,14 +154,17 @@ void onCO2RawRead() {
     if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) sendCO2Value();
   }
 }
-char VERSION[] = "vThing - CO2 Monitor v1.0";
-void setup() {
-  Serial.begin(9600);
-//  Serial << "Start Setup: " << millis() << endl;
+void printVersion() {
   switch (deviceType) {
     case DT_VTHING_CO2:  Serial << endl << "vThing - CO2 Monitor v1.1" << endl; break;
     case DT_VAIR:        Serial << endl << "vAir - WiFi Module v1.6.1"   << endl; break;
-  }
+    case DT_VTHING_STARTER: Serial << endl << "vThing - Starter Edition v1.0"   << endl; break;
+  }  
+}
+void setup() {
+  Serial.begin(9600);
+//  Serial << "Start Setup: " << millis() << endl;
+  printVersion();
   EEPROM.begin(3000);
   Serial << "ready" << endl;
   //Serial << "Strip begin: " << millis() << endl;
