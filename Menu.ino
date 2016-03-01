@@ -64,6 +64,8 @@ int handleCommand() {
   else if (strstr(line, "jjj")) testJSON();
   else if (strstr(line, "jscfg")) printJSONConfig();
   else if (strstr(line, "bttn")) shouldSend=true;
+  else if (strcmp(line, "restart") == 0) ESP.restart();
+  else if (strcmp(line, "factory") == 0) factoryReset();
   
   Serial << ">" << endl;
   return 0;
@@ -111,7 +113,7 @@ int setWifi(const char* p) {
   p = extractStringFromQuotes(p, s1, 20);
   p = extractStringFromQuotes(p, s2, 20);
   p = extractStringFromQuotes(p, s3, 20);
-  Serial << "setWifi" << s1 << s2 << s3 << endl;
+  //Serial << "setWifi" << s1 << s2 << s3 << endl;
 
   connectToWifi(s1, s2, s3);
   return 0;
@@ -158,7 +160,7 @@ void cfgHCPIOT1(const char *p) {
   p = extractStringFromQuotes(p, buf, sizeof(buf)); // host
   storeToEE(EE_IOT_HOST_60B, buf, 60);     //host
   putJSONConfig(SAP_IOT_HOST, buf);
-  Serial << "IOT Host: " << buf << endl;
+  //Serial << "IOT Host: " << buf << endl;
   
   p = extractStringFromQuotes(p, devId, sizeof(devId)); 
   putJSONConfig(SAP_IOT_DEVID, devId);
@@ -166,26 +168,26 @@ void cfgHCPIOT1(const char *p) {
   p = extractStringFromQuotes(p, varName, sizeof(varName)); 
   sprintf(buf, "/com.sap.iotservices.mms/v1/api/http/data/%s/%s/sync?%s=", devId, msgId, varName);
   storeToEE(EE_IOT_PATH_140B, buf, 140); // path
-  Serial << "IOT Path: " << buf << endl;  
+  //Serial << "IOT Path: " << buf << endl;  
   printJSONConfig();
 
-  heap("");
+  //heap("");
 }
 
 void cfgHCPIOT2(const char *p) {  
   char buf[140];
     p = extractStringFromQuotes(p, buf, sizeof(buf)); // token
   storeToEE(EE_IOT_TOKN_40B, buf, 40);     // token
-  Serial << "IOT OAuth Token: " << buf << endl;
+  //Serial << "IOT OAuth Token: " << buf << endl;
   putJSONConfig(SAP_IOT_TOKEN, buf);
 
   p = extractStringFromQuotes(p, buf, sizeof(buf)); // button messageid
-  Serial << "-" << buf << "-" << endl;
+  //Serial << "-" << buf << "-" << endl;
   putJSONConfig(SAP_IOT_BTN_MSGID, buf);
   printJSONConfig();
   
 
-  heap("");
+  //heap("");
 }
 
 
@@ -231,8 +233,8 @@ void sndHCPIOT(const char *line) {
   EEPROM.get(EE_IOT_TOKN_40B, token);
 
   sprintf(path, "%s%s", path, &line[7]);
-  Serial << "hcpiot: " << path << endl;
-  Serial << "hcpiot, token: " << token << endl;
+  Serial << "Sending to HCP: " << path << endl;
+//  Serial << "hcpiot, token: " << token << endl;
   
   HTTPClient http;
   http.begin(HTTPS_STR + host + path);
@@ -254,4 +256,10 @@ void sndSimple() {
   processResponseCodeATFW(&http, http.POST(""));
 }
 
+void factoryReset() {
+  Serial << "Doing Factory Reset, and restarting..." << endl;
+  for (int i=0; i < 3000; i++) EEPROM.write(i, 0xFF);
+  EEPROM.commit();  
+  ESP.restart();
+}
 

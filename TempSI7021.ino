@@ -8,3 +8,7 @@ void onTempRead() {
   sndIOT(s.c_str());
 }
 
+void dumpTemp() {
+  Serial << "Temp : "     << si7021->readTemp() << " C" << endl;  
+}
+

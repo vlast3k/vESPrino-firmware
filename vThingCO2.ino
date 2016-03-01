@@ -67,6 +67,8 @@ void processCommand(String cmd);
 void initLight();
 void  printJSONConfig();
 void putJSONConfig(char *key, char *value);
+void dumpTemp();
+void factoryReset();
 
 String getJSONConfig(char *item);
 void testJSON();
@@ -154,11 +156,13 @@ void onCO2RawRead() {
     if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) sendCO2Value();
   }
 }
+
+String VERSION = "v1.7";
 void printVersion() {
   switch (deviceType) {
-    case DT_VTHING_CO2:  Serial << endl << "vThing - CO2 Monitor v1.1" << endl; break;
-    case DT_VAIR:        Serial << endl << "vAir - WiFi Module v1.6.1"   << endl; break;
-    case DT_VTHING_STARTER: Serial << endl << "vThing - Starter Edition v1.0"   << endl; break;
+    case DT_VTHING_CO2:     Serial << endl << "vThing - CO2 Monitor "     << VERSION << endl; break;
+    case DT_VAIR:           Serial << endl << "vAir - WiFi Module "       << VERSION << endl; break;
+    case DT_VTHING_STARTER: Serial << endl << "vThing - Starter Edition " << VERSION << endl; break;
   }  
 }
 void setup() {
@@ -182,8 +186,9 @@ void setup() {
     si7021 = new SI7021();
     si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
     si7021->setHumidityRes(8); // Humidity = 12-bit / Temperature = 14-bit
-    tmrTempRead = new Timer(30000L,    onTempRead);
-    tmrCheckPushMsg = new Timer(5000L, handleSAP_IOT_PushService);
+    dumpTemp();
+    tmrTempRead = new Timer(15000L,    onTempRead);
+    tmrCheckPushMsg = new Timer(1000L, handleSAP_IOT_PushService);
     tmrTempRead->Start();
     tmrCheckPushMsg->Start();
     attachButton();
@@ -232,6 +237,7 @@ void loop() {
     //Serial << "\n\n\n------ before do Send\n\n\n";
     doSend();
     //Serial << "\n\n\n------ before delay 5 sec\n\n\n";
-    delay(5000);
+    //Serial << ".";
+    delay(1000);
   }
 }

@@ -3,7 +3,6 @@ void ex2_attachInterrupt(void (*)());
 
 
 void onButton() {
-  Serial <<"bttn" << endl;
   if (digitalRead(BTTN_PIN) == 0) shouldSend = true;
 }
 
@@ -17,12 +16,16 @@ void attachButton() {
 int clicks = 5;
 void doSend() {
   if (shouldSend == false) return;
-  if (!getJSONConfig(SAP_IOT_HOST)) {
-    Serial << "json iot host: " << getJSONConfig(SAP_IOT_HOST) << "..." << endl;
+  shouldSend = false;    
+  Serial << "Button Clicked!" << endl;
+  if(WiFi.status() != WL_CONNECTED) {
+    Serial << "Will not send: No WiFi" << endl;
     return;
   }
-  shouldSend = false;
-  Serial << "Sending button" << endl;
+  if (!getJSONConfig(SAP_IOT_HOST)) {
+    Serial << "Will not send: No configuration" << endl;
+    return;
+  }
   HTTPClient http;
   //https://iotmmsi024148trial.hanatrial.ondemand.com/com.sap.iotservices.mms/v1/api/http/push/e46304a8-a410-4979-82f6-ca3da7e43df9
   //{"method":"http", "sender":"My IoT application", "messageType":"42c3546a088b3ef8b8d3", "messages":[{"command":"yellow"}]}

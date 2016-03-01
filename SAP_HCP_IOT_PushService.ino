@@ -72,13 +72,13 @@ void processMessage(String msgIn) {
   //Serial.print(root[0].is<JsonObject&>());
   //Serial  << "type:" << root.get(0) << endl;
   if (root[0].is<JsonObject&>()) {
-    Serial << root[0].asObject().containsKey("messages") << endl; 
-    Serial << root[0]["messages"].is<JsonArray&>() << endl;
-    Serial << root[0]["messages"][0].is<JsonObject&>() << endl;
-    Serial << root[0]["messages"][0].asObject().containsKey("color") << endl;
-    Serial << " Received cmd: " << root[0]["messages"][0]["color"].asString() << endl;
+    //Serial << root[0].asObject().containsKey("messages") << endl; 
+    //Serial << root[0]["messages"].is<JsonArray&>() << endl;
+    //Serial << root[0]["messages"][0].is<JsonObject&>() << endl;
+    //Serial << root[0]["messages"][0].asObject().containsKey("color") << endl;
+    //Serial << " Received cmd: " << root[0]["messages"][0]["color"].asString() << endl;
     if (root[0]["messages"][0]["color"].asString()) {
-      Serial << "to process command" << endl;
+      //Serial << "to process command" << endl;
       processCommand(root[0]["messages"][0]["color"].asString());
     } else {
       Serial << "command not recognized" << endl;

@@ -8,6 +8,9 @@ void doHttpUpdate(int mode) {
   } else if (deviceType == DT_VTHING_CO2) {
     prod = "https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest.bin";
     test = "https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_test.bin";
+  } else if (deviceType == DT_VTHING_STARTER) {
+    prod = "https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_starter.bin";
+    test = "https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_starter_test.bin";
   }
   t_httpUpdate_return ret = ESPhttpUpdate.update(mode == 1 ? prod : test);
   switch(ret) {
