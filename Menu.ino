@@ -1,5 +1,7 @@
 #define LINE_LEN 250
 char line[LINE_LEN];
+String HTTP_STR = "http://";
+String HTTPS_STR= "https://";
 
 boolean processUserInput() {
   Serial.setTimeout(500);
@@ -262,4 +264,19 @@ void factoryReset() {
   EEPROM.commit();  
   ESP.restart();
 }
+
+
+int processResponseCodeATFW(HTTPClient *http, int rc) {
+  if (rc > 0) Serial << "Response Code: " << rc << endl;
+  else Serial << "Error Code: " << rc << " = " << http->errorToString(rc).c_str() << endl;
+  if (rc > 0) {
+    Serial << "Payload: [" << http->getString() << "]" << endl;
+    Serial << "CLOSED" << endl; // for compatibility with AT FW
+  } else {
+    Serial << "Failed" << endl;
+  }
+  return rc;
+}
+
+
 

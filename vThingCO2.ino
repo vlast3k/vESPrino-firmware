@@ -101,7 +101,7 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 #define SAP_IOT_TOKEN "spTok"
 #define SAP_IOT_BTN_MSGID "spBtMID"
 
-int deviceType = DT_VTHING_STARTER;
+int deviceType = DT_VTHING_CO2;
 
 String   mqttServer = "m20.cloudmqtt.com";
 uint32_t mqttPort   = 19749;
@@ -130,7 +130,7 @@ uint32_t intCO2SendValue = 120000L;
 uint16_t co2Threshold = 1;
 uint32_t lastSentCO2value = 0;
 
-Timer *tmrCO2RawRead, *tmrCO2SendValueTimer, *tmrTempRead, *tmrCheckPushMsg;
+Timer *tmrCO2RawRead, *tmrCO2SendValueTimer, *tmrTempRead, *tmrCheckPushMsg, *tmrStopLED;
 boolean startedCO2Monitoring = false;
 RunningAverage raCO2Raw(4);
 NeoPixelBus *strip;// = NeoPixelBus(1, D4);
@@ -165,6 +165,12 @@ void printVersion() {
     case DT_VTHING_STARTER: Serial << endl << "vThing - Starter Edition " << VERSION << endl; break;
   }  
 }
+
+void onStopLED() {
+    strip->SetPixelColor(0, RgbColor(0, 0,0));
+    strip->Show();      
+}
+
 void setup() {
   Serial.begin(9600);
 //  Serial << "Start Setup: " << millis() << endl;
@@ -193,17 +199,20 @@ void setup() {
     tmrCheckPushMsg->Start();
     attachButton();
   } else if (deviceType == DT_VTHING_CO2 ) {
+    strip = new NeoPixelBus(1, D4);
     if (strip) {
       strip->Begin();
       strip->SetPixelColor(0, RgbColor(0, 5,0));
       strip->Show();  
     }
+    tmrStopLED           = new Timer(10000, onStopLED, true);
     tmrCO2RawRead        = new Timer(intCO2RawRead,   onCO2RawRead);
     tmrCO2SendValueTimer = new Timer(intCO2SendValue, sendCO2Value);
     int res = CM1106_read();
     Serial << "CO2 now: " << res << endl;
     tmrCO2RawRead->Start();
     tmrCO2SendValueTimer->Start();
+    tmrStopLED->Start();
   }
   //Serial << "Completed Setup: " << millis() << endl;
 //WiFi.mode(WIFI_OFF);
@@ -228,6 +237,7 @@ void loop() {
   if (deviceType == DT_VTHING_CO2) {
     tmrCO2RawRead->Update();
     tmrCO2SendValueTimer->Update();
+    tmrStopLED->Update();
     delay(5000);
   } else if (deviceType == DT_VTHING_STARTER) {
     tmrTempRead->Update();
