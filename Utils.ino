@@ -23,14 +23,14 @@ void storeToEE(int address, const char *str, int maxLength) {
 }
 
 void heap(const char * str) {
-  Serial << "Heap " << str << ": " << ESP.getFreeHeap() << endl;
+  SERIAL << "Heap " << str << ": " << ESP.getFreeHeap() << endl;
 }
 
 String getJSONConfig(char *item) {
   StaticJsonBuffer<200> jsonBuffer;
   char data[1000];
   EEPROM.get(EE_JSON_CFG_1000B, data);
-  //Serial << "JSON cfg: " << data << endl;
+  //SERIAL << "JSON cfg: " << data << endl;
   if (data[0] == -1 || data[0] == 0 || data[0] == 255) strcpy(data, "{}");
   JsonObject& root = jsonBuffer.parseObject(data);
   return String(root[item].asString());
@@ -56,13 +56,13 @@ void testJSON() {
   
   EEPROM.write(EE_JSON_CFG_1000B, -1);
   EEPROM.commit();
-  Serial << "Testing JSON" << endl;
-  Serial << getJSONConfig("vladi") << endl;
+  SERIAL << "Testing JSON" << endl;
+  SERIAL << getJSONConfig("vladi") << endl;
   putJSONConfig("vladi", "sadsa");
-  Serial << "1 " << getJSONConfig("vladi") << endl;  
+  SERIAL << "1 " << getJSONConfig("vladi") << endl;  
   putJSONConfig("vladi", "sadsa");
-  Serial << "2 " << getJSONConfig("vladi") << endl;  
-  Serial << endl;
+  SERIAL << "2 " << getJSONConfig("vladi") << endl;  
+  SERIAL << endl;
   EEPROM.write(EE_JSON_CFG_1000B, -1);
   EEPROM.commit();
 }
@@ -73,6 +73,6 @@ void testJSON() {
   EEPROM.get(EE_JSON_CFG_1000B, data);
   if (data[0] == -1 || data[0] == 0) strcpy(data, "{}");
   JsonObject& root = jsonBuffer.parseObject(data);
-  root.printTo(Serial);
+  root.printTo(SERIAL);
  }
 

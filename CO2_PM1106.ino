@@ -16,10 +16,10 @@ void sendCmd(SoftwareSerialESP *PM1106_swSer, uint8_t *cmd, uint8_t *r) {
 
 void dump(uint8_t *r) {
   for (int i=0; i<24; i++) {
-    Serial.print(*(r++), HEX);
-    Serial.print(",");
+    SERIAL.print(*(r++), HEX);
+    SERIAL.print(",");
   } 
-  Serial.println();
+  SERIAL.println();
 }
 
 
@@ -34,7 +34,7 @@ int CM1106_read() {
   sendCmd(&PM1106_swSer, cmdReadCO2, resp);
   //PM1106_swSer.end();
   //dump(resp);
-  //Serial << ((uint16_t)256)*resp[3] + resp[4] << endl;
+  //SERIAL << ((uint16_t)256)*resp[3] + resp[4] << endl;
   return ((uint16_t)256)*resp[3] + resp[4];
 }
 void CM1106_init() {
@@ -50,7 +50,7 @@ int CM1106__getCO2() {
   PM1106_swSer.begin(9600);
   sendCmd(&PM1106_swSer, cmdReadCO2, resp);
   dump(resp);
-  Serial << ((uint16_t)256)*resp[3] + resp[4] << endl;
+  SERIAL << ((uint16_t)256)*resp[3] + resp[4] << endl;
   return ((uint16_t)256)*resp[3] + resp[4];
 }
 

@@ -21,9 +21,9 @@ void initLight() {
 }
 
 void processCommand(String color) {
-  //Serial << "color: " << color;
+  //SERIAL << "color: " << color;
   //color.trim();
-  Serial << "Received Command: " << color << endl;
+  SERIAL << "Received Command: " << color << endl;
   RgbColor c;
   if (color == "red")         c = red;
   else if (color == "blue")   c = blue;
@@ -39,7 +39,7 @@ void processCommand(String color) {
   else if (color == "cyan")   c = cyan;
   else {
     uint32_t data = strtol(color.c_str(), NULL, 0);
-    //Serial << " receveid int: " << data << endl;
+    //SERIAL << " receveid int: " << data << endl;
     c = RgbColor((data & 0xFF0000) >> 16, (data & 0x00FF00) >> 8, (data & 0x0000FF));    
   }
 

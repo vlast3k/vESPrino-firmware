@@ -65,10 +65,17 @@ void attachButton();
 void processMessage(String payload);
 void processCommand(String cmd);
 void initLight();
-void  printJSONConfig();
+void printJSONConfig();
 void putJSONConfig(char *key, char *value);
 void dumpTemp();
 void factoryReset();
+void testH801();
+
+void h801_setup();
+void h801_loop();
+void h801_onConfigStored();
+void h801_mqtt_connect();
+void h801_processConfig(const char *p);
 
 String getJSONConfig(char *item);
 void testJSON();
@@ -95,13 +102,18 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 #define DT_VTHING_CO2 1
 #define DT_VAIR 2
 #define DT_VTHING_STARTER 3
+#define DT_VTHING_H801_LED 4
 
 #define SAP_IOT_HOST "spHst"
 #define SAP_IOT_DEVID "spDvId"
 #define SAP_IOT_TOKEN "spTok"
 #define SAP_IOT_BTN_MSGID "spBtMID"
+#define H801_API_KEY "h801key"
 
-int deviceType = DT_VTHING_CO2;
+#define SERIAL Serial1
+
+//int deviceType = DT_VTHING_CO2;
+int deviceType = DT_VTHING_H801_LED;
 
 String   mqttServer = "m20.cloudmqtt.com";
 uint32_t mqttPort   = 19749;
@@ -157,12 +169,13 @@ void onCO2RawRead() {
   }
 }
 
-String VERSION = "v1.7";
+String VERSION = "v1.8";
 void printVersion() {
   switch (deviceType) {
-    case DT_VTHING_CO2:     Serial << endl << "vThing - CO2 Monitor "     << VERSION << endl; break;
-    case DT_VAIR:           Serial << endl << "vAir - WiFi Module "       << VERSION << endl; break;
-    case DT_VTHING_STARTER: Serial << endl << "vThing - Starter Edition " << VERSION << endl; break;
+    case DT_VTHING_CO2:     SERIAL << endl << "vThing - CO2 Monitor "     << VERSION << endl; break;
+    case DT_VAIR:           SERIAL << endl << "vAir - WiFi Module "       << VERSION << endl; break;
+    case DT_VTHING_STARTER: SERIAL << endl << "vThing - Starter Edition " << VERSION << endl; break;
+    case DT_VTHING_H801_LED: SERIAL << endl << "vThing - H801 Fw " << VERSION << endl; break;
   }  
 }
 
@@ -172,16 +185,17 @@ void onStopLED() {
 }
 
 void setup() {
+  Serial1.begin(9600);
   Serial.begin(9600);
-//  Serial << "Start Setup: " << millis() << endl;
+//  SERIAL << "Start Setup: " << millis() << endl;
   printVersion();
   EEPROM.begin(3000);
-  Serial << "ready" << endl;
-  //Serial << "Strip begin: " << millis() << endl;
-  //Serial << "Strip end: " << millis() << endl;
+  SERIAL << "ready" << endl;
+  //SERIAL << "Strip begin: " << millis() << endl;
+  //SERIAL << "Strip end: " << millis() << endl;
   //startWifi();
-  Serial << "Waiting for auto-connect" << endl;
-
+  SERIAL << "Waiting for auto-connect" << endl;
+  delay(1000);
   if (deviceType == DT_VTHING_STARTER) {
     strip = new NeoPixelBus(1, D4);
     if (strip) {
@@ -209,19 +223,21 @@ void setup() {
     tmrCO2RawRead        = new Timer(intCO2RawRead,   onCO2RawRead);
     tmrCO2SendValueTimer = new Timer(intCO2SendValue, sendCO2Value);
     int res = CM1106_read();
-    Serial << "CO2 now: " << res << endl;
+    SERIAL << "CO2 now: " << res << endl;
     tmrCO2RawRead->Start();
     tmrCO2SendValueTimer->Start();
     tmrStopLED->Start();
+  } else if (deviceType == DT_VTHING_H801_LED) {    
+    h801_setup();
   }
-  //Serial << "Completed Setup: " << millis() << endl;
+  //SERIAL << "Completed Setup: " << millis() << endl;
 //WiFi.mode(WIFI_OFF);
   //wifi_set_sleep_type(LIGHT_SLEEP_T);
     //WiFi.begin("vladiHome", "0888414447");
   
 //  while (WiFi.status() != WL_CONNECTED) {
 //    delay(500);
-//    Serial.print(".");
+//    SERIAL.print(".");
 //  }
 }
 
@@ -241,13 +257,19 @@ void loop() {
     delay(5000);
   } else if (deviceType == DT_VTHING_STARTER) {
     tmrTempRead->Update();
-    //Serial << "\n\n\n------ before push service\n\n\n";
+    //SERIAL << "\n\n\n------ before push service\n\n\n";
     tmrCheckPushMsg->Update();
     //handleSAP_IOT_PushService();
-    //Serial << "\n\n\n------ before do Send\n\n\n";
+    //SERIAL << "\n\n\n------ before do Send\n\n\n";
     doSend();
-    //Serial << "\n\n\n------ before delay 5 sec\n\n\n";
-    //Serial << ".";
+    //SERIAL << "\n\n\n------ before delay 5 sec\n\n\n";
+    //SERIAL << ".";
     delay(1000);
+  } else if (deviceType == DT_VTHING_H801_LED) {
+    h801_loop();
+//    Serial1 << "serial1" << endl;
+//    Serial <<"serial" << endl;
+//    SERIAL << "SERIAL" << endl;
+//    delay(500);
   }
 }

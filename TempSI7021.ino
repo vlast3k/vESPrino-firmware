@@ -1,14 +1,14 @@
 void onTempRead() {
   float tmp = si7021->readTemp();
   float hum = si7021->readHumidity();
-  Serial << "Humidity : " << hum << " %\t";
-  Serial << "Temp : "     << tmp << " C" << endl;
+  SERIAL << "Humidity : " << hum << " %\t";
+  SERIAL << "Temp : "     << tmp << " C" << endl;
   
   String s = String("sndiot ") + tmp;
   sndIOT(s.c_str());
 }
 
 void dumpTemp() {
-  Serial << "Temp : "     << si7021->readTemp() << " C" << endl;  
+  SERIAL << "Temp : "     << si7021->readTemp() << " C" << endl;  
 }
 

@@ -24,17 +24,21 @@ void configMQTT(const char *p) {
   p = extractStringFromQuotes(p, mqttUser,   sizeof(mqttUser)); 
   p = extractStringFromQuotes(p, mqttPass,   sizeof(mqttPass)); 
   p = extractStringFromQuotes(p, mqttTopic,  sizeof(mqttTopic)); 
-  Serial << "port: " << atol(mqttPortS) << endl;
+  SERIAL << "port: " << atol(mqttPortS) << endl;
   EEPROM.put(EE_MQTT_SERVER_30B, mqttServer);
   EEPROM.put(EE_MQTT_PORT_4B, atol(mqttPortS));
   EEPROM.put(EE_MQTT_CLIENT_20B, mqttClient);
   EEPROM.put(EE_MQTT_USER_45B, mqttUser);
   EEPROM.put(EE_MQTT_PASS_15B, mqttPass);
+  if (mqttTopic[0] == 0 && deviceType == DT_VTHING_H801_LED) strcpy(mqttTopic, "vThingH801");
+  else if (mqttTopic[0] == 0) strcpy(mqttTopic, "vThing/data");
   EEPROM.put(EE_MQTT_TOPIC_40B, mqttTopic);
+  
   EEPROM.commit();
-  Serial << "MQTT Configuration Stored" << endl;
-  Serial << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << "," << mqttTopic << endl;
-  Serial << "DONE" << endl;
+  SERIAL << "MQTT Configuration Stored" << endl;
+  SERIAL << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << "," << mqttTopic << endl;
+  SERIAL << "DONE" << endl;
+  if (deviceType == DT_VTHING_H801_LED) h801_mqtt_connect();
   
 }
 
@@ -48,19 +52,19 @@ void sendMQTT(String msg) {
   EEPROM.get(EE_MQTT_PASS_15B,   mqttPass);
   EEPROM.get(EE_MQTT_TOPIC_40B,  mqttTopic);
   EEPROM.get(EE_MQTT_VALUE_70B,  mqttValue);
-  Serial << "Sending via MQTT: ";
+  SERIAL << "Sending via MQTT: ";
   delay(150);
-  Serial << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
+  SERIAL << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
   delay(150);
-  Serial << mqttUser;
+  SERIAL << mqttUser;
   delay(150);
-  Serial << "," << mqttPass << ","; 
+  SERIAL << "," << mqttPass << ","; 
   delay(150);
-  Serial << mqttTopic;
+  SERIAL << mqttTopic;
   delay(150);
-  Serial << ",";
+  SERIAL << ",";
   delay(150);
-  Serial << mqttValue << endl;
+  SERIAL << mqttValue << endl;
   delay(150);
   uint32_t st = millis();
   WiFiClient wclient;
@@ -73,14 +77,14 @@ void sendMQTT(String msg) {
       //sprintf(ddd, "{\"data\": %s, \"write\": true,  \"ispublic\": true}", msg.c_str());
       char mqttValue2[80];
       sprintf(mqttValue2, mqttValue, msg.c_str());
-      Serial << "Connected. Will publish: " << mqttValue2 << endl;
+      SERIAL << "Connected. Will publish: " << mqttValue2 << endl;
       boolean res = client.publish(mqttTopic, mqttValue2);
-      Serial.println(res ? "Done" : "Falied!");
+      SERIAL.println(res ? "Done" : "Falied!");
     } else {
-        Serial.println("Could not connect to MQTT server");   
+        SERIAL.println("Could not connect to MQTT server");   
     }     
   }
   client.disconnect();
-  Serial << "sent in:" << (millis() - st) << endl;
+  SERIAL << "sent in:" << (millis() - st) << endl;
 }
 

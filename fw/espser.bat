@@ -1,1 +1,1 @@
-"c:\develop\arduino_ide\hardware\esp8266com\esp8266\tools\esptool\esptool.exe" -vv -cd nodemcu -cb 512000 -cp COM16 -ca 0x00000 -cf "./latest.bin"
+"c:\develop\arduino_ide\hardware\esp8266com\esp8266\tools\esptool\esptool.exe" -vv -cd nodemcu -cb 512000 -cp COM16 -ca 0x00000 -cf "%1"

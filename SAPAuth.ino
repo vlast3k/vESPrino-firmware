@@ -9,26 +9,26 @@ void on302() {
 
 int checkSAPAuth() {
   if (strstr(WiFi.SSID().c_str(), "SAP-Guest") == 0) {
-    //Serial << "Network is not SAP-Guest : "<< WiFi.SSID() << endl;
+    //SERIAL << "Network is not SAP-Guest : "<< WiFi.SSID() << endl;
     return -1;
   }
-  Serial << "Checking SAP Authentication" << endl;
+  SERIAL << "Checking SAP Authentication" << endl;
   if (WiFi.status() != WL_CONNECTED) {
-    Serial << "Cannot set SAP Guest credentials. No WiFi!" << endl;
+    SERIAL << "Cannot set SAP Guest credentials. No WiFi!" << endl;
     return -1;
   }
   httpAuthSAP();
   if (sendPing() == 302) {
     if (httpAuthSAP() == 302) {
-      Serial << "SAP-Guest User/Pass - incorrect" << endl;
+      SERIAL << "SAP-Guest User/Pass - incorrect" << endl;
       return -1;
     }
     if (sendPing() != 200) {
-      Serial << "Could not authenticate for SAP" << endl;
+      SERIAL << "Could not authenticate for SAP" << endl;
       return -1;
     }
   }
-  Serial << "SAP Auth - OK!" << endl;
+  SERIAL << "SAP Auth - OK!" << endl;
   return 1;
 }
 
@@ -38,7 +38,7 @@ char *sapAuthPreparePostData(char *postData) {
   EEPROM.get(EE_WIFI_P1_30B, userName);
   EEPROM.get(EE_WIFI_P2_30B, pass);
   if (userName[0] < 2) {
-    Serial << "Missing SAP-Guest user/pass" << endl;
+    SERIAL << "Missing SAP-Guest user/pass" << endl;
     return NULL;
   }
   sprintf(postData, "user=%s&password=%s&cmd=authenticate&url=http%3A%2F%2Fgoogle.bg%2F&Login=Log+In", userName, pass);
@@ -59,7 +59,7 @@ int httpAuthSAP() {
   if (rc < 0 || rc == 200) return 1;
   else return -1; 
 //  int rc = sendHTTP("securelogin.wlan.sap.com", "POST", "/cgi-bin/login", sapAuthHeaders, postData, true, true);
-//  Serial << "SAP Auth Response is: " << rc << endl;
+//  SERIAL << "SAP Auth Response is: " << rc << endl;
 //  if (rc == -1 || rc == 200) return 1;
 //  else return -1;
 }
