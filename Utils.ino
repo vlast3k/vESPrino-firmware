@@ -26,7 +26,7 @@ void heap(const char * str) {
   SERIAL << "Heap " << str << ": " << ESP.getFreeHeap() << endl;
 }
 
-String getJSONConfig(char *item) {
+String getJSONConfig(const char *item) {
   StaticJsonBuffer<200> jsonBuffer;
   char data[1000];
   EEPROM.get(EE_JSON_CFG_1000B, data);
@@ -35,7 +35,7 @@ String getJSONConfig(char *item) {
   JsonObject& root = jsonBuffer.parseObject(data);
   return String(root[item].asString());
 }
-void putJSONConfig(char *key, char *value) {
+void putJSONConfig(const char *key, const char *value) {
   StaticJsonBuffer<200> jsonBuffer;
   char data2[1000], data[1000];
 

@@ -80,6 +80,7 @@ void setSendInterval (const char *line) {
   if (strchr(line, ' ')) {
     interval = atoi(strchr(line, ' ') + 1);
   }
+  putJSONConfig(XX_SND_INT, String(interval).c_str());
   intCO2SendValue = (uint32_t)interval * 1000;
   tmrCO2SendValueTimer->setInterval(intCO2SendValue); 
 }
@@ -89,9 +90,9 @@ void setSendThreshold(const char *line) {
   if (strchr(line, ' ')) {
     thr = atoi(strchr(line, ' ') + 1);
   }
+  putJSONConfig(XX_SND_THR, String(thr).c_str());
   co2Threshold = thr;
 }
-
 
 char atCIPSTART_IP[20];
 void getTS(const char* line) {

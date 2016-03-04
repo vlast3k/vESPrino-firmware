@@ -66,7 +66,7 @@ void processMessage(String payload);
 void processCommand(String cmd);
 void initLight();
 void printJSONConfig();
-void putJSONConfig(char *key, char *value);
+void putJSONConfig(const char *key, const char *value);
 void dumpTemp();
 void factoryReset();
 void testH801();
@@ -77,7 +77,7 @@ void h801_onConfigStored();
 void h801_mqtt_connect();
 void h801_processConfig(const char *p);
 
-String getJSONConfig(char *item);
+String getJSONConfig(const char *item);
 void testJSON();
 
 void setSAPAuth(const char *);
@@ -109,11 +109,15 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 #define SAP_IOT_TOKEN "spTok"
 #define SAP_IOT_BTN_MSGID "spBtMID"
 #define H801_API_KEY "h801key"
+#define XX_SND_INT  "xxSndInt"
+#define XX_SND_THR  "xxSndThr"
 
-#define SERIAL Serial1
 
-//int deviceType = DT_VTHING_CO2;
-int deviceType = DT_VTHING_H801_LED;
+int deviceType = DT_VTHING_CO2;
+#define SERIAL Serial
+
+//int deviceType = DT_VTHING_H801_LED
+//#define SERIAL Serial1
 
 String   mqttServer = "m20.cloudmqtt.com";
 uint32_t mqttPort   = 19749;
@@ -219,6 +223,9 @@ void setup() {
       strip->SetPixelColor(0, RgbColor(0, 5,0));
       strip->Show();  
     }
+    if (getJSONConfig(XX_SND_INT)) intCO2SendValue = getJSONConfig(XX_SND_INT).toInt();
+    if (getJSONConfig(XX_SND_THR)) co2Threshold    = getJSONConfig(XX_SND_THR).toInt();
+    
     tmrStopLED           = new Timer(10000, onStopLED, true);
     tmrCO2RawRead        = new Timer(intCO2RawRead,   onCO2RawRead);
     tmrCO2SendValueTimer = new Timer(intCO2SendValue, sendCO2Value);
