@@ -157,6 +157,7 @@ bool shouldSend = false;
 
 void sendCO2Value() {
   int val = (int)raCO2Raw.getAverage();
+  if (val > 2000) SERIAL << "val is: " << val << endl;
   String s = String("sndiot ") + val;
   sndIOT(s.c_str());
   lastSentCO2value = val;
@@ -167,6 +168,8 @@ void onCO2RawRead() {
   int res = CM1106_read();
   if (res != 550) startedCO2Monitoring = true;
   if (startedCO2Monitoring) {
+    if (res > 2000) SERIAL << "res is: " << res << endl;
+     SERIAL << "res is2: " << res << endl;
     raCO2Raw.addValue(res);
     int diff = raCO2Raw.getAverage() - lastSentCO2value;
     if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) sendCO2Value();

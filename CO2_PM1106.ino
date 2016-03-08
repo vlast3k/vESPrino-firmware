@@ -33,8 +33,10 @@ int CM1106_read() {
   sendCmd(&PM1106_swSer, cmdReadCO2, resp);
   sendCmd(&PM1106_swSer, cmdReadCO2, resp);
   //PM1106_swSer.end();
-  //dump(resp);
-  //SERIAL << ((uint16_t)256)*resp[3] + resp[4] << endl;
+  if (DEBUG) {
+    dump(resp);
+    SERIAL << ((uint16_t)256)*resp[3] + resp[4] << endl;
+  }
   return ((uint16_t)256)*resp[3] + resp[4];
 }
 void CM1106_init() {
