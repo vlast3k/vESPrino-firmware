@@ -235,7 +235,6 @@ void setup() {
     int res = CM1106_read();
     SERIAL << "CO2 now: " << res << endl;
     tmrCO2RawRead->Start();
-    tmrCO2SendValueTimer->Start();
     tmrStopLED->Start();
   } else if (deviceType == DT_VTHING_H801_LED) {    
     h801_setup();
