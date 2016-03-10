@@ -50,8 +50,8 @@ int handleCommand() {
   else if (strstr(line, "smp")) sndSimple();
   else if (strstr(line, "wifi")) setWifi(line);
   else if (strstr(line, "scan")) wifiScanNetworks();
-  else if (strcmp(line, "otahtest")) doHttpUpdate(2);
-  else if (strcmp(line, "otah")) doHttpUpdate(1);
+  else if (strcmp(line, "otahtest") == 0) doHttpUpdate(2);
+  else if (strcmp(line, "otah") == 0) doHttpUpdate(1);
   else if (line[0] == 'o') startOTA();
   else if (strcmp(line, "ubi") == 0) testUBI();
   else if (strstr(line, "cfg_mqtt"))  configMQTT(line);
