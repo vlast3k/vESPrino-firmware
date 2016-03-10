@@ -113,7 +113,7 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 #define XX_SND_THR  "xxSndThr"
 
 
-int deviceType = DT_VTHING_CO2;
+int deviceType = DT_VAIR;
 #define SERIAL Serial
 
 //int deviceType = DT_VTHING_H801_LED
@@ -176,7 +176,7 @@ void onCO2RawRead() {
   }
 }
 
-String VERSION = "v1.8";
+String VERSION = "v1.9";
 void printVersion() {
   switch (deviceType) {
     case DT_VTHING_CO2:     SERIAL << endl << "vThing - CO2 Monitor "     << VERSION << endl; break;

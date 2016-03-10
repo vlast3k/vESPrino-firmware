@@ -79,7 +79,7 @@ void sendMQTT(String msg) {
       sprintf(mqttValue2, mqttValue, msg.c_str());
       SERIAL << "Connected. Will publish: " << mqttValue2 << endl;
       boolean res = client.publish(mqttTopic, mqttValue2);
-      SERIAL.println(res ? "Done" : "Falied!");
+      SERIAL.println(res ? "CLOSED" : "Falied!");
     } else {
         SERIAL.println("Could not connect to MQTT server");   
     }     
