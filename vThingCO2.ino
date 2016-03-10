@@ -1,3 +1,10 @@
+#define DT_VTHING_CO2 1
+#define DT_VAIR 2
+#define DT_VTHING_STARTER 3
+#define DT_VTHING_H801_LED 4
+
+int deviceType = DT_VTHING_CO2;
+
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
 #include <ESP8266mDNS.h>
@@ -99,10 +106,7 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 #define EE_JSON_CFG_1000B   1000
 //#define EE_LAST 694
 
-#define DT_VTHING_CO2 1
-#define DT_VAIR 2
-#define DT_VTHING_STARTER 3
-#define DT_VTHING_H801_LED 4
+
 
 #define SAP_IOT_HOST "spHst"
 #define SAP_IOT_DEVID "spDvId"
@@ -113,7 +117,7 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 #define XX_SND_THR  "xxSndThr"
 
 
-int deviceType = DT_VAIR;
+
 #define SERIAL Serial
 
 //int deviceType = DT_VTHING_H801_LED
