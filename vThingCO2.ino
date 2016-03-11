@@ -161,7 +161,7 @@ bool shouldSend = false;
 
 void sendCO2Value() {
   int val = (int)raCO2Raw.getAverage();
-  if (val > 2000) SERIAL << "val is: " << val << endl;
+ // if (val > 2000) SERIAL << "val is: " << val << endl;
   String s = String("sndiot ") + val;
   sndIOT(s.c_str());
   lastSentCO2value = val;
@@ -172,15 +172,18 @@ void onCO2RawRead() {
   int res = CM1106_read();
   if (res != 550) startedCO2Monitoring = true;
   if (startedCO2Monitoring) {
-    if (res > 2000) SERIAL << "res is: " << res << endl;
-     SERIAL << "res is2: " << res << endl;
+    //if (res > 2000) SERIAL << "res is: " << res << endl;
     raCO2Raw.addValue(res);
+    SERIAL << "co2 is: " << res << "," <<lastSentCO2value << "," << raCO2Raw.getAverage() << endl;
     int diff = raCO2Raw.getAverage() - lastSentCO2value;
-    if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) sendCO2Value();
+    if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) {
+      Serial << "Threshold reached, sending value" << endl;
+      sendCO2Value();
+    }
   }
 }
 
-String VERSION = "v1.9";
+String VERSION = "v1.9.1";
 void printVersion() {
   switch (deviceType) {
     case DT_VTHING_CO2:     SERIAL << endl << "vThing - CO2 Monitor "     << VERSION << endl; break;
@@ -230,8 +233,9 @@ void setup() {
       strip->SetPixelColor(0, RgbColor(0, 5,0));
       strip->Show();  
     }
-    if (getJSONConfig(XX_SND_INT)) intCO2SendValue = getJSONConfig(XX_SND_INT).toInt();
+    if (getJSONConfig(XX_SND_INT)) intCO2SendValue = getJSONConfig(XX_SND_INT).toInt() *1000;
     if (getJSONConfig(XX_SND_THR)) co2Threshold    = getJSONConfig(XX_SND_THR).toInt();
+    Serial << "Send Interval (ms): " << intCO2SendValue << ", Threshold (ppm): " << co2Threshold << endl;
     
     tmrStopLED           = new Timer(10000, onStopLED, true);
     tmrCO2RawRead        = new Timer(intCO2RawRead,   onCO2RawRead);

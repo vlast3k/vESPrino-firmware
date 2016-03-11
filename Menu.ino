@@ -57,8 +57,8 @@ int handleCommand() {
   else if (strstr(line, "cfg_mqtt"))  configMQTT(line);
   else if (strstr(line, "cfg_mqval"))  { storeToEE(EE_MQTT_VALUE_70B, &line[10], 70); SERIAL << "DONE" << endl; }
   else if (strstr(line, "atest_mqtt")) sendMQTT("556");
-  else if (strstr(line, "set_send_int ")) setSendInterval (line);
-  else if (strstr(line, "set_send_thr ")) setSendThreshold(line);
+  else if (strstr(line, "wsi ")) setSendInterval (line);
+  else if (strstr(line, "wst ")) setSendThreshold(line);
   else if (strstr(line, "info")) printVersion();
   else if (strstr(line, "tskey ")) cfgGENIOT((String("cfggen http://api.thingspeak.com/update?key=") + &line[6] + "&field1=%s").c_str());
   else if (strstr(line, "ubik "))  ubik = String(&line[5]);  
@@ -70,6 +70,7 @@ int handleCommand() {
   else if (strcmp(line, "factory") == 0) factoryReset();
   else if (strcmp(line, "testled") == 0) testH801();
   else if (strstr(line, "h801cfg")) h801_processConfig(line);
+  else if (strcmp(line, "debug") == 0) DEBUG = true;
   
   SERIAL << ">" << endl;
   return 0;
@@ -83,6 +84,7 @@ void setSendInterval (const char *line) {
   putJSONConfig(XX_SND_INT, String(interval).c_str());
   intCO2SendValue = (uint32_t)interval * 1000;
   tmrCO2SendValueTimer->setInterval(intCO2SendValue); 
+  Serial << "Send Interval (ms): " << intCO2SendValue << endl;
 }
 
 void setSendThreshold(const char *line) {
@@ -92,6 +94,7 @@ void setSendThreshold(const char *line) {
   }
   putJSONConfig(XX_SND_THR, String(thr).c_str());
   co2Threshold = thr;
+  Serial << "CO2 Threshold (ppm): " << co2Threshold << endl;
 }
 
 char atCIPSTART_IP[20];
