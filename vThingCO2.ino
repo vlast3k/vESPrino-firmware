@@ -3,12 +3,15 @@
 #define DT_VTHING_STARTER 3
 #define DT_VTHING_H801_LED 4
 
-#define MEMTEST
+//#define VTHING_H801_LED
+//#define VTHING_STARTER
+//#define SAP_AUTH
 
 //int deviceType = DT_VTHING_CO2;
 //#define SERIAL Serial
 
-int deviceType = DT_VTHING_CO2;
+//int deviceType = DT_VTHING_CO2;
+int deviceType = DT_VAIR;
 #define SERIAL Serial
 
 #include <ESP8266WiFi.h>
@@ -23,7 +26,7 @@ int deviceType = DT_VTHING_CO2;
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
 #include <SoftwareSerialESP.h>
-#include <Si7021.h>
+
 #include <ArduinoJson.h>
 
 
@@ -67,14 +70,7 @@ int wifiConnectToStoredSSID();
 boolean processUserInput();
 byte readLine(int timeout);
 int handleCommand();
-int sendPing();
-int httpAuthSAP();
-int checkSAPAuth();
 void heap(const char * str);
-void onTempRead();
-void handleSAP_IOT_PushService();
-void doSend();
-void attachButton();
 void processMessage(String payload);
 void processCommand(String cmd);
 void initLight();
@@ -82,13 +78,29 @@ void printJSONConfig();
 void putJSONConfig(const char *key, const char *value);
 void dumpTemp();
 void factoryReset();
-void testH801();
 
+#ifdef SAP_AUTH
+int sendPing();
+int httpAuthSAP();
+int checkSAPAuth();
+#endif
+
+#ifdef VTHING_H801_LED
+void testH801();
 void h801_setup();
 void h801_loop();
 void h801_onConfigStored();
 void h801_mqtt_connect();
 void h801_processConfig(const char *p);
+#endif
+
+#ifdef VTHING_STARTER
+void si7021init();
+void onTempRead();
+void handleSAP_IOT_PushService();
+void doSend();
+void attachButton();
+#endif
 
 String getJSONConfig(const char *item);
 void testJSON();
@@ -126,18 +138,18 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 
 
 
-String   mqttServer = "m20.cloudmqtt.com";
-uint32_t mqttPort   = 19749;
-String   mqttClient = "vAir_CO2_Monitor";
-String   mqttUser   = "pndhubpk";
-String   mqttPass   = "yfT7ax_KDrgG";
-String   mqttTopic  = "co2Value";
+String   mqttServer; //= "m20.cloudmqtt.com";
+uint32_t mqttPort   ;//= 19749;
+String   mqttClient ;//= "vAir_CO2_Monitor";
+String   mqttUser   ;//= "pndhubpk";
+String   mqttPass   ;//= "yfT7ax_KDrgG";
+String   mqttTopic  ;//= "co2Value";
 
 
-String mmsHost = "iotmmsi024148trial.hanatrial.ondemand.com";
-String deviceId = "e46304a8-a410-4979-82f6-ca3da7e43df9";
-String authToken = "8f337a8e54bd352f28c2892743c94b3";
-String colors[] = {"red","pink","lila","violet","blue","mblue","cyan","green","yellow","orange"};
+String mmsHost ;//= "iotmmsi024148trial.hanatrial.ondemand.com";
+String deviceId; //= "e46304a8-a410-4979-82f6-ca3da7e43df9";
+String authToken;// = "8f337a8e54bd352f28c2892743c94b3";
+//String colors[] = {"red","pink","lila","violet","blue","mblue","cyan","green","yellow","orange"};
 #define COLOR_COUNT 10
 
 //h iotmmsi024148trial.hanatrial.ondemand.com
@@ -157,7 +169,7 @@ Timer *tmrCO2RawRead, *tmrCO2SendValueTimer, *tmrTempRead, *tmrCheckPushMsg, *tm
 boolean startedCO2Monitoring = false;
 RunningAverage raCO2Raw(4);
 NeoPixelBus *strip;// = NeoPixelBus(1, D4);
-SI7021 *si7021;
+
 
 
 bool shouldSend = false;
@@ -180,19 +192,19 @@ void onCO2RawRead() {
     SERIAL << "co2 is: " << res << "," <<lastSentCO2value << "," << raCO2Raw.getAverage() << endl;
     int diff = raCO2Raw.getAverage() - lastSentCO2value;
     if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) {
-      Serial << "Threshold reached, sending value" << endl;
+      Serial << F("Threshold reached, sending value") << endl;
       sendCO2Value();
     }
   }
 }
 
-String VERSION = "v1.9.1";
+String VERSION = "v1.10";
 void printVersion() {
   switch (deviceType) {
-    case DT_VTHING_CO2:     SERIAL << endl << "vThing - CO2 Monitor "     << VERSION << endl; break;
-    case DT_VAIR:           SERIAL << endl << "vAir - WiFi Module "       << VERSION << endl; break;
-    case DT_VTHING_STARTER: SERIAL << endl << "vThing - Starter Edition " << VERSION << endl; break;
-    case DT_VTHING_H801_LED: SERIAL << endl << "vThing - H801 Fw " << VERSION << endl; break;
+    case DT_VTHING_CO2:     SERIAL << endl << F("vThing - CO2 Monitor ")     << VERSION << endl; break;
+    case DT_VAIR:           SERIAL << endl << F("vAir - WiFi Module ")       << VERSION << endl; break;
+    case DT_VTHING_STARTER: SERIAL << endl << F("vThing - Starter Edition ") << VERSION << endl; break;
+    case DT_VTHING_H801_LED: SERIAL << endl << F("vThing - H801 Fw ") << VERSION << endl; break;
   }  
 }
 
@@ -202,33 +214,33 @@ void onStopLED() {
 }
 
 void setup() {
-  Serial1.begin(9600);
-  Serial.begin(9600);
+  SERIAL.begin(9600);
+//  Serial.begin(9600);
 //  SERIAL << "Start Setup: " << millis() << endl;
   printVersion();
   EEPROM.begin(3000);
-  SERIAL << "ready" << endl;
+  SERIAL << F("ready") << endl;
   //SERIAL << "Strip begin: " << millis() << endl;
   //SERIAL << "Strip end: " << millis() << endl;
   //startWifi();
-  SERIAL << "Waiting for auto-connect" << endl;
+  SERIAL << F("Waiting for auto-connect") << endl;
   delay(1000);
   if (deviceType == DT_VTHING_STARTER) {
+#ifdef VTHING_STARTER
     strip = new NeoPixelBus(1, D4);
     if (strip) {
       strip->Begin();
       strip->SetPixelColor(0, RgbColor(0, 5,0));
       strip->Show();  
     }    
-    si7021 = new SI7021();
-    si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
-    si7021->setHumidityRes(8); // Humidity = 12-bit / Temperature = 14-bit
+    si7021init();
     dumpTemp();
     tmrTempRead = new Timer(15000L,    onTempRead);
     tmrCheckPushMsg = new Timer(1000L, handleSAP_IOT_PushService);
     tmrTempRead->Start();
     tmrCheckPushMsg->Start();
     attachButton();
+#endif
   } else if (deviceType == DT_VTHING_CO2 ) {
     strip = new NeoPixelBus(1, D4);
     if (strip) {
@@ -238,7 +250,7 @@ void setup() {
     }
     if (getJSONConfig(XX_SND_INT)) intCO2SendValue = getJSONConfig(XX_SND_INT).toInt() *1000;
     if (getJSONConfig(XX_SND_THR)) co2Threshold    = getJSONConfig(XX_SND_THR).toInt();
-    Serial << "Send Interval (ms): " << intCO2SendValue << ", Threshold (ppm): " << co2Threshold << endl;
+    Serial << F("Send Interval (ms): ") << intCO2SendValue << F(", Threshold (ppm): ") << co2Threshold << endl;
     
     tmrStopLED           = new Timer(10000, onStopLED, true);
     tmrCO2RawRead        = new Timer(intCO2RawRead,   onCO2RawRead);
@@ -248,7 +260,9 @@ void setup() {
     tmrCO2RawRead->Start();
     tmrStopLED->Start();
   } else if (deviceType == DT_VTHING_H801_LED) {    
-   // h801_setup();
+#ifdef VTHING_H801_LED
+    h801_setup();
+#endif
   }
   //SERIAL << "Completed Setup: " << millis() << endl;
 //WiFi.mode(WIFI_OFF);
@@ -276,6 +290,7 @@ void loop() {
     tmrStopLED->Update();
     delay(5000);
   } else if (deviceType == DT_VTHING_STARTER) {
+#ifdef VTHING_STARTER
     tmrTempRead->Update();
     //SERIAL << "\n\n\n------ before push service\n\n\n";
     tmrCheckPushMsg->Update();
@@ -285,8 +300,11 @@ void loop() {
     //SERIAL << "\n\n\n------ before delay 5 sec\n\n\n";
     //SERIAL << ".";
     delay(1000);
+#endif
   } else if (deviceType == DT_VTHING_H801_LED) {
-  //  h801_loop();
+#ifdef VTHING_H801_LED
+    h801_loop();
+#endif
 //    Serial1 << "serial1" << endl;
 //    Serial <<"serial" << endl;
 //    SERIAL << "SERIAL" << endl;

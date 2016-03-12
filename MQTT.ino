@@ -13,9 +13,6 @@
 // wifi "vladiHome", "0888414447"
 //atest_mqtt
 
-void configMQTTVal(const char *p) {
-   
-}
 void configMQTT(const char *p) {
   char mqttServer[30], mqttPortS[6], mqttClient[20], mqttUser[45], mqttPass[15], mqttTopic[40];
   p = extractStringFromQuotes(p, mqttServer, sizeof(mqttServer)); 
@@ -24,21 +21,24 @@ void configMQTT(const char *p) {
   p = extractStringFromQuotes(p, mqttUser,   sizeof(mqttUser)); 
   p = extractStringFromQuotes(p, mqttPass,   sizeof(mqttPass)); 
   p = extractStringFromQuotes(p, mqttTopic,  sizeof(mqttTopic)); 
-  SERIAL << "port: " << atol(mqttPortS) << endl;
+  if (mqttClient[0] == 0) strcpy(mqttTopic, "vThing");
+  if (mqttTopic[0] == 0 && deviceType == DT_VTHING_H801_LED) strcpy(mqttTopic, "vThingH801");
+  else if (mqttTopic[0] == 0) strcpy(mqttTopic, "vThing/data");
+
   EEPROM.put(EE_MQTT_SERVER_30B, mqttServer);
   EEPROM.put(EE_MQTT_PORT_4B, atol(mqttPortS));
   EEPROM.put(EE_MQTT_CLIENT_20B, mqttClient);
   EEPROM.put(EE_MQTT_USER_45B, mqttUser);
   EEPROM.put(EE_MQTT_PASS_15B, mqttPass);
-  if (mqttTopic[0] == 0 && deviceType == DT_VTHING_H801_LED) strcpy(mqttTopic, "vThingH801");
-  else if (mqttTopic[0] == 0) strcpy(mqttTopic, "vThing/data");
   EEPROM.put(EE_MQTT_TOPIC_40B, mqttTopic);
   
   EEPROM.commit();
-  SERIAL << "MQTT Configuration Stored" << endl;
+  SERIAL << F("MQTT Configuration Stored") << endl;
   SERIAL << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << "," << mqttTopic << endl;
-  SERIAL << "DONE" << endl;
+  SERIAL << F("DONE") << endl;
+#ifdef VTHING_H801_LED  
   if (deviceType == DT_VTHING_H801_LED) h801_mqtt_connect();
+#endif
   
 }
 
@@ -77,11 +77,11 @@ void sendMQTT(String msg) {
       //sprintf(ddd, "{\"data\": %s, \"write\": true,  \"ispublic\": true}", msg.c_str());
       char mqttValue2[80];
       sprintf(mqttValue2, mqttValue, msg.c_str());
-      SERIAL << "Connected. Will publish: " << mqttValue2 << endl;
+      SERIAL << F("Connected. Will publish: ") << mqttValue2 << endl;
       boolean res = client.publish(mqttTopic, mqttValue2);
-      SERIAL.println(res ? "CLOSED" : "Falied!");
+      SERIAL.println(res ? F("CLOSED") : F("Failed!"));
     } else {
-        SERIAL.println("Could not connect to MQTT server");   
+        SERIAL.println(F("Could not connect to MQTT server"));   
     }     
   }
   client.disconnect();

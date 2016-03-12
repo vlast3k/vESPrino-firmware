@@ -37,10 +37,12 @@ String ubik;
 int handleCommand() {
   if (DEBUG) SERIAL << "Received command: " << line << endl;
   if (strstr(line, "tstest")) sendTS();
-  else if (line[0] == 'p') sendPing();
   else if (line[0] == 'A') mockATCommand(line);
+#ifdef SAP_AUTH
+  else if (strcmp(line, "ping") == 0) sendPing();
   else if (line[0] == 'S') httpAuthSAP();
   else if (line[0] == 'C') checkSAPAuth();
+#endif
   else if (line[0] == 'G') getTS(line);
   else if (strstr(line, "cfggen")) cfgGENIOT(line);
   else if (strstr(line, "cfgiot1")) cfgHCPIOT1(line);
@@ -68,8 +70,10 @@ int handleCommand() {
   else if (strstr(line, "bttn")) shouldSend=true;
   else if (strcmp(line, "restart") == 0) ESP.restart();
   else if (strcmp(line, "factory") == 0) factoryReset();
+#ifdef VTHING_H801_LED
   else if (strcmp(line, "testled") == 0) testH801();
   else if (strstr(line, "h801cfg")) h801_processConfig(line);
+#endif
   else if (strcmp(line, "debug") == 0) DEBUG = true;
   else if (strcmp(line, "thu") == 0) testHttpUpdate();
   
@@ -80,26 +84,22 @@ int handleCommand() {
 
 void testHttpUpdate() {
   heap("");
-  SERIAL << "Start http update test" << endl;
+  SERIAL << F("Start http update test") << endl;
     HTTPClient http;
-    http.begin("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest.bin");
+    http.begin(F("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest.bin"));
     http.useHTTP10(true);
     http.setTimeout(8000);
-    http.setUserAgent("ESP8266-http-Update");
-    http.addHeader("x-ESP8266-STA-MAC", WiFi.macAddress());
-    http.addHeader("x-ESP8266-AP-MAC", WiFi.softAPmacAddress());
-    http.addHeader("x-ESP8266-free-space", String(ESP.getFreeSketchSpace()));
-    http.addHeader("x-ESP8266-sketch-size", String(ESP.getSketchSize()));
-    http.addHeader("x-ESP8266-chip-size", String(ESP.getFlashChipRealSize()));
-    http.addHeader("x-ESP8266-sdk-version", ESP.getSdkVersion());
-  SERIAL << "Start http update test 111" << endl;
-  heap("");
+    http.setUserAgent(String(F("ESP8266-http-Update")).c_str());
+    http.addHeader(F("x-ESP8266-STA-MAC"), WiFi.macAddress());
+    http.addHeader(F("x-ESP8266-AP-MAC"), WiFi.softAPmacAddress());
+    http.addHeader(F("x-ESP8266-free-space"), String(ESP.getFreeSketchSpace()));
+    http.addHeader(F("x-ESP8266-sketch-size"), String(ESP.getSketchSize()));
+    http.addHeader(F("x-ESP8266-chip-size"), String(ESP.getFlashChipRealSize()));
+    http.addHeader(F("x-ESP8266-sdk-version"), ESP.getSdkVersion());
     int code = http.GET();
-  heap("");
-  SERIAL << "Start http update test222" << endl;
 
     if(code <= 0) {
-        SERIAL << "[httpUpdate] HTTP error: " <<  http.errorToString(code) << endl;
+        SERIAL << F("[httpUpdate] HTTP error: ") <<  http.errorToString(code) << endl;
     } else {
       SERIAL << "OK!" << endl;
     }
@@ -124,7 +124,7 @@ void setSendThreshold(const char *line) {
   }
   putJSONConfig(XX_SND_THR, String(thr).c_str());
   co2Threshold = thr;
-  Serial << "CO2 Threshold (ppm): " << co2Threshold << endl;
+  Serial << F("CO2 Threshold (ppm): ") << co2Threshold << endl;
 }
 
 char atCIPSTART_IP[20];
@@ -136,13 +136,13 @@ void getTS(const char* line) {
 
 void testUBI() {
   HTTPClient http;
-  http.begin("http://50.23.124.66/api/postvalue/?token=Cg5W22qmWFcsMqsALMik04VtEF7PYA&variable=565965867625420c74ec604b&value=456");
+  http.begin(F("http://50.23.124.66/api/postvalue/?token=Cg5W22qmWFcsMqsALMik04VtEF7PYA&variable=565965867625420c74ec604b&value=456"));
   processResponseCodeATFW(&http, http.GET());  
 }
 
 void sendTS() {
   HTTPClient http;
-  http.begin("http://api.thingspeak.com/update?key=2DB818ODLIFO8TLF&field1=456");
+  http.begin(F("http://api.thingspeak.com/update?key=2DB818ODLIFO8TLF&field1=456"));
   processResponseCodeATFW(&http, http.GET());
 }
 
@@ -176,13 +176,13 @@ void mockATCommand(const char *line) {
 void cfgGENIOT(const char *p) {
   char genurl[140] = "";
   if (!p[6]) {
-    SERIAL << "Cleared Generic URL" << endl;    
+    SERIAL << F("Cleared Generic URL") << endl;    
   } else {
     strncpy(genurl, p+7, sizeof(genurl)-1);
-    SERIAL << "Stored Generic URL: " << genurl << endl;
+    SERIAL << F("Stored Generic URL: ") << genurl << endl;
   }
   storeToEE(EE_GENIOT_PATH_140B, genurl, 140); // path
-  SERIAL << "DONE" << endl;
+  SERIAL << F("DONE") << endl;
 }
 
 void cfgHCPIOT1(const char *p) {
@@ -204,7 +204,7 @@ void cfgHCPIOT1(const char *p) {
   putJSONConfig(SAP_IOT_DEVID, devId);
   p = extractStringFromQuotes(p, msgId, sizeof(msgId)); 
   p = extractStringFromQuotes(p, varName, sizeof(varName)); 
-  sprintf(buf, "/com.sap.iotservices.mms/v1/api/http/data/%s/%s/sync?%s=", devId, msgId, varName);
+  sprintf(buf, String(F("/com.sap.iotservices.mms/v1/api/http/data/%s/%s/sync?%s=")).c_str(), devId, msgId, varName);
   storeToEE(EE_IOT_PATH_140B, buf, 140); // path
   //SERIAL << "IOT Path: " << buf << endl;  
   printJSONConfig();
@@ -231,7 +231,7 @@ void cfgHCPIOT2(const char *p) {
 
 void sndIOT(const char *line) {
   if (WiFi.status() != WL_CONNECTED) {
-    SERIAL << "Cannot send data. No Wifi connection." << endl;
+    SERIAL << F("Cannot send data. No Wifi connection.") << endl;
     return;
   }
   char path[140];
@@ -255,7 +255,7 @@ void sndGENIOT(const char *line) {
   char str[140], str2[150];
   EEPROM.get(EE_GENIOT_PATH_140B, str);
   sprintf(str2, str, &line[7]);
-  SERIAL << "Sending to URL: \"" << str2 << "\"" << endl;
+  SERIAL << F("Sending to URL: \"") << str2 << "\"" << endl;
   
   HTTPClient http;
   http.begin(str2);
@@ -271,7 +271,7 @@ void sndHCPIOT(const char *line) {
   EEPROM.get(EE_IOT_TOKN_40B, token);
 
   sprintf(path, "%s%s", path, &line[7]);
-  SERIAL << "Sending to HCP: " << path << endl;
+  SERIAL << F("Sending to HCP: ") << path << endl;
 //  SERIAL << "hcpiot, token: " << token << endl;
   
   HTTPClient http;
@@ -289,13 +289,13 @@ void addHCPIOTHeaders(HTTPClient *http, const char *token) {
 
 void sndSimple() {
   HTTPClient http;
-  http.begin("https://iotmmsi024148trial.hanatrial.ondemand.com/com.sap.iotservices.mms/v1/api/http/data/c5c73d69-6a19-4c7d-9da3-b32198ba71f9/2023a0e66f76d20f47d7/sync?co2=34");
-  addHCPIOTHeaders(&http, "be4e6b1381f6989b195a402420399a8");
+  http.begin(F("https://iotmmsi024148trial.hanatrial.ondemand.com/com.sap.iotservices.mms/v1/api/http/data/c5c73d69-6a19-4c7d-9da3-b32198ba71f9/2023a0e66f76d20f47d7/sync?co2=34"));
+  addHCPIOTHeaders(&http, String(F("be4e6b1381f6989b195a402420399a8")).c_str());
   processResponseCodeATFW(&http, http.POST(""));
 }
 
 void factoryReset() {
-  SERIAL << "Doing Factory Reset, and restarting..." << endl;
+  SERIAL << F("Doing Factory Reset, and restarting...") << endl;
   for (int i=0; i < 3000; i++) EEPROM.write(i, 0xFF);
   EEPROM.commit();  
   ESP.restart();
@@ -303,13 +303,13 @@ void factoryReset() {
 
 
 int processResponseCodeATFW(HTTPClient *http, int rc) {
-  if (rc > 0) SERIAL << "Response Code: " << rc << endl;
-  else SERIAL << "Error Code: " << rc << " = " << http->errorToString(rc).c_str() << endl;
+  if (rc > 0) SERIAL << F("Response Code: ") << rc << endl;
+  else SERIAL << F("Error Code: ") << rc << " = " << http->errorToString(rc).c_str() << endl;
   if (rc > 0) {
-    SERIAL << "Payload: [" << http->getString() << "]" << endl;
-    SERIAL << "CLOSED" << endl; // for compatibility with AT FW
+    SERIAL << F("Payload: [") << http->getString() << "]" << endl;
+    SERIAL << F("CLOSED") << endl; // for compatibility with AT FW
   } else {
-    SERIAL << "Failed" << endl;
+    SERIAL << F("Failed") << endl;
   }
   return rc;
 }

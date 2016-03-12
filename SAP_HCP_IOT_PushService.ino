@@ -1,10 +1,10 @@
-
+#ifdef VTHING_STARTER
 
 //uint32_t lastSAPCheck = -1000000L;
 void handleSAP_IOT_PushService() {
     if(WiFi.status() != WL_CONNECTED) return;
     if (!getJSONConfig(SAP_IOT_HOST)) return;
-    String url = String("https://") + getJSONConfig(SAP_IOT_HOST) + "/com.sap.iotservices.mms/v1/api/http/data/" + getJSONConfig(SAP_IOT_DEVID) ; 
+    String url = String("https://") + getJSONConfig(SAP_IOT_HOST) + F("/com.sap.iotservices.mms/v1/api/http/data/") + getJSONConfig(SAP_IOT_DEVID) ; 
 //    SERIAL << url << endl;
 //    SERIAL << getJSONConfig(SAP_IOT_HOST) << endl;
 //    if (getJSONConfig(SAP_IOT_HOST)) SERIAL << "ok" << endl;
@@ -25,7 +25,7 @@ void handleSAP_IOT_PushService() {
         //SERIAL.println(payload);          
         processMessage(payload);
     } else {
-      SERIAL << "Failed to push message to: " << url << ", due to: " <<http.errorToString(httpCode) << endl;
+      SERIAL << F("Failed to push message to: ") << url << ", due to: " <<http.errorToString(httpCode) << endl;
         //SERIAL.printf("[HTTP] GET... failed, error: %s, url\n", http.errorToString(httpCode).c_str());
     }
 
@@ -66,7 +66,7 @@ void processMessage(String msgIn) {
 
   if (!root.success()) {
     //if server has returned empyy response
-    SERIAL << "parseObject() failed: " << msgIn << endl;
+    SERIAL << F("parseObject() failed: ") << msgIn << endl;
     return;
   }
   //SERIAL.print(root[0].is<JsonObject&>());
@@ -81,7 +81,7 @@ void processMessage(String msgIn) {
       //SERIAL << "to process command" << endl;
       processCommand(root[0]["messages"][0]["color"].asString());
     } else {
-      SERIAL << "command not recognized" << endl;
+      SERIAL << F("command not recognized") << endl;
      }
   } 
 //  else {
@@ -90,3 +90,4 @@ void processMessage(String msgIn) {
 
 }
 
+#endif

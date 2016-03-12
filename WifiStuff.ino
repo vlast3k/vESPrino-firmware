@@ -5,7 +5,9 @@ void handleWifi() {
   if (ip == WiFi.localIP()) return;
   else if (WiFi.status() == WL_CONNECTED) {
     ip = WiFi.localIP();
+#ifdef SAP_AUTH    
     checkSAPAuth();
+#endif
     SERIAL << "IP address: " << WiFi.localIP() << " in " << millis() << " ms" << endl << "GOT IP" << endl; 
   } 
   ip = WiFi.localIP();

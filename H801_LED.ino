@@ -1,3 +1,5 @@
+#ifdef VTHING_H801_LED
+
 #include <PubSubClient.h>
 #include <ESP8266WebServer.h>
 
@@ -17,12 +19,6 @@
 //    279, 311, 346, 386, 430, 479, 534, 595, 663, 739, 824, 918, 1023
 //};
 
-int gamma_table[PWM_VALUE+1] = {
-    0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 8, 9, 10,
-    11, 12, 13, 15, 17, 19, 21, 23, 26, 29, 32, 36, 40, 44, 49, 55,
-    61, 68, 76, 85, 94, 105, 117, 131, 146, 162, 181, 202, 225, 250,
-    279, 311, 346, 386, 430, 479, 534, 595, 663, 739, 824, 918, 1023
-};
 
 int currentPinValue[16];
 
@@ -57,6 +53,7 @@ int currentPinValue[16];
 PubSubClient *h801_mqttClient = NULL;//(server);
 IPAddress *mqttIP;//= WiFi.localIP();// = IPAddress(0,0,0,0);
 ESP8266WebServer *h801_webServer = NULL;
+WiFiClient *wclient;
 
 const char* apiKey = "Qw8rdb20aV";
 //http://randomkeygen.com/
@@ -72,6 +69,13 @@ void h801_processConfig(const char *p) {
 }
 
 void analogWriteColor(int pin, int value) {
+  
+  int gamma_table[PWM_VALUE+1] = {
+    0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 8, 9, 10,
+    11, 12, 13, 15, 17, 19, 21, 23, 26, 29, 32, 36, 40, 44, 49, 55,
+    61, 68, 76, 85, 94, 105, 117, 131, 146, 162, 181, 202, 225, 250,
+    279, 311, 346, 386, 430, 479, 534, 595, 663, 739, 824, 918, 1023
+  };
   currentPinValue[pin] = value;
   value = map(value,0,100,0,PWM_VALUE);
   value = constrain(value,0,PWM_VALUE);
@@ -130,12 +134,12 @@ void h801_callback(const MQTT::Publish& pub) {
   else if (topic.indexOf("/W2")   > -1) analogWriteColor(w2PIN, payload.toInt());   
 }
 
-WiFiClient wclient;
 void h801_mqtt_connect() {
   if (WiFi.status() != WL_CONNECTED) return;
   if (h801_mqttClient) delete h801_mqttClient;
   char mqttServer[30], mqttClient[20], mqttTopic[40];
   long mqttPort;
+  wclient = new WiFiClient();
   EEPROM.get(EE_MQTT_SERVER_30B, mqttServer);
   if (mqttServer[0] == 0 || mqttServer[0] == 255) return;
   EEPROM.get(EE_MQTT_PORT_4B,    mqttPort);
@@ -143,7 +147,7 @@ void h801_mqtt_connect() {
   EEPROM.get(EE_MQTT_TOPIC_40B,  mqttTopic);
   
   SERIAL << "mqtt connecting to: " << mqttServer << " " << mqttPort << " " << mqttClient << endl;
-  h801_mqttClient = new PubSubClient(wclient, mqttServer, mqttPort);
+  h801_mqttClient = new PubSubClient(*wclient, mqttServer, mqttPort);
   h801_mqttClient->set_callback(h801_callback);
   if (h801_mqttClient->connect(mqttClient)) {
     h801_mqttClient->subscribe(String(mqttTopic) + "/Color");
@@ -183,3 +187,5 @@ void h801_loop() {
  //heap("");
  //delay(500);
 }
+
+#endif
