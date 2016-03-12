@@ -3,7 +3,11 @@
 #define DT_VTHING_STARTER 3
 #define DT_VTHING_H801_LED 4
 
-int deviceType = DT_VTHING_CO2;
+//int deviceType = DT_VTHING_CO2;
+//#define SERIAL Serial
+
+int deviceType = DT_VTHING_H801_LED;
+#define SERIAL Serial1
 
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
@@ -11,7 +15,7 @@ int deviceType = DT_VTHING_CO2;
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include <Streaming.h>
-#include <EEPROM.h>
+#i nclude <EEPROM.h>
 #include <Math.h>
 #include <algorithm>    // std::min
 #include <ESP8266HTTPClient.h>
@@ -118,10 +122,6 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 
 
 
-#define SERIAL Serial
-
-//int deviceType = DT_VTHING_H801_LED
-//#define SERIAL Serial1
 
 String   mqttServer = "m20.cloudmqtt.com";
 uint32_t mqttPort   = 19749;
