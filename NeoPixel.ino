@@ -1,3 +1,4 @@
+#ifndef VTHING_H801_LED
 #include <NeoPixelBus.h>
 
 //NeoPixelBus strip = NeoPixelBus(1, D4);
@@ -47,4 +48,4 @@ void processCommand(String color) {
   strip->Show();
 }
 
-
+#endif

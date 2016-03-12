@@ -43,6 +43,7 @@ int handleCommand() {
   else if (line[0] == 'S') httpAuthSAP();
   else if (line[0] == 'C') checkSAPAuth();
 #endif
+#ifndef VTHING_H801_LED
   else if (line[0] == 'G') getTS(line);
   else if (strstr(line, "cfggen")) cfgGENIOT(line);
   else if (strstr(line, "cfgiot1")) cfgHCPIOT1(line);
@@ -50,24 +51,26 @@ int handleCommand() {
   else if (strstr(line, "sndiot")) sndIOT(line);
   //else if (strstr(line, "smp2")) sndSimple2();
   else if (strstr(line, "smp")) sndSimple();
-  else if (strstr(line, "wifi")) setWifi(line);
-  else if (strstr(line, "scan")) wifiScanNetworks();
-  else if (strcmp(line, "otahtest") == 0) doHttpUpdate(2);
-  else if (strcmp(line, "otah") == 0) doHttpUpdate(1);
-  else if (line[0] == 'o') startOTA();
   else if (strcmp(line, "ubi") == 0) testUBI();
-  else if (strstr(line, "cfg_mqtt"))  configMQTT(line);
-  else if (strstr(line, "cfg_mqval"))  { storeToEE(EE_MQTT_VALUE_70B, &line[10], 70); SERIAL << "DONE" << endl; }
-  else if (strstr(line, "atest_mqtt")) sendMQTT("556");
   else if (strstr(line, "wsi ")) setSendInterval (line);
   else if (strstr(line, "wst ")) setSendThreshold(line);
-  else if (strstr(line, "info")) printVersion();
   else if (strstr(line, "tskey ")) cfgGENIOT((String("cfggen http://api.thingspeak.com/update?key=") + &line[6] + "&field1=%s").c_str());
   else if (strstr(line, "ubik "))  ubik = String(&line[5]);  
   else if (strstr(line, "ubiv "))  cfgGENIOT((String("cfggen http://50.23.124.66/api/postvalue/?token=") + ubik + "&variable=" + &line[5] + "&value=%s").c_str());
   else if (strstr(line, "jjj")) testJSON();
-  else if (strstr(line, "jscfg")) printJSONConfig();
+  else if (strstr(line, "scan")) wifiScanNetworks();
+  else if (strstr(line, "atest_mqtt")) sendMQTT("556");
   else if (strstr(line, "bttn")) shouldSend=true;
+#endif
+  else if (strstr(line, "wifi")) setWifi(line);
+  else if (strcmp(line, "otahtest") == 0) doHttpUpdate(2, NULL);
+  else if (strcmp(line, "otah") == 0) doHttpUpdate(1, NULL);
+  else if (strstr(line, "otau"))      doHttpUpdate(0, &line[5]);
+  else if (strcmp(line, "otaa") == 0)  startOTA();
+  else if (strstr(line, "cfg_mqtt"))  configMQTT(line);
+  else if (strstr(line, "cfg_mqval"))  { storeToEE(EE_MQTT_VALUE_70B, &line[10], 70); SERIAL << "DONE" << endl; }
+  else if (strstr(line, "info")) printVersion();
+  else if (strstr(line, "jscfg")) printJSONConfig();
   else if (strcmp(line, "restart") == 0) ESP.restart();
   else if (strcmp(line, "factory") == 0) factoryReset();
 #ifdef VTHING_H801_LED
@@ -86,7 +89,7 @@ void testHttpUpdate() {
   heap("");
   SERIAL << F("Start http update test") << endl;
     HTTPClient http;
-    http.begin(F("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest.bin"));
+    http.begin(F("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_h801.bin"));
     http.useHTTP10(true);
     http.setTimeout(8000);
     http.setUserAgent(String(F("ESP8266-http-Update")).c_str());
@@ -106,6 +109,7 @@ void testHttpUpdate() {
         http.end();
 }
 
+#ifndef VTHING_H801_LED
 void setSendInterval (const char *line) {
   int interval = 120;
   if (strchr(line, ' ')) {
@@ -126,6 +130,8 @@ void setSendThreshold(const char *line) {
   co2Threshold = thr;
   Serial << F("CO2 Threshold (ppm): ") << co2Threshold << endl;
 }
+
+#endif
 
 char atCIPSTART_IP[20];
 void getTS(const char* line) {

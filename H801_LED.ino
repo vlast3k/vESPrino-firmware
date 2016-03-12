@@ -92,6 +92,15 @@ void processTriplet(String payload) {
    analogWriteColor(bluePIN, payload.substring(c2+1).toInt()); 
 }
 
+void stopH801() {
+  SERIAL << "on stop" << endl;
+  heap("");
+  delete h801_webServer;
+  delete h801_mqttClient;
+  delete wclient;
+  heap("");
+}
+
 void onh801_HttpRequest() {
   ESP8266WebServer &server = *h801_webServer;
   String apiKey = getJSONConfig(H801_API_KEY);
@@ -119,7 +128,7 @@ void h801_webServer_start() {
 
   SERIAL.print("\n\nOpen http://");
   SERIAL.print(WiFi.localIP());
-  SERIAL.println("/ in your browser to see it working");
+  SERIAL.println(F("/ in your browser to see status and /?color=12,15,100&w1=12&w2=56 to set R,G,B,W1 and W2 - range [0,100])"));
   //mqttIP = &WiFi.localIP();
 }
 
@@ -140,13 +149,16 @@ void h801_mqtt_connect() {
   char mqttServer[30], mqttClient[20], mqttTopic[40];
   long mqttPort;
   wclient = new WiFiClient();
+    //SERIAL << "ADADASdsadasdD" << endl;
   EEPROM.get(EE_MQTT_SERVER_30B, mqttServer);
   if (mqttServer[0] == 0 || mqttServer[0] == 255) return;
   EEPROM.get(EE_MQTT_PORT_4B,    mqttPort);
   EEPROM.get(EE_MQTT_CLIENT_20B, mqttClient);
   EEPROM.get(EE_MQTT_TOPIC_40B,  mqttTopic);
-  
+
+  delay(100);
   SERIAL << "mqtt connecting to: " << mqttServer << " " << mqttPort << " " << mqttClient << endl;
+  delay(100);
   h801_mqttClient = new PubSubClient(*wclient, mqttServer, mqttPort);
   h801_mqttClient->set_callback(h801_callback);
   if (h801_mqttClient->connect(mqttClient)) {
@@ -154,8 +166,10 @@ void h801_mqtt_connect() {
     h801_mqttClient->subscribe(String(mqttTopic) + "/W1");
     h801_mqttClient->subscribe(String(mqttTopic) + "/W2");
     SERIAL.println("MQTT connected");  
-    SERIAL << "Subscribed Topics: " << endl << String(mqttTopic) + "/Color" << endl <<
-              String(mqttTopic) + "/W1" << endl << String(mqttTopic) + "/W2" << endl;
+    SERIAL << "Subscribed Topics: " << endl << String(mqttTopic) + 
+                                  "/Color  Send Payload: R,G,B  from 0-100 (incl), e.g. 15,20,100" << endl <<
+              String(mqttTopic) + "/W1     Send Payload: W1  0-100" << endl << String(mqttTopic) + 
+                                  "/W2     Send Payload: W1  0-100" << endl;
   }  else {
     SERIAL << " mqtt failed" << endl;
   }
@@ -174,7 +188,10 @@ void h801_setup() {
   pinMode(greenPIN, OUTPUT);
   pinMode(bluePIN, OUTPUT);
   pinMode(w1PIN, OUTPUT);
-  pinMode(w2PIN, OUTPUT);      
+  pinMode(w2PIN, OUTPUT);    
+
+    LEDoff;
+    LED2on;
 }
 
 void h801_loop() {

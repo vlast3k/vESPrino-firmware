@@ -12,8 +12,6 @@ void attachButton() {
   //pinMode(BTTN_PIN, INPUT_PULLUP);
   attachInterrupt(BTTN_PIN, onButton, CHANGE);
 }
-\
-
 
 int clicks = 5;
 void doSend() {

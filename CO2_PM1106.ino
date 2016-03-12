@@ -1,5 +1,5 @@
-
-
+#ifdef VTHING_CO2
+#include <SoftwareSerialESP.h>
 uint8_t cmdReadCO2[] = {4, 0x11, 0x01, 0x01, 0xed};
 uint8_t resp[25];
 
@@ -56,3 +56,4 @@ int CM1106__getCO2() {
   return ((uint16_t)256)*resp[3] + resp[4];
 }
 
+#endif

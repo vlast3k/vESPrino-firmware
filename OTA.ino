@@ -1,6 +1,7 @@
 
-void doHttpUpdate(int mode) {
+void doHttpUpdate(int mode, char *url) {
   SERIAL << F("Starting Web update, mode ") << mode << endl;
+  if (url) SERIAL << F("Will update from: ") << url << endl;
   const __FlashStringHelper *prod, *test;
   if (deviceType == DT_VAIR) {
     prod = F("https://raw.githubusercontent.com/vlast3k/ESP8266_SERIALOTATS/master/fw/latest.bin");
@@ -12,10 +13,19 @@ void doHttpUpdate(int mode) {
     prod = F("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_starter.bin");
     test = F("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_starter_test.bin");
   } else if (deviceType == DT_VTHING_H801_LED) {
-    prod = F("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_h801.bin");
+    prod = F("http://anker-bg.com/vlast3k/latest_h801.bin");
     test = F("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest.bin");
   }
-  t_httpUpdate_return ret = ESPhttpUpdate.update(String(mode == 1 ? prod : test).c_str());
+//  stopH801();
+
+  t_httpUpdate_return ret;
+  if (url) {
+    ret= ESPhttpUpdate.update(url);
+  } else {
+    SERIAL << F("Will update from: ") << (mode == 1 ? prod : test) << endl;
+    ret= ESPhttpUpdate.update(String(mode == 1 ? prod : test).c_str());
+  }
+  
   switch(ret) {
     case HTTP_UPDATE_FAILED:
       SERIAL.println(F("HTTP_UPDATE_FAILED"));
