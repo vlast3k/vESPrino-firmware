@@ -13,7 +13,7 @@ void doHttpUpdate(int mode) {
     test = "https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_starter_test.bin";
   } else if (deviceType == DT_VTHING_H801_LED) {
     prod = "https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_h801.bin";
-    test = "https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_h801_test.bin";
+    test = "https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest.bin";
   }
   t_httpUpdate_return ret = ESPhttpUpdate.update(mode == 1 ? prod : test);
   switch(ret) {

@@ -3,11 +3,13 @@
 #define DT_VTHING_STARTER 3
 #define DT_VTHING_H801_LED 4
 
+#define MEMTEST
+
 //int deviceType = DT_VTHING_CO2;
 //#define SERIAL Serial
 
-int deviceType = DT_VTHING_H801_LED;
-#define SERIAL Serial1
+int deviceType = DT_VTHING_CO2;
+#define SERIAL Serial
 
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
@@ -15,7 +17,7 @@ int deviceType = DT_VTHING_H801_LED;
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include <Streaming.h>
-#i nclude <EEPROM.h>
+#include <EEPROM.h>
 #include <Math.h>
 #include <algorithm>    // std::min
 #include <ESP8266HTTPClient.h>
@@ -90,6 +92,7 @@ void h801_processConfig(const char *p);
 
 String getJSONConfig(const char *item);
 void testJSON();
+void testHttpUpdate();
 
 void setSAPAuth(const char *);
 char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
@@ -245,7 +248,7 @@ void setup() {
     tmrCO2RawRead->Start();
     tmrStopLED->Start();
   } else if (deviceType == DT_VTHING_H801_LED) {    
-    h801_setup();
+   // h801_setup();
   }
   //SERIAL << "Completed Setup: " << millis() << endl;
 //WiFi.mode(WIFI_OFF);
@@ -283,7 +286,7 @@ void loop() {
     //SERIAL << ".";
     delay(1000);
   } else if (deviceType == DT_VTHING_H801_LED) {
-    h801_loop();
+  //  h801_loop();
 //    Serial1 << "serial1" << endl;
 //    Serial <<"serial" << endl;
 //    SERIAL << "SERIAL" << endl;

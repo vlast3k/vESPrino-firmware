@@ -71,9 +71,39 @@ int handleCommand() {
   else if (strcmp(line, "testled") == 0) testH801();
   else if (strstr(line, "h801cfg")) h801_processConfig(line);
   else if (strcmp(line, "debug") == 0) DEBUG = true;
+  else if (strcmp(line, "thu") == 0) testHttpUpdate();
+  
   
   SERIAL << ">" << endl;
   return 0;
+}
+
+void testHttpUpdate() {
+  heap("");
+  SERIAL << "Start http update test" << endl;
+    HTTPClient http;
+    http.begin("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest.bin");
+    http.useHTTP10(true);
+    http.setTimeout(8000);
+    http.setUserAgent("ESP8266-http-Update");
+    http.addHeader("x-ESP8266-STA-MAC", WiFi.macAddress());
+    http.addHeader("x-ESP8266-AP-MAC", WiFi.softAPmacAddress());
+    http.addHeader("x-ESP8266-free-space", String(ESP.getFreeSketchSpace()));
+    http.addHeader("x-ESP8266-sketch-size", String(ESP.getSketchSize()));
+    http.addHeader("x-ESP8266-chip-size", String(ESP.getFlashChipRealSize()));
+    http.addHeader("x-ESP8266-sdk-version", ESP.getSdkVersion());
+  SERIAL << "Start http update test 111" << endl;
+  heap("");
+    int code = http.GET();
+  heap("");
+  SERIAL << "Start http update test222" << endl;
+
+    if(code <= 0) {
+        SERIAL << "[httpUpdate] HTTP error: " <<  http.errorToString(code) << endl;
+    } else {
+      SERIAL << "OK!" << endl;
+    }
+        http.end();
 }
 
 void setSendInterval (const char *line) {
