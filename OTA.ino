@@ -4,10 +4,10 @@ void doHttpUpdate(int mode, char *url) {
   if (url) SERIAL << F("Will update from: ") << url << endl;
   const __FlashStringHelper *prod, *test;
   if (deviceType == DT_VAIR) {
-    prod = F("https://raw.githubusercontent.com/vlast3k/ESP8266_SERIALOTATS/master/fw/latest.bin");
+    prod = F("http://anker-bg.com/vlast3k/vair/latest.bin");
     test = F("https://raw.githubusercontent.com/vlast3k/ESP8266_SERIALOTATS/master/fw/latest_test.bin");
   } else if (deviceType == DT_VTHING_CO2) {
-    prod = F("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest.bin");
+    prod = F("http://anker-bg.com/vlast3k/vthing_co2/latest.bin");
     test = F("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_test.bin");
   } else if (deviceType == DT_VTHING_STARTER) {
     prod = F("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_starter.bin");

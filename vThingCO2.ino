@@ -3,17 +3,32 @@
 #define DT_VTHING_STARTER 3
 #define DT_VTHING_H801_LED 4
 
+//H801 build with 1mb / 256k
 //#define VTHING_H801_LED
 //#define VTHING_STARTER
-//#define SAP_AUTH
+#define SAP_AUTH
+#define VTHING_CO2
+//#define VAIR
 
-//int deviceType = DT_VTHING_CO2;
-//#define SERIAL Serial
+//int deviceType = DT_VAIR;
+#ifdef VTHING_CO2
+int deviceType = DT_VTHING_CO2;
+#define SERIAL Serial
+#endif
 
-//int deviceType = DT_VTHING_CO2;
+#ifdef VAIR
 int deviceType = DT_VAIR;
 #define SERIAL Serial
+#endif
 
+#ifdef VTHING_H801_LED
+int deviceType = DT_VTHING_H801_LED;
+#define SERIAL Serial1
+#endif
+
+
+
+//#include <SoftwareSerialESP.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
 #include <ESP8266mDNS.h>
@@ -25,7 +40,7 @@ int deviceType = DT_VAIR;
 #include <algorithm>    // std::min
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
-#include <SoftwareSerialESP.h>
+
 
 #include <ArduinoJson.h>
 
@@ -58,7 +73,7 @@ void sendMQTT(String msg);
 int processResponseCodeATFW(HTTPClient *http, int rc);
 int CM1106_read();
 void CM1106_init();
-void doHttpUpdate(int mode);
+void doHttpUpdate(int mode, char *url);
 void handleOTA();
 void startOTA();
 char *extractStringFromQuotes(const char* src, char *dest, int destSize);
@@ -86,6 +101,7 @@ int checkSAPAuth();
 #endif
 
 #ifdef VTHING_H801_LED
+void stopH801();
 void testH801();
 void h801_setup();
 void h801_loop();
@@ -160,6 +176,7 @@ String authToken;// = "8f337a8e54bd352f28c2892743c94b3";
 
 boolean DEBUG = false;
 
+#ifndef VTHING_H801_LED
 uint32_t intCO2RawRead   =  15000L;
 uint32_t intCO2SendValue = 120000L;
 uint16_t co2Threshold = 1;
@@ -170,10 +187,15 @@ boolean startedCO2Monitoring = false;
 RunningAverage raCO2Raw(4);
 NeoPixelBus *strip;// = NeoPixelBus(1, D4);
 
+void onStopLED() {
+    strip->SetPixelColor(0, RgbColor(0, 0,0));
+    strip->Show();      
+}
 
+#endif
 
 bool shouldSend = false;
-
+#ifdef VTHING_CO2
 void sendCO2Value() {
   int val = (int)raCO2Raw.getAverage();
  // if (val > 2000) SERIAL << "val is: " << val << endl;
@@ -198,7 +220,9 @@ void onCO2RawRead() {
   }
 }
 
-String VERSION = "v1.10";
+#endif
+
+String VERSION = "v1.10.1";
 void printVersion() {
   switch (deviceType) {
     case DT_VTHING_CO2:     SERIAL << endl << F("vThing - CO2 Monitor ")     << VERSION << endl; break;
@@ -208,14 +232,11 @@ void printVersion() {
   }  
 }
 
-void onStopLED() {
-    strip->SetPixelColor(0, RgbColor(0, 0,0));
-    strip->Show();      
-}
 
 void setup() {
-  SERIAL.begin(9600);
-//  Serial.begin(9600);
+  //SERIAL.begin(9600);
+  Serial.begin(9600);
+  Serial1.begin(9600);
 //  SERIAL << "Start Setup: " << millis() << endl;
   printVersion();
   EEPROM.begin(3000);
@@ -242,6 +263,7 @@ void setup() {
     attachButton();
 #endif
   } else if (deviceType == DT_VTHING_CO2 ) {
+#ifdef VTHING_CO2
     strip = new NeoPixelBus(1, D4);
     if (strip) {
       strip->Begin();
@@ -259,6 +281,7 @@ void setup() {
     SERIAL << "CO2 now: " << res << endl;
     tmrCO2RawRead->Start();
     tmrStopLED->Start();
+#endif
   } else if (deviceType == DT_VTHING_H801_LED) {    
 #ifdef VTHING_H801_LED
     h801_setup();
@@ -285,10 +308,12 @@ void loop() {
   }
 
   if (deviceType == DT_VTHING_CO2) {
+#ifdef VTHING_CO2    
     tmrCO2RawRead->Update();
     tmrCO2SendValueTimer->Update();
     tmrStopLED->Update();
     delay(5000);
+#endif    
   } else if (deviceType == DT_VTHING_STARTER) {
 #ifdef VTHING_STARTER
     tmrTempRead->Update();
@@ -303,6 +328,7 @@ void loop() {
 #endif
   } else if (deviceType == DT_VTHING_H801_LED) {
 #ifdef VTHING_H801_LED
+    delay(1000);
     h801_loop();
 #endif
 //    Serial1 << "serial1" << endl;
