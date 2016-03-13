@@ -3,6 +3,8 @@ char line[LINE_LEN];
 String HTTP_STR = "http://";
 String HTTPS_STR= "https://";
 
+
+void sendPingPort(const char *p);
 boolean processUserInput() {
   Serial.setTimeout(500);
   if (!Serial.available()) {
@@ -51,6 +53,7 @@ int handleCommand() {
   else if (strstr(line, "sndiot")) sndIOT(line);
   //else if (strstr(line, "smp2")) sndSimple2();
   else if (strstr(line, "smp")) sndSimple();
+  else if (strcmp(line, "test") == 0) sndIOT("sndiot 567");
   else if (strcmp(line, "ubi") == 0) testUBI();
   else if (strstr(line, "wsi ")) setSendInterval (line);
   else if (strstr(line, "wst ")) setSendThreshold(line);
@@ -79,10 +82,23 @@ int handleCommand() {
 #endif
   else if (strcmp(line, "debug") == 0) DEBUG = true;
   else if (strcmp(line, "thu") == 0) testHttpUpdate();
+  else if (strstr(line, "ping")) sendPingPort(line);
   
   
   SERIAL << ">" << endl;
   return 0;
+}
+
+void sendPingPort(const char *p) {
+  char host[30],  port[20];
+  p = extractStringFromQuotes(p, host, 30);
+  p = extractStringFromQuotes(p, port, 20);  
+  int iport = atoi(port);
+  WiFiClient ccc;
+  SERIAL << "Test connection to to:" << host << ":" << port << endl;
+  int res = ccc.connect(host, iport);
+  SERIAL << "Res: " << res << endl;
+  
 }
 
 void testHttpUpdate() {

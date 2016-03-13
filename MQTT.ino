@@ -68,11 +68,16 @@ void sendMQTT(String msg) {
   delay(150);
   uint32_t st = millis();
   WiFiClient wclient;
-  PubSubClient client(wclient, mqttServer, mqttPort);
+//  PubSubClient client(wclient, mqttServer, mqttPort);
+  PubSubClient client(mqttServer, mqttPort, wclient);
   if (WiFi.status() == WL_CONNECTED) {
-    MQTT::Connect conn = MQTT::Connect(mqttClient);
-    if (strlen(mqttUser) > 0) conn.set_auth(mqttUser, mqttPass);
-    if (client.connect(conn)) {
+    //MQTT::Connect conn = MQTT::Connect(mqttClient);
+//    if (strlen(mqttUser) > 0) conn.set_auth(mqttUser, mqttPass);
+//    if (client.connect(conn)) {
+    boolean res;
+    if (strlen(mqttUser) > 0) res = client.connect(mqttClient, mqttUser, mqttPass);
+    else res = client.connect(mqttClient);
+    if (res) {
       //char ddd[50];
       //sprintf(ddd, "{\"data\": %s, \"write\": true,  \"ispublic\": true}", msg.c_str());
       char mqttValue2[80];

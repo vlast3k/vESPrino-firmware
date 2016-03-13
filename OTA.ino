@@ -13,7 +13,7 @@ void doHttpUpdate(int mode, char *url) {
     prod = F("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_starter.bin");
     test = F("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest_starter_test.bin");
   } else if (deviceType == DT_VTHING_H801_LED) {
-    prod = F("http://anker-bg.com/vlast3k/latest_h801.bin");
+    prod = F("http://anker-bg.com/vlast3k/h801/latest.bin");
     test = F("https://raw.githubusercontent.com/vlast3k/vThingCO2/master/fw/latest.bin");
   }
 //  stopH801();

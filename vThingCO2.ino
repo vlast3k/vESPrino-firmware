@@ -4,10 +4,10 @@
 #define DT_VTHING_H801_LED 4
 
 //H801 build with 1mb / 256k
-//#define VTHING_H801_LED
+#define VTHING_H801_LED
 //#define VTHING_STARTER
-#define SAP_AUTH
-#define VTHING_CO2
+//#define SAP_AUTH
+//#define VTHING_CO2
 //#define VAIR
 
 //int deviceType = DT_VAIR;
@@ -222,7 +222,7 @@ void onCO2RawRead() {
 
 #endif
 
-String VERSION = "v1.10.1";
+String VERSION = "v1.10.3";
 void printVersion() {
   switch (deviceType) {
     case DT_VTHING_CO2:     SERIAL << endl << F("vThing - CO2 Monitor ")     << VERSION << endl; break;
@@ -230,6 +230,7 @@ void printVersion() {
     case DT_VTHING_STARTER: SERIAL << endl << F("vThing - Starter Edition ") << VERSION << endl; break;
     case DT_VTHING_H801_LED: SERIAL << endl << F("vThing - H801 Fw ") << VERSION << endl; break;
   }  
+  SERIAL << "IP address: " << WiFi.localIP() << endl;
 }
 
 

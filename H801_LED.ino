@@ -24,9 +24,12 @@ int currentPinValue[16];
 
 
 // RGB FET
-#define redPIN    12
-#define greenPIN  15
-#define bluePIN   13
+//#define redPIN    1215
+//#define greenPIN  1513
+//#define bluePIN   1312
+#define redPIN    15
+#define greenPIN  13
+#define bluePIN   12
 
 
 // W FET
@@ -134,10 +137,10 @@ void h801_webServer_start() {
 
 
 
-void h801_callback(const MQTT::Publish& pub) {
-  SERIAL << pub.topic() << " => " << pub.payload_string() << endl;
-  String payload = pub.payload_string(), topic = String(pub.topic());
-  Serial << topic << ", " << topic.indexOf("/Color") <<" ..." <<endl;
+//void h801_callback(const MQTT::Publish& pub) {
+void h801_callback(char* topic1, byte* payload1, unsigned int length) {
+  String payload = String((char*)payload1), topic = String(topic1);
+  SERIAL << topic << " => " << payload << endl;
   if      (topic.indexOf("/Color") > -1) processTriplet(payload);
   else if (topic.indexOf("/W1")   > -1) analogWriteColor(w1PIN, payload.toInt());
   else if (topic.indexOf("/W2")   > -1) analogWriteColor(w2PIN, payload.toInt());   
@@ -159,12 +162,12 @@ void h801_mqtt_connect() {
   delay(100);
   SERIAL << "mqtt connecting to: " << mqttServer << " " << mqttPort << " " << mqttClient << endl;
   delay(100);
-  h801_mqttClient = new PubSubClient(*wclient, mqttServer, mqttPort);
-  h801_mqttClient->set_callback(h801_callback);
+  h801_mqttClient = new PubSubClient(mqttServer, mqttPort, h801_callback, *wclient);
+//  h801_mqttClient->set_callback(h801_callback);
   if (h801_mqttClient->connect(mqttClient)) {
-    h801_mqttClient->subscribe(String(mqttTopic) + "/Color");
-    h801_mqttClient->subscribe(String(mqttTopic) + "/W1");
-    h801_mqttClient->subscribe(String(mqttTopic) + "/W2");
+    h801_mqttClient->subscribe((String(mqttTopic) + "/Color").c_str());
+    h801_mqttClient->subscribe((String(mqttTopic) + "/W1").c_str());
+    h801_mqttClient->subscribe((String(mqttTopic) + "/W2").c_str());
     SERIAL.println("MQTT connected");  
     SERIAL << "Subscribed Topics: " << endl << String(mqttTopic) + 
                                   "/Color  Send Payload: R,G,B  from 0-100 (incl), e.g. 15,20,100" << endl <<
