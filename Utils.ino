@@ -35,7 +35,11 @@ String getJSONConfig(const char *item) {
   JsonObject& root = jsonBuffer.parseObject(data);
   return String(root[item].asString());
 }
-void putJSONConfig(const char *key, const char *value) {
+void putJSONConfig(const char *key, int value, boolean commit) {
+  putJSONConfig(key, String(value).c_str(), commit);
+}
+
+void putJSONConfig(const char *key, const char *value, boolean commit) {
   StaticJsonBuffer<200> jsonBuffer;
   char data2[1000], data[1000];
 
@@ -46,7 +50,7 @@ void putJSONConfig(const char *key, const char *value) {
   root[key] = value;
   root.printTo(data2, sizeof(data2));
   EEPROM.put(EE_JSON_CFG_1000B, data2);
-  EEPROM.commit();  
+  if (commit) EEPROM.commit();  
 }
 
 void testJSON() {

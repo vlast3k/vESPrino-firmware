@@ -82,6 +82,7 @@ int handleCommand() {
 #endif
   else if (strcmp(line, "debug") == 0) DEBUG = true;
   else if (strcmp(line, "thu") == 0) testHttpUpdate();
+  else if (strcmp(line, "sss") == 0) {SERIAL << "STOP Active execution\n"; SKIP_LOOP = true; }
   else if (strstr(line, "ping")) sendPingPort(line);
   
   

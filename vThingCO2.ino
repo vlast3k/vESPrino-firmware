@@ -4,11 +4,11 @@
 #define DT_VTHING_H801_LED 4
 
 //H801 build with 1mb / 256k
-#define VTHING_H801_LED
+//#define VTHING_H801_LED
 //#define VTHING_STARTER
 //#define SAP_AUTH
 //#define VTHING_CO2
-//#define VAIR
+#define VTHING_H801_LED
 
 //int deviceType = DT_VAIR;
 #ifdef VTHING_CO2
@@ -90,9 +90,11 @@ void processMessage(String payload);
 void processCommand(String cmd);
 void initLight();
 void printJSONConfig();
-void putJSONConfig(const char *key, const char *value);
+void putJSONConfig(const char *key, int value, boolean commit = true);
+void putJSONConfig(const char *key, const char *value, boolean commit = true);
 void dumpTemp();
 void factoryReset();
+void activeWait();
 
 #ifdef SAP_AUTH
 int sendPing();
@@ -109,6 +111,8 @@ void h801_onConfigStored();
 void h801_mqtt_connect();
 void h801_processConfig(const char *p);
 #endif
+
+
 
 #ifdef VTHING_STARTER
 void si7021init();
@@ -175,6 +179,7 @@ String authToken;// = "8f337a8e54bd352f28c2892743c94b3";
 //t 46de4fc404221b32054a8405f602fd
 
 boolean DEBUG = false;
+boolean SKIP_LOOP = false;
 
 #ifndef VTHING_H801_LED
 uint32_t intCO2RawRead   =  15000L;
@@ -222,7 +227,7 @@ void onCO2RawRead() {
 
 #endif
 
-String VERSION = "v1.10.3";
+String VERSION = "v1.11";
 void printVersion() {
   switch (deviceType) {
     case DT_VTHING_CO2:     SERIAL << endl << F("vThing - CO2 Monitor ")     << VERSION << endl; break;
@@ -246,6 +251,7 @@ void setup() {
   //SERIAL << "Strip end: " << millis() << endl;
   //startWifi();
   SERIAL << F("Waiting for auto-connect") << endl;
+  activeWait();
   delay(1000);
   if (deviceType == DT_VTHING_STARTER) {
 #ifdef VTHING_STARTER
@@ -299,6 +305,16 @@ void setup() {
 //  }
 }
 
+void activeWait() {
+  for (int i=1; i < 50; i++) {
+    delay(100);
+    handleWifi();
+    processUserInput();
+    if ((i%10) == 0) SERIAL << '.';   
+  }
+  SERIAL << endl;
+}
+
 
 boolean startedOTA = false;
 void loop() {
@@ -307,6 +323,7 @@ void loop() {
   if (!startedOTA) {
     while (processUserInput()) delay(1000);
   }
+  if (SKIP_LOOP) {delay(100); return;}
 
   if (deviceType == DT_VTHING_CO2) {
 #ifdef VTHING_CO2    
@@ -329,7 +346,7 @@ void loop() {
 #endif
   } else if (deviceType == DT_VTHING_H801_LED) {
 #ifdef VTHING_H801_LED
-    delay(1000);
+   // delay(1000);
     h801_loop();
 #endif
 //    Serial1 << "serial1" << endl;
