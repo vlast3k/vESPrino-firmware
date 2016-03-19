@@ -73,6 +73,15 @@ void h801_processConfig(const char *p) {
   putJSONConfig(H801_API_KEY, apiKey);
 }
 
+void onH801LEDStoreData() {
+  SERIAL << "H801 Storing LED configuration\n";
+  putJSONConfig("R", currentPinValue[redPIN], false);
+  putJSONConfig("G", currentPinValue[greenPIN], false);
+  putJSONConfig("B", currentPinValue[bluePIN], false);
+  putJSONConfig("W1", currentPinValue[w1PIN], false);
+  putJSONConfig("W2", currentPinValue[w2PIN], true);
+}
+
 void analogWriteColor(int pin, float value, boolean startStoreTimer = false) {
 //  int gamma_table[PWM_VALUE+1] = {
 //    0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 8, 9, 10,
@@ -86,7 +95,7 @@ void analogWriteColor(int pin, float value, boolean startStoreTimer = false) {
   //value = gamma_table[value];
   if (DEBUG) SERIAL << "PWM PIN: " << pin << " = " << value << endl;
   analogWrite(pin, value);  
-  if (startStoreTimer) tmrStoreData->Start();
+  //if (startStoreTimer) tmrStoreData->Start();
 }
 
 void h801Fade(int r, int g, int b) {
@@ -113,7 +122,7 @@ void h801Fade(int r, int g, int b) {
 }
 
 void processTriplet(String payload) {
-  int r,g,b;
+  int r = currentPinValue[redPIN], g = currentPinValue[greenPIN], b = currentPinValue[bluePIN];
   int c2, c1 = payload.indexOf(';');
   if (c1 > -1) c2 = payload.indexOf(';',c1+1);
   r = payload.toInt();
@@ -135,9 +144,9 @@ void stopH801() {
 
 String h801LEDConfigAsJSON() {
   char sss[100];
-  sprintf(sss, "{\"red\":%d,\"green\":%d,\"blue\":%d,\"sw1\":%d,\"sw2\":%d}",
+  sprintf(sss, "{\"red\":%d,\"green\":%d,\"blue\":%d,\"w1\":%d,\"w2\":%d,\"ver\":\"%s\"}",
     (int)currentPinValue[redPIN], (int)currentPinValue[greenPIN], (int)currentPinValue[bluePIN], 
-    (int)currentPinValue[w1PIN], (int)currentPinValue[w2PIN]);
+    (int)currentPinValue[w1PIN], (int)currentPinValue[w2PIN], VERSION.c_str());
   return String(sss);  
 }
 
@@ -145,7 +154,7 @@ void publishMQTTStatus() {
   if (WiFi.status() == WL_CONNECTED && h801_mqttClient->connected()) {
     char mqttTopic[40];
     EEPROM.get(EE_MQTT_TOPIC_40B,  mqttTopic);
-    h801_mqttClient->publish((String(mqttTopic) + "/Status").c_str(), h801LEDConfigAsJSON().c_str());
+    h801_mqttClient->publish((String(mqttTopic) + "/Status").c_str(), h801LEDConfigAsJSON().c_str(), true);
   }
 }
 
@@ -160,6 +169,8 @@ void onh801_HttpRequest() {
   if (server.hasArg("color")) processTriplet(server.arg("color"));
   if (server.hasArg("sw1")) analogWriteColor(w1PIN, server.arg("sw1").toInt());
   if (server.hasArg("sw2")) analogWriteColor(w2PIN, server.arg("sw2").toInt());
+  if (server.hasArg("save")) onH801LEDStoreData();
+  
 
   server.send(200, "application/json", h801LEDConfigAsJSON().c_str());
   publishMQTTStatus();
@@ -173,19 +184,22 @@ void h801_webServer_start() {
   h801_webServer->begin();
 
   SERIAL << F("\n\nOpen http://") << WiFi.localIP() << F("/ in your browser to see status and\nhttp://") <<
-                                     WiFi.localIP() << F("/?color=12;15;100&w1=12&w2=56 to set R,G,B,W1 and W2 - range [0,100])\n");
-  //mqttIP = &WiFi.localIP();
+                                     WiFi.localIP() << F("/?color=12;15;100&w1=12&w2=56 to set R,G,B,W1 and W2 - range [0,100])\nadd 'save=true' param, to store data\n");
 }
 
 
 //void h801_callback(const MQTT::Publish& pub) {
 void h801_callback(char* topic1, byte* payload1, unsigned int length) {
-  String payload = String((char*)payload1), topic = String(topic1);
+  char bPayload[60];
+  strncpy(bPayload, (char*)payload1, _min(length, sizeof(bPayload)-1));
+  bPayload[length] = 0;
+  String payload = String((char*)bPayload), topic = String(topic1);
   SERIAL << topic << " => " << payload << endl;
-  if      (topic.indexOf("/Color") > -1 && payload.length() == 0) publishMQTTStatus();
+  if      (topic.indexOf("/Color") > -1 && !isDigit(payload1[0])) publishMQTTStatus();
   else if (topic.indexOf("/Color") > -1) processTriplet(payload);
   else if (topic.indexOf("/W1")   > -1) analogWriteColor(w1PIN, payload.toInt());
   else if (topic.indexOf("/W2")   > -1) analogWriteColor(w2PIN, payload.toInt());   
+  else if (topic.indexOf("/Save") > -1) onH801LEDStoreData();   
   publishMQTTStatus();
 }
 
@@ -211,11 +225,13 @@ void h801_mqtt_connect() {
     h801_mqttClient->subscribe((String(mqttTopic) + "/Color").c_str());
     h801_mqttClient->subscribe((String(mqttTopic) + "/W1").c_str());
     h801_mqttClient->subscribe((String(mqttTopic) + "/W2").c_str());
+    h801_mqttClient->subscribe((String(mqttTopic) + "/Save").c_str());
     SERIAL.println("MQTT connected");  
     SERIAL << F("Subscribed Topics: \n") << 
                 mqttTopic << F("/Color  Send Payload: R;G;B  from 0-100 (incl), e.g. 15;20;100\n") <<
                 mqttTopic << F("/W1     Send Payload: W1  0-100\n") << 
                 mqttTopic << F("/W2     Send Payload: W1  0-100\n") <<
+                mqttTopic << F("/Save   to store settings to flash (LEDs will flash once)\n") <<
                 F("Status update will be published on: ") << mqttTopic << "/Status\n";
   }  else {
     SERIAL << " mqtt failed" << endl;
@@ -247,15 +263,7 @@ void onH801hb() {
   }
 }
 
-void onH801LEDStoreData() {
-  SERIAL << "H801 Storing LED configuration\n";
-  putJSONConfig("R", currentPinValue[redPIN], false);
-  putJSONConfig("G", currentPinValue[greenPIN], false);
-  putJSONConfig("B", currentPinValue[bluePIN], false);
-  putJSONConfig("W1", currentPinValue[w1PIN], false);
-  
-  putJSONConfig("W2", currentPinValue[w2PIN], true);
-}
+
 
 void loadLEDDataH801() {
   uint32_t x = millis();
@@ -284,7 +292,7 @@ void h801_setup() {
   LED2off;
   tmr1 = new Timer(1000, onH801hb);
   tmr1 -> Start();
-  tmrStoreData = new Timer(5000, onH801LEDStoreData, true);
+//  tmrStoreData = new Timer(5000, onH801LEDStoreData, true);
 
   loadLEDDataH801();
 }
@@ -297,7 +305,7 @@ void h801_loop() {
   if (h801_mqttClient) h801_mqttClient->loop();
   if (h801_webServer) h801_webServer->handleClient();
   tmr1->Update();
-  tmrStoreData->Update();
+//  tmrStoreData->Update();
  //heap("");
   delay(100);
 }
