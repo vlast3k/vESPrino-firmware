@@ -58,7 +58,8 @@ IPAddress *mqttIP;//= WiFi.localIP();// = IPAddress(0,0,0,0);
 ESP8266WebServer *h801_webServer = NULL;
 WiFiClient *wclient;
 boolean h801led = false;
-Timer *tmr1, *tmrStoreData;
+int h801ConnectRetries = 0;
+Timer *tmr1, *tmrStoreData, *tmrH801mqttKeepAlive;
 
 const char* apiKey = "Qw8rdb20aV";
 //http://randomkeygen.com/
@@ -144,9 +145,9 @@ void stopH801() {
 
 String h801LEDConfigAsJSON() {
   char sss[100];
-  sprintf(sss, "{\"red\":%d,\"green\":%d,\"blue\":%d,\"w1\":%d,\"w2\":%d,\"ver\":\"%s\"}",
+  sprintf(sss, "{\"red\":%d,\"green\":%d,\"blue\":%d,\"w1\":%d,\"w2\":%d,\"ver\":\"%s\",\"http\":%d}",
     (int)currentPinValue[redPIN], (int)currentPinValue[greenPIN], (int)currentPinValue[bluePIN], 
-    (int)currentPinValue[w1PIN], (int)currentPinValue[w2PIN], VERSION.c_str());
+    (int)currentPinValue[w1PIN], (int)currentPinValue[w2PIN], VERSION.c_str(), (h801_webServer)?h801_webServer->getServerStatus():44);
   return String(sss);  
 }
 
@@ -206,6 +207,7 @@ void h801_callback(char* topic1, byte* payload1, unsigned int length) {
 void h801_mqtt_connect() {
   if (WiFi.status() != WL_CONNECTED) return;
   if (h801_mqttClient) delete h801_mqttClient;
+  if (wclient) delete wclient;
   char mqttServer[30], mqttClient[20], mqttTopic[40];
   long mqttPort;
   wclient = new WiFiClient();
@@ -253,9 +255,14 @@ void onH801hb() {
     LEDon;
     //SERIAL << "nowifi" << endl;
   } else if(!h801_mqttClient->connected()) {
-    tmr1->setInterval(500);
-    LEDon;
-    //SERIAL << "nomqtt" << endl;
+    if (h801ConnectRetries > 30) {
+      h801_mqtt_connect();
+      h801ConnectRetries = 0;
+    } else {
+      tmr1->setInterval(500);
+      LEDon;
+      h801ConnectRetries++;
+    }
   } else {
     tmr1->setInterval(1000);
     LEDoff;
@@ -292,6 +299,8 @@ void h801_setup() {
   LED2off;
   tmr1 = new Timer(1000, onH801hb);
   tmr1 -> Start();
+  tmrH801mqttKeepAlive = new Timer(120L * 1000, publishMQTTStatus);
+  tmrH801mqttKeepAlive->Start();
 //  tmrStoreData = new Timer(5000, onH801LEDStoreData, true);
 
   loadLEDDataH801();
@@ -305,6 +314,7 @@ void h801_loop() {
   if (h801_mqttClient) h801_mqttClient->loop();
   if (h801_webServer) h801_webServer->handleClient();
   tmr1->Update();
+  tmrH801mqttKeepAlive->Update();
 //  tmrStoreData->Update();
  //heap("");
   delay(100);

@@ -227,7 +227,7 @@ void onCO2RawRead() {
 
 #endif
 
-String VERSION = "v1.11.1";
+String VERSION = "v1.11.2";
 void printVersion() {
   switch (deviceType) {
     case DT_VTHING_CO2:     SERIAL << endl << F("vThing - CO2 Monitor ")     << VERSION << endl; break;
