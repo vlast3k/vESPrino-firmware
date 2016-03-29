@@ -147,7 +147,7 @@ String h801LEDConfigAsJSON() {
   char sss[100];
   sprintf(sss, "{\"red\":%d,\"green\":%d,\"blue\":%d,\"w1\":%d,\"w2\":%d,\"ver\":\"%s\",\"http\":%d}",
     (int)currentPinValue[redPIN], (int)currentPinValue[greenPIN], (int)currentPinValue[bluePIN], 
-    (int)currentPinValue[w1PIN], (int)currentPinValue[w2PIN], VERSION.c_str(), (h801_webServer)?h801_webServer->getServerStatus():44);
+    (int)currentPinValue[w1PIN], (int)currentPinValue[w2PIN], VERSION.c_str(), 1);//(h801_webServer)?h801_webServer->getServerStatus():44);
   return String(sss);  
 }
 

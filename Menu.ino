@@ -35,6 +35,7 @@ byte readLine(int timeout) {
   return i;
 }
 
+void dumpCfg();
 String ubik;
 int handleCommand() {
   if (DEBUG) SERIAL << "Received command: " << line << endl;
@@ -84,10 +85,25 @@ int handleCommand() {
   else if (strcmp(line, "thu") == 0) testHttpUpdate();
   else if (strcmp(line, "sss") == 0) {SERIAL << "STOP Active execution\n"; SKIP_LOOP = true; }
   else if (strstr(line, "ping")) sendPingPort(line);
+  else if (strcmp(line, "dumpCfg") == 0) dumpCfg();
+  else if (strcmp(line, "heap") == 0) heap("");
   
   
   SERIAL << ">" << endl;
   return 0;
+}
+
+void dumpCfg() {
+  for (int i=0; i < 30; i++) {
+    SERIAL << i << " : " ;
+    for (int j=0; j < 100; j++) {
+      byte b = EEPROM.read(i*100 + j);
+      if (b == 0) b = '?';
+      SERIAL << (char)b;
+    }
+    delay(10);
+    SERIAL << endl;
+  }
 }
 
 void sendPingPort(const char *p) {
@@ -294,7 +310,7 @@ void sndHCPIOT(const char *line) {
   EEPROM.get(EE_IOT_TOKN_40B, token);
 
   sprintf(path, "%s%s", path, &line[7]);
-  SERIAL << F("Sending to HCP: ") << path << endl;
+  if (DEBUG) SERIAL << F("Sending to HCP: ") << path << endl;
 //  SERIAL << "hcpiot, token: " << token << endl;
   
   HTTPClient http;
@@ -329,7 +345,7 @@ int processResponseCodeATFW(HTTPClient *http, int rc) {
   if (rc > 0) SERIAL << F("Response Code: ") << rc << endl;
   else SERIAL << F("Error Code: ") << rc << " = " << http->errorToString(rc).c_str() << endl;
   if (rc > 0) {
-    SERIAL << F("Payload: [") << http->getString() << "]" << endl;
+    if (DEBUG) SERIAL << F("Payload: [") << http->getString() << "]" << endl;
     SERIAL << F("CLOSED") << endl; // for compatibility with AT FW
   } else {
     SERIAL << F("Failed") << endl;

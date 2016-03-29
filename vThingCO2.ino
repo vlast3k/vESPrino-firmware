@@ -5,10 +5,10 @@
 
 //H801 build with 1mb / 256k
 //#define VTHING_H801_LED
-//#define VTHING_STARTER
-//#define SAP_AUTH
+#define VTHING_STARTER
+#define SAP_AUTH
 //#define VTHING_CO2
-#define VTHING_H801_LED
+//#define VTHING_H801_LED
 
 //int deviceType = DT_VAIR;
 #ifdef VTHING_CO2
@@ -27,6 +27,10 @@ int deviceType = DT_VTHING_H801_LED;
 #endif
 
 
+#ifdef VTHING_STARTER
+int deviceType = DT_VTHING_STARTER;
+#define SERIAL Serial
+#endif
 
 //#include <SoftwareSerialESP.h>
 #include <ESP8266WiFi.h>
@@ -227,7 +231,7 @@ void onCO2RawRead() {
 
 #endif
 
-String VERSION = "v1.11.2";
+String VERSION = "v1.11.3";
 void printVersion() {
   switch (deviceType) {
     case DT_VTHING_CO2:     SERIAL << endl << F("vThing - CO2 Monitor ")     << VERSION << endl; break;
@@ -334,13 +338,14 @@ void loop() {
 #endif    
   } else if (deviceType == DT_VTHING_STARTER) {
 #ifdef VTHING_STARTER
+    //heap("");
     tmrTempRead->Update();
     //SERIAL << "\n\n\n------ before push service\n\n\n";
     tmrCheckPushMsg->Update();
     //handleSAP_IOT_PushService();
     //SERIAL << "\n\n\n------ before do Send\n\n\n";
     doSend();
-    //SERIAL << "\n\n\n------ before delay 5 sec\n\n\n";
+//    SERIAL << "\n\n\n------ before delay 5 sec\n\n\n";
     //SERIAL << ".";
     delay(1000);
 #endif

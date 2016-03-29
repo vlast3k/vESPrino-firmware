@@ -3,20 +3,27 @@
 //uint32_t lastSAPCheck = -1000000L;
 void handleSAP_IOT_PushService() {
     if(WiFi.status() != WL_CONNECTED) return;
+    //Serial << " before get json config" << endl;
     if (!getJSONConfig(SAP_IOT_HOST)) return;
+    //Serial << " after " << endl;
     String url = String("https://") + getJSONConfig(SAP_IOT_HOST) + F("/com.sap.iotservices.mms/v1/api/http/data/") + getJSONConfig(SAP_IOT_DEVID) ; 
-//    SERIAL << url << endl;
+//        Serial << " before get json config" << end;
+
+    //SERIAL << url << endl;
 //    SERIAL << getJSONConfig(SAP_IOT_HOST) << endl;
 //    if (getJSONConfig(SAP_IOT_HOST)) SERIAL << "ok" << endl;
 //    else SERIAL << "false" << endl;
     //SERIAL << (getJSONConfig(SAP_IOT_HOST) == true) << endl;
     HTTPClient http;
     http.begin(url);
+    //Serial << " after begin " << endl;
     http.addHeader("Content-Type",  "application/json;charset=UTF-8");
 //    SERIAL <<  getJSONConfig(SAP_IOT_TOKEN) << endl;
     http.addHeader("Authorization", String("Bearer ") + getJSONConfig(SAP_IOT_TOKEN));  
-  //  SERIAL << "make req" << endl;
+    //SERIAL << "make req" << endl;
+ //   Serial << " after begin " << endl;
     int httpCode = http.GET();
+    //SERIAL << "make req " << httpCode << endl;
     // httpCode will be negative on error
     if(httpCode > 0) {
         // HTTP header has been send and Server response header has been handled

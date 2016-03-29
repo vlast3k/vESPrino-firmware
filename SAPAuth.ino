@@ -3,6 +3,7 @@
 void on302() {
   char str[30];
   EEPROM.get(EE_WIFI_SSID_30B, str);
+  if (DEBUG) SERIAL << F("Stored Network is:") << str << endl;
   if (strstr(str, "SAP-Guest") == 0) {
     checkSAPAuth();
     sendPing();
@@ -11,7 +12,7 @@ void on302() {
 
 int checkSAPAuth() {
   if (strstr(WiFi.SSID().c_str(), "SAP-Guest") == 0) {
-    //SERIAL << "Network is not SAP-Guest : "<< WiFi.SSID() << endl;
+    if (DEBUG) SERIAL << F("Network is not SAP-Guest : ") << WiFi.SSID() << endl;
     return -1;
   }
   SERIAL << F("Checking SAP Authentication") << endl;
