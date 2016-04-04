@@ -3,6 +3,7 @@
 //uint32_t lastSAPCheck = -1000000L;
 void handleSAP_IOT_PushService() {
     if(WiFi.status() != WL_CONNECTED) return;
+    heap("");
     //Serial << " before get json config" << endl;
     if (!getJSONConfig(SAP_IOT_HOST)) return;
     //Serial << " after " << endl;
@@ -73,7 +74,7 @@ void processMessage(String msgIn) {
 
   if (!root.success()) {
     //if server has returned empyy response
-    SERIAL << F("parseObject() failed: ") << msgIn << endl;
+    if (DEBUG) SERIAL << F("parseObject() failed: ") << msgIn << endl;
     return;
   }
   //SERIAL.print(root[0].is<JsonObject&>());
