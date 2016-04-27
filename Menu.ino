@@ -186,10 +186,10 @@ void sendTS() {
 }
 
 int setWifi(const char* p) {
-  char s1[20], s2[20], s3[20];
-  p = extractStringFromQuotes(p, s1, 20);
-  p = extractStringFromQuotes(p, s2, 20);
-  p = extractStringFromQuotes(p, s3, 20);
+  char s1[30], s2[30], s3[30];
+  p = extractStringFromQuotes(p, s1, 29);
+  p = extractStringFromQuotes(p, s2, 29);
+  p = extractStringFromQuotes(p, s3, 29);
   //SERIAL << "setWifi" << s1 << s2 << s3 << endl;
 
   connectToWifi(s1, s2, s3);

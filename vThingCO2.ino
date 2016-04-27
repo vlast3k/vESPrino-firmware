@@ -3,11 +3,13 @@
 #define DT_VTHING_STARTER 3
 #define DT_VTHING_H801_LED 4
 
+
+#define USELIB
 //H801 build with 1mb / 256k
 //#define VTHING_H801_LED
-#define VTHING_STARTER
+//#define VTHING_STARTER
 #define SAP_AUTH
-//#define VTHING_CO2
+#define VTHING_CO2
 //#define VTHING_H801_LED
 
 //int deviceType = DT_VAIR;
@@ -45,6 +47,10 @@ int deviceType = DT_VTHING_STARTER;
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
 
+#ifdef USELIB
+#include <CubicGasSensors.h>
+#endif
+
 
 #include <ArduinoJson.h>
 
@@ -75,8 +81,10 @@ void sndSimple();
 void configMQTT(const char *p);
 void sendMQTT(String msg);
 int processResponseCodeATFW(HTTPClient *http, int rc);
+#ifndef USELIB
 int CM1106_read();
 void CM1106_init();
+#endif
 void doHttpUpdate(int mode, char *url);
 void handleOTA();
 void startOTA();
@@ -146,8 +154,9 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
 #define EE_MQTT_PASS_15B    569
 #define EE_MQTT_TOPIC_40B   584
 #define EE_MQTT_VALUE_70B   624
+#define EE_1B_RESET_CO2     694   
+//#define EE_LAST 695
 #define EE_JSON_CFG_1000B   1000
-//#define EE_LAST 694
 
 
 
@@ -205,8 +214,18 @@ void onStopLED() {
 
 bool shouldSend = false;
 #ifdef VTHING_CO2
+
+#ifdef USELIB
+ CubicGasSensors cubicCo2(D5, D7, EE_1B_RESET_CO2);
+#endif
+
 void sendCO2Value() {
+  
+ #ifdef USELIB
+  int val = cubicCo2.getCO2();
+ #else
   int val = (int)raCO2Raw.getAverage();
+ #endif
  // if (val > 2000) SERIAL << "val is: " << val << endl;
   String s = String("sndiot ") + val;
   sndIOT(s.c_str());
@@ -215,6 +234,17 @@ void sendCO2Value() {
 }
 
 void onCO2RawRead() {
+ #ifdef USELIB
+  int res = cubicCo2.getCO2();
+  startedCO2Monitoring = cubicCo2.hasStarted();
+  if (startedCO2Monitoring) {
+    int diff = res - lastSentCO2value;
+    if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) {
+      Serial << F("Threshold reached, sending value") << endl;
+      sendCO2Value();
+    }    
+  }
+ #else
   int res = CM1106_read();
   if (res != 550) startedCO2Monitoring = true;
   if (startedCO2Monitoring) {
@@ -227,11 +257,12 @@ void onCO2RawRead() {
       sendCO2Value();
     }
   }
+ #endif
 }
 
 #endif
 
-String VERSION = "v1.11.3";
+String VERSION = "v1.11.4";
 void printVersion() {
   switch (deviceType) {
     case DT_VTHING_CO2:     SERIAL << endl << F("vThing - CO2 Monitor ")     << VERSION << endl; break;
@@ -260,9 +291,10 @@ void setup() {
   if (deviceType == DT_VTHING_STARTER) {
 #ifdef VTHING_STARTER
     strip = new NeoPixelBus(1, D4);
+    Serial << "aaaaaaaaa" << endl;
     if (strip) {
       strip->Begin();
-      strip->SetPixelColor(0, RgbColor(0, 5,0));
+      strip->SetPixelColor(0, RgbColor(220, 220,0));
       strip->Show();  
     }    
     si7021init();
@@ -288,8 +320,11 @@ void setup() {
     tmrStopLED           = new Timer(10000, onStopLED, true);
     tmrCO2RawRead        = new Timer(intCO2RawRead,   onCO2RawRead);
     tmrCO2SendValueTimer = new Timer(intCO2SendValue, sendCO2Value);
-    int res = CM1106_read();
-    SERIAL << "CO2 now: " << res << endl;
+    #ifdef USELIB
+      SERIAL << "CO2 now: " << cubicCo2.getCO2() << endl;
+    #else
+      SERIAL << "CO2 now: " << CM1106_read() << endl;
+    #endif
     tmrCO2RawRead->Start();
     tmrStopLED->Start();
 #endif
