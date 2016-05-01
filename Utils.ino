@@ -80,3 +80,15 @@ void testJSON() {
   root.printTo(SERIAL);
  }
 
+void activeWait() {
+  for (int i=1; i < 50; i++) {
+    delay(100);
+    handleWifi();
+    processUserInput();
+    if ((i%10) == 0) SERIAL << '.';   
+  }
+  SERIAL << endl;
+}
+
+
+

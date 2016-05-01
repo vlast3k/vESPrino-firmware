@@ -1,5 +1,12 @@
 #include <PubSubClient.h>
 
+String   mqttServer; //= "m20.cloudmqtt.com";
+uint32_t mqttPort   ;//= 19749;
+String   mqttClient ;//= "vAir_CO2_Monitor";
+String   mqttUser   ;//= "pndhubpk";
+String   mqttPass   ;//= "yfT7ax_KDrgG";
+String   mqttTopic  ;//= "co2Value";
+
 //String   mqttServer = "m20.cloudmqtt.com";
 //uint32_t mqttPort   = 19749;
 //String   mqttClient = "vAir_CO2_Monitor";
@@ -22,8 +29,13 @@ void configMQTT(const char *p) {
   p = extractStringFromQuotes(p, mqttPass,   sizeof(mqttPass)); 
   p = extractStringFromQuotes(p, mqttTopic,  sizeof(mqttTopic)); 
   if (mqttClient[0] == 0) strcpy(mqttTopic, "vThing");
-  if (mqttTopic[0] == 0 && deviceType == DT_VTHING_H801_LED) strcpy(mqttTopic, "vThingH801");
-  else if (mqttTopic[0] == 0) strcpy(mqttTopic, "vThing/data");
+  if (mqttTopic[0] == 0) {
+    #ifdef VTHING_H801_LED) 
+      strcpy(mqttTopic, "vThingH801");
+    #else
+      strcpy(mqttTopic, "vThing/data");
+    #endif
+  }
 
   EEPROM.put(EE_MQTT_SERVER_30B, mqttServer);
   EEPROM.put(EE_MQTT_PORT_4B, atol(mqttPortS));
@@ -37,7 +49,7 @@ void configMQTT(const char *p) {
   SERIAL << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << "," << mqttTopic << endl;
   SERIAL << F("DONE") << endl;
 #ifdef VTHING_H801_LED  
-  if (deviceType == DT_VTHING_H801_LED) h801_mqtt_connect();
+  h801_mqtt_connect();
 #endif
   
 }

@@ -42,9 +42,9 @@ int handleCommand() {
   if (strstr(line, "tstest")) sendTS();
   else if (line[0] == 'A') mockATCommand(line);
 #ifdef SAP_AUTH
-  else if (strcmp(line, "ping") == 0) sendPing();
-  else if (line[0] == 'S') httpAuthSAP();
-  else if (line[0] == 'C') checkSAPAuth();
+  else if (strcmp(line, "ping") == 0) vSAP_Auth(EE_WIFI_P1_30B, EE_WIFI_P1_30B).sendPing();
+  else if (line[0] == 'S') vSAP_Auth(EE_WIFI_P1_30B, EE_WIFI_P1_30B);
+  else if (line[0] == 'C') vSAP_Auth(EE_WIFI_P1_30B, EE_WIFI_P1_30B);
 #endif
 #ifndef VTHING_H801_LED
   else if (line[0] == 'G') getTS(line);
@@ -65,12 +65,13 @@ int handleCommand() {
   else if (strstr(line, "scan")) wifiScanNetworks();
   else if (strstr(line, "atest_mqtt")) sendMQTT("556");
   else if (strstr(line, "bttn")) shouldSend=true;
+  else if (strcmp(line, "rco") == 0) resetCO2();
 #endif
   else if (strstr(line, "wifi")) setWifi(line);
   else if (strcmp(line, "otahtest") == 0) doHttpUpdate(2, NULL);
   else if (strcmp(line, "otah") == 0) doHttpUpdate(1, NULL);
   else if (strstr(line, "otau"))      doHttpUpdate(0, &line[5]);
-  else if (strcmp(line, "otaa") == 0)  startOTA();
+  //else if (strcmp(line, "otaa") == 0)  startOTA();
   else if (strstr(line, "cfg_mqtt"))  configMQTT(line);
   else if (strstr(line, "cfg_mqval"))  { storeToEE(EE_MQTT_VALUE_70B, &line[10], 70); SERIAL << "DONE" << endl; }
   else if (strstr(line, "info")) printVersion();
@@ -89,7 +90,7 @@ int handleCommand() {
   else if (strcmp(line, "heap") == 0) heap("");
   
   
-  SERIAL << ">" << endl;
+  SERIAL << "OK >" << endl;
   return 0;
 }
 
