@@ -1,4 +1,6 @@
 #ifdef VTHING_STARTER
+
+Timer *tmrTempRead, *tmrCheckPushMsg;
 void initVThingStarter() {
   strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
   Serial << "aaaaaaaaa" << endl;

@@ -56,8 +56,6 @@ int handleCommand() {
   else if (strstr(line, "smp")) sndSimple();
   else if (strcmp(line, "test") == 0) sndIOT("sndiot 567");
   else if (strcmp(line, "ubi") == 0) testUBI();
-  else if (strstr(line, "wsi ")) setSendInterval (line);
-  else if (strstr(line, "wst ")) setSendThreshold(line);
   else if (strstr(line, "tskey ")) cfgGENIOT((String("cfggen http://api.thingspeak.com/update?key=") + &line[6] + "&field1=%s").c_str());
   else if (strstr(line, "ubik "))  ubik = String(&line[5]);  
   else if (strstr(line, "ubiv "))  cfgGENIOT((String("cfggen http://50.23.124.66/api/postvalue/?token=") + ubik + "&variable=" + &line[5] + "&value=%s").c_str());
@@ -65,6 +63,10 @@ int handleCommand() {
   else if (strstr(line, "scan")) wifiScanNetworks();
   else if (strstr(line, "atest_mqtt")) sendMQTT("556");
   else if (strstr(line, "bttn")) shouldSend=true;
+#endif
+#ifdef VTHING_CO2
+  else if (strstr(line, "wsi ")) setSendInterval (line);
+  else if (strstr(line, "wst ")) setSendThreshold(line);
   else if (strcmp(line, "rco") == 0) resetCO2();
 #endif
   else if (strstr(line, "wifi")) setWifi(line);
@@ -143,7 +145,7 @@ void testHttpUpdate() {
         http.end();
 }
 
-#ifndef VTHING_H801_LED
+#ifdef VTHING_CO2
 void setSendInterval (const char *line) {
   int interval = 120;
   if (strchr(line, ' ')) {

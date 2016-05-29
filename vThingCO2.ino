@@ -128,25 +128,18 @@ boolean SKIP_LOOP = false;
 
   #define SERIAL Serial
   
-  uint32_t intCO2RawRead   =  15000L;
-  uint32_t intCO2SendValue = 120000L;
-  uint16_t co2Threshold = 1;
-  uint32_t lastSentCO2value = 0;
-  
-  Timer *tmrCO2RawRead, *tmrCO2SendValueTimer, *tmrTempRead, *tmrCheckPushMsg, *tmrStopLED;
-  boolean startedCO2Monitoring = false;
-  RunningAverage raCO2Raw(4);
   NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
-  
+    
+  Timer *tmrStopLED;
   void onStopLED() {
       strip->SetPixelColor(0, RgbColor(0, 0,0));
       strip->Show();      
   }
 
 #endif
-
+int pgpio0, pgpio2;
 bool shouldSend = false;
-String VERSION = "v1.13";
+String VERSION = "v1.14";
 void printVersion() {
   SERIAL << endl;
   #ifdef VTHING_CO2    
@@ -162,10 +155,15 @@ void printVersion() {
   SERIAL << F("IP address: ") << WiFi.localIP() << endl;
 }
 
+
 void setup() {
-  //SERIAL.begin(9600);
-  Serial.begin(9600);
-  Serial1.begin(9600);
+  SERIAL.begin(9600);
+//  Serial.begin(9600);
+//  Serial1.begin(9600);
+  pinMode(0, INPUT);
+  pinMode(2, INPUT);
+  pgpio0 = digitalRead(0);
+  pgpio2 = digitalRead(2);
   printVersion();
   EEPROM.begin(3000);
   SERIAL << F("ready") << endl;
