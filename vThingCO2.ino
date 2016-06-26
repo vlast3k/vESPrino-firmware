@@ -132,6 +132,7 @@ boolean SKIP_LOOP = false;
     
   Timer *tmrStopLED;
   void onStopLED() {
+   // SERIAL << "STOP LED Executed " << endl;
       strip->SetPixelColor(0, RgbColor(0, 0,0));
       strip->Show();      
   }
@@ -139,7 +140,7 @@ boolean SKIP_LOOP = false;
 #endif
 int pgpio0, pgpio2;
 bool shouldSend = false;
-String VERSION = "v1.14";
+String VERSION = "v1.15";
 void printVersion() {
   SERIAL << endl;
   #ifdef VTHING_CO2    
@@ -158,12 +159,12 @@ void printVersion() {
 
 void setup() {
   SERIAL.begin(9600);
-//  Serial.begin(9600);
-//  Serial1.begin(9600);
-  pinMode(0, INPUT);
-  pinMode(2, INPUT);
-  pgpio0 = digitalRead(0);
-  pgpio2 = digitalRead(2);
+  //Serial.begin(9600);
+  //Serial1.begin(9600);
+  //pinMode(0, INPUT);
+  //pinMode(2, INPUT);
+  //pgpio0 = digitalRead(0);
+  //pgpio2 = digitalRead(2);
   printVersion();
   EEPROM.begin(3000);
   SERIAL << F("ready") << endl;

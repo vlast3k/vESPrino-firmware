@@ -201,7 +201,7 @@ void h801_callback(char* topic1, byte* payload1, unsigned int length) {
   else if (topic.indexOf("/W1")   > -1) analogWriteColor(w1PIN, payload.toInt());
   else if (topic.indexOf("/W2")   > -1) analogWriteColor(w2PIN, payload.toInt());   
   else if (topic.indexOf("/Save") > -1) onH801LEDStoreData();   
-  publishMQTTStatus();
+  //publishMQTTStatus();
 }
 
 void h801_mqtt_connect() {
