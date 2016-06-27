@@ -1,14 +1,12 @@
 #ifdef VTHING_STARTER
 
 Timer *tmrTempRead, *tmrCheckPushMsg;
-void initVThingStarter() {
-  strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
-  Serial << "aaaaaaaaa" << endl;
-  if (strip) {
+void initVThingStarter() {   
+    strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
     strip->Begin();
-    strip->SetPixelColor(0, RgbColor(220, 220,0));
+    strip->SetPixelColor(0, RgbColor(20, 0, 10));
     strip->Show();  
-  }    
+
   si7021init();
   dumpTemp();
   tmrTempRead = new Timer(15000L,    onTempRead);

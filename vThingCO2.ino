@@ -158,6 +158,13 @@ void printVersion() {
 
 
 void setup() {
+  #ifdef VTHING_CO2
+    strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
+    strip->Begin();
+    strip->SetPixelColor(0, RgbColor(20, 0, 10));
+    strip->Show();  
+  #endif
+  
   SERIAL.begin(9600);
   //Serial.begin(9600);
   //Serial1.begin(9600);

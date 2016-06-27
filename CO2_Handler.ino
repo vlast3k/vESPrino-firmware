@@ -49,10 +49,7 @@ void onCO2RawRead() {
 }
 
 void initCO2Handler() {
-  strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
-  strip->Begin();
-  strip->SetPixelColor(0, RgbColor(20, 0, 10));
-  strip->Show();  
+
 
   if (getJSONConfig(XX_SND_INT)) intCO2SendValue = getJSONConfig(XX_SND_INT).toInt() *1000;
   if (getJSONConfig(XX_SND_THR)) co2Threshold    = getJSONConfig(XX_SND_THR).toInt();
