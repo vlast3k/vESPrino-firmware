@@ -296,7 +296,12 @@ void sndIOT(const char *line) {
 void sndGENIOT(const char *line) {
   char str[140], str2[150];
   EEPROM.get(EE_GENIOT_PATH_140B, str);
-  sprintf(str2, str, &line[7]);
+  if (strstr(str, "thingspeak")) {
+    strcat(str, "&field2=%d");
+    sprintf(str2, str, &line[7], millis()/60000L);
+  } else {
+    sprintf(str2, str, &line[7]);    
+  }
   SERIAL << F("Sending to URL: \"") << str2 << "\"" << endl;
   
   HTTPClient http;
