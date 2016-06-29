@@ -1,8 +1,8 @@
 //H801 build with 1mb / 256k
 //#define VTHING_H801_LED
-//#define VTHING_STARTER
+#define VTHING_STARTER
 //#define VAIR
-#define VTHING_CO2
+//#define VTHING_CO2
 
 #define EE_WIFI_SSID_30B 0
 #define EE_WIFI_P1_30B 30
@@ -29,7 +29,7 @@
 #define H801_API_KEY "h801key"
 #define XX_SND_INT  "xxSndInt"
 #define XX_SND_THR  "xxSndThr"
-
+using namespace std;
 
 #include <Streaming.h>
 #include <EEPROM.h>
@@ -140,7 +140,7 @@ boolean SKIP_LOOP = false;
 #endif
 int pgpio0, pgpio2;
 bool shouldSend = false;
-String VERSION = "v1.15";
+String VERSION = "v1.16";
 void printVersion() {
   SERIAL << endl;
   #ifdef VTHING_CO2    

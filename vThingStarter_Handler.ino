@@ -1,6 +1,6 @@
 #ifdef VTHING_STARTER
-
-Timer *tmrTempRead, *tmrCheckPushMsg;
+void onGetDweets();
+Timer *tmrTempRead, *tmrCheckPushMsg, *tmrGetDweets;
 void initVThingStarter() {   
     strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
     strip->Begin();
@@ -9,10 +9,12 @@ void initVThingStarter() {
 
   si7021init();
   dumpTemp();
+  tmrGetDweets = new Timer(2000L,    onGetDweets);
   tmrTempRead = new Timer(15000L,    onTempRead);
   tmrCheckPushMsg = new Timer(1000L, handleSAP_IOT_PushService);
   tmrTempRead->Start();
   tmrCheckPushMsg->Start();
+  tmrGetDweets->Start();
   attachButton();
 }
 
@@ -21,6 +23,7 @@ void loopVThingStarter() {
     tmrTempRead->Update();
     //SERIAL << "\n\n\n------ before push service\n\n\n";
     tmrCheckPushMsg->Update();
+    tmrGetDweets->Update();
     //handleSAP_IOT_PushService();
     //SERIAL << "\n\n\n------ before do Send\n\n\n";
     doSend();
