@@ -29,7 +29,7 @@
 #define H801_API_KEY "h801key"
 #define XX_SND_INT  "xxSndInt"
 #define XX_SND_THR  "xxSndThr"
-using namespace std;
+
 
 #include <Streaming.h>
 #include <EEPROM.h>
@@ -127,6 +127,7 @@ boolean SKIP_LOOP = false;
 #ifdef VTHING_H801_LED
   #define SERIAL Serial1
 #else
+  #define SAP_AUTH ddd
   #include <RunningAverage.h>
   #include <NeoPixelBus.h> 
   #include <vSAP_Auth.h>
