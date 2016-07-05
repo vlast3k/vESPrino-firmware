@@ -71,6 +71,9 @@ void wifiScanNetworks() {
   }
   SERIAL.println("");
 
+  WiFi.mode(WIFI_STA);
+  wifiConnectToStoredSSID();
+
   // Wait a bit before scanning again
 
 }

@@ -80,16 +80,16 @@ void processCommand(String cmd);
 void initLight();
 void printJSONConfig();
 void putJSONConfig(const char *key, int value, boolean commit = true);
-void putJSONConfig(const char *key, const char *value, boolean commit = true);
+void putJSONConfig(const char *key, const char *value, boolean isArrayValue = false, boolean commit = true);
 void dumpTemp();
 void factoryReset();
 void activeWait();
-String getJSONConfig(const char *item);
+char *getJSONConfig(const char *item, char *buf, char *p1 = NULL, char *p3=NULL);
 void testJSON();
 void testHttpUpdate();
 void setSAPAuth(const char *);
 char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
-
+void scani2c();
 
 #ifdef VTHING_H801_LED
 void stopH801();
@@ -102,13 +102,18 @@ void h801_processConfig(const char *p);
 #endif
 
 #ifdef VTHING_STARTER
-void si7021init();
+boolean si7021init();
 void onTempRead();
 void handleSAP_IOT_PushService();
 void doSend();
 void attachButton();
 void initVThingStarter();
 void loopVThingStarter();
+
+void handleCommandVESPrino(char *line);
+
+boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false;
+
 #endif
 
 #ifdef VTHING_CO2
@@ -158,6 +163,8 @@ void printVersion() {
 
 
 void setup() {
+
+  //WiFi.begin();
   #ifdef VTHING_CO2
     strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
     strip->Begin();
@@ -175,6 +182,7 @@ void setup() {
   printVersion();
   EEPROM.begin(3000);
   SERIAL << F("ready") << endl;
+
   SERIAL << F("Waiting for auto-connect") << endl;
   activeWait();
 

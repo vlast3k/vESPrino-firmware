@@ -1,4 +1,96 @@
 #ifdef VTHING_STARTER
+
+
+
+  #include <Wire.h>
+  #include <PN532_I2C.h>
+  #include <PN532.h>
+
+    PN532_I2C pn532i2c(Wire);
+  PN532 nfc(pn532i2c);
+void oledHandleCommand(char *cmd);
+
+void checkButtonSend();
+
+void initPN532() {
+  Wire.begin(D5, D7);
+  nfc.begin();
+  delay(1200);
+  uint32_t versiondata = nfc.getFirmwareVersion();
+  if (! versiondata) {
+    Serial.print("Didn't find PN53x board");
+    delay(100);
+    while (1); // halt
+  }
+  // Got ok data, print it out!
+  Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX); 
+  Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC); 
+  Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
+  
+  // configure board to read RFID tags
+  //nfc.setPassiveActivationRetries(0x19);
+  nfc.SAMConfig();
+  
+  Serial.println("Waiting for an ISO14443A Card ...");  
+  
+}
+
+void    checkForNFCCart() {
+  uint8_t success;
+  uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
+  uint8_t uidLength;                        // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+  static uint8_t prevUid[10];
+  static uint32_t prevMillis=0;
+    
+  // Wait for an ISO14443A type cards (Mifare, etc.).  When one is found
+  // 'uid' will be populated with the UID, and uidLength will indicate
+  // if the uid is 4 bytes (Mifare Classic) or 7 bytes (Mifare Ultralight)
+  success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
+  
+  if (success) {
+    // Display some basic information about the card
+    if ((millis() - prevMillis < 1000) && ! memcmp(uid, prevUid, uidLength)) return;
+    Serial.println("Found an ISO14443A card");
+    Serial.print("  UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
+    Serial.print("  UID Value: ");
+    nfc.PrintHex(uid, uidLength);
+    memcpy(prevUid, uid, uidLength);
+    prevMillis = millis();
+    Serial.println("");
+
+    char tmp[200], tmp2[200];
+    char p2[40], p3[100];
+    if(WiFi.status() == WL_CONNECTED && getJSONConfig("vespRFID", tmp, p2, p3)[0]) {
+      char suid[20];
+      for (int i=0; i < uidLength; i++) sprintf(&suid[i*2], "%02X", uid[i]);
+      //sprintf(suid, "%02X%02X%02X%02X", uid[0],uid[1],uid[2],uid[3]);
+      if (!strcmp(tmp, "dw")) {
+        sprintf(tmp2, p3, suid);
+        sprintf(tmp, "http://dweet.io/dweet/for/%s?%s", p2, tmp2);
+      } else if (!strcmp(tmp, "if")) {
+        sprintf(tmp2, p3, suid);
+        sprintf(tmp, "http://maker.ifttt.com/trigger/%s/with/key/%s", p2, p3);
+      }  else {
+        sprintf(tmp2, tmp, suid);
+        strcpy(tmp, tmp2);
+      }
+      SERIAL << "Sending to URL: " << tmp << endl;
+      HTTPClient http;
+      http.begin(tmp);
+      //addHCPIOTHeaders(&http, token);
+      int rc = processResponseCodeATFW(&http, http.GET());
+    }
+  }
+}
+
+boolean checkI2CDevice(int sda, int sca, int addr) {
+  Wire.begin(sda, sca);
+  Wire.beginTransmission(addr);
+  int res = Wire.endTransmission();
+  SERIAL << "i2c addr:" << addr << ", i2c res: " << _HEX(res) << endl;
+  return !res;
+}
+
 void onGetDweets();
 Timer *tmrTempRead, *tmrCheckPushMsg, *tmrGetDweets;
 void initVThingStarter() {   
@@ -16,30 +108,54 @@ void initVThingStarter() {
   tmrCheckPushMsg->Start();
   tmrGetDweets->Start();
   attachButton();
+
+      char tmp[200];
+    if (getJSONConfig("vespDWCmd", tmp)[0]) {
+      SERIAL << F("Will read dweets from: http://dweet.io/get/latest/dweet/for/") << getJSONConfig("vespDWCmd", tmp) << endl;
+      SERIAL << F("Send commands to: https://dweet.io/dweet/for/") << getJSONConfig("vespDWCmd", tmp) << F("vladi1?cmd=") << endl;
+    } else {
+      SERIAL << F("dweet id not set, use vespDWCmd <dweetid> to set it\n");
+      
+    }
+
+  hasSSD1306 = checkI2CDevice(D7, D5, 0x3c);
+  hasPN532   = checkI2CDevice(D5, D7, 0x24);
+  hasSI7021  = checkI2CDevice(D1, D6, 0x40); 
+  hasBMP180  = checkI2CDevice(D1, D6, 0x77); 
+  hasBH1750  = checkI2CDevice(D1, D6, 0x23); 
+  SERIAL << "oled: " << hasSSD1306 << ", si7021: " << hasSI7021 << ", pn532: " << hasPN532 << ", bmp180: " << hasBMP180 << ", BH1750: " << hasBH1750 << endl;
+  //initSSD1306();
+  if (hasPN532) initPN532();
 }
 
 void loopVThingStarter() {
-      //heap("");
-    tmrTempRead->Update();
-    //SERIAL << "\n\n\n------ before push service\n\n\n";
-    tmrCheckPushMsg->Update();
+  if (hasSI7021) tmrTempRead->Update();
+//    tmrCheckPushMsg->Update();
     tmrGetDweets->Update();
-    //handleSAP_IOT_PushService();
-    //SERIAL << "\n\n\n------ before do Send\n\n\n";
-    doSend();
-//    SERIAL << "\n\n\n------ before delay 5 sec\n\n\n";
-    //SERIAL << ".";
-    delay(1000);
+    //doSend();
+    checkButtonSend();
+//    
+//    delay(1000);
+  if (hasPN532) checkForNFCCart();
 }
 
 #include <Si7021.h>
 SI7021 *si7021;
-void si7021init() {
+boolean si7021init() {
     si7021 = new SI7021();
     si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
+    if (si7021->getDeviceID() == 255) {
+      delete si7021;
+      si7021 = NULL;
+      return false;
+    }
+    SERIAL << "Found SI7021 Temperature/Humidity Sensor\n" << endl;
     si7021->setHumidityRes(8); // Humidity = 12-bit / Temperature = 14-bit
+    return true;
 }
+
 void onTempRead() {
+  if (!si7021) return;
   float tmp = si7021->readTemp();
   float hum = si7021->readHumidity();
   SERIAL << F("Humidity : ") << hum << " %\t";
@@ -50,6 +166,7 @@ void onTempRead() {
 }
 
 void dumpTemp() {
+  if (!si7021) return;
   SERIAL << F("Temp : ")     << si7021->readTemp() << " C" << endl;  
 }
 
@@ -66,28 +183,55 @@ void attachButton() {
   attachInterrupt(BTTN_PIN, onButton, CHANGE);
 }
 
-int clicks = 5;
-void doSend() {
+void checkButtonSend() {
   if (shouldSend == false) return;
-  shouldSend = false;    
+  shouldSend = false;  
+  char tmp[200];
   SERIAL << F("Button Clicked!") << endl;
   if(WiFi.status() != WL_CONNECTED) {
     SERIAL << F("Will not send: No WiFi") << endl;
     return;
   }
-  if (!getJSONConfig(SAP_IOT_HOST)) {
+  char p2[40], p3[40];
+ // SERIAL <<"getjscfg" <<getJSONConfig("vespBttn", p1, p2, p3)[0] << "!" << endl;
+  if (getJSONConfig("vespBttn", tmp, p2, p3)[0]) {
+    if (!strcmp(tmp, "dw")) {
+      sprintf(tmp, "http://dweet.io/dweet/for/%s?%s", p2, p3);
+    } else if (!strcmp(tmp, "if")) {
+      sprintf(tmp, "http://maker.ifttt.com/trigger/%s/with/key/%s", p2, p3);
+    } 
+    
+    SERIAL << "Sending to URL: " << tmp << endl;
+    HTTPClient http;
+    http.begin(tmp);
+    //addHCPIOTHeaders(&http, token);
+    int rc = processResponseCodeATFW(&http, http.GET());
+  }
+}
+
+int clicks = 5;
+void doSend() {
+  if (shouldSend == false) return;
+  shouldSend = false;    
+  char tmp[200];
+  SERIAL << F("Button Clicked!") << endl;
+  if(WiFi.status() != WL_CONNECTED) {
+    SERIAL << F("Will not send: No WiFi") << endl;
+    return;
+  }
+  if (!getJSONConfig(SAP_IOT_HOST, tmp)[0]) {
     SERIAL << F("Will not send: No configuration") << endl;
     return;
   }
   HTTPClient http;
   //https://iotmmsi024148trial.hanatrial.ondemand.com/com.sap.iotservices.mms/v1/api/http/push/e46304a8-a410-4979-82f6-ca3da7e43df9
   //{"method":"http", "sender":"My IoT application", "messageType":"42c3546a088b3ef8b8d3", "messages":[{"command":"yellow"}]}
-  String rq = String("https://") + getJSONConfig(SAP_IOT_HOST) + F("/com.sap.iotservices.mms/v1/api/http/data/") + getJSONConfig(SAP_IOT_DEVID) + "/" + getJSONConfig(SAP_IOT_BTN_MSGID) + "/sync?button=IA==";
+  String rq = String("https://") + getJSONConfig(SAP_IOT_HOST, tmp) + F("/com.sap.iotservices.mms/v1/api/http/data/") + getJSONConfig(SAP_IOT_DEVID, tmp) + "/" + getJSONConfig(SAP_IOT_BTN_MSGID, tmp) + "/sync?button=IA==";
   SERIAL << "Sending: " << rq << endl;                
   http.begin(rq);
   http.addHeader("Content-Type",  "application/json;charset=UTF-8");
   //http.setAuthorization("P1940433103", "Abcd1234");
-  http.addHeader("Authorization", String("Bearer ") + getJSONConfig(SAP_IOT_TOKEN));  
+  http.addHeader("Authorization", String("Bearer ") + getJSONConfig(SAP_IOT_TOKEN, tmp));  
 //  String post = "";
 //  post += "{\"method\":\"http\", \"sender\":\"My IoT application\", \"messageType\":\"" + getJSONConfig(SAP_IOT_BTN_MSGID) + "\", \"messages\":[{\"button\":\"" + colors[(clicks++) % COLOR_COUNT] + "\"}]}";
   int httpCode = http.POST("");
@@ -118,12 +262,13 @@ String authToken;// = "8f337a8e54bd352f28c2892743c94b3";
 
 //uint32_t lastSAPCheck = -1000000L;
 void handleSAP_IOT_PushService() {
+    char tmp[200];
     if(WiFi.status() != WL_CONNECTED) return;
     heap("");
     //Serial << " before get json config" << endl;
-    if (!getJSONConfig(SAP_IOT_HOST)) return;
+    if (!getJSONConfig(SAP_IOT_HOST, tmp)[0]) return;
     //Serial << " after " << endl;
-    String url = String("https://") + getJSONConfig(SAP_IOT_HOST) + F("/com.sap.iotservices.mms/v1/api/http/data/") + getJSONConfig(SAP_IOT_DEVID) ; 
+    String url = String("https://") + getJSONConfig(SAP_IOT_HOST, tmp) + F("/com.sap.iotservices.mms/v1/api/http/data/") + getJSONConfig(SAP_IOT_DEVID, tmp) ; 
 //        Serial << " before get json config" << end;
 
     //SERIAL << url << endl;
@@ -136,7 +281,7 @@ void handleSAP_IOT_PushService() {
     //Serial << " after begin " << endl;
     http.addHeader("Content-Type",  "application/json;charset=UTF-8");
 //    SERIAL <<  getJSONConfig(SAP_IOT_TOKEN) << endl;
-    http.addHeader("Authorization", String("Bearer ") + getJSONConfig(SAP_IOT_TOKEN));  
+    http.addHeader("Authorization", String("Bearer ") + getJSONConfig(SAP_IOT_TOKEN, tmp));  
     //SERIAL << "make req" << endl;
  //   Serial << " after begin " << endl;
     int httpCode = http.GET();

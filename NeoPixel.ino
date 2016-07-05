@@ -3,18 +3,18 @@
 
 //NeoPixelBus strip = NeoPixelBus(1, D4);
 #define colorSaturation 255
-//RgbColor red =    RgbColor(255, 0, 0);
-//RgbColor pink =   RgbColor(255, 0, 128);
-//RgbColor lila =   RgbColor(255, 0, 255);
-//RgbColor violet = RgbColor(128, 0, 255);
-//RgbColor blue =   RgbColor(0, 0, 255);
-//RgbColor mblue =  RgbColor(0, 128, 255);
-//RgbColor cyan =   RgbColor(0, 255, 255);
-//RgbColor green =  RgbColor(0, 255, 0);
-//RgbColor yellow = RgbColor(255, 255, 0);
-//RgbColor orange = RgbColor(255, 100, 0);
-//RgbColor white = RgbColor(colorSaturation);
-//RgbColor black = RgbColor(0);
+#define Cred     RgbColor(255, 0, 0)
+#define Cpink    RgbColor(255, 0, 128)
+#define Clila    RgbColor(255, 0, 255)
+#define Cviolet  RgbColor(128, 0, 255)
+#define Cblue    RgbColor(0, 0, 255)
+#define Cmblue   RgbColor(0, 128, 255)
+#define Ccyan    RgbColor(0, 255, 255)
+#define Cgreen   RgbColor(0, 255, 0)
+#define Cyellow  RgbColor(255, 255, 0)
+#define Corange  RgbColor(255, 100, 0)
+#define Cwhite   RgbColor(colorSaturation)
+#define Cblack   RgbColor(0)
 
 
 void initLight() {

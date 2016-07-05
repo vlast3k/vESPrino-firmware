@@ -26,28 +26,51 @@ void heap(const char * str) {
   SERIAL << "Heap " << str << ": " << ESP.getFreeHeap() << endl;
 }
 
-String getJSONConfig(const char *item) {
-  StaticJsonBuffer<200> jsonBuffer;
+char *getJSONConfig(const char *item, char *dest, char *p2, char *p3) {
+  StaticJsonBuffer<400> jsonBuffer;
   char data[1000];
+  dest[0] = 0;
   EEPROM.get(EE_JSON_CFG_1000B, data);
   //SERIAL << "JSON cfg: " << data << endl;
   if (data[0] == -1 || data[0] == 0 || data[0] == 255) strcpy(data, "{}");
   JsonObject& root = jsonBuffer.parseObject(data);
-  return String(root[item].asString());
+  if (!root.success() || !root.containsKey(item)) return dest;
+  if (root[item].is<const char*>()) {
+    strcpy(dest, root[item].asString());
+  } else {
+    if (root[item][0].asString()) strcpy(dest, root[item][0].asString());
+    if (root[item][1].asString()) strcpy(p2  , root[item][1].asString());
+    if (root[item][2].asString()) strcpy(p3  , root[item][2].asString());
+  }
+  SERIAL << "dest: " << dest << endl;
+  return dest;
 }
 void putJSONConfig(const char *key, int value, boolean commit) {
-  putJSONConfig(key, String(value).c_str(), commit);
+  putJSONConfig(key, String(value).c_str(), false, commit);
 }
 
-void putJSONConfig(const char *key, const char *value, boolean commit) {
-  StaticJsonBuffer<200> jsonBuffer;
+
+
+void putJSONConfig(const char *key, const char *value, boolean valueIsArray, boolean commit) {
+  StaticJsonBuffer<600> jsonBuffer;
   char data2[1000], data[1000];
 
   EEPROM.get(EE_JSON_CFG_1000B, data);
   if (data[0] == -1 || data[0] == 0 || data[0] == 255) strcpy(data, "{}");
   JsonObject& root = jsonBuffer.parseObject(data);
-  
-  root[key] = value;
+  char p1[50] = {0}, p2[50] = {0}, p3[50] = {0};
+  if (!valueIsArray) {
+    root[key] = value;
+  } else {
+    value = extractStringFromQuotes(value, p1, sizeof(p1)); 
+    if (value) value = extractStringFromQuotes(value, p2, sizeof(p2)); 
+    if (value) value = extractStringFromQuotes(value, p3, sizeof(p3)); 
+    JsonArray& data = root.createNestedArray(key);
+    data.add(p1);
+    if (p2[0]) data.add(p2);
+    if (p3[0]) data.add(p3);
+    
+  }
   root.printTo(data2, sizeof(data2));
   EEPROM.put(EE_JSON_CFG_1000B, data2);
   if (commit) EEPROM.commit();  
@@ -55,24 +78,25 @@ void putJSONConfig(const char *key, const char *value, boolean commit) {
 
 void testJSON() {
   char ddd[1000] = "";
+  char tmp[100];
   EEPROM.put(EE_JSON_CFG_1000B, ddd);
   EEPROM.commit();
   
   EEPROM.write(EE_JSON_CFG_1000B, -1);
   EEPROM.commit();
   SERIAL << "Testing JSON" << endl;
-  SERIAL << getJSONConfig("vladi") << endl;
+  SERIAL << getJSONConfig("vladi", tmp) << endl;
   putJSONConfig("vladi", "sadsa");
-  SERIAL << "1 " << getJSONConfig("vladi") << endl;  
+  SERIAL << "1 " << getJSONConfig("vladi", tmp) << endl;  
   putJSONConfig("vladi", "sadsa");
-  SERIAL << "2 " << getJSONConfig("vladi") << endl;  
+  SERIAL << "2 " << getJSONConfig("vladi", tmp) << endl;  
   SERIAL << endl;
   EEPROM.write(EE_JSON_CFG_1000B, -1);
   EEPROM.commit();
 }
 
  void printJSONConfig() {
-  StaticJsonBuffer<200> jsonBuffer;
+  StaticJsonBuffer<400> jsonBuffer;
   char data[1000];
   EEPROM.get(EE_JSON_CFG_1000B, data);
   if (data[0] == -1 || data[0] == 0) strcpy(data, "{}");

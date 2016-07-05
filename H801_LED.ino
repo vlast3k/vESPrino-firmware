@@ -76,11 +76,11 @@ void h801_processConfig(const char *p) {
 
 void onH801LEDStoreData() {
   SERIAL << "H801 Storing LED configuration\n";
-  putJSONConfig("R", currentPinValue[redPIN], false);
-  putJSONConfig("G", currentPinValue[greenPIN], false);
-  putJSONConfig("B", currentPinValue[bluePIN], false);
-  putJSONConfig("W1", currentPinValue[w1PIN], false);
-  putJSONConfig("W2", currentPinValue[w2PIN], true);
+  putJSONConfig("R", currentPinValue[redPIN], false, false);
+  putJSONConfig("G", currentPinValue[greenPIN], false, false);
+  putJSONConfig("B", currentPinValue[bluePIN], false, false);
+  putJSONConfig("W1", currentPinValue[w1PIN], false, false);
+  putJSONConfig("W2", currentPinValue[w2PIN], false, true);
 }
 
 void analogWriteColor(int pin, float value, boolean startStoreTimer = false) {
@@ -161,7 +161,8 @@ void publishMQTTStatus() {
 
 void onh801_HttpRequest() {
   ESP8266WebServer &server = *h801_webServer;
-  String apiKey = getJSONConfig(H801_API_KEY);
+  char tmp[30];
+  String apiKey = String(getJSONConfig(H801_API_KEY, tmp));
   if (apiKey && (!server.hasArg("key") || server.arg("key") != apiKey)) {
     server.send(401, "text/plain", "'key' request parameter is required");
     return;
@@ -274,11 +275,12 @@ void onH801hb() {
 
 void loadLEDDataH801() {
   uint32_t x = millis();
-  analogWriteColor(redPIN,   getJSONConfig("R").toInt(), false);
-  analogWriteColor(greenPIN, getJSONConfig("G").toInt(), false);
-  analogWriteColor(bluePIN,  getJSONConfig("B").toInt(), false);
-  analogWriteColor(w1PIN,    getJSONConfig("W1").toInt(), false);
-  analogWriteColor(w2PIN,    getJSONConfig("W2").toInt(), false);
+  char tmp[30];
+  analogWriteColor(redPIN,   String(getJSONConfig("R", tmp)).toInt(), false);
+  analogWriteColor(greenPIN, String(getJSONConfig("G", tmp)).toInt(), false);
+  analogWriteColor(bluePIN,  String(getJSONConfig("B", tmp)).toInt(), false);
+  analogWriteColor(w1PIN,    String(getJSONConfig("W1", tmp)).toInt(), false);
+  analogWriteColor(w2PIN,    String(getJSONConfig("W2", tmp)).toInt(), false);
   x = millis() - x;
   SERIAL << F("LED Config Loaded in: ") << x << F(" ms\n");
 

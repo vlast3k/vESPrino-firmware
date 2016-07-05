@@ -60,7 +60,7 @@ int handleCommand() {
   else if (strstr(line, "ubik "))  ubik = String(&line[5]);  
   else if (strstr(line, "ubiv "))  cfgGENIOT((String("cfggen http://50.23.124.66/api/postvalue/?token=") + ubik + "&variable=" + &line[5] + "&value=%s").c_str());
   else if (strstr(line, "jjj")) testJSON();
-  else if (strstr(line, "scan")) wifiScanNetworks();
+  else if (strcmp(line, "scan") == 0) wifiScanNetworks();
   else if (strstr(line, "atest_mqtt")) sendMQTT("556");
   else if (strstr(line, "bttn")) shouldSend=true;
 #endif
@@ -90,6 +90,11 @@ int handleCommand() {
   else if (strstr(line, "ping")) sendPingPort(line);
   else if (strcmp(line, "dumpCfg") == 0) dumpCfg();
   else if (strcmp(line, "heap") == 0) heap("");
+  else if (strcmp(line, "scani2c") == 0) scani2c();
+
+#ifdef VTHING_STARTER
+  handleCommandVESPrino(line);
+#endif
   
   
   SERIAL << "OK >" << endl;
