@@ -42,7 +42,7 @@ char *getJSONConfig(const char *item, char *dest, char *p2, char *p3) {
     if (root[item][1].asString()) strcpy(p2  , root[item][1].asString());
     if (root[item][2].asString()) strcpy(p3  , root[item][2].asString());
   }
-  SERIAL << "dest: " << dest << endl;
+  //SERIAL << "dest: " << dest << endl;
   return dest;
 }
 void putJSONConfig(const char *key, int value, boolean commit) {
@@ -105,7 +105,7 @@ void testJSON() {
  }
 
 void activeWait() {
-  for (int i=1; i < 50; i++) {
+  for (int i=1; i < 30; i++) {
     delay(100);
     handleWifi();
     processUserInput();

@@ -29,7 +29,7 @@
 #define H801_API_KEY "h801key"
 #define XX_SND_INT  "xxSndInt"
 #define XX_SND_THR  "xxSndThr"
-
+using namespace std;
 
 #include <Streaming.h>
 #include <EEPROM.h>
@@ -112,7 +112,7 @@ void loopVThingStarter();
 
 void handleCommandVESPrino(char *line);
 
-boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false;
+boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
 
 #endif
 
@@ -127,7 +127,6 @@ boolean SKIP_LOOP = false;
 #ifdef VTHING_H801_LED
   #define SERIAL Serial1
 #else
-  #define SAP_AUTH ddd
   #include <RunningAverage.h>
   #include <NeoPixelBus.h> 
   #include <vSAP_Auth.h>
@@ -164,16 +163,17 @@ void printVersion() {
 
 
 void setup() {
+  SERIAL.begin(9600);
 
   //WiFi.begin();
-  #ifdef VTHING_CO2
+  #if defined(VTHING_CO2) || defined(VTHING_STARTER)
+  SERIAL << "AAAA";
     strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
     strip->Begin();
     strip->SetPixelColor(0, RgbColor(20, 0, 10));
     strip->Show();  
   #endif
   
-  SERIAL.begin(9600);
   //Serial.begin(9600);
   //Serial1.begin(9600);
   //pinMode(0, INPUT);

@@ -21,6 +21,8 @@ void initLight() {
   strip->Begin();
 }
 
+
+
 void processCommand(String color) {
   //SERIAL << "color: " << color;
   //color.trim();

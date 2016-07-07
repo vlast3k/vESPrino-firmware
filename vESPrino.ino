@@ -2,7 +2,7 @@
 
 #include "SSD1306.h" // alias for `#include "SSD1306Wire.h"`
 SSD1306  *display = NULL;
-
+int ledMode = 0;
 void handleDWCommand(char *line);
 //const RgbColor allColors[] = {Cred, Cpink, Clila, Cviolet, Cblue, Cmblue, Ccyan, Cgreen, Cyellow, Corange};
 const RgbColor allColors[] = {Cred, Clila, Cmblue, Cgreen, Cyellow};
@@ -18,8 +18,8 @@ void setLedColor(const RgbColor &color) {
   strip.Begin();
   strip.SetPixelColor(0, color);
   strip.Show();   
-//  delay(1);
-//  Serial1.end();
+  delay(1);
+  Serial1.end();
 }
 
 float ledBrg = 0.7f;
@@ -65,6 +65,7 @@ void oledHandleCommand(char *cmd) {
 void handleCommandVESPrino(char *line) {
        if (strstr(line, "vespBttnA "))  putJSONConfig("vespBttn", strstr(line, " ")+1, true);
   else if (strstr(line, "vespBttn "))   putJSONConfig("vespBttn", strstr(line, " ")+1);
+  else if (strstr(line, "vespRFIDA")) putJSONConfig("vespRFID" , strstr(line, " ")+1, true);
   else if (strstr(line, "vespRFID")) putJSONConfig("vespRFID" , strstr(line, " ")+1);
   else if (strstr(line, "vespDWCmd")) putJSONConfig("vespDWCmd" , strstr(line, " ")+1);
   else if (strstr(line, "vespSens"))  putJSONConfig("vespSens", strstr(line, " ")+1);
@@ -106,10 +107,13 @@ void ledSetBrg(char *s) {
   ledHandleColor(NULL);
 }
 
+
+
 void handleDWCommand(char *line) {
-       if (strstr(line, "oled "))      oledHandleCommand(strstr(line, " ")+1);
-  else if (strstr(line, "led "))       ledHandleColor(strstr(line, " ")+1);
-  else if (strstr(line, "ledbrg "))    ledSetBrg(strstr(line, " ")+1);
+       if (strstr(line, "oled_"))      oledHandleCommand(strstr(line, "_")+1);
+  else if (strstr(line, "led_"))       ledHandleColor(strstr(line, "_")+1);
+  else if (strstr(line, "ledbrg_"))    ledSetBrg(strstr(line, "_")+1);
+  else if (strstr(line, "ledmode_"))   ledMode = atoi(strstr(line, "_")+1);
 }
 
 void onGetDweets() {
@@ -118,7 +122,15 @@ void onGetDweets() {
   if (!res) return;
   handleDWCommand(line);
 }
-
+uint32_t lastChange = 0;
+void loopNeoPixel() {
+  if (ledMode == 1) {
+    if (millis() - lastChange > 500) {
+      handleDWCommand("led_next");
+      lastChange = millis();
+    }
+  }
+}
 
 
 #endif

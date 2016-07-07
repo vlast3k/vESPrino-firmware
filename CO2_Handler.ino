@@ -51,8 +51,9 @@ void onCO2RawRead() {
 void initCO2Handler() {
 
   char tmp[20];
-  if (getJSONConfig(XX_SND_INT, tmp)[0]) intCO2SendValue = String(getJSONConfig(XX_SND_INT)).toInt() *1000;
-  if (getJSONConfig(XX_SND_THR, tmp)[0]) co2Threshold    = String(getJSONConfig(XX_SND_THR)).toInt();
+  
+  if (getJSONConfig(XX_SND_INT, tmp)[0]) intCO2SendValue = String(getJSONConfig(XX_SND_INT, tmp)).toInt() *1000;
+  if (getJSONConfig(XX_SND_THR, tmp)[0]) co2Threshold    = String(getJSONConfig(XX_SND_THR, tmp)).toInt();
   Serial << F("Send Interval (ms): ") << intCO2SendValue << F(", Threshold (ppm): ") << co2Threshold << endl;
   
   tmrStopLED           = new Timer(30000L, onStopLED, true);
