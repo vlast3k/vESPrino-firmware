@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 char *extractStringFromQuotes(const char* src, char *dest, int destSize) {
   
   if (!*src) {

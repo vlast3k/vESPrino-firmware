@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #ifdef VTHING_CO2
 #include <CubicGasSensors.h>
 

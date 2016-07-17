@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
  IPAddress ip = WiFi.localIP();
 
 void handleWifi() {
@@ -9,6 +11,8 @@ void handleWifi() {
     vSAP_Auth(EE_WIFI_P1_30B, EE_WIFI_P1_30B);
 #endif
     SERIAL << "IP address: " << WiFi.localIP() << " in " << millis() << " ms" << endl << "GOT IP" << endl; 
+    handleCommandVESPrino("vecmd led_mblue");
+    handleCommandVESPrino("vecmd ledmode_2_3");
   } 
   ip = WiFi.localIP();
 }

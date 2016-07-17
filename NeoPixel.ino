@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #ifndef VTHING_H801_LED
 #include <NeoPixelBus.h>
 

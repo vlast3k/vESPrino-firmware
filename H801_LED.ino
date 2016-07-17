@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #ifdef VTHING_H801_LED
 
 #include <PubSubClient.h>

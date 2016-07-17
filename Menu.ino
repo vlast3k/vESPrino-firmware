@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #define LINE_LEN 250
 char line[LINE_LEN];
 String HTTP_STR = "http://";

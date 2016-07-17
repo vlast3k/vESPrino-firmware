@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 //H801 build with 1mb / 256k
 //#define VTHING_H801_LED
 #define VTHING_STARTER

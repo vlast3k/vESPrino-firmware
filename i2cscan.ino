@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #include <Wire.h>
 
 void scani2cBus(int sda, int sca)

@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #include <PubSubClient.h>
 
 String   mqttServer; //= "m20.cloudmqtt.com";

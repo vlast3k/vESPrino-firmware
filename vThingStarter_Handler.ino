@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #ifdef VTHING_STARTER
 
 
@@ -27,31 +29,33 @@ void handleGesture() {
     switch ( apds.readGesture() ) {
       case DIR_UP:
         gesture = "UP";
-        handleCommandVESPrino("vecmd led_green");
+//        handleCommandVESPrino("vecmd led_green");
         break;
       case DIR_DOWN:
         gesture = "DOWN";
-        handleCommandVESPrino("vecmd led_blue");
+//        handleCommandVESPrino("vecmd led_blue");
         break;
       case DIR_LEFT:
         gesture = "LEFT";
-        handleCommandVESPrino("vecmd led_yellow");
+//        handleCommandVESPrino("vecmd led_yellow");
         break;
       case DIR_RIGHT:
         gesture = "RIGHT";
-        handleCommandVESPrino("vecmd led_orange");
+//        handleCommandVESPrino("vecmd led_orange");
         break;
       case DIR_NEAR:
         gesture = "NEAR";
-        handleCommandVESPrino("vecmd led_lila");
+//        handleCommandVESPrino("vecmd led_lila");
         break;
       case DIR_FAR:
         gesture = "FAR";
-        handleCommandVESPrino("vecmd led_cyan");
+//        handleCommandVESPrino("vecmd led_cyan");
         break;
       default:
         gesture = "NONE";
     }
+    handleCommandVESPrino("vecmd led_green");
+    handleCommandVESPrino("vecmd ledmode_2_2");
     SERIAL << "Gesture: " << gesture << endl;
     char tmp[200], tmp2[200];
     char p2[40], p3[100];
@@ -229,7 +233,7 @@ void initVThingStarter() {
   //initSSD1306();
   if (hasPN532) initPN532();
   if (hasSSD1306) oledHandleCommand("     vESPrino\n  IoT made easy\nPlay with sensors");
-  handleCommandVESPrino("vecmd led black");
+  handleCommandVESPrino("vecmd led_black");
   //handleCommandVESPrino("vecmd ledmode 1");
   //  pinMode(2, OUTPUT);
   if (hasAPDS9960) initAPDS9960();

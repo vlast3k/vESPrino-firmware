@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #include <ESP8266httpUpdate.h>
 
 void doHttpUpdate(int mode, char *url) {

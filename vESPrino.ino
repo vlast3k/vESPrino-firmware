@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #ifdef VTHING_STARTER
 
 #include "SSD1306.h" // alias for `#include "SSD1306Wire.h"`
@@ -13,6 +15,8 @@ RgbColor ledNextColor() {
   return allColors[colorIdx++ % TOTAL_COLORS];
 }
 
+//RgbColor *currentColor;
+
 void setLedColor(const RgbColor &color) {
   NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> strip(1, 2);
   strip.Begin();
@@ -20,6 +24,7 @@ void setLedColor(const RgbColor &color) {
   strip.Show();   
   delay(1);
   Serial1.end();
+ // currentColor = color;
 }
 
 float ledBrg = 0.7f;
@@ -57,7 +62,11 @@ void oledHandleCommand(char *cmd) {
   if (!display) display = new SSD1306(0x3c, D7, D5);
   display->init();
   display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(ArialMT_Plain_16);
+  if (strlen(cmd) < 8) {
+    display->setFont(ArialMT_Plain_24);
+  } else {
+    display->setFont(ArialMT_Plain_16);    
+  }
   display->drawString(0, 0, cmd);
   display->display();
 }
@@ -103,17 +112,44 @@ boolean getDweetCommand(char *cmd) {
 }
 
 void ledSetBrg(char *s) {
-  ledBrg = ((float)atoi(s))/10;
+  ledBrg = ((float)atoi(s))/100;
   ledHandleColor(NULL);
 }
 
 
+void ledHandleMode(char *cmd) {
+  ledMode = atoi(cmd);
+  if (ledMode == 2) { //blink 2_2
+    int blinks = 1;
+    int blOn = 200;
+    int blOff = 200;
+    if (cmd = strstr(cmd, "_")) {
+      cmd++;
+      blinks = atoi(cmd);
+      if (cmd = strstr(cmd, "_")) {
+        cmd++;
+        blOn = atoi(cmd);
+        if (cmd = strstr(cmd, "_")) {
+          cmd++;
+          blOff = atoi(cmd);
+        }
+      }
+    }
+    Serial << "Will Blink " << blinks << "x, on:" << blOn << " ms, off:" << blOff << " ms" << endl;
+    for (int i=0; i<blinks; i++) {
+      ledHandleColor(NULL);
+      delay(blOn);
+      setLedColor(0);
+      if (i < blinks-1) delay(blOff);
+    }
+  }
+}
 
 void handleDWCommand(char *line) {
        if (strstr(line, "oled_"))      oledHandleCommand(strstr(line, "_")+1);
   else if (strstr(line, "led_"))       ledHandleColor(strstr(line, "_")+1);
   else if (strstr(line, "ledbrg_"))    ledSetBrg(strstr(line, "_")+1);
-  else if (strstr(line, "ledmode_"))   ledMode = atoi(strstr(line, "_")+1);
+  else if (strstr(line, "ledmode_"))   ledHandleMode(strstr(line, "_")+1);
 }
 
 void onGetDweets() {
