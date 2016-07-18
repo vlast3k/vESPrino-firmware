@@ -1,5 +1,18 @@
 #include <Arduino.h>
-
+#include <ESP8266WiFi.h>
+#include <WiFiClientSecure.h>
+#include <ESP8266HTTPClient.h>
+#include <ArduinoJson.h>
+#include <Streaming.h>
+#include <EEPROM.h>
+#include <ArduinoJson.h>
+#define SERIAL Serial
+#define EE_WIFI_SSID_30B 0
+#define EE_WIFI_P1_30B 30
+#define EE_WIFI_P2_30B 60
+char *extractStringFromQuotes(const char* src, char *dest, int destSize);
+void storeToEE(int address, const char *str, int maxLength);
+int wifiConnectToStoredSSID();
  IPAddress ip = WiFi.localIP();
 
 void handleWifi() {
@@ -7,13 +20,13 @@ void handleWifi() {
   if (ip == WiFi.localIP()) return;
   else if (WiFi.status() == WL_CONNECTED) {
     ip = WiFi.localIP();
-#ifdef SAP_AUTH    
+#ifdef SAP_AUTH
     vSAP_Auth(EE_WIFI_P1_30B, EE_WIFI_P1_30B);
 #endif
-    SERIAL << "IP address: " << WiFi.localIP() << " in " << millis() << " ms" << endl << "GOT IP" << endl; 
-    handleCommandVESPrino("vecmd led_mblue");
-    handleCommandVESPrino("vecmd ledmode_2_3");
-  } 
+    SERIAL << "IP address: " << WiFi.localIP() << " in " << millis() << " ms" << endl << "GOT IP" << endl;
+    // handleCommandVESPrino("vecmd led_mblue");
+    // handleCommandVESPrino("vecmd ledmode_2_3");
+  }
   ip = WiFi.localIP();
 }
 
@@ -32,7 +45,7 @@ void connectToWifi(const char *s1, const char *s2, const char *s3) {
 //  if (strstr(s1, "SAP-Guest")) {
 //
 //    checkSAPAuth();
-//  } 
+//  }
 }
 
 int wifiConnectToStoredSSID() {
@@ -58,7 +71,7 @@ void wifiScanNetworks() {
     SERIAL.println("no networks found");
   else
   {
-    SERIAL.print(n);
+    SERIAL.print(n) ;
     SERIAL.println(" networks found");
     for (int i = 0; i < n; ++i)
     {
@@ -81,4 +94,3 @@ void wifiScanNetworks() {
   // Wait a bit before scanning again
 
 }
-

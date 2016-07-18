@@ -1,18 +1,54 @@
 #include <Arduino.h>
-
+#include <Streaming.h>
+#include <Streaming.h>
+#include <EEPROM.h>
+#include <Math.h>
+#include <algorithm>    // std::min
+#include <ESP8266WiFi.h>
+#include <WiFiClientSecure.h>
+#include <ESP8266HTTPClient.h>
+#include <ArduinoJson.h>
+#include <Timer.h>
+#include "common.hpp"
+#define SERIAL Serial
 #define LINE_LEN 250
 char line[LINE_LEN];
 String HTTP_STR = "http://";
 String HTTPS_STR= "https://";
 
+#define EE_WIFI_SSID_30B 0
+#define EE_WIFI_P1_30B 30
+#define EE_WIFI_P2_30B 60
+#define EE_IOT_HOST_60B 90
+#define EE_IOT_PATH_140B 150
+#define EE_IOT_TOKN_40B 290
+#define EE_GENIOT_PATH_140B 330
+#define EE_MQTT_SERVER_30B  470
+#define EE_MQTT_PORT_4B     500
+#define EE_MQTT_CLIENT_20B  504
+#define EE_MQTT_USER_45B    524
+#define EE_MQTT_PASS_15B    569
+#define EE_MQTT_TOPIC_40B   584
+#define EE_MQTT_VALUE_70B   624
+#define EE_1B_RESET_CO2     694
+//#define EE_LAST 695
+#define EE_JSON_CFG_1000B   1000
 
-void sendPingPort(const char *p);
+#define SAP_IOT_HOST "spHst"
+#define SAP_IOT_DEVID "spDvId"
+#define SAP_IOT_TOKEN "spTok"
+#define SAP_IOT_BTN_MSGID "spBtMID"
+#define H801_API_KEY "h801key"
+#define XX_SND_INT  "xxSndInt"
+#define XX_SND_THR  "xxSndThr"
+
+
 boolean processUserInput() {
   Serial.setTimeout(500);
   if (!Serial.available()) {
     return false;
   }
-  
+
   Serial.setTimeout(30000);
   if (readLine(30000) >= 0) {
     Serial.flush();
@@ -28,8 +64,8 @@ byte readLine(int timeout) {
   while (millis() < deadline) {
     if (Serial.available()) {
       line[i++] = (char) Serial.read();
-      if      (line[i-1] == '\r')  i--;   
-      else if (i == LINE_LEN - 1)  break; 
+      if      (line[i-1] == '\r')  i--;
+      else if (i == LINE_LEN - 1)  break;
       else if (line[i-1] == '\n')  {i--; break;}
     }
   }
@@ -39,6 +75,8 @@ byte readLine(int timeout) {
 
 void dumpCfg();
 String ubik;
+extern boolean DEBUG;
+void sendTS();
 int handleCommand() {
   if (DEBUG) SERIAL << "Received command: " << line << endl;
   if (strstr(line, "tstest")) sendTS();
@@ -59,7 +97,7 @@ int handleCommand() {
   else if (strcmp(line, "test") == 0) sndIOT("sndiot 567");
   else if (strcmp(line, "ubi") == 0) testUBI();
   else if (strstr(line, "tskey ")) cfgGENIOT((String("cfggen http://api.thingspeak.com/update?key=") + &line[6] + "&field1=%s").c_str());
-  else if (strstr(line, "ubik "))  ubik = String(&line[5]);  
+  else if (strstr(line, "ubik "))  ubik = String(&line[5]);
   else if (strstr(line, "ubiv "))  cfgGENIOT((String("cfggen http://50.23.124.66/api/postvalue/?token=") + ubik + "&variable=" + &line[5] + "&value=%s").c_str());
   else if (strstr(line, "jjj")) testJSON();
   else if (strcmp(line, "scan") == 0) wifiScanNetworks();
@@ -97,8 +135,8 @@ int handleCommand() {
 #ifdef VTHING_STARTER
   handleCommandVESPrino(line);
 #endif
-  
-  
+
+
   SERIAL << "OK >" << endl;
   return 0;
 }
@@ -119,13 +157,13 @@ void dumpCfg() {
 void sendPingPort(const char *p) {
   char host[30],  port[20];
   p = extractStringFromQuotes(p, host, 30);
-  p = extractStringFromQuotes(p, port, 20);  
+  p = extractStringFromQuotes(p, port, 20);
   int iport = atoi(port);
   WiFiClient ccc;
   SERIAL << "Test connection to to:" << host << ":" << port << endl;
   int res = ccc.connect(host, iport);
   SERIAL << "Res: " << res << endl;
-  
+
 }
 
 void testHttpUpdate() {
@@ -160,7 +198,7 @@ void setSendInterval (const char *line) {
   }
   putJSONConfig(XX_SND_INT, String(interval).c_str());
   intCO2SendValue = (uint32_t)interval * 1000;
-  tmrCO2SendValueTimer->setInterval(intCO2SendValue); 
+  tmrCO2SendValueTimer->setInterval(intCO2SendValue);
   Serial << "Send Interval (ms): " << intCO2SendValue << endl;
 }
 
@@ -186,7 +224,7 @@ void getTS(const char* line) {
 void testUBI() {
   HTTPClient http;
   http.begin(F("http://50.23.124.66/api/postvalue/?token=Cg5W22qmWFcsMqsALMik04VtEF7PYA&variable=565965867625420c74ec604b&value=456"));
-  processResponseCodeATFW(&http, http.GET());  
+  processResponseCodeATFW(&http, http.GET());
 }
 
 void sendTS() {
@@ -209,15 +247,15 @@ int setWifi(const char* p) {
 
 void atCIPSTART(const char *p) {
   p = extractStringFromQuotes(p, atCIPSTART_IP, 20);
-  p = extractStringFromQuotes(p, atCIPSTART_IP, 20);  
+  p = extractStringFromQuotes(p, atCIPSTART_IP, 20);
 }
 
 void mockATCommand(const char *line) {
   if (line[0] == 'A') {
     if (strstr(line, "AT+CWJAP_DEF")) setWifi(line);
     if (strstr(line, "AT+CIPSTART")) atCIPSTART(line);
-    
-    if (strstr(line, "AT+CIPSEND"))  SERIAL << ">" << endl; 
+
+    if (strstr(line, "AT+CIPSEND"))  SERIAL << ">" << endl;
     else                             SERIAL << "OK" << endl;
   }
 }
@@ -225,7 +263,7 @@ void mockATCommand(const char *line) {
 void cfgGENIOT(const char *p) {
   char genurl[140] = "";
   if (!p[6]) {
-    SERIAL << F("Cleared Generic URL") << endl;    
+    SERIAL << F("Cleared Generic URL") << endl;
   } else {
     strncpy(genurl, p+7, sizeof(genurl)-1);
     SERIAL << F("Stored Generic URL: ") << genurl << endl;
@@ -240,7 +278,7 @@ void cfgHCPIOT1(const char *p) {
   // deviceId: c5c73d69-6a19-4c7d-9da3-b32198ba71f9
   // messageId: 2023a0e66f76d20f47d7
   // variable name: co2
-  
+
   // Authorization: Bearer 46de4fc404221b32054a8405f602fd
 
   char buf[140], devId[40], msgId[25], varName[20];
@@ -248,20 +286,20 @@ void cfgHCPIOT1(const char *p) {
   storeToEE(EE_IOT_HOST_60B, buf, 60);     //host
   putJSONConfig(SAP_IOT_HOST, buf);
   //SERIAL << "IOT Host: " << buf << endl;
-  
-  p = extractStringFromQuotes(p, devId, sizeof(devId)); 
+
+  p = extractStringFromQuotes(p, devId, sizeof(devId));
   putJSONConfig(SAP_IOT_DEVID, devId);
-  p = extractStringFromQuotes(p, msgId, sizeof(msgId)); 
-  p = extractStringFromQuotes(p, varName, sizeof(varName)); 
+  p = extractStringFromQuotes(p, msgId, sizeof(msgId));
+  p = extractStringFromQuotes(p, varName, sizeof(varName));
   sprintf(buf, String(F("/com.sap.iotservices.mms/v1/api/http/data/%s/%s/sync?%s=")).c_str(), devId, msgId, varName);
   storeToEE(EE_IOT_PATH_140B, buf, 140); // path
-  //SERIAL << "IOT Path: " << buf << endl;  
+  //SERIAL << "IOT Path: " << buf << endl;
   printJSONConfig();
 
   //heap("");
 }
 
-void cfgHCPIOT2(const char *p) {  
+void cfgHCPIOT2(const char *p) {
   char buf[140];
     p = extractStringFromQuotes(p, buf, sizeof(buf)); // token
   storeToEE(EE_IOT_TOKN_40B, buf, 40);     // token
@@ -272,7 +310,7 @@ void cfgHCPIOT2(const char *p) {
   //SERIAL << "-" << buf << "-" << endl;
   putJSONConfig(SAP_IOT_BTN_MSGID, buf);
   printJSONConfig();
-  
+
 
   //heap("");
 }
@@ -286,18 +324,18 @@ void sndIOT(const char *line) {
   char path[140];
   EEPROM.get(EE_IOT_PATH_140B, path);
   if (path[0] && path[0] != 255) {
-    sndHCPIOT(line);    
-  } 
-  
+    sndHCPIOT(line);
+  }
+
   EEPROM.get(EE_GENIOT_PATH_140B, path);
   if (path[0] && path[0] != 255) {
     sndGENIOT(line);
-  } 
+  }
 
   EEPROM.get(EE_MQTT_SERVER_30B, path);
   if (path[0] && path[0] != 255) {
     sendMQTT(&line[7]);
-  } 
+  }
 }
 
 void sndGENIOT(const char *line) {
@@ -307,10 +345,10 @@ void sndGENIOT(const char *line) {
     strcat(str, "&field2=%d");
     sprintf(str2, str, &line[7], millis()/60000L);
   } else {
-    sprintf(str2, str, &line[7]);    
+    sprintf(str2, str, &line[7]);
   }
   SERIAL << F("Sending to URL: \"") << str2 << "\"" << endl;
-  
+
   HTTPClient http;
   http.begin(str2);
   //addHCPIOTHeaders(&http, token);
@@ -327,7 +365,7 @@ void sndHCPIOT(const char *line) {
   sprintf(path, "%s%s", path, &line[7]);
   if (DEBUG) SERIAL << F("Sending to HCP: ") << path << endl;
 //  SERIAL << "hcpiot, token: " << token << endl;
-  
+
   HTTPClient http;
   http.begin(HTTPS_STR + host + path);
   addHCPIOTHeaders(&http, token);
@@ -338,7 +376,7 @@ void sndHCPIOT(const char *line) {
 
 void addHCPIOTHeaders(HTTPClient *http, const char *token) {
   http->addHeader("Content-Type",  "application/json;charset=UTF-8");
-  http->addHeader("Authorization", String("Bearer ") + token);  
+  http->addHeader("Authorization", String("Bearer ") + token);
 }
 
 void sndSimple() {
@@ -351,7 +389,7 @@ void sndSimple() {
 void factoryReset() {
   SERIAL << F("Doing Factory Reset, and restarting...") << endl;
   for (int i=0; i < 3000; i++) EEPROM.write(i, 0xFF);
-  EEPROM.commit();  
+  EEPROM.commit();
   ESP.restart();
 }
 
@@ -367,6 +405,3 @@ int processResponseCodeATFW(HTTPClient *http, int rc) {
   }
   return rc;
 }
-
-
-

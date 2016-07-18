@@ -1,7 +1,14 @@
 #include <Arduino.h>
-
+#include <Streaming.h>
+#include <EEPROM.h>
+#include <ArduinoJson.h>
+#include <algorithm>    // std::min
+#include "common.hpp"
+#define EE_JSON_CFG_1000B   1000
+boolean processUserInput();
+void handleWifi();
 char *extractStringFromQuotes(const char* src, char *dest, int destSize) {
-  
+
   if (!*src) {
     *dest = 0;
     return NULL;
@@ -9,7 +16,7 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize) {
   char *p1, *p2;
   if (!(p1 = strchr(src, '\"'))) return 0;
   if (!(p2 = strchr(p1+1, '\"'))) return 0;
-  int len = std::min(p2-p1, destSize);  
+  int len = std::min(p2-p1, destSize);
   strncpy(dest, p1+1, len-1);
   dest[len-1] = 0;
   return p2 + 1;
@@ -64,18 +71,18 @@ void putJSONConfig(const char *key, const char *value, boolean valueIsArray, boo
   if (!valueIsArray) {
     root[key] = value;
   } else {
-    value = extractStringFromQuotes(value, p1, sizeof(p1)); 
-    if (value) value = extractStringFromQuotes(value, p2, sizeof(p2)); 
-    if (value) value = extractStringFromQuotes(value, p3, sizeof(p3)); 
+    value = extractStringFromQuotes(value, p1, sizeof(p1));
+    if (value) value = extractStringFromQuotes(value, p2, sizeof(p2));
+    if (value) value = extractStringFromQuotes(value, p3, sizeof(p3));
     JsonArray& data = root.createNestedArray(key);
     data.add(p1);
     if (p2[0]) data.add(p2);
     if (p3[0]) data.add(p3);
-    
+
   }
   root.printTo(data2, sizeof(data2));
   EEPROM.put(EE_JSON_CFG_1000B, data2);
-  if (commit) EEPROM.commit();  
+  if (commit) EEPROM.commit();
 }
 
 void testJSON() {
@@ -83,15 +90,15 @@ void testJSON() {
   char tmp[100];
   EEPROM.put(EE_JSON_CFG_1000B, ddd);
   EEPROM.commit();
-  
+
   EEPROM.write(EE_JSON_CFG_1000B, -1);
   EEPROM.commit();
   SERIAL << "Testing JSON" << endl;
   SERIAL << getJSONConfig("vladi", tmp) << endl;
   putJSONConfig("vladi", "sadsa");
-  SERIAL << "1 " << getJSONConfig("vladi", tmp) << endl;  
+  SERIAL << "1 " << getJSONConfig("vladi", tmp) << endl;
   putJSONConfig("vladi", "sadsa");
-  SERIAL << "2 " << getJSONConfig("vladi", tmp) << endl;  
+  SERIAL << "2 " << getJSONConfig("vladi", tmp) << endl;
   SERIAL << endl;
   EEPROM.write(EE_JSON_CFG_1000B, -1);
   EEPROM.commit();
@@ -111,10 +118,7 @@ void activeWait() {
     delay(100);
     handleWifi();
     processUserInput();
-    if ((i%10) == 0) SERIAL << '.';   
+    if ((i%10) == 0) SERIAL << '.';
   }
   SERIAL << endl;
 }
-
-
-

@@ -1,10 +1,12 @@
 #include <Arduino.h>
 
 #include <ESP8266httpUpdate.h>
+#include <Streaming.h>
+#define SERIAL Serial
 
 void doHttpUpdate(int mode, char *url) {
   if (!url) {
-    #ifdef VTHING_CO2    
+    #ifdef VTHING_CO2
       url = "http://anker-bg.com/vlast3k/vthing_co2/latest.bin";
     #elif defined(VTHING_STARTER)
       url = "http://anker-bg.com/vlast3k/vthing_starter/latest.bin";
@@ -19,7 +21,7 @@ void doHttpUpdate(int mode, char *url) {
 
   t_httpUpdate_return ret;
   ret= ESPhttpUpdate.update(url);
-  
+
   switch(ret) {
     case HTTP_UPDATE_FAILED:
       SERIAL.println(F("HTTP_UPDATE_FAILED"));

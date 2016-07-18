@@ -1,7 +1,12 @@
-#include <Arduino.h>
-
 #ifdef VTHING_STARTER
-
+#include <Arduino.h>
+#include <NeoPixelBus.h>
+#include <ESP8266WiFi.h>
+#include <WiFiClientSecure.h>
+#include <ESP8266HTTPClient.h>
+#include <ArduinoJson.h>
+#include <Streaming.h>
+#include "common.hpp"
 #include "SSD1306.h" // alias for `#include "SSD1306Wire.h"`
 SSD1306  *display = NULL;
 int ledMode = 0;
@@ -9,7 +14,8 @@ void handleDWCommand(char *line);
 //const RgbColor allColors[] = {Cred, Cpink, Clila, Cviolet, Cblue, Cmblue, Ccyan, Cgreen, Cyellow, Corange};
 const RgbColor allColors[] = {Cred, Clila, Cmblue, Cgreen, Cyellow};
 #define TOTAL_COLORS 5
-
+void initVThingStarter();
+void loopVThingStarter();
 RgbColor ledNextColor() {
   static byte colorIdx = 0;
   return allColors[colorIdx++ % TOTAL_COLORS];
@@ -21,7 +27,7 @@ void setLedColor(const RgbColor &color) {
   NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> strip(1, 2);
   strip.Begin();
   strip.SetPixelColor(0, color);
-  strip.Show();   
+  strip.Show();
   delay(1);
   Serial1.end();
  // currentColor = color;
@@ -50,7 +56,7 @@ void ledHandleColor(char *colorNew) {
   else {
     uint32_t data = strtol(color, NULL, 0);
     //SERIAL << " receveid int: " << data << endl;
-    c = RgbColor((data & 0xFF0000) >> 16, (data & 0x00FF00) >> 8, (data & 0x0000FF));    
+    c = RgbColor((data & 0xFF0000) >> 16, (data & 0x00FF00) >> 8, (data & 0x0000FF));
   }
   c = RgbColor::LinearBlend(c, Cblack, ledBrg);
   setLedColor(c);
@@ -65,7 +71,7 @@ void oledHandleCommand(char *cmd) {
   if (strlen(cmd) < 8) {
     display->setFont(ArialMT_Plain_24);
   } else {
-    display->setFont(ArialMT_Plain_16);    
+    display->setFont(ArialMT_Plain_16);
   }
   display->drawString(0, 0, cmd);
   display->display();
@@ -95,7 +101,7 @@ boolean getDweetCommand(char *cmd) {
       SERIAL << F("Failed to getDweet from: ") << url << ", due to: " << http.errorToString(httpCode) << endl;
       return false;
     }
-    
+
     String payload = http.getString();
     StaticJsonBuffer<400> jsonBuffer;
     JsonObject& root = jsonBuffer.parseObject(payload.c_str());

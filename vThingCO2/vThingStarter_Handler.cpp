@@ -1,20 +1,25 @@
+#ifdef VTHING_STARTER
 #include <Arduino.h>
 
-#ifdef VTHING_STARTER
-
+#include <Arduino.h>
+#include <NeoPixelBus.h>
+#include <ESP8266WiFi.h>
+#include <WiFiClientSecure.h>
+#include <ESP8266HTTPClient.h>
+#include <ArduinoJson.h>
+#include <Streaming.h>
+#include "common.hpp"
 
 
   #include <Wire.h>
   #include <PN532_I2C.h>
   #include <PN532.h>
   #include <SparkFun_APDS9960.h>
-
-    PN532_I2C pn532i2c(Wire);
+  #include <Timer.h>
+  void initVThingStarter();
+  void loopVThingStarter();
+  PN532_I2C pn532i2c(Wire);
   PN532 nfc(pn532i2c);
-void oledHandleCommand(char *cmd);
-void loopNeoPixel();
-void checkButtonSend();
-void handleCommandVESPrino(char *line);
 SparkFun_APDS9960 apds = SparkFun_APDS9960();
 int isr_flag = 0;
 #define APDS9960_INT    D7
@@ -80,7 +85,7 @@ void handleGesture() {
       //addHCPIOTHeaders(&http, token);
       int rc = processResponseCodeATFW(&http, http.GET());
     }
-    
+
   }
 }
 
@@ -95,7 +100,7 @@ void checkForGesture() {
 
 void initAPDS9960() {
   pinMode(APDS9960_INT, INPUT);
- 
+
   // Initialize interrupt service routine
   attachInterrupt(APDS9960_INT, interruptRoutine, CHANGE);
 
@@ -106,14 +111,14 @@ void initAPDS9960() {
   } else {
     Serial.println(F("Something went wrong during APDS-9960 init!"));
   }
-  
+
   // Start running the APDS-9960 gesture sensor engine
   if ( apds.enableGestureSensor(true) ) {
     Serial.println(F("Gesture sensor is now running"));
   } else {
     Serial.println(F("Something went wrong during gesture sensor init!"));
   }
-}  
+}
 
 
 void initPN532() {
@@ -127,16 +132,16 @@ void initPN532() {
     while (1); // halt
   }
   // Got ok data, print it out!
-  Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX); 
-  Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC); 
+  Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX);
+  Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC);
   Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
-  
+
   // configure board to read RFID tags
   //nfc.setPassiveActivationRetries(0x19);
   nfc.SAMConfig();
-  
-  Serial.println("Waiting for an ISO14443A Card ...");  
-  
+
+  Serial.println("Waiting for an ISO14443A Card ...");
+
 }
 
 void    checkForNFCCart() {
@@ -145,12 +150,12 @@ void    checkForNFCCart() {
   uint8_t uidLength;                        // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
   static uint8_t prevUid[10];
   static uint32_t prevMillis=0;
-    
+
   // Wait for an ISO14443A type cards (Mifare, etc.).  When one is found
   // 'uid' will be populated with the UID, and uidLength will indicate
   // if the uid is 4 bytes (Mifare Classic) or 7 bytes (Mifare Ultralight)
   success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
-  
+
   if (success) {
     // Display some basic information about the card
     if ((millis() - prevMillis < 1000) && ! memcmp(uid, prevUid, uidLength)) return;
@@ -197,12 +202,12 @@ boolean checkI2CDevice(int sda, int sca, int addr) {
 
 void onGetDweets();
 Timer *tmrTempRead, *tmrCheckPushMsg, *tmrGetDweets;
-void initVThingStarter() {   
+void initVThingStarter() {
    // strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
     //handleCommandVESPrino("vecmd led lila");
 //    strip->Begin();
 //    strip->SetPixelColor(0, RgbColor(20, 0, 10));
-//    strip->Show();  
+//    strip->Show();
 
   si7021init();
   dumpTemp();
@@ -220,15 +225,15 @@ void initVThingStarter() {
       SERIAL << F("Send commands to: https://dweet.io/dweet/for/") << getJSONConfig("vespDWCmd", tmp) << F("vladi1?cmd=") << endl;
     } else {
       SERIAL << F("dweet id not set, use vespDWCmd <dweetid> to set it\n");
-      
+
     }
 
   hasSSD1306 = checkI2CDevice(D7, D5, 0x3c);
   hasPN532   = checkI2CDevice(D5, D7, 0x24);
-  hasSI7021  = checkI2CDevice(D1, D6, 0x40); 
-  hasBMP180  = checkI2CDevice(D1, D6, 0x77); 
-  hasBH1750  = checkI2CDevice(D1, D6, 0x23); 
-  hasAPDS9960= checkI2CDevice(D6, D1, 0x39); 
+  hasSI7021  = checkI2CDevice(D1, D6, 0x40);
+  hasBMP180  = checkI2CDevice(D1, D6, 0x77);
+  hasBH1750  = checkI2CDevice(D1, D6, 0x23);
+  hasAPDS9960= checkI2CDevice(D6, D1, 0x39);
   SERIAL << "oled: " << hasSSD1306 << ", si7021: " << hasSI7021 << ", pn532: " << hasPN532 << ", bmp180: " << hasBMP180 << ", BH1750: " << hasBH1750 << endl;
   //initSSD1306();
   if (hasPN532) initPN532();
@@ -249,7 +254,7 @@ void loopVThingStarter() {
     tmrGetDweets->Update();
     //doSend();
     checkButtonSend();
-//    
+//
 //    delay(1000);
   if (hasPN532) checkForNFCCart();
   if (hasAPDS9960) checkForGesture();
@@ -277,14 +282,14 @@ void onTempRead() {
   float hum = si7021->readHumidity();
   SERIAL << F("Humidity : ") << hum << " %\t";
   SERIAL << F("Temp : "    ) << tmp << " C" << endl;
-  
+
   String s = String("sndiot ") + tmp;
   sndIOT(s.c_str());
 }
 
 void dumpTemp() {
   if (!si7021) return;
-  SERIAL << F("Temp : ")     << si7021->readTemp() << " C" << endl;  
+  SERIAL << F("Temp : ")     << si7021->readTemp() << " C" << endl;
 }
 
 int BTTN_PIN = D3;
@@ -304,7 +309,7 @@ void attachButton() {
 
 void checkButtonSend() {
   if (shouldSend == false) return;
-  shouldSend = false;  
+  shouldSend = false;
   //digitalWrite(2, LOW);
   char tmp[200];
   SERIAL << F("Button Clicked!") << endl;
@@ -319,8 +324,8 @@ void checkButtonSend() {
       sprintf(tmp, "http://dweet.io/dweet/for/%s?%s", p2, p3);
     } else if (!strcmp(tmp, "if")) {
       sprintf(tmp, "http://maker.ifttt.com/trigger/%s/with/key/%s", p2, p3);
-    } 
-    
+    }
+
     SERIAL << "Sending to URL: " << tmp << endl;
     HTTPClient http;
     http.begin(tmp);
@@ -332,7 +337,7 @@ void checkButtonSend() {
 int clicks = 5;
 void doSend() {
   if (shouldSend == false) return;
-  shouldSend = false;    
+  shouldSend = false;
   char tmp[200];
   SERIAL << F("Button Clicked!") << endl;
   if(WiFi.status() != WL_CONNECTED) {
@@ -347,11 +352,11 @@ void doSend() {
   //https://iotmmsi024148trial.hanatrial.ondemand.com/com.sap.iotservices.mms/v1/api/http/push/e46304a8-a410-4979-82f6-ca3da7e43df9
   //{"method":"http", "sender":"My IoT application", "messageType":"42c3546a088b3ef8b8d3", "messages":[{"command":"yellow"}]}
   String rq = String("https://") + getJSONConfig(SAP_IOT_HOST, tmp) + F("/com.sap.iotservices.mms/v1/api/http/data/") + getJSONConfig(SAP_IOT_DEVID, tmp) + "/" + getJSONConfig(SAP_IOT_BTN_MSGID, tmp) + "/sync?button=IA==";
-  SERIAL << "Sending: " << rq << endl;                
+  SERIAL << "Sending: " << rq << endl;
   http.begin(rq);
   http.addHeader("Content-Type",  "application/json;charset=UTF-8");
   //http.setAuthorization("P1940433103", "Abcd1234");
-  http.addHeader("Authorization", String("Bearer ") + getJSONConfig(SAP_IOT_TOKEN, tmp));  
+  http.addHeader("Authorization", String("Bearer ") + getJSONConfig(SAP_IOT_TOKEN, tmp));
 //  String post = "";
 //  post += "{\"method\":\"http\", \"sender\":\"My IoT application\", \"messageType\":\"" + getJSONConfig(SAP_IOT_BTN_MSGID) + "\", \"messages\":[{\"button\":\"" + colors[(clicks++) % COLOR_COUNT] + "\"}]}";
   int httpCode = http.POST("");
@@ -360,7 +365,7 @@ void doSend() {
       // HTTP header has been send and Server response header has been handled
       SERIAL.printf(String(F("[HTTP] GET... code: %d\n")).c_str(), httpCode);
       String payload = http.getString();
-      SERIAL.println(payload);          
+      SERIAL.println(payload);
   } else {
       SERIAL.printf(String(F("[HTTP] GET... failed, error: %s\n")).c_str(), http.errorToString(httpCode).c_str());
   }
@@ -388,7 +393,7 @@ void handleSAP_IOT_PushService() {
     //Serial << " before get json config" << endl;
     if (!getJSONConfig(SAP_IOT_HOST, tmp)[0]) return;
     //Serial << " after " << endl;
-    String url = String("https://") + getJSONConfig(SAP_IOT_HOST, tmp) + F("/com.sap.iotservices.mms/v1/api/http/data/") + getJSONConfig(SAP_IOT_DEVID, tmp) ; 
+    String url = String("https://") + getJSONConfig(SAP_IOT_HOST, tmp) + F("/com.sap.iotservices.mms/v1/api/http/data/") + getJSONConfig(SAP_IOT_DEVID, tmp) ;
 //        Serial << " before get json config" << end;
 
     //SERIAL << url << endl;
@@ -401,7 +406,7 @@ void handleSAP_IOT_PushService() {
     //Serial << " after begin " << endl;
     http.addHeader("Content-Type",  "application/json;charset=UTF-8");
 //    SERIAL <<  getJSONConfig(SAP_IOT_TOKEN) << endl;
-    http.addHeader("Authorization", String("Bearer ") + getJSONConfig(SAP_IOT_TOKEN, tmp));  
+    http.addHeader("Authorization", String("Bearer ") + getJSONConfig(SAP_IOT_TOKEN, tmp));
     //SERIAL << "make req" << endl;
  //   Serial << " after begin " << endl;
     int httpCode = http.GET();
@@ -411,7 +416,7 @@ void handleSAP_IOT_PushService() {
         // HTTP header has been send and Server response header has been handled
         //SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
         String payload = http.getString();
-        //SERIAL.println(payload);          
+        //SERIAL.println(payload);
         processMessage(payload);
     } else {
       SERIAL << F("Failed to push message to: ") << url << ", due to: " <<http.errorToString(httpCode) << endl;
@@ -437,13 +442,13 @@ void handleSAP_IOT_PushService() {
 //            // HTTP header has been send and Server response header has been handled
 //            SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
 //            String payload = http.getString();
-//            SERIAL.println(payload);          
+//            SERIAL.println(payload);
 //        } else {
 //            SERIAL.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
 //        }
 //
 //        http.end();
-//    }  
+//    }
 //}
 
 void processMessage(String msgIn) {
@@ -461,7 +466,7 @@ void processMessage(String msgIn) {
   //SERIAL.print(root[0].is<JsonObject&>());
   //SERIAL  << "type:" << root.get(0) << endl;
   if (root[0].is<JsonObject&>()) {
-    //SERIAL << root[0].asObject().containsKey("messages") << endl; 
+    //SERIAL << root[0].asObject().containsKey("messages") << endl;
     //SERIAL << root[0]["messages"].is<JsonArray&>() << endl;
     //SERIAL << root[0]["messages"][0].is<JsonObject&>() << endl;
     //SERIAL << root[0]["messages"][0].asObject().containsKey("color") << endl;
@@ -472,7 +477,7 @@ void processMessage(String msgIn) {
     } else {
       SERIAL << F("command not recognized") << endl;
      }
-  } 
+  }
 //  else {
 //    SERIAL << "no cmd" << endl;
 //  }

@@ -1,6 +1,21 @@
 #include <Arduino.h>
 
 #include <PubSubClient.h>
+#include <Streaming.h>
+#include <EEPROM.h>
+#include <ESP8266WiFi.h>
+#include <WiFiClientSecure.h>
+#include <ESP8266HTTPClient.h>
+#include <ArduinoJson.h>
+char *extractStringFromQuotes(const char* src, char *dest, int destSize);
+#define SERIAL Serial
+#define EE_MQTT_SERVER_30B  470
+#define EE_MQTT_PORT_4B     500
+#define EE_MQTT_CLIENT_20B  504
+#define EE_MQTT_USER_45B    524
+#define EE_MQTT_PASS_15B    569
+#define EE_MQTT_TOPIC_40B   584
+#define EE_MQTT_VALUE_70B   624
 
 String   mqttServer; //= "m20.cloudmqtt.com";
 uint32_t mqttPort   ;//= 19749;
@@ -24,15 +39,15 @@ String   mqttTopic  ;//= "co2Value";
 
 void configMQTT(const char *p) {
   char mqttServer[30], mqttPortS[6], mqttClient[20], mqttUser[45], mqttPass[15], mqttTopic[40];
-  p = extractStringFromQuotes(p, mqttServer, sizeof(mqttServer)); 
-  p = extractStringFromQuotes(p, mqttPortS,   sizeof(mqttPortS)); 
-  p = extractStringFromQuotes(p, mqttClient, sizeof(mqttClient)); 
-  p = extractStringFromQuotes(p, mqttUser,   sizeof(mqttUser)); 
-  p = extractStringFromQuotes(p, mqttPass,   sizeof(mqttPass)); 
-  p = extractStringFromQuotes(p, mqttTopic,  sizeof(mqttTopic)); 
+  p = extractStringFromQuotes(p, mqttServer, sizeof(mqttServer));
+  p = extractStringFromQuotes(p, mqttPortS,   sizeof(mqttPortS));
+  p = extractStringFromQuotes(p, mqttClient, sizeof(mqttClient));
+  p = extractStringFromQuotes(p, mqttUser,   sizeof(mqttUser));
+  p = extractStringFromQuotes(p, mqttPass,   sizeof(mqttPass));
+  p = extractStringFromQuotes(p, mqttTopic,  sizeof(mqttTopic));
   if (mqttClient[0] == 0) strcpy(mqttTopic, "vThing");
   if (mqttTopic[0] == 0) {
-    #ifdef VTHING_H801_LED) 
+    #ifdef VTHING_H801_LED
       strcpy(mqttTopic, "vThingH801");
     #else
       strcpy(mqttTopic, "vThing/data");
@@ -45,15 +60,15 @@ void configMQTT(const char *p) {
   EEPROM.put(EE_MQTT_USER_45B, mqttUser);
   EEPROM.put(EE_MQTT_PASS_15B, mqttPass);
   EEPROM.put(EE_MQTT_TOPIC_40B, mqttTopic);
-  
+
   EEPROM.commit();
   SERIAL << F("MQTT Configuration Stored") << endl;
   SERIAL << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << "," << mqttTopic << endl;
   SERIAL << F("DONE") << endl;
-#ifdef VTHING_H801_LED  
+#ifdef VTHING_H801_LED
   h801_mqtt_connect();
 #endif
-  
+
 }
 
 void sendMQTT(String msg) {
@@ -72,7 +87,7 @@ void sendMQTT(String msg) {
   delay(150);
   SERIAL << mqttUser;
   delay(150);
-  SERIAL << "," << mqttPass << ","; 
+  SERIAL << "," << mqttPass << ",";
   delay(150);
   SERIAL << mqttTopic;
   delay(150);
@@ -100,10 +115,9 @@ void sendMQTT(String msg) {
       boolean res = client.publish(mqttTopic, mqttValue2);
       SERIAL.println(res ? F("CLOSED") : F("Failed!"));
     } else {
-        SERIAL.println(F("Could not connect to MQTT server"));   
-    }     
+        SERIAL.println(F("Could not connect to MQTT server"));
+    }
   }
   client.disconnect();
   SERIAL << "sent in:" << (millis() - st) << endl;
 }
-
