@@ -2,8 +2,7 @@
 
 #ifndef VTHING_H801_LED
 #include <NeoPixelBus.h>
-#include <Streaming.h>
-#define SERIAL Serial
+#include "common.hpp"
 extern NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;
 //NeoPixelBus strip = NeoPixelBus(1, D4);
 #define colorSaturation 255

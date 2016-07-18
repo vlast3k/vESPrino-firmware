@@ -1,7 +1,6 @@
-#include <Arduino.h>
 
 #ifdef VTHING_H801_LED
-
+#include <Arduino.h>
 #include <PubSubClient.h>
 #include <ESP8266WebServer.h>
 

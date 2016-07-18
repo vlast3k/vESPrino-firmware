@@ -1,47 +1,8 @@
-#include <Arduino.h>
-#include <Streaming.h>
-#include <Streaming.h>
-#include <EEPROM.h>
-#include <Math.h>
-#include <algorithm>    // std::min
-#include <ESP8266WiFi.h>
-#include <WiFiClientSecure.h>
-#include <ESP8266HTTPClient.h>
-#include <ArduinoJson.h>
-#include <Timer.h>
 #include "common.hpp"
-#define SERIAL Serial
 #define LINE_LEN 250
 char line[LINE_LEN];
 String HTTP_STR = "http://";
 String HTTPS_STR= "https://";
-
-#define EE_WIFI_SSID_30B 0
-#define EE_WIFI_P1_30B 30
-#define EE_WIFI_P2_30B 60
-#define EE_IOT_HOST_60B 90
-#define EE_IOT_PATH_140B 150
-#define EE_IOT_TOKN_40B 290
-#define EE_GENIOT_PATH_140B 330
-#define EE_MQTT_SERVER_30B  470
-#define EE_MQTT_PORT_4B     500
-#define EE_MQTT_CLIENT_20B  504
-#define EE_MQTT_USER_45B    524
-#define EE_MQTT_PASS_15B    569
-#define EE_MQTT_TOPIC_40B   584
-#define EE_MQTT_VALUE_70B   624
-#define EE_1B_RESET_CO2     694
-//#define EE_LAST 695
-#define EE_JSON_CFG_1000B   1000
-
-#define SAP_IOT_HOST "spHst"
-#define SAP_IOT_DEVID "spDvId"
-#define SAP_IOT_TOKEN "spTok"
-#define SAP_IOT_BTN_MSGID "spBtMID"
-#define H801_API_KEY "h801key"
-#define XX_SND_INT  "xxSndInt"
-#define XX_SND_THR  "xxSndThr"
-
 
 boolean processUserInput() {
   Serial.setTimeout(500);

@@ -1,11 +1,4 @@
 #ifdef VTHING_STARTER
-#include <Arduino.h>
-#include <NeoPixelBus.h>
-#include <ESP8266WiFi.h>
-#include <WiFiClientSecure.h>
-#include <ESP8266HTTPClient.h>
-#include <ArduinoJson.h>
-#include <Streaming.h>
 #include "common.hpp"
 #include "SSD1306.h" // alias for `#include "SSD1306Wire.h"`
 SSD1306  *display = NULL;

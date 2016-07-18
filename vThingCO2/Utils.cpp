@@ -1,12 +1,7 @@
 #include <Arduino.h>
-#include <Streaming.h>
-#include <EEPROM.h>
-#include <ArduinoJson.h>
 #include <algorithm>    // std::min
 #include "common.hpp"
-#define EE_JSON_CFG_1000B   1000
-boolean processUserInput();
-void handleWifi();
+
 char *extractStringFromQuotes(const char* src, char *dest, int destSize) {
 
   if (!*src) {

@@ -1,18 +1,5 @@
-#include <Arduino.h>
-#include <ESP8266WiFi.h>
-#include <WiFiClientSecure.h>
-#include <ESP8266HTTPClient.h>
-#include <ArduinoJson.h>
-#include <Streaming.h>
-#include <EEPROM.h>
-#include <ArduinoJson.h>
-#define SERIAL Serial
-#define EE_WIFI_SSID_30B 0
-#define EE_WIFI_P1_30B 30
-#define EE_WIFI_P2_30B 60
-char *extractStringFromQuotes(const char* src, char *dest, int destSize);
-void storeToEE(int address, const char *str, int maxLength);
-int wifiConnectToStoredSSID();
+#include "common.hpp"
+
  IPAddress ip = WiFi.localIP();
 
 void handleWifi() {

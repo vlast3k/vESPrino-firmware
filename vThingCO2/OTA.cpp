@@ -1,8 +1,7 @@
 #include <Arduino.h>
 
 #include <ESP8266httpUpdate.h>
-#include <Streaming.h>
-#define SERIAL Serial
+#include "common.hpp"
 
 void doHttpUpdate(int mode, char *url) {
   if (!url) {

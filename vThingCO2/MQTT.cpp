@@ -1,21 +1,7 @@
-#include <Arduino.h>
+#include "common.hpp"
 
 #include <PubSubClient.h>
-#include <Streaming.h>
-#include <EEPROM.h>
-#include <ESP8266WiFi.h>
-#include <WiFiClientSecure.h>
-#include <ESP8266HTTPClient.h>
-#include <ArduinoJson.h>
-char *extractStringFromQuotes(const char* src, char *dest, int destSize);
-#define SERIAL Serial
-#define EE_MQTT_SERVER_30B  470
-#define EE_MQTT_PORT_4B     500
-#define EE_MQTT_CLIENT_20B  504
-#define EE_MQTT_USER_45B    524
-#define EE_MQTT_PASS_15B    569
-#define EE_MQTT_TOPIC_40B   584
-#define EE_MQTT_VALUE_70B   624
+
 
 String   mqttServer; //= "m20.cloudmqtt.com";
 uint32_t mqttPort   ;//= 19749;

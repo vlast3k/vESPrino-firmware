@@ -1,13 +1,4 @@
 #ifdef VTHING_STARTER
-#include <Arduino.h>
-
-#include <Arduino.h>
-#include <NeoPixelBus.h>
-#include <ESP8266WiFi.h>
-#include <WiFiClientSecure.h>
-#include <ESP8266HTTPClient.h>
-#include <ArduinoJson.h>
-#include <Streaming.h>
 #include "common.hpp"
 
 
