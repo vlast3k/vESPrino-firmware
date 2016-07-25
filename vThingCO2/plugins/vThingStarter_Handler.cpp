@@ -1,6 +1,6 @@
 #ifdef VTHING_STARTER
 #include "common.hpp"
-
+#include "plugins\AT_FW_Plugin.hpp"
 
   #include <Wire.h>
   #include <PN532_I2C.h>
@@ -50,8 +50,8 @@ void handleGesture() {
       default:
         gesture = "NONE";
     }
-    handleCommandVESPrino("vecmd led_green");
-    handleCommandVESPrino("vecmd ledmode_2_2");
+    menuHandler.handleCommand("vecmd led_green");
+    menuHandler.handleCommand("vecmd ledmode_2_2");
     SERIAL << "Gesture: " << gesture << endl;
     char tmp[200], tmp2[200];
     char p2[40], p3[100];
@@ -74,7 +74,7 @@ void handleGesture() {
       HTTPClient http;
       http.begin(s);
       //addHCPIOTHeaders(&http, token);
-      int rc = processResponseCodeATFW(&http, http.GET());
+      int rc = AT_FW_Plugin::processResponseCodeATFW(&http, http.GET());
     }
 
   }
@@ -178,7 +178,7 @@ void    checkForNFCCart() {
       HTTPClient http;
       http.begin(tmp);
       //addHCPIOTHeaders(&http, token);
-      int rc = processResponseCodeATFW(&http, http.GET());
+      int rc = AT_FW_Plugin::processResponseCodeATFW(&http, http.GET());
     }
   }
 }
@@ -204,9 +204,9 @@ void initVThingStarter() {
   dumpTemp();
   tmrGetDweets = new Timer(2000L,    onGetDweets);
   tmrTempRead = new Timer(15000L,    onTempRead);
-  tmrCheckPushMsg = new Timer(1000L, handleSAP_IOT_PushService);
+  //tmrCheckPushMsg = new Timer(1000L, handleSAP_IOT_PushService);
   tmrTempRead->Start();
-  tmrCheckPushMsg->Start();
+  //tmrCheckPushMsg->Start();
   tmrGetDweets->Start();
   attachButton();
 
@@ -229,7 +229,7 @@ void initVThingStarter() {
   //initSSD1306();
   if (hasPN532) initPN532();
   if (hasSSD1306) oledHandleCommand("     vESPrino\n  IoT made easy\nPlay with sensors");
-  handleCommandVESPrino("vecmd led_black");
+  menuHandler.handleCommand("vecmd led_black");
   //handleCommandVESPrino("vecmd ledmode 1");
   //  pinMode(2, OUTPUT);
   if (hasAPDS9960) initAPDS9960();
@@ -321,101 +321,11 @@ void checkButtonSend() {
     HTTPClient http;
     http.begin(tmp);
     //addHCPIOTHeaders(&http, token);
-    int rc = processResponseCodeATFW(&http, http.GET());
+    int rc = AT_FW_Plugin::processResponseCodeATFW(&http, http.GET());
   }
 }
 
 int clicks = 5;
-void doSend() {
-  if (shouldSend == false) return;
-  shouldSend = false;
-  char tmp[200];
-  SERIAL << F("Button Clicked!") << endl;
-  if(WiFi.status() != WL_CONNECTED) {
-    SERIAL << F("Will not send: No WiFi") << endl;
-    return;
-  }
-  if (!getJSONConfig(SAP_IOT_HOST, tmp)[0]) {
-    SERIAL << F("Will not send: No configuration") << endl;
-    return;
-  }
-  HTTPClient http;
-  //https://iotmmsi024148trial.hanatrial.ondemand.com/com.sap.iotservices.mms/v1/api/http/push/e46304a8-a410-4979-82f6-ca3da7e43df9
-  //{"method":"http", "sender":"My IoT application", "messageType":"42c3546a088b3ef8b8d3", "messages":[{"command":"yellow"}]}
-  String rq = String("https://") + getJSONConfig(SAP_IOT_HOST, tmp) + F("/com.sap.iotservices.mms/v1/api/http/data/") + getJSONConfig(SAP_IOT_DEVID, tmp) + "/" + getJSONConfig(SAP_IOT_BTN_MSGID, tmp) + "/sync?button=IA==";
-  SERIAL << "Sending: " << rq << endl;
-  http.begin(rq);
-  http.addHeader("Content-Type",  "application/json;charset=UTF-8");
-  //http.setAuthorization("P1940433103", "Abcd1234");
-  http.addHeader("Authorization", String("Bearer ") + getJSONConfig(SAP_IOT_TOKEN, tmp));
-//  String post = "";
-//  post += "{\"method\":\"http\", \"sender\":\"My IoT application\", \"messageType\":\"" + getJSONConfig(SAP_IOT_BTN_MSGID) + "\", \"messages\":[{\"button\":\"" + colors[(clicks++) % COLOR_COUNT] + "\"}]}";
-  int httpCode = http.POST("");
-  // httpCode will be negative on error
-  if(httpCode > 0) {
-      // HTTP header has been send and Server response header has been handled
-      SERIAL.printf(String(F("[HTTP] GET... code: %d\n")).c_str(), httpCode);
-      String payload = http.getString();
-      SERIAL.println(payload);
-  } else {
-      SERIAL.printf(String(F("[HTTP] GET... failed, error: %s\n")).c_str(), http.errorToString(httpCode).c_str());
-  }
-}
-
-
-String mmsHost ;//= "iotmmsi024148trial.hanatrial.ondemand.com";
-String deviceId; //= "e46304a8-a410-4979-82f6-ca3da7e43df9";
-String authToken;// = "8f337a8e54bd352f28c2892743c94b3";
-//String colors[] = {"red","pink","lila","violet","blue","mblue","cyan","green","yellow","orange"};
-#define COLOR_COUNT 10
-
-//h iotmmsi024148trial.hanatrial.ondemand.com
-//d c5c73d69-6a19-4c7d-9da3-b32198ba71f9
-//m 2023a0e66f76d20f47d7
-//v co2
-//t 46de4fc404221b32054a8405f602fd
-
-
-//uint32_t lastSAPCheck = -1000000L;
-void handleSAP_IOT_PushService() {
-    char tmp[200];
-    if(WiFi.status() != WL_CONNECTED) return;
-    heap("");
-    //Serial << " before get json config" << endl;
-    if (!getJSONConfig(SAP_IOT_HOST, tmp)[0]) return;
-    //Serial << " after " << endl;
-    String url = String("https://") + getJSONConfig(SAP_IOT_HOST, tmp) + F("/com.sap.iotservices.mms/v1/api/http/data/") + getJSONConfig(SAP_IOT_DEVID, tmp) ;
-//        Serial << " before get json config" << end;
-
-    //SERIAL << url << endl;
-//    SERIAL << getJSONConfig(SAP_IOT_HOST) << endl;
-//    if (getJSONConfig(SAP_IOT_HOST)) SERIAL << "ok" << endl;
-//    else SERIAL << "false" << endl;
-    //SERIAL << (getJSONConfig(SAP_IOT_HOST) == true) << endl;
-    HTTPClient http;
-    http.begin(url);
-    //Serial << " after begin " << endl;
-    http.addHeader("Content-Type",  "application/json;charset=UTF-8");
-//    SERIAL <<  getJSONConfig(SAP_IOT_TOKEN) << endl;
-    http.addHeader("Authorization", String("Bearer ") + getJSONConfig(SAP_IOT_TOKEN, tmp));
-    //SERIAL << "make req" << endl;
- //   Serial << " after begin " << endl;
-    int httpCode = http.GET();
-    //SERIAL << "make req " << httpCode << endl;
-    // httpCode will be negative on error
-    if(httpCode > 0) {
-        // HTTP header has been send and Server response header has been handled
-        //SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
-        String payload = http.getString();
-        //SERIAL.println(payload);
-        processMessage(payload);
-    } else {
-      SERIAL << F("Failed to push message to: ") << url << ", due to: " <<http.errorToString(httpCode) << endl;
-        //SERIAL.printf("[HTTP] GET... failed, error: %s, url\n", http.errorToString(httpCode).c_str());
-    }
-
-    //lastSAPCheck = millis();
-}
 
 //void httpGET(String url) {
 //    if(WiFi.status() == WL_CONNECTED) {

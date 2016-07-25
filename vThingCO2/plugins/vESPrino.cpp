@@ -70,7 +70,7 @@ void oledHandleCommand(char *cmd) {
   display->display();
 }
 
-void handleCommandVESPrino(char *line) {
+void handleCommandVESPrino(const char *line) {
        if (strstr(line, "vespBttnA "))  putJSONConfig("vespBttn", strstr(line, " ")+1, true);
   else if (strstr(line, "vespBttn "))   putJSONConfig("vespBttn", strstr(line, " ")+1);
   else if (strstr(line, "vespRFIDA")) putJSONConfig("vespRFID" , strstr(line, " ")+1, true);
@@ -79,6 +79,12 @@ void handleCommandVESPrino(char *line) {
   else if (strstr(line, "vespSens"))  putJSONConfig("vespSens", strstr(line, " ")+1);
   else if (strstr(line, "vecmd "))    handleDWCommand(strstr(line, " ")+1);
 }
+
+void VESP_registerCommands(MenuHandler *handler) {
+  handler->registerCommand(new MenuEntry(F("vesp"), CMD_BEGIN, handleCommandVESPrino, F("")));
+  handler->registerCommand(new MenuEntry(F("vecmd"), CMD_BEGIN, handleCommandVESPrino, F("")));
+}
+
 
 boolean getDweetCommand(char *cmd) {
     static char lastDweet[30];

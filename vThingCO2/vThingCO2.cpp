@@ -6,6 +6,11 @@
 
 #include "common.hpp"
 #include <CubicGasSensors.h>
+#include "commands\CommonCommands.hpp"
+#include "plugins\SAP_HCP_IOT_Plugin.hpp"
+#include "plugins\AT_FW_Plugin.hpp"
+#include "plugins\CustomURL_Plugin.hpp"
+#include "plugins\URLShortcuts.hpp"
 
 
 
@@ -37,7 +42,7 @@ NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus
 int pgpio0, pgpio2;
 
 String VERSION = "v1.16";
-void printVersion() {
+void printVersion(const char* ignore) {
   SERIAL << endl;
   #ifdef VTHING_CO2
     SERIAL << F("vThing - CO2 Monitor ");
@@ -85,11 +90,32 @@ void setup() {
   #elif defined(VTHING_H801_LED)
     h801_setup();
   #endif
+  CommonCommands commCmd;
+  commCmd.registerCommands(&menuHandler);
+  SAP_HCP_IOT_Plugin::registerCommands(&menuHandler);
+  AT_FW_Plugin::registerCommands(&menuHandler);
+  CustomURL_Plugin::registerCommands(&menuHandler);
+  URLShortcuts::registerCommands(&menuHandler);
+  OTA_registerCommands(&menuHandler);
+  WIFI_registerCommands(&menuHandler);
+  MQTT_RegisterCommands(&menuHandler);
+#ifdef VTHING_CO2
+  CO2_registerCommands(&menuHandler);
+#endif
+#ifdef VTHING_H801_LED
+  H801_registerCommands(&menuHandler);
+#endif
+#ifdef VTHING_STARTER
+  VESP_registerCommands(&menuHandler);
+#endif
+  menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
+
+
 }
 
 void loop() {
   handleWifi();
-  while (processUserInput()) delay(1000);
+  while (menuHandler.processUserInput()) delay(1000);
   if (SKIP_LOOP) {delay(100); return;}
 
   #ifdef VTHING_CO2

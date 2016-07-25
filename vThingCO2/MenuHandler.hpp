@@ -7,7 +7,7 @@
 
 
 
-typedef void (*MenuHandlerFunction)(char *line);
+typedef void (*MenuHandlerFunction)(const char *line);
 class MenuEntry {
   public:
     MenuEntry(const __FlashStringHelper *_cmd, bool _cmdExactMatch, MenuHandlerFunction _handler, const __FlashStringHelper *_description) :

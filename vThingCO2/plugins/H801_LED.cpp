@@ -242,7 +242,7 @@ void h801_mqtt_connect() {
   }
 }
 
-void  testH801() {
+void testH801(const char *ignore) {
   boolean res = h801_mqttClient->publish("/openHAB/RGB_2/Color", "12;33;44");
   SERIAL << String(res) << endl;
 }
@@ -321,6 +321,11 @@ void h801_loop() {
 //  tmrStoreData->Update();
  //heap("");
   delay(100);
+}
+
+void H801_registerCommands(menuHandler *handler) {
+  handler->registerCommand(new MenuEntry(F("testled"), CMD_EXACT, testH801 , F("")));
+  handler->registerCommand(new MenuEntry(F("h801cfg"), CMD_BEGIN, h801_processConfig, F("")));
 }
 
 #endif

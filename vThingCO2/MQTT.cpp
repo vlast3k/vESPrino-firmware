@@ -107,3 +107,18 @@ void sendMQTT(String msg) {
   client.disconnect();
   SERIAL << "sent in:" << (millis() - st) << endl;
 }
+
+void configMQTTVal(const char *line) {
+  storeToEE(EE_MQTT_VALUE_70B, &line[10], 70);
+  SERIAL << "DONE" << endl;
+}
+
+void configMQTTTest(const char *ignore) {
+  sendMQTT("556");
+}
+
+void MQTT_RegisterCommands(MenuHandler *handler) {
+  handler->registerCommand(new MenuEntry(F("cfg_mqtt"),  CMD_BEGIN, configMQTT, F("")));
+  handler->registerCommand(new MenuEntry(F("cfg_mqval"), CMD_BEGIN, configMQTTVal, F("")));
+  handler->registerCommand(new MenuEntry(F("atest_mqtt"), CMD_EXACT, configMQTTTest, F("")));
+}

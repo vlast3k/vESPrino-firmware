@@ -3,7 +3,7 @@
 #include <ESP8266httpUpdate.h>
 #include "common.hpp"
 
-void doHttpUpdate(int mode, char *url) {
+void doHttpUpdate(int mode, const char *url) {
   if (!url) {
     #ifdef VTHING_CO2
       url = "http://anker-bg.com/vlast3k/vthing_co2/latest.bin";
@@ -34,4 +34,22 @@ void doHttpUpdate(int mode, char *url) {
       SERIAL.println(F("HTTP_UPDATE_OK"));
       break;
   }
+}
+
+void ota_otahtest(const char* line) {
+  doHttpUpdate(2, NULL);
+}
+
+void ota_otah(const char* line) {
+  doHttpUpdate(1, NULL);
+}
+
+void ota_otau(const char* line) {
+  doHttpUpdate(0, &line[5]);
+}
+
+void OTA_registerCommands(MenuHandler *handler) {
+  handler->registerCommand(new MenuEntry(F("otahtest"), CMD_BEGIN, ota_otahtest, F("HCP Cfg 1")));
+  handler->registerCommand(new MenuEntry(F("otah"), CMD_EXACT, ota_otah, F("HCP Cfg 2")));
+  handler->registerCommand(new MenuEntry(F("otau"), CMD_BEGIN, ota_otau, F("HCP Cfg 2")));
 }

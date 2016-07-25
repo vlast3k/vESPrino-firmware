@@ -71,10 +71,41 @@ void loopCO2Handler() {
   delay(3000);
 }
 
-void resetCO2() {
+void resetCO2(const char *ignore) {
   SERIAL << F("Calibration Mode Enabled.\nPlease put the device for 5 minutes at fresh air.\nYou can now put it outside. It will complete calibration once it worked 5 minutes after restart") << endl;
   EEPROM.put(EE_1B_RESET_CO2, (byte)1);
   EEPROM.commit();
   ESP.restart();
 }
+
+void setSendInterval (const char *line) {
+  int interval = 120;
+  if (strchr(line, ' ')) {
+    interval = atoi(strchr(line, ' ') + 1);
+  }
+  putJSONConfig(XX_SND_INT, String(interval).c_str());
+  intCO2SendValue = (uint32_t)interval * 1000;
+  tmrCO2SendValueTimer->setInterval(intCO2SendValue);
+  Serial << "Send Interval (ms): " << intCO2SendValue << endl;
+}
+
+void setSendThreshold(const char *line) {
+  int thr = 0;
+  if (strchr(line, ' ')) {
+    thr = atoi(strchr(line, ' ') + 1);
+  }
+  putJSONConfig(XX_SND_THR, String(thr).c_str());
+  co2Threshold = thr;
+  Serial << F("CO2 Threshold (ppm): ") << co2Threshold << endl;
+}
+
+void CO2_registerCommands(MenuHandler *handler) {
+  handler->registerCommand(new MenuEntry(F("wsi"), CMD_BEGIN, setSendInterval , F("")));
+  handler->registerCommand(new MenuEntry(F("wst"), CMD_BEGIN, setSendThreshold, F("")));
+  handler->registerCommand(new MenuEntry(F("rco"), CMD_EXACT, resetCO2, F("")));
+  // else if (strstr(line, "wsi ")) setSendInterval (line);
+  // else if (strstr(line, "wst ")) setSendThreshold(line);
+  // else if (strcmp(line, "rco") == 0) resetCO2();
+}
+
 #endif

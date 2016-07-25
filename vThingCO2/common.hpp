@@ -12,6 +12,7 @@
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 #include <Timer.h>
+#include "MenuHandler.hpp"
 extern "C" {
 #include "user_interface.h"
 }
@@ -61,53 +62,58 @@ extern "C" {
 #define XX_SND_INT  "xxSndInt"
 #define XX_SND_THR  "xxSndThr"
 
+#define HTTP_STR  "http://"
+#define HTTPS_STR "https://"
+
+void OTA_registerCommands(MenuHandler *handler);
+void WIFI_registerCommands(MenuHandler *handler);
+void MQTT_RegisterCommands(MenuHandler *handler);
+void VESP_registerCommands(MenuHandler *handler);
+void CO2_registerCommands(MenuHandler *handler);
+
 void heap(const char * str);
 void setSendInterval (const char *line);
 void setSendThreshold(const char *line);
-void getTS(const char* line);
-void sendTS();
-void testUBI();
-int setWifi(const char* p);
-void atCIPSTART(const char *p);
-void mockATCommand(const char *line);
-void cfgGENIOT(const char *p);
-void cfgHCPIOT1(const char *p);
-void cfgHCPIOT2(const char *p);
+// void getTS(const char* line);
+// void sendTS();
+// void testUBI();
+void setWifi(const char* p);
+// void atCIPSTART(const char *p);
+// void mockATCommand(const char *line);
+// void cfgGENIOT(const char *p);
+
 void sndIOT(const char *line);
-void sndGENIOT(const char *line);
-void sndHCPIOT(const char *line);
-void addHCPIOTHeaders(HTTPClient *http, const char *token);
-void sndSimple();
+// void sndGENIOT(const char *line);
+// void sndSimple();
 void configMQTT(const char *p);
 void sendMQTT(String msg);
-int processResponseCodeATFW(HTTPClient *http, int rc);
-void doHttpUpdate(int mode, char *url);
+// int processResponseCodeATFW(HTTPClient *http, int rc);
 char *extractStringFromQuotes(const char* src, char *dest, int destSize);
 void storeToEE(int address, const char *str, int maxLength);
 void handleWifi();
-void connectToWifi(const char *s1, const char *s2, const char *s3);
-void wifiScanNetworks();
-int wifiConnectToStoredSSID();
-boolean processUserInput();
-byte readLine(int timeout);
-int handleCommand();
+// void connectToWifi(const char *s1, const char *s2, const char *s3);
+// void wifiScanNetworks();
+// int wifiConnectToStoredSSID();
+//boolean processUserInput();
+//byte readLine(int timeout);
+//int handleCommand();
 void heap(const char * str);
 void processMessage(String payload);
 void processCommand(String cmd);
 void initLight();
-void printJSONConfig();
+void printJSONConfig(const char *ignore);
 void putJSONConfig(const char *key, int value, boolean commit = true);
 void putJSONConfig(const char *key, const char *value, boolean isArrayValue = false, boolean commit = true);
 void dumpTemp();
-void factoryReset();
+void factoryReset(char *line = NULL);
 void activeWait();
 char *getJSONConfig(const char *item, char *buf, char *p1 = NULL, char *p3=NULL);
-void testJSON();
-void testHttpUpdate();
+void testJSON(const char *ignore);
+// void testHttpUpdate();
 void setSAPAuth(const char *);
 char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
-void scani2c();
-void printVersion();
+void scani2c(const char *ignore);
+void printVersion(const char *ignore="");
 void handleCommandVESPrino(char *line);
 byte readLine(int timeout);
 int handleCommand();
@@ -121,7 +127,6 @@ void checkButtonSend();
 //#ifdef VTHING_STARTER
 boolean si7021init();
 void onTempRead();
-void handleSAP_IOT_PushService();
 void doSend();
 void attachButton();
 void initVThingStarter();
@@ -151,4 +156,5 @@ extern boolean hasSSD1306, hasSI7021, hasPN532, hasBMP180, hasBH1750, hasAPDS996
 extern bool shouldSend;
 extern boolean DEBUG;
 extern boolean SKIP_LOOP;
+extern MenuHandler menuHandler;
 #endif

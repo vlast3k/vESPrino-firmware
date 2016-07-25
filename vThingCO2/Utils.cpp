@@ -80,7 +80,7 @@ void putJSONConfig(const char *key, const char *value, boolean valueIsArray, boo
   if (commit) EEPROM.commit();
 }
 
-void testJSON() {
+void testJSON(const char *ignore) {
   char ddd[1000] = "";
   char tmp[100];
   EEPROM.put(EE_JSON_CFG_1000B, ddd);
@@ -90,7 +90,7 @@ void testJSON() {
   EEPROM.commit();
   SERIAL << "Testing JSON" << endl;
   SERIAL << getJSONConfig("vladi", tmp) << endl;
-  putJSONConfig("vladi", "sadsa");
+  putJSONConfig("vladi", "sadsda");
   SERIAL << "1 " << getJSONConfig("vladi", tmp) << endl;
   putJSONConfig("vladi", "sadsa");
   SERIAL << "2 " << getJSONConfig("vladi", tmp) << endl;
@@ -99,7 +99,7 @@ void testJSON() {
   EEPROM.commit();
 }
 
- void printJSONConfig() {
+ void printJSONConfig(const char* ignore) {
   StaticJsonBuffer<400> jsonBuffer;
   char data[1000];
   EEPROM.get(EE_JSON_CFG_1000B, data);
@@ -112,7 +112,7 @@ void activeWait() {
   for (int i=1; i < 30; i++) {
     delay(100);
     handleWifi();
-    processUserInput();
+    menuHandler.processUserInput();
     if ((i%10) == 0) SERIAL << '.';
   }
   SERIAL << endl;

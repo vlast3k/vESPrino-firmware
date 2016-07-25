@@ -46,7 +46,7 @@ void scani2cBus(int sda, int sca)
   //delay(5000);           // wait 5 seconds for next scan
 }
 
-void scani2c() {
+void scani2c(const char *ignore) {
 
   Serial.println("\nI2C Scanner D1 D6");
   scani2cBus(D1, D6);
