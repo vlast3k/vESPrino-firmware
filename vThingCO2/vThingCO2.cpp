@@ -55,6 +55,7 @@ void printVersion(const char* ignore) {
   #endif
   SERIAL << VERSION << endl;
   SERIAL << F("IP address: ") << WiFi.localIP() << endl;
+
 }
 
 
@@ -69,6 +70,10 @@ void setup() {
     strip->SetPixelColor(0, RgbColor(20, 0, 10));
     strip->Show();
   #endif
+
+  pinMode(D8, OUTPUT);     // Initialize the LED_BUILTIN pin as an output
+  digitalWrite(D8, HIGH);
+  delay(1000);
 
   //Serial.begin(9600);
   //Serial1.begin(9600);

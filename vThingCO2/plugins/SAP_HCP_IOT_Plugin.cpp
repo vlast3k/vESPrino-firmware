@@ -164,3 +164,36 @@ void SAP_HCP_IOT_Plugin::addHCPIOTHeaders(HTTPClient *http, const char *token) {
   http->addHeader("Content-Type",  "application/json;charset=UTF-8");
   http->addHeader("Authorization", String("Bearer ") + token);
 }
+
+void processMessage(String msgIn) {
+  StaticJsonBuffer<200> jsonBuffer;
+  char msg[301];
+  strncpy(msg, msgIn.c_str(), 300);
+  JsonArray& root = jsonBuffer.parseArray(msg);
+  //[{"messageType":"42c3546a088b3ef8b8d3","sender":"IoT App","messages":[{"command":"switch on"}]}]
+
+  if (!root.success()) {
+    //if server has returned empyy response
+    if (DEBUG) SERIAL << F("parseObject() failed: ") << msgIn << endl;
+    return;
+  }
+  //SERIAL.print(root[0].is<JsonObject&>());
+  //SERIAL  << "type:" << root.get(0) << endl;
+  if (root[0].is<JsonObject&>()) {
+    //SERIAL << root[0].asObject().containsKey("messages") << endl;
+    //SERIAL << root[0]["messages"].is<JsonArray&>() << endl;
+    //SERIAL << root[0]["messages"][0].is<JsonObject&>() << endl;
+    //SERIAL << root[0]["messages"][0].asObject().containsKey("color") << endl;
+    //SERIAL << " Received cmd: " << root[0]["messages"][0]["color"].asString() << endl;
+    if (root[0]["messages"][0]["color"].asString()) {
+      //SERIAL << "to process command" << endl;
+      processCommand(root[0]["messages"][0]["color"].asString());
+    } else {
+      SERIAL << F("command not recognized") << endl;
+     }
+  }
+//  else {
+//    SERIAL << "no cmd" << endl;
+//  }
+
+}

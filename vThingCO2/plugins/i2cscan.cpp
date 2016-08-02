@@ -1,6 +1,15 @@
 #include <Arduino.h>
-
+#include <Streaming.h>
 #include <Wire.h>
+#include "common.hpp"
+
+boolean checkI2CDevice(int sda, int sca, int addr) {
+  Wire.begin(sda, sca);
+  Wire.beginTransmission(addr);
+  int res = Wire.endTransmission();
+  SERIAL << "i2c addr:" << addr << ", i2c res: " << _HEX(res) << endl;
+  return !res;
+}
 
 void scani2cBus(int sda, int sca)
 {
@@ -48,16 +57,15 @@ void scani2cBus(int sda, int sca)
 
 void scani2c(const char *ignore) {
 
-  Serial.println("\nI2C Scanner D1 D6");
-  scani2cBus(D1, D6);
+  Serial <<"I2C Scan SDA : SCA" << endl;
+  Serial << "D1 : D5\n";
+  scani2cBus(D1, D5);
 
-  Serial.println("\nI2C Scanner D6 D1");
-  scani2cBus(D6, D1);
-
-  Serial.println("\nI2C Scanner D7 D5");
-  scani2cBus(D7, D5);
-
-  Serial.println("\nI2C Scanner D5 D7");
-  scani2cBus(D5, D7);
+  Serial << "D5 : D1\n";
+  scani2cBus(D5, D1);
+  Serial << "D7 : D6\n";
+  scani2cBus(D7, D6);
+  Serial << "D6 : D7\n";
+  scani2cBus(D6, D7);
 
 }

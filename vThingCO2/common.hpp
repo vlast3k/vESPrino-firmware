@@ -134,6 +134,33 @@ void loopVThingStarter();
 
 void handleCommandVESPrino(char *line);
 
+void initPIR();
+void handlePIR();
+
+void initPN532();
+void checkForNFCCart();
+
+void initAPDS9960();
+void handleGesture();
+void checkForGesture();
+
+boolean si7021init();
+void onTempRead();
+void dumpTemp();
+
+boolean getDweetCommand(char *cmd);
+void onGetDweets();
+void handleDWCommand(char *line);
+
+RgbColor ledNextColor();
+void setLedColor(const RgbColor &color);
+void ledHandleColor(char *colorNew);
+void ledSetBrg(char *s);
+void ledHandleMode(char *cmd) ;
+
+boolean checkI2CDevice(int sda, int sca, int addr) ;
+
+
 //#endif
 
 #ifdef VTHING_H801_LED
@@ -152,9 +179,10 @@ void loopCO2Handler();
 
 
 #endif
-extern boolean hasSSD1306, hasSI7021, hasPN532, hasBMP180, hasBH1750, hasAPDS9960;
+extern boolean hasSSD1306, hasSI7021, hasPN532, hasBMP180, hasBH1750, hasAPDS9960, hasPIR;
 extern bool shouldSend;
 extern boolean DEBUG;
 extern boolean SKIP_LOOP;
 extern MenuHandler menuHandler;
+
 #endif
