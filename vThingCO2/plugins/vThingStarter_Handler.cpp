@@ -84,7 +84,7 @@ void initVThingStarter() {
 
   if(!hasAPDS9960)   attachButton();
 
-  hasPIR = true;
+  hasPIR = false;
   if(hasPIR) initPIR();
 
 
