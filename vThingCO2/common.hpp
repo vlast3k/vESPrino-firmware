@@ -186,3 +186,5 @@ extern boolean SKIP_LOOP;
 extern MenuHandler menuHandler;
 
 #endif
+
+void MigrateSettingsIfNeeded();

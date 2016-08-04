@@ -11,6 +11,7 @@
 #include "plugins\AT_FW_Plugin.hpp"
 #include "plugins\CustomURL_Plugin.hpp"
 #include "plugins\URLShortcuts.hpp"
+#include "plugins\PropertyList.hpp"
 
 
 
@@ -87,6 +88,8 @@ void setup() {
 
   SERIAL << F("Waiting for auto-connect") << endl;
   activeWait();
+  MigrateSettingsIfNeeded();
+  PropertyList.begin();
 
   #ifdef VTHING_STARTER
     initVThingStarter();
