@@ -1,6 +1,7 @@
 #include "common.hpp"
 #include "plugins\SAP_HCP_IOT_Plugin.hpp"
 #include "plugins\CustomURL_Plugin.hpp"
+#include "plugins\PropertyList.hpp"
 
  IPAddress ip = WiFi.localIP();
 
@@ -12,7 +13,7 @@ void handleWifi() {
 #ifdef SAP_AUTH
     vSAP_Auth(EE_WIFI_P1_30B, EE_WIFI_P1_30B);
 #endif
-    SERIAL << "IP address: " << WiFi.localIP() << " in " << millis() << " ms" << endl << "GOT IP" << endl;
+    SERIAL << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
     // handleCommandVESPrino("vecmd led_mblue");
     // handleCommandVESPrino("vecmd ledmode_2_3");
   }
@@ -21,18 +22,18 @@ void handleWifi() {
 
 int wifiConnectToStoredSSID() {
   char ssid[30], pass[30];
-  EEPROM.get(EE_WIFI_SSID_30B, ssid);
-  EEPROM.get(EE_WIFI_P1_30B, pass);
-  SERIAL << "Connecting to: \"" << ssid << "\", \"" << pass << "\"" << endl;
+  PropertyList.readProperty(EE_WIFI_SSID, ssid);
+  PropertyList.readProperty(EE_WIFI_P1, pass);
+  SERIAL << F("Connecting to: \"") << ssid << F("\", \"") << pass << F("\"") << endl;
   WiFi.disconnect();
   delay(500);
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, pass);
 }
 void connectToWifi(const char *s1, const char *s2, const char *s3) {
-  storeToEE(EE_WIFI_SSID_30B, s1, 30);
-  storeToEE(EE_WIFI_P1_30B, s2, 30);
-  storeToEE(EE_WIFI_P2_30B, s3, 30);
+  PropertyList.putProperty(EE_WIFI_SSID, s1);
+  PropertyList.putProperty(EE_WIFI_P1, s2);
+  PropertyList.putProperty(EE_WIFI_P2, s3);
 
   wifiConnectToStoredSSID();
   //SERIAL << "Connecting to " << s1 << endl;
@@ -113,17 +114,17 @@ void sndIOT(const char *line) {
     return;
   }
   char path[140];
-  EEPROM.get(EE_IOT_PATH_140B, path);
+  PropertyList.readProperty(EE_IOT_PATH, path);
   if (path[0] && path[0] != 255) {
     SAP_HCP_IOT_Plugin::sndHCPIOT(line);
   }
 
-  EEPROM.get(EE_GENIOT_PATH_140B, path);
+  PropertyList.readProperty(EE_GENIOT_PATH, path);
   if (path[0] && path[0] != 255) {
     CustomURL_Plugin::sndGENIOT(line);
   }
 
-  EEPROM.get(EE_MQTT_SERVER_30B, path);
+  PropertyList.readProperty(EE_MQTT_SERVER, path);
   if (path[0] && path[0] != 255) {
     sendMQTT(&line[7]);
   }

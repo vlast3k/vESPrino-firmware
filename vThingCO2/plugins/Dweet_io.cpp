@@ -1,5 +1,6 @@
 #ifdef VTHING_STARTER
 #include "common.hpp"
+#include "PropertyList.hpp"
 
 void onGetDweets() {
   char line[200];
@@ -12,8 +13,8 @@ boolean getDweetCommand(char *cmd) {
     static char lastDweet[30];
 
     char tmp[200];
-    if (!getJSONConfig("vespDWCmd", tmp)[0]) return false;
-    String url = String("http://dweet.io/get/latest/dweet/for/") + getJSONConfig("vespDWCmd", tmp);
+    if (!PropertyList.readProperty("vespDWCmd", tmp)[0]) return false;
+    String url = String("http://dweet.io/get/latest/dweet/for/") + PropertyList.readProperty("vespDWCmd", tmp);
 
     HTTPClient http;
     http.begin(url);

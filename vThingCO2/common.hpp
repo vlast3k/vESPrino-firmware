@@ -4,7 +4,7 @@
 #include <NeoPixelBus.h>
 #include <CubicGasSensors.h>
 #include <Streaming.h>
-#include <EEPROM.h>
+//#include <EEPROM.h>
 #include <Math.h>
 #include <algorithm>    // std::min
 #include <ESP8266WiFi.h>
@@ -36,23 +36,42 @@ extern "C" {
 #define Cblack   RgbColor(0)
 
 #define SERIAL Serial
-#define EE_WIFI_SSID_30B 0
-#define EE_WIFI_P1_30B 30
-#define EE_WIFI_P2_30B 60
-#define EE_IOT_HOST_60B 90
-#define EE_IOT_PATH_140B 150
-#define EE_IOT_TOKN_40B 290
-#define EE_GENIOT_PATH_140B 330
-#define EE_MQTT_SERVER_30B  470
-#define EE_MQTT_PORT_4B     500
-#define EE_MQTT_CLIENT_20B  504
-#define EE_MQTT_USER_45B    524
-#define EE_MQTT_PASS_15B    569
-#define EE_MQTT_TOPIC_40B   584
-#define EE_MQTT_VALUE_70B   624
-#define EE_1B_RESET_CO2     694
-//#define EE_LAST 695
-#define EE_JSON_CFG_1000B   1000
+#define EE_WIFI_SSID F("wifi.ssid")
+#define EE_WIFI_P1   F("wifi.p1")
+#define EE_WIFI_P2   F("wifi.p1")
+#define EE_IOT_HOST  F("sap.hcp.host")
+#define EE_IOT_PATH  F("sap.hcp.path")
+#define EE_IOT_TOKN  F("sap.hcp.token")
+#define EE_GENIOT_PATH  F("custom_url.path")
+#define EE_MQTT_SERVER  F("mqtt.server")
+#define EE_MQTT_PORT    F("mqtt.port")
+#define EE_MQTT_CLIENT  F("mqtt.client")
+#define EE_MQTT_USER    F("mqtt.user")
+#define EE_MQTT_PASS    F("mqtt.pass")
+#define EE_MQTT_TOPIC   F("mqtt.topic")
+#define EE_MQTT_VALUE   F("mqtt.valie")
+#define EE_RESET_CO2    F("cubic.co2.reset")
+
+#define PROP_SND_INT      F("cubic.co2.interval")
+#define PROP_SND_THR      F("cubic.co2.threshold")
+#define PROP_H801_API_KEY F("h801.api_key")
+// #define EE_WIFI_SSID_30B 0
+// #define EE_WIFI_P1_30B 30
+// #define EE_WIFI_P2_30B 60
+// #define EE_IOT_HOST_60B 90
+// #define EE_IOT_PATH_140B 150
+// #define EE_IOT_TOKN_40B 290
+// #define EE_GENIOT_PATH_140B 330
+// #define EE_MQTT_SERVER_30B  470
+// #define EE_MQTT_PORT_4B     500
+// #define EE_MQTT_CLIENT_20B  504
+// #define EE_MQTT_USER_45B    524
+// #define EE_MQTT_PASS_15B    569
+// #define EE_MQTT_TOPIC_40B   584
+// #define EE_MQTT_VALUE_70B   624
+// #define EE_1B_RESET_CO2     694
+// //#define EE_LAST 695
+// #define EE_JSON_CFG_1000B   1000
 
 #define SAP_IOT_HOST "spHst"
 #define SAP_IOT_DEVID "spDvId"
@@ -89,7 +108,7 @@ void configMQTT(const char *p);
 void sendMQTT(String msg);
 // int processResponseCodeATFW(HTTPClient *http, int rc);
 char *extractStringFromQuotes(const char* src, char *dest, int destSize);
-void storeToEE(int address, const char *str, int maxLength);
+//void storeToEE(int address, const char *str, int maxLength);
 void handleWifi();
 // void connectToWifi(const char *s1, const char *s2, const char *s3);
 // void wifiScanNetworks();
@@ -101,14 +120,14 @@ void heap(const char * str);
 void processMessage(String payload);
 void processCommand(String cmd);
 void initLight();
-void printJSONConfig(const char *ignore);
-void putJSONConfig(const char *key, int value, boolean commit = true);
-void putJSONConfig(const char *key, const char *value, boolean isArrayValue = false, boolean commit = true);
+//void printJSONConfig(const char *ignore);
+//void putJSONConfig(const char *key, int value, boolean commit = true);
+//void putJSONConfig(const char *key, const char *value, boolean isArrayValue = false, boolean commit = true);
 void dumpTemp();
 void factoryReset(char *line = NULL);
 void activeWait();
-char *getJSONConfig(const char *item, char *buf, char *p1 = NULL, char *p3=NULL);
-void testJSON(const char *ignore);
+//char *getJSONConfig(const char *item, char *buf, char *p1 = NULL, char *p3=NULL);
+//void testJSON(const char *ignore);
 // void testHttpUpdate();
 void setSAPAuth(const char *);
 char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;

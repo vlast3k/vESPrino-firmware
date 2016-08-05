@@ -5,11 +5,12 @@
 class PropertyListClass {
 public:
   void begin();
-  void putProperty(const __FlashStringHelper *key, char *value);
-  void putProperty(const char *key, char *value);
+  void putProperty(const __FlashStringHelper *key, const char *value);
+  void putProperty(const char *key, const char *value);
   char *readProperty(const __FlashStringHelper *key, char *value);
   char *readProperty(const char *key, char *value);
   bool readBoolProperty(char *key);
+  long readLongProperty(const __FlashStringHelper *key);
 
 
 

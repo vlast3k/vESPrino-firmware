@@ -1,6 +1,7 @@
 #include "common.hpp"
 
 #include <PubSubClient.h>
+#include "plugins/PropertyList.hpp"
 
 
 String   mqttServer; //= "m20.cloudmqtt.com";
@@ -40,12 +41,13 @@ void configMQTT(const char *p) {
     #endif
   }
 
-  EEPROM.put(EE_MQTT_SERVER_30B, mqttServer);
-  EEPROM.put(EE_MQTT_PORT_4B, atol(mqttPortS));
-  EEPROM.put(EE_MQTT_CLIENT_20B, mqttClient);
-  EEPROM.put(EE_MQTT_USER_45B, mqttUser);
-  EEPROM.put(EE_MQTT_PASS_15B, mqttPass);
-  EEPROM.put(EE_MQTT_TOPIC_40B, mqttTopic);
+  PropertyList.putProperty(EE_MQTT_SERVER, mqttServer);
+  PropertyList.putProperty(EE_MQTT_SERVER, mqttServer);
+  PropertyList.putProperty(EE_MQTT_PORT, mqttPortS);
+  PropertyList.putProperty(EE_MQTT_CLIENT, mqttClient);
+  PropertyList.putProperty(EE_MQTT_USER, mqttUser);
+  PropertyList.putProperty(EE_MQTT_PASS, mqttPass);
+  PropertyList.putProperty(EE_MQTT_TOPIC, mqttTopic);
 
   EEPROM.commit();
   SERIAL << F("MQTT Configuration Stored") << endl;
@@ -60,13 +62,13 @@ void configMQTT(const char *p) {
 void sendMQTT(String msg) {
   char mqttServer[30], mqttClient[20], mqttUser[45], mqttPass[15], mqttTopic[40], mqttValue[70];
   long mqttPort;
-  EEPROM.get(EE_MQTT_SERVER_30B, mqttServer);
-  EEPROM.get(EE_MQTT_PORT_4B,    mqttPort);
-  EEPROM.get(EE_MQTT_CLIENT_20B, mqttClient);
-  EEPROM.get(EE_MQTT_USER_45B,   mqttUser);
-  EEPROM.get(EE_MQTT_PASS_15B,   mqttPass);
-  EEPROM.get(EE_MQTT_TOPIC_40B,  mqttTopic);
-  EEPROM.get(EE_MQTT_VALUE_70B,  mqttValue);
+  PropertyList.readProperty(EE_MQTT_SERVER, mqttServer);
+  mqttPort = PropertyList.readLongProperty(EE_MQTT_PORT);
+  PropertyList.readProperty(EE_MQTT_CLIENT, mqttClient);
+  PropertyList.readProperty(EE_MQTT_USER,   mqttUser);
+  PropertyList.readProperty(EE_MQTT_PASS,   mqttPass);
+  PropertyList.readProperty(EE_MQTT_TOPIC,  mqttTopic);
+  PropertyList.readProperty(EE_MQTT_VALUE,  mqttValue);
   SERIAL << "Sending via MQTT: ";
   delay(150);
   SERIAL << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
@@ -109,7 +111,7 @@ void sendMQTT(String msg) {
 }
 
 void configMQTTVal(const char *line) {
-  storeToEE(EE_MQTT_VALUE_70B, &line[10], 70);
+  PropertyList.putProperty(EE_MQTT_VALUE, &line[10]);
   SERIAL << "DONE" << endl;
 }
 

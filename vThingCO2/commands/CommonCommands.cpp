@@ -47,8 +47,8 @@ void CommonCommands::registerCommands(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("dumpCfg"), CMD_EXACT, &CommonCommands::dumpCfg, F("Dump EEPROM Contents")));
   handler->registerCommand(new MenuEntry(F("heap"), CMD_EXACT, &CommonCommands::cmdHeap, F("Free heap")));
   handler->registerCommand(new MenuEntry(F("restart"), CMD_EXACT, espRestart, F("")));
-  handler->registerCommand(new MenuEntry(F("jscfg"), CMD_EXACT, printJSONConfig, F("")));
-  handler->registerCommand(new MenuEntry(F("jjj"), CMD_EXACT, testJSON, F("")));
+  // handler->registerCommand(new MenuEntry(F("jscfg"), CMD_EXACT, printJSONConfig, F("")));
+  // handler->registerCommand(new MenuEntry(F("jjj"), CMD_EXACT, testJSON, F("")));
   handler->registerCommand(new MenuEntry(F("sss"), CMD_EXACT, stopActiveExecution, F("")));
 
 }

@@ -18,10 +18,10 @@ void PropertyListClass::begin() {
 }
 
 
-void PropertyListClass::putProperty(const __FlashStringHelper *key, char *value) {
+void PropertyListClass::putProperty(const __FlashStringHelper *key, const char *value) {
   putProperty(String(key).c_str(), value);
 }
-void PropertyListClass::putProperty(const char *key, char *value) {
+void PropertyListClass::putProperty(const char *key, const char *value) {
   File in = SPIFFS.open(configFileName, "r");
   File out= SPIFFS.open(tempFileName, "w");
   String _key = String(key) + "=";
@@ -65,5 +65,10 @@ bool PropertyListClass::readBoolProperty(char *key) {
   return readProperty(key, v)[0] != 0;
 }
 
+long PropertyListClass::readLongProperty(const __FlashStringHelper *key) {
+  char v[20];
+  return atol(readProperty(key, v));
+
+}
 
 PropertyListClass PropertyList;

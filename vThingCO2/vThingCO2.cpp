@@ -83,7 +83,7 @@ void setup() {
   //pgpio0 = digitalRead(0);
   //pgpio2 = digitalRead(2);
   printVersion();
-  EEPROM.begin(3000);
+  
   SERIAL << F("ready") << endl;
 
   SERIAL << F("Waiting for auto-connect") << endl;

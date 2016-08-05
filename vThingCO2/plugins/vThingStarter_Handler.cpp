@@ -3,6 +3,7 @@
 #include "plugins\AT_FW_Plugin.hpp"
 #include <Wire.h>
 #include <Timer.h>
+#include "PropertyList.hpp"
 
 void onPIR() {
   Serial << "on PIR" << endl;
@@ -16,12 +17,12 @@ void onPIROff() {
 
 void handleCommandVESPrino(const char *line) {
   Serial <<"Vesprino cmd: " << line << endl;
-       if (strstr(line, "vespBttnA "))  putJSONConfig("vespBttn", strstr(line, " ")+1, true);
-  else if (strstr(line, "vespBttn "))   putJSONConfig("vespBttn", strstr(line, " ")+1);
-  else if (strstr(line, "vespRFIDA")) putJSONConfig("vespRFID" , strstr(line, " ")+1, true);
-  else if (strstr(line, "vespRFID")) putJSONConfig("vespRFID" , strstr(line, " ")+1);
-  else if (strstr(line, "vespDWCmd")) putJSONConfig("vespDWCmd" , strstr(line, " ")+1);
-  else if (strstr(line, "vespSens"))  putJSONConfig("vespSens", strstr(line, " ")+1);
+       if (strstr(line, "vespBttnA "))  PropertyList.putProperty("vespBttn", strstr(line, " ")+1, true);
+  else if (strstr(line, "vespBttn "))   PropertyList.putProperty("vespBttn", strstr(line, " ")+1);
+  else if (strstr(line, "vespRFIDA"))   PropertyList.putProperty("vespRFID" , strstr(line, " ")+1, true);
+  else if (strstr(line, "vespRFID"))    PropertyList.putProperty("vespRFID" , strstr(line, " ")+1);
+  else if (strstr(line, "vespDWCmd"))   PropertyList.putProperty("vespDWCmd" , strstr(line, " ")+1);
+  else if (strstr(line, "vespSens"))    PropertyList.putProperty("vespSens", strstr(line, " ")+1);
   else if (strstr(line, "vecmd "))    handleDWCommand(strstr(line, " ")+1);
 }
 
@@ -59,9 +60,9 @@ void initVThingStarter() {
   attachButton();
 
       char tmp[200];
-    if (getJSONConfig("vespDWCmd", tmp)[0]) {
-      SERIAL << F("Will read dweets from: http://dweet.io/get/latest/dweet/for/") << getJSONConfig("vespDWCmd", tmp) << endl;
-      SERIAL << F("Send commands to: https://dweet.io/dweet/for/") << getJSONConfig("vespDWCmd", tmp) << F("vladi1?cmd=") << endl;
+    if (PropertyList.readProperty("vespDWCmd", tmp)[0]) {
+      SERIAL << F("Will read dweets from: http://dweet.io/get/latest/dweet/for/") << PropertyList.readProperty("vespDWCmd", tmp) << endl;
+      SERIAL << F("Send commands to: https://dweet.io/dweet/for/") << PropertyList.readProperty("vespDWCmd", tmp) << F("vladi1?cmd=") << endl;
     } else {
       SERIAL << F("dweet id not set, use vespDWCmd <dweetid> to set it\n");
 
