@@ -11,7 +11,7 @@ public:
   char *readProperty(const char *key, char *value);
   bool readBoolProperty(char *key);
   long readLongProperty(const __FlashStringHelper *key);
-
+  bool hasProperty(const __FlashStringHelper *key);
 
 
 private:

@@ -16,27 +16,9 @@
 #define EE_MQTT_PASS_15B    569
 #define EE_MQTT_TOPIC_40B   584
 #define EE_MQTT_VALUE_70B   624
-#define EE_RESET_CO2_1B     694
+//#define EE_RESET_CO2_1B     694
 
-#define EE_WIFI_SSID F("wifi.ssid")
-#define EE_WIFI_P1   F("wifi.p1")
-#define EE_WIFI_P2   F("wifi.p1")
-#define EE_IOT_HOST  F("sap.hcp.host")
-#define EE_IOT_PATH  F("sap.hcp.path")
-#define EE_IOT_TOKN  F("sap.hcp.token")
-#define EE_GENIOT_PATH  F("custom_url.path")
-#define EE_MQTT_SERVER  F("mqtt.server")
-#define EE_MQTT_PORT    F("mqtt.port")
-#define EE_MQTT_CLIENT  F("mqtt.client")
-#define EE_MQTT_USER    F("mqtt.user")
-#define EE_MQTT_PASS    F("mqtt.pass")
-#define EE_MQTT_TOPIC   F("mqtt.topic")
-#define EE_MQTT_VALUE   F("mqtt.valie")
-#define EE_RESET_CO2    F("cubic.co2.reset")
 
-#define PROP_SND_INT      F("cubic.co2.interval")
-#define PROP_SND_THR      F("cubic.co2.threshold")
-#define PROP_H801_API_KEY F("h801.api_key")
 //#define PROP_H801_API_KEY F("h801.api_keyddddddddddddddddddddd")
 
 #define H801_API_KEY F("h801key")
@@ -73,8 +55,7 @@ void MigrateSettingsIfNeeded() {
   _migrateEESetting(EE_MQTT_PASS_15B, EE_MQTT_PASS);
   _migrateEESetting(EE_MQTT_TOPIC_40B, EE_MQTT_TOPIC);
   _migrateEESetting(EE_MQTT_VALUE_70B, EE_MQTT_VALUE);
-  _migrateEESetting(EE_RESET_CO2_1B, EE_RESET_CO2);
-
+  
   _migrateJsonSetting(XX_SND_INT, PROP_SND_INT);
   _migrateJsonSetting(XX_SND_THR, PROP_SND_THR);
   _migrateJsonSetting(H801_API_KEY, PROP_H801_API_KEY);

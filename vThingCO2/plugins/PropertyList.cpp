@@ -65,7 +65,13 @@ bool PropertyListClass::readBoolProperty(char *key) {
   return readProperty(key, v)[0] != 0;
 }
 
+bool PropertyListClass::hasProperty(const __FlashStringHelper *key) {
+  char v[200];
+  return readProperty(key, v)[0] != 0;
+}
+
 long PropertyListClass::readLongProperty(const __FlashStringHelper *key) {
+  if (!hasProperty(key)) return 0;
   char v[20];
   return atol(readProperty(key, v));
 

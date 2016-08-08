@@ -50,7 +50,8 @@ extern "C" {
 #define EE_MQTT_PASS    F("mqtt.pass")
 #define EE_MQTT_TOPIC   F("mqtt.topic")
 #define EE_MQTT_VALUE   F("mqtt.valie")
-#define EE_RESET_CO2    F("cubic.co2.reset")
+#define EE_RESET_CO2_1B 1
+
 
 #define PROP_SND_INT      F("cubic.co2.interval")
 #define PROP_SND_THR      F("cubic.co2.threshold")
@@ -77,9 +78,9 @@ extern "C" {
 #define SAP_IOT_DEVID "spDvId"
 #define SAP_IOT_TOKEN "spTok"
 #define SAP_IOT_BTN_MSGID "spBtMID"
-#define H801_API_KEY "h801key"
-#define XX_SND_INT  "xxSndInt"
-#define XX_SND_THR  "xxSndThr"
+//#define H801_API_KEY "h801key"
+//#define XX_SND_INT  "xxSndInt"
+//#define XX_SND_THR  "xxSndThr"
 
 #define HTTP_STR  "http://"
 #define HTTPS_STR "https://"
@@ -203,7 +204,10 @@ extern bool shouldSend;
 extern boolean DEBUG;
 extern boolean SKIP_LOOP;
 extern MenuHandler menuHandler;
+extern Timer *tmrStopLED;
+extern NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
 
 #endif
 
 void MigrateSettingsIfNeeded();
+void onStopLED();

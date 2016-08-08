@@ -1,4 +1,11 @@
-#ifdef VTHING_CO2
+//#ifdef VTHING_CO2
+
+#include "Arduino.h"
+#include "Timer.h"
+#include "CubicGasSensors.h"
+#include "common.hpp"
+#include "plugins\PropertyList.hpp"
+#include "EEPROM.h"
 uint32_t intCO2RawRead   = 15000L;
 uint32_t intCO2SendValue = 120000L;
 uint16_t co2Threshold = 1;
@@ -25,7 +32,7 @@ void onCo2Status(CubicStatus status) {
   strip->Show();
 }
 
-CubicGasSensors cubicCo2(onCo2Status, EE_1B_RESET_CO2);
+CubicGasSensors cubicCo2(onCo2Status, EE_RESET_CO2_1B);
 
 void sendCO2Value() {
   int val = cubicCo2.getCO2(DEBUG);
@@ -51,8 +58,8 @@ void initCO2Handler() {
 
   char tmp[20];
 
-  if (getJSONConfig(XX_SND_INT, tmp)[0]) intCO2SendValue = String(getJSONConfig(XX_SND_INT, tmp)).toInt() *1000;
-  if (getJSONConfig(XX_SND_THR, tmp)[0]) co2Threshold    = String(getJSONConfig(XX_SND_THR, tmp)).toInt();
+  if (PropertyList.hasProperty(PROP_SND_INT)) intCO2SendValue = PropertyList.readLongProperty(PROP_SND_INT)*1000;
+  if (PropertyList.hasProperty(PROP_SND_THR)) co2Threshold    = PropertyList.readLongProperty(PROP_SND_THR);
   Serial << F("Send Interval (ms): ") << intCO2SendValue << F(", Threshold (ppm): ") << co2Threshold << endl;
 
   tmrStopLED           = new Timer(30000L, onStopLED, true);
@@ -73,7 +80,8 @@ void loopCO2Handler() {
 
 void resetCO2(const char *ignore) {
   SERIAL << F("Calibration Mode Enabled.\nPlease put the device for 5 minutes at fresh air.\nYou can now put it outside. It will complete calibration once it worked 5 minutes after restart") << endl;
-  EEPROM.put(EE_1B_RESET_CO2, (byte)1);
+  EEPROM.begin(10);
+  EEPROM.put(EE_RESET_CO2_1B, (byte)1);
   EEPROM.commit();
   ESP.restart();
 }
@@ -83,7 +91,7 @@ void setSendInterval (const char *line) {
   if (strchr(line, ' ')) {
     interval = atoi(strchr(line, ' ') + 1);
   }
-  putJSONConfig(XX_SND_INT, String(interval).c_str());
+  PropertyList.putProperty(PROP_SND_INT, String(interval).c_str());
   intCO2SendValue = (uint32_t)interval * 1000;
   tmrCO2SendValueTimer->setInterval(intCO2SendValue);
   Serial << "Send Interval (ms): " << intCO2SendValue << endl;
@@ -94,7 +102,8 @@ void setSendThreshold(const char *line) {
   if (strchr(line, ' ')) {
     thr = atoi(strchr(line, ' ') + 1);
   }
-  putJSONConfig(XX_SND_THR, String(thr).c_str());
+  PropertyList.putProperty(PROP_SND_THR, String(thr).c_str());
+//  putJSONConfig(XX_SND_THR, String(thr).c_str());
   co2Threshold = thr;
   Serial << F("CO2 Threshold (ppm): ") << co2Threshold << endl;
 }
@@ -108,4 +117,4 @@ void CO2_registerCommands(MenuHandler *handler) {
   // else if (strcmp(line, "rco") == 0) resetCO2();
 }
 
-#endif
+//#endif
