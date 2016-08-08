@@ -12,6 +12,7 @@
 #include "plugins\CustomURL_Plugin.hpp"
 #include "plugins\URLShortcuts.hpp"
 #include "plugins\PropertyList.hpp"
+#include <LinkedList.h>
 
 
 
@@ -59,6 +60,10 @@ void printVersion(const char* ignore) {
 
 }
 
+void registerPlugin(Plugin *plugin) {
+  plugins
+}
+
 
 void setup() {
   SERIAL.begin(9600);
@@ -83,7 +88,7 @@ void setup() {
   //pgpio0 = digitalRead(0);
   //pgpio2 = digitalRead(2);
   printVersion();
-  
+
   SERIAL << F("ready") << endl;
 
   SERIAL << F("Waiting for auto-connect") << endl;

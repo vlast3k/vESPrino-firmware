@@ -21,6 +21,10 @@ extern "C" {
 #else
   #include <SoftwareSerial.h>
 #endif
+#include "LinkedList.h"
+#include "interfaces\Destination.hpp"
+#include "interfaces\Plugin.hpp"
+#include "interfaces\Sensor.hpp"
 
 #define Cred     RgbColor(255, 0, 0)
 #define Cpink    RgbColor(255, 0, 128)
@@ -206,6 +210,7 @@ extern boolean SKIP_LOOP;
 extern MenuHandler menuHandler;
 extern Timer *tmrStopLED;
 extern NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
+extern LinkedList<Plugin *> plugins;
 
 #endif
 
