@@ -6,16 +6,15 @@
 #include "common.hpp"
 #include "plugins\PropertyList.hpp"
 #include "EEPROM.h"
-uint32_t intCO2RawRead   = 15000L;
-uint32_t intCO2SendValue = 120000L;
-uint16_t co2Threshold = 1;
-uint32_t lastSentCO2value = 0;
+#include "CO2Sensor.hpp"
+// uint32_t intCO2RawRead   = 15000L;
+// uint32_t intCO2SendValue = 120000L;
+// uint16_t co2Threshold = 1;
+// uint32_t lastSentCO2value = 0;
 
-Timer *tmrCO2RawRead, *tmrCO2SendValueTimer;
+// Timer *tmrCO2RawRead, *tmrCO2SendValueTimer;
 boolean startedCO2Monitoring = false;
 //RunningAverage raCO2Raw(4);
-
-
 
 void onCo2Status(CubicStatus status) {
   //SERIAL << "status = " << status << endl;
@@ -34,46 +33,71 @@ void onCo2Status(CubicStatus status) {
 
 CubicGasSensors cubicCo2(onCo2Status, EE_RESET_CO2_1B);
 
-void sendCO2Value() {
-  int val = cubicCo2.getCO2(DEBUG);
-  String s = String("sndiot ") + val;
-  sndIOT(s.c_str());
-  lastSentCO2value = val;
-  tmrCO2SendValueTimer->Start();
+const char* CO2Sensor::getSensorId() {
+  static const char id[] = "CO2";
+  return id;
 }
 
-void onCO2RawRead() {
+float CO2Sensor::getValue() {
   int res = cubicCo2.getCO2(DEBUG);
   startedCO2Monitoring = cubicCo2.hasStarted();
   if (startedCO2Monitoring) {
-    int diff = res - lastSentCO2value;
-    if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) {
-      if (DEBUG) Serial << F("Threshold reached, sending value") << endl;
-      sendCO2Value();
-    }
+    return res;
+  } else {
+    return nanf("");
   }
+  //   int diff = res - lastSentCO2value;
+  //   if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) {
+  //     if (DEBUG) Serial << F("Threshold reached, sending value") << endl;
+  //     sendCO2Value();
+  //   }
+  // }
+
 }
+
+
+
+
+// void sendCO2Value() {
+//   int val = cubicCo2.getCO2(DEBUG);
+//   String s = String("sndiot ") + val;
+//   sndIOT(s.c_str());
+//   lastSentCO2value = val;
+//   tmrCO2SendValueTimer->Start();
+// }
+
+// void onCO2RawRead() {
+//   int res = cubicCo2.getCO2(DEBUG);
+//   startedCO2Monitoring = cubicCo2.hasStarted();
+//   if (startedCO2Monitoring) {
+//     int diff = res - lastSentCO2value;
+//     if ((co2Threshold > 0) && (abs(diff) > co2Threshold)) {
+//       if (DEBUG) Serial << F("Threshold reached, sending value") << endl;
+//       sendCO2Value();
+//     }
+//   }
+// }
 
 void initCO2Handler() {
 
   char tmp[20];
 
-  if (PropertyList.hasProperty(PROP_SND_INT)) intCO2SendValue = PropertyList.readLongProperty(PROP_SND_INT)*1000;
-  if (PropertyList.hasProperty(PROP_SND_THR)) co2Threshold    = PropertyList.readLongProperty(PROP_SND_THR);
-  Serial << F("Send Interval (ms): ") << intCO2SendValue << F(", Threshold (ppm): ") << co2Threshold << endl;
+  // if (PropertyList.hasProperty(PROP_SND_INT)) intCO2SendValue = PropertyList.readLongProperty(PROP_SND_INT)*1000;
+  // if (PropertyList.hasProperty(PROP_SND_THR)) co2Threshold    = PropertyList.readLongProperty(PROP_SND_THR);
+  // Serial << F("Send Interval (ms): ") << intCO2SendValue << F(", Threshold (ppm): ") << co2Threshold << endl;
 
   tmrStopLED           = new Timer(30000L, onStopLED, true);
-  tmrCO2RawRead        = new Timer(intCO2RawRead,   onCO2RawRead);
-  tmrCO2SendValueTimer = new Timer(intCO2SendValue, sendCO2Value);
+  // tmrCO2RawRead        = new Timer(intCO2RawRead,   onCO2RawRead);
+  // tmrCO2SendValueTimer = new Timer(intCO2SendValue, sendCO2Value);
   cubicCo2.init();
   SERIAL << "CO2 now: " << cubicCo2.rawReadCM1106_CO2() << endl;
-  tmrCO2RawRead->Start();
+//  tmrCO2RawRead->Start();
 
 }
 
 void loopCO2Handler() {
-  tmrCO2RawRead->Update();
-  tmrCO2SendValueTimer->Update();
+  // tmrCO2RawRead->Update();
+  // tmrCO2SendValueTimer->Update();
   tmrStopLED->Update();
   delay(3000);
 }

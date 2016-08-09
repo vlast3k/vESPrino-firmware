@@ -70,7 +70,7 @@ void registerSensor(Sensor *sensor) {
   sensors.add(sensor);
 }
 
-void registerSensor(Destination *destination) {
+void registerDestination(Destination *destination) {
   destinations.add(destination);
 }
 

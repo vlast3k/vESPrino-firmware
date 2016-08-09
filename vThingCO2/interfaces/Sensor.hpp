@@ -7,7 +7,7 @@
 
 class Sensor : public Plugin {
 public:
-  virtual void getData(LinkedList<Pair*> *data);
+  //virtual void getData(LinkedList<Pair*> *data);
   virtual const char* getSensorId();
   virtual float getValue();
 };

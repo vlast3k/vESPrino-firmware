@@ -4,7 +4,9 @@
 #include "interfaces\Plugin.hpp"
 
 class CO2Sensor : public Sensor {
-
+public:
+  const char* getSensorId();
+  float getValue();
 };
 
 #endif
