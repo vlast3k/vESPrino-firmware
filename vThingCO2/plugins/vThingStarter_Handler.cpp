@@ -17,13 +17,13 @@ void onPIROff() {
 
 void handleCommandVESPrino(const char *line) {
   Serial <<"Vesprino cmd: " << line << endl;
-       if (strstr(line, "vespBttnA "))  PropertyList.putProperty("vespBttn", strstr(line, " ")+1, true);
-  else if (strstr(line, "vespBttn "))   PropertyList.putProperty("vespBttn", strstr(line, " ")+1);
-  else if (strstr(line, "vespRFIDA"))   PropertyList.putProperty("vespRFID" , strstr(line, " ")+1, true);
-  else if (strstr(line, "vespRFID"))    PropertyList.putProperty("vespRFID" , strstr(line, " ")+1);
-  else if (strstr(line, "vespDWCmd"))   PropertyList.putProperty("vespDWCmd" , strstr(line, " ")+1);
-  else if (strstr(line, "vespSens"))    PropertyList.putProperty("vespSens", strstr(line, " ")+1);
-  else if (strstr(line, "vecmd "))    handleDWCommand(strstr(line, " ")+1);
+  //      if (strstr(line, "vespBttnA "))  PropertyList.putProperty("vespBttn", strstr(line, " ")+1, true);
+  // else if (strstr(line, "vespBttn "))   PropertyList.putProperty("vespBttn", strstr(line, " ")+1);
+  // else if (strstr(line, "vespRFIDA"))   PropertyList.putProperty("vespRFID" , strstr(line, " ")+1, true);
+  // else if (strstr(line, "vespRFID"))    PropertyList.putProperty("vespRFID" , strstr(line, " ")+1);
+  // else if (strstr(line, "vespDWCmd"))   PropertyList.putProperty("vespDWCmd" , strstr(line, " ")+1);
+  // else if (strstr(line, "vespSens"))    PropertyList.putProperty("vespSens", strstr(line, " ")+1);
+  // else if (strstr(line, "vecmd "))    handleDWCommand(strstr(line, " ")+1);
 }
 
 void VESP_registerCommands(MenuHandler *handler) {

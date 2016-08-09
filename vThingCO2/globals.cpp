@@ -18,3 +18,5 @@ Timer *tmrStopLED;
 NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
 
 LinkedList<Plugin *> plugins = LinkedList<Plugin *>();
+LinkedList<Sensor *> sensors = LinkedList<Sensor *>();
+LinkedList<Destination *> destinations = LinkedList<Destination *>();

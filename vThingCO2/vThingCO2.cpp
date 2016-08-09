@@ -13,15 +13,17 @@
 #include "plugins\URLShortcuts.hpp"
 #include "plugins\PropertyList.hpp"
 #include <LinkedList.h>
+#include "interfaces\Sensor.hpp"
+#include "interfaces\Plugin.hpp"
 
 
 
 using namespace std;
 
-  Timer *tmrStopLED;
+//  Timer *tmrStopLED;
 
 
-NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
+//NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
 
 #ifdef VTHING_H801_LED
   #define SERIAL Serial1
@@ -61,8 +63,17 @@ void printVersion(const char* ignore) {
 }
 
 void registerPlugin(Plugin *plugin) {
-  plugins
+  plugins.add(plugin);
 }
+
+void registerSensor(Sensor *sensor) {
+  sensors.add(sensor);
+}
+
+void registerSensor(Destination *destination) {
+  destinations.add(destination);
+}
+
 
 
 void setup() {
@@ -123,7 +134,7 @@ void setup() {
 #endif
   menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
 
-
+ setup_IntThrHandler();
 }
 
 void loop() {
@@ -138,4 +149,5 @@ void loop() {
   #elif defined(VTHING_H801_LED)
     h801_loop();
   #endif
+  loop_IntThrHandler();
 }

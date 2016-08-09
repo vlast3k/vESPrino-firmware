@@ -1,5 +1,6 @@
 #include "common.hpp"
 #include "plugins\AT_FW_Plugin.hpp"
+#include "plugins\PropertyList.hpp"
 
 int BTTN_PIN = D3;
 void ex2_attachInterrupt(void (*)());
@@ -28,7 +29,7 @@ void checkButtonSend() {
   }
   char p2[40], p3[40];
  // SERIAL <<"getjscfg" <<getJSONConfig("vespBttn", p1, p2, p3)[0] << "!" << endl;
-  if (getJSONConfig("vespBttn", tmp, p2, p3)[0]) {
+  if (PropertyList.readProperty("vespBttn",  p3)[0]) {
     if (!strcmp(tmp, "dw")) {
       sprintf(tmp, "http://dweet.io/dweet/for/%s?%s", p2, p3);
     } else if (!strcmp(tmp, "if")) {

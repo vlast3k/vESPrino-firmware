@@ -1,10 +1,9 @@
 #ifdef VTHING_STARTER
 #include "common.hpp"
 #include "plugins\AT_FW_Plugin.hpp"
-
-  #include <Wire.h>
-
-  #include <SparkFun_APDS9960.h>
+#include "PropertyList.hpp"
+#include <Wire.h>
+#include <SparkFun_APDS9960.h>
 
 SparkFun_APDS9960 apds = SparkFun_APDS9960();
 int isr_flag = 0;
@@ -50,7 +49,7 @@ void handleGesture() {
     SERIAL << "Gesture: " << gesture << endl;
     char tmp[200], tmp2[200];
     char p2[40], p3[100];
-    if(WiFi.status() == WL_CONNECTED && getJSONConfig("vespRFID", tmp, p2, p3)[0]) {
+    if(WiFi.status() == WL_CONNECTED && PropertyList.readProperty("vespRFID", p3)[0]) {
       if (!strcmp(tmp, "dw")) {
         String s = String(p3);
         s.replace("%s", gesture);

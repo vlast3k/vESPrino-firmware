@@ -63,9 +63,9 @@ extern "C" {
 // #define EE_WIFI_SSID_30B 0
 // #define EE_WIFI_P1_30B 30
 // #define EE_WIFI_P2_30B 60
-// #define EE_IOT_HOST_60B 90
-// #define EE_IOT_PATH_140B 150
-// #define EE_IOT_TOKN_40B 290
+#define EE_IOT_HOST_60B 90
+#define EE_IOT_PATH_140B 150
+#define EE_IOT_TOKN_40B 290
 // #define EE_GENIOT_PATH_140B 330
 // #define EE_MQTT_SERVER_30B  470
 // #define EE_MQTT_PORT_4B     500
@@ -76,7 +76,7 @@ extern "C" {
 // #define EE_MQTT_VALUE_70B   624
 // #define EE_1B_RESET_CO2     694
 // //#define EE_LAST 695
-// #define EE_JSON_CFG_1000B   1000
+#define EE_JSON_CFG_1000B   1000
 
 #define SAP_IOT_HOST "spHst"
 #define SAP_IOT_DEVID "spDvId"
@@ -113,7 +113,7 @@ void configMQTT(const char *p);
 void sendMQTT(String msg);
 // int processResponseCodeATFW(HTTPClient *http, int rc);
 char *extractStringFromQuotes(const char* src, char *dest, int destSize);
-//void storeToEE(int address, const char *str, int maxLength);
+void storeToEE(int address, const char *str, int maxLength);
 void handleWifi();
 // void connectToWifi(const char *s1, const char *s2, const char *s3);
 // void wifiScanNetworks();
@@ -125,13 +125,13 @@ void heap(const char * str);
 void processMessage(String payload);
 void processCommand(String cmd);
 void initLight();
-//void printJSONConfig(const char *ignore);
-//void putJSONConfig(const char *key, int value, boolean commit = true);
-//void putJSONConfig(const char *key, const char *value, boolean isArrayValue = false, boolean commit = true);
+void printJSONConfig(const char *ignore);
+void putJSONConfig(const char *key, int value, boolean commit = true);
+void putJSONConfig(const char *key, const char *value, boolean isArrayValue = false, boolean commit = true);
 void dumpTemp();
 void factoryReset(char *line = NULL);
 void activeWait();
-//char *getJSONConfig(const char *item, char *buf, char *p1 = NULL, char *p3=NULL);
+char *getJSONConfig(const char *item, char *buf, char *p1 = NULL, char *p3=NULL);
 //void testJSON(const char *ignore);
 // void testHttpUpdate();
 void setSAPAuth(const char *);
@@ -211,8 +211,12 @@ extern MenuHandler menuHandler;
 extern Timer *tmrStopLED;
 extern NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
 extern LinkedList<Plugin *> plugins;
+extern LinkedList<Sensor *> sensors;
+extern LinkedList<Destination *> destinations;
 
 #endif
 
 void MigrateSettingsIfNeeded();
 void onStopLED();
+void loop_IntThrHandler();
+void setup_IntThrHandler();
