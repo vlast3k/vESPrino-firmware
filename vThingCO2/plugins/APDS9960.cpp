@@ -49,7 +49,7 @@ void handleGesture() {
     SERIAL << "Gesture: " << gesture << endl;
     char tmp[200], tmp2[200];
     char p2[40], p3[100];
-    if(WiFi.status() == WL_CONNECTED && PropertyList.readProperty("vespRFID", p3)[0]) {
+    if(WiFi.status() == WL_CONNECTED && PropertyList.readProperty("vespRFID")[0]) {
       if (!strcmp(tmp, "dw")) {
         String s = String(p3);
         s.replace("%s", gesture);

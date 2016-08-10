@@ -21,14 +21,14 @@ void handleWifi() {
 }
 
 int wifiConnectToStoredSSID() {
-  char ssid[30], pass[30];
-  PropertyList.readProperty(EE_WIFI_SSID, ssid);
-  PropertyList.readProperty(EE_WIFI_P1, pass);
+  String ssid, pass;
+  ssid = PropertyList.readProperty(EE_WIFI_SSID);
+  pass = PropertyList.readProperty(EE_WIFI_P1);
   SERIAL << F("Connecting to: \"") << ssid << F("\", \"") << pass << F("\"") << endl;
   WiFi.disconnect();
   delay(500);
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, pass);
+  WiFi.begin(ssid.c_str(), pass.c_str());
 }
 void connectToWifi(const char *s1, const char *s2, const char *s3) {
   PropertyList.putProperty(EE_WIFI_SSID, s1);
@@ -113,19 +113,18 @@ void sndIOT(const char *line) {
     SERIAL << F("Cannot send data. No Wifi connection.") << endl;
     return;
   }
-  char path[140];
-  PropertyList.readProperty(EE_IOT_PATH, path);
-  if (path[0] && path[0] != 255) {
+//  String path;
+//  path = PropertyList.hasProperty(EE_IOT_PATH);
+  if (PropertyList.hasProperty(EE_IOT_PATH)) {
     SAP_HCP_IOT_Plugin::sndHCPIOT(line);
   }
 
-  PropertyList.readProperty(EE_GENIOT_PATH, path);
-  if (path[0] && path[0] != 255) {
+
+  if (PropertyList.hasProperty(EE_GENIOT_PATH)) {
     CustomURL_Plugin::sndGENIOT(line);
   }
 
-  PropertyList.readProperty(EE_MQTT_SERVER, path);
-  if (path[0] && path[0] != 255) {
+  if (PropertyList.hasProperty(EE_MQTT_SERVER)) {
     sendMQTT(&line[7]);
   }
 }

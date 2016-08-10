@@ -60,9 +60,9 @@ void initVThingStarter() {
   attachButton();
 
       char tmp[200];
-    if (PropertyList.readProperty("vespDWCmd", tmp)[0]) {
-      SERIAL << F("Will read dweets from: http://dweet.io/get/latest/dweet/for/") << PropertyList.readProperty("vespDWCmd", tmp) << endl;
-      SERIAL << F("Send commands to: https://dweet.io/dweet/for/") << PropertyList.readProperty("vespDWCmd", tmp) << F("vladi1?cmd=") << endl;
+    if (PropertyList.hasProperty("vespDWCmd")) {
+      SERIAL << F("Will read dweets from: http://dweet.io/get/latest/dweet/for/") << PropertyList.readProperty("vespDWCmd") << endl;
+      SERIAL << F("Send commands to: https://dweet.io/dweet/for/") << PropertyList.readProperty("vespDWCmd") << F("vladi1?cmd=") << endl;
     } else {
       SERIAL << F("dweet id not set, use vespDWCmd <dweetid> to set it\n");
 

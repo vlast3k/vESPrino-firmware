@@ -40,7 +40,7 @@ void onRawRead() {
   bool shouldSend = false;
   for (int i=0; i < sensors.size(); i++) {
     float currentValue = sensors.get(i)->getValue();
-    concxst cdssdshar* id = sensors.get(i)->getSensorId();
+    const char* id = sensors.get(i)->getSensorId();
     if (hashMap.getValueOf(id)->thr > 0 && abs(currentValue - hashMap.getValueOf(id)->oldValue) > hashMap.getValueOf(id)->thr) {
       on_SendValue();
     }

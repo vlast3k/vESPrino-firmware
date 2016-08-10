@@ -21,7 +21,7 @@ void CustomURL_Plugin::cfgGENIOT(const char *p) {
 
 void CustomURL_Plugin::sndGENIOT(const char *line) {
   char str[140], str2[150];
-  PropertyList.readProperty(EE_GENIOT_PATH, str);
+  strcpy(str, PropertyList.readProperty(EE_GENIOT_PATH));
   if (strstr(str, "thingspeak")) {
     strcat(str, "&field2=%d");
     sprintf(str2, str, &line[7], millis()/60000L);

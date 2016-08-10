@@ -41,39 +41,40 @@ void PropertyListClass::putProperty(const char *key, const char *value) {
   }
 }
 
-char *PropertyListClass::readProperty(const __FlashStringHelper *key, char *value) {
-  return readProperty(String(key).c_str(), value);
+char *PropertyListClass::readProperty(const __FlashStringHelper *key) {
+  return readProperty(String(key).c_str());
 }
 
-char *PropertyListClass::readProperty(const char *key, char *value) {
+char *PropertyListClass::readProperty(const char *key) {
   File in = SPIFFS.open(configFileName, "r");
   String _key = String(key) + "=";
   int r;
   while (r = in.available()) {
     String line = in.readStringUntil('\n');
     if (line.startsWith(_key)) {
-      strcpy(value, line.c_str() + _key.length());
-      return value;
+      strcpy(buffer, line.c_str() + _key.length());
+      return buffer;
     }
   }
-  value[0] = 0;
-  return value;
+  buffer[0] = 0;
+  return buffer;
 }
 
 bool PropertyListClass::readBoolProperty(char *key) {
-  char v[10];
-  return readProperty(key, v)[0] != 0;
+  return readProperty(key)[0] != 0;
 }
 
 bool PropertyListClass::hasProperty(const __FlashStringHelper *key) {
-  char v[200];
-  return readProperty(key, v)[0] != 0;
+  return readProperty(key)[0] != 0;
+}
+
+bool PropertyListClass::hasProperty(const char *key) {
+  return readProperty(key)[0] != 0;
 }
 
 long PropertyListClass::readLongProperty(const __FlashStringHelper *key) {
   if (!hasProperty(key)) return 0;
-  char v[20];
-  return atol(readProperty(key, v));
+  return atol(readProperty(key));
 
 }
 

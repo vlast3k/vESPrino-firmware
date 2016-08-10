@@ -13,8 +13,8 @@ boolean getDweetCommand(char *cmd) {
     static char lastDweet[30];
 
     char tmp[200];
-    if (!PropertyList.readProperty("vespDWCmd", tmp)[0]) return false;
-    String url = String("http://dweet.io/get/latest/dweet/for/") + PropertyList.readProperty("vespDWCmd", tmp);
+    if (!PropertyList.hasProperty("vespDWCmd")) return false;
+    String url = String("http://dweet.io/get/latest/dweet/for/") + PropertyList.readProperty("vespDWCmd");
 
     HTTPClient http;
     http.begin(url);

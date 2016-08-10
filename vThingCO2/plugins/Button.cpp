@@ -29,7 +29,7 @@ void checkButtonSend() {
   }
   char p2[40], p3[40];
  // SERIAL <<"getjscfg" <<getJSONConfig("vespBttn", p1, p2, p3)[0] << "!" << endl;
-  if (PropertyList.readProperty("vespBttn",  p3)[0]) {
+  if (PropertyList.hasProperty("vespBttn")) {
     if (!strcmp(tmp, "dw")) {
       sprintf(tmp, "http://dweet.io/dweet/for/%s?%s", p2, p3);
     } else if (!strcmp(tmp, "if")) {

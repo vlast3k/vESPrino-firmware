@@ -60,15 +60,15 @@ void configMQTT(const char *p) {
 }
 
 void sendMQTT(String msg) {
-  char mqttServer[30], mqttClient[20], mqttUser[45], mqttPass[15], mqttTopic[40], mqttValue[70];
+  String mqttServer, mqttClient, mqttUser, mqttPass, mqttTopic, mqttValue;
   long mqttPort;
-  PropertyList.readProperty(EE_MQTT_SERVER, mqttServer);
-  mqttPort = PropertyList.readLongProperty(EE_MQTT_PORT);
-  PropertyList.readProperty(EE_MQTT_CLIENT, mqttClient);
-  PropertyList.readProperty(EE_MQTT_USER,   mqttUser);
-  PropertyList.readProperty(EE_MQTT_PASS,   mqttPass);
-  PropertyList.readProperty(EE_MQTT_TOPIC,  mqttTopic);
-  PropertyList.readProperty(EE_MQTT_VALUE,  mqttValue);
+  mqttServer = PropertyList.readProperty(EE_MQTT_SERVER);
+  mqttPort   = PropertyList.readLongProperty(EE_MQTT_PORT);
+  mqttClient = PropertyList.readProperty(EE_MQTT_CLIENT);
+  mqttUser   = PropertyList.readProperty(EE_MQTT_USER);
+  mqttPass   = PropertyList.readProperty(EE_MQTT_PASS);
+  mqttTopic  = PropertyList.readProperty(EE_MQTT_TOPIC);
+  mqttValue  = PropertyList.readProperty(EE_MQTT_VALUE);
   SERIAL << "Sending via MQTT: ";
   delay(150);
   SERIAL << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
@@ -86,21 +86,21 @@ void sendMQTT(String msg) {
   uint32_t st = millis();
   WiFiClient wclient;
 //  PubSubClient client(wclient, mqttServer, mqttPort);
-  PubSubClient client(mqttServer, mqttPort, wclient);
+  PubSubClient client(mqttServer.c_str(), mqttPort, wclient);
   if (WiFi.status() == WL_CONNECTED) {
     //MQTT::Connect conn = MQTT::Connect(mqttClient);
 //    if (strlen(mqttUser) > 0) conn.set_auth(mqttUser, mqttPass);
 //    if (client.connect(conn)) {
     boolean res;
-    if (strlen(mqttUser) > 0) res = client.connect(mqttClient, mqttUser, mqttPass);
-    else res = client.connect(mqttClient);
+    if (mqttUser.length() > 0) res = client.connect(mqttClient.c_str(), mqttUser.c_str(), mqttPass.c_str());
+    else res = client.connect(mqttClient.c_str());
     if (res) {
       //char ddd[50];
       //sprintf(ddd, "{\"data\": %s, \"write\": true,  \"ispublic\": true}", msg.c_str());
       char mqttValue2[80];
-      sprintf(mqttValue2, mqttValue, msg.c_str());
+      sprintf(mqttValue2, mqttValue.c_str(), msg.c_str());
       SERIAL << F("Connected. Will publish: ") << mqttValue2 << endl;
-      boolean res = client.publish(mqttTopic, mqttValue2);
+      boolean res = client.publish(mqttTopic.c_str(), mqttValue2);
       SERIAL.println(res ? F("CLOSED") : F("Failed!"));
     } else {
         SERIAL.println(F("Could not connect to MQTT server"));
