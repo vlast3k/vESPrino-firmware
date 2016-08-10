@@ -224,3 +224,6 @@ void MigrateSettingsIfNeeded();
 void onStopLED();
 void loop_IntThrHandler();
 void setup_IntThrHandler(MenuHandler *handler);
+
+void registerDestination(Destination *destination);
+void registerPlugin(Plugin *plugin);

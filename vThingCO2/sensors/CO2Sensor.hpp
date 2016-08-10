@@ -5,7 +5,7 @@
 
 class CO2Sensor : public Sensor {
 public:
-  void setup();
+  void setup(MenuHandler *handler);
   void loop();
   const char* getSensorId();
   float getValue();

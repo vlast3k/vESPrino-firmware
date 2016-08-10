@@ -119,17 +119,18 @@ void resetCO2(const char *ignore) {
 
 
 
-void CO2_registerCommands(MenuHandler *handler) {
+//void CO2_registerCommands(MenuHandler *handler) {
   //handler->registerCommand(new MenuEntry(F("wsi"), CMD_BEGIN, setSendInterval , F("")));
   //handler->registerCommand(new MenuEntry(F("wst"), CMD_BEGIN, setSendThreshold, F("")));
-  handler->registerCommand(new MenuEntry(F("rco"), CMD_EXACT, resetCO2, F("")));
+
   // else if (strstr(line, "wsi ")) setSendInterval (line);
   // else if (strstr(line, "wst ")) setSendThreshold(line);
   // else if (strcmp(line, "rco") == 0) resetCO2();
-}
+//}
 
-void CO2Sensor::setup() {
+void CO2Sensor::setup(MenuHandler *handler) {
   initCO2Handler();
+  handler->registerCommand(new MenuEntry(F("rco"), CMD_EXACT, resetCO2, F("")));
 }
 
 void CO2Sensor::loop() {
