@@ -18,7 +18,7 @@ public:
 private:
   String configFileName = "/vs_cfg.txt";
   String tempFileName = "/vs_cfg.tmp";
-  char buffer[200];
+  //char buffer[200];
 
 };
 

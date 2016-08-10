@@ -25,6 +25,7 @@ extern "C" {
 #include "interfaces\Destination.hpp"
 #include "interfaces\Plugin.hpp"
 #include "interfaces\Sensor.hpp"
+#include "destinations\CustomHTTPDest.hpp"
 
 #define Cred     RgbColor(255, 0, 0)
 #define Cpink    RgbColor(255, 0, 128)
@@ -196,13 +197,13 @@ void h801_onConfigStored();
 void h801_mqtt_connect();
 void h801_processConfig(const char *p);
 #endif
-#ifdef VTHING_CO2
+//#ifdef VTHING_CO2
 
 void initCO2Handler();
 void loopCO2Handler();
 
 
-#endif
+//#endif
 extern boolean hasSSD1306, hasSI7021, hasPN532, hasBMP180, hasBH1750, hasAPDS9960, hasPIR;
 extern bool shouldSend;
 extern boolean DEBUG;
@@ -213,10 +214,13 @@ extern NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoP
 extern LinkedList<Plugin *> plugins;
 extern LinkedList<Sensor *> sensors;
 extern LinkedList<Destination *> destinations;
+extern LinkedList<Thr *> thresholds;
+extern char commonBuffer200[200];
+extern CustomHTTPDest customHTTPDest;
 
 #endif
 
 void MigrateSettingsIfNeeded();
 void onStopLED();
 void loop_IntThrHandler();
-void setup_IntThrHandler();
+void setup_IntThrHandler(MenuHandler *handler);

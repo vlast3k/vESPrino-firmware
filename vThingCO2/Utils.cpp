@@ -3,7 +3,6 @@
 #include "common.hpp"
 
 char *extractStringFromQuotes(const char* src, char *dest, int destSize) {
-
   if (!*src) {
     *dest = 0;
     return NULL;

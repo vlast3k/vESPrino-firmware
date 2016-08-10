@@ -1,6 +1,7 @@
 #include <Streaming.h>
 #include "FS.h"
 #include "PropertyList.hpp"
+#include "common.hpp"
 
 void PropertyListClass::begin() {
   bool res =  SPIFFS.begin();
@@ -52,12 +53,12 @@ char *PropertyListClass::readProperty(const char *key) {
   while (r = in.available()) {
     String line = in.readStringUntil('\n');
     if (line.startsWith(_key)) {
-      strcpy(buffer, line.c_str() + _key.length());
-      return buffer;
+      strcpy(commonBuffer200, line.c_str() + _key.length());
+      return commonBuffer200;
     }
   }
-  buffer[0] = 0;
-  return buffer;
+  commonBuffer200[0] = 0;
+  return commonBuffer200;
 }
 
 bool PropertyListClass::readBoolProperty(char *key) {

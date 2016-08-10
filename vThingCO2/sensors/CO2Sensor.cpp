@@ -7,6 +7,7 @@
 #include "plugins\PropertyList.hpp"
 #include "EEPROM.h"
 #include "CO2Sensor.hpp"
+#include "interfaces\Pair.h"
 // uint32_t intCO2RawRead   = 15000L;
 // uint32_t intCO2SendValue = 120000L;
 // uint16_t co2Threshold = 1;
@@ -15,6 +16,8 @@
 // Timer *tmrCO2RawRead, *tmrCO2SendValueTimer;
 boolean startedCO2Monitoring = false;
 //RunningAverage raCO2Raw(4);
+Thr co2Threshold("CO2", 1);
+CO2Sensor co2Sensor;
 
 void onCo2Status(CubicStatus status) {
   //SERIAL << "status = " << status << endl;
@@ -82,6 +85,7 @@ void initCO2Handler() {
 
   char tmp[20];
 
+
   // if (PropertyList.hasProperty(PROP_SND_INT)) intCO2SendValue = PropertyList.readLongProperty(PROP_SND_INT)*1000;
   // if (PropertyList.hasProperty(PROP_SND_THR)) co2Threshold    = PropertyList.readLongProperty(PROP_SND_THR);
   // Serial << F("Send Interval (ms): ") << intCO2SendValue << F(", Threshold (ppm): ") << co2Threshold << endl;
@@ -90,6 +94,9 @@ void initCO2Handler() {
   // tmrCO2RawRead        = new Timer(intCO2RawRead,   onCO2RawRead);
   // tmrCO2SendValueTimer = new Timer(intCO2SendValue, sendCO2Value);
   cubicCo2.init();
+  thresholds.add(&co2Threshold);
+  sensors.add(&co2Sensor);
+  plugins.add(&co2Sensor);
   SERIAL << "CO2 now: " << cubicCo2.rawReadCM1106_CO2() << endl;
 //  tmrCO2RawRead->Start();
 
@@ -110,35 +117,23 @@ void resetCO2(const char *ignore) {
   ESP.restart();
 }
 
-void setSendInterval (const char *line) {
-  int interval = 120;
-  if (strchr(line, ' ')) {
-    interval = atoi(strchr(line, ' ') + 1);
-  }
-  PropertyList.putProperty(PROP_SND_INT, String(interval).c_str());
-  intCO2SendValue = (uint32_t)interval * 1000;
-  tmrCO2SendValueTimer->setInterval(intCO2SendValue);
-  Serial << "Send Interval (ms): " << intCO2SendValue << endl;
-}
 
-void setSendThreshold(const char *line) {
-  int thr = 0;
-  if (strchr(line, ' ')) {
-    thr = atoi(strchr(line, ' ') + 1);
-  }
-  PropertyList.putProperty(PROP_SND_THR, String(thr).c_str());
-//  putJSONConfig(XX_SND_THR, String(thr).c_str());
-  co2Threshold = thr;
-  Serial << F("CO2 Threshold (ppm): ") << co2Threshold << endl;
-}
 
 void CO2_registerCommands(MenuHandler *handler) {
-  handler->registerCommand(new MenuEntry(F("wsi"), CMD_BEGIN, setSendInterval , F("")));
-  handler->registerCommand(new MenuEntry(F("wst"), CMD_BEGIN, setSendThreshold, F("")));
+  //handler->registerCommand(new MenuEntry(F("wsi"), CMD_BEGIN, setSendInterval , F("")));
+  //handler->registerCommand(new MenuEntry(F("wst"), CMD_BEGIN, setSendThreshold, F("")));
   handler->registerCommand(new MenuEntry(F("rco"), CMD_EXACT, resetCO2, F("")));
   // else if (strstr(line, "wsi ")) setSendInterval (line);
   // else if (strstr(line, "wst ")) setSendThreshold(line);
   // else if (strcmp(line, "rco") == 0) resetCO2();
+}
+
+void CO2Sensor::setup() {
+  initCO2Handler();
+}
+
+void CO2Sensor::loop() {
+//  initCO2Handler();
 }
 
 //#endif

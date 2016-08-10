@@ -15,6 +15,7 @@
 #include <LinkedList.h>
 #include "interfaces\Sensor.hpp"
 #include "interfaces\Plugin.hpp"
+#include "destinations\CustomHTTPDest.hpp"
 
 
 
@@ -114,6 +115,11 @@ void setup() {
   #elif defined(VTHING_H801_LED)
     h801_setup();
   #endif
+
+  initCO2Handler();
+  registerDestination(&customHTTPDest);
+
+
   CommonCommands commCmd;
   commCmd.registerCommands(&menuHandler);
   SAP_HCP_IOT_Plugin::registerCommands(&menuHandler);
@@ -134,7 +140,7 @@ void setup() {
 #endif
   menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
 
- setup_IntThrHandler();
+ setup_IntThrHandler(&menuHandler);
 }
 
 void loop() {
