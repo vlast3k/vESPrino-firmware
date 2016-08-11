@@ -47,6 +47,7 @@ void MenuHandler::handleCommand(char *line) {
     MenuEntry *m = commands->get(i);
     if ( (m->cmdExactMatch && !strcmp(String(m->cmd).c_str(), String(line).c_str())) ||
         (!m->cmdExactMatch &&  strstr(String(line).c_str(), String(m->cmd).c_str())) ) {
+          Serial <<"calling handler " << endl;
           m->handler(line);
     }
   }

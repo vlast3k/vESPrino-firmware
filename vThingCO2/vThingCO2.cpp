@@ -72,8 +72,11 @@ void registerDestination(Destination *destination) {
 }
 
 void setupPlugins(MenuHandler *handler) {
+  Serial << "Plugin.setup()\n";
   for (int i=0; i < plugins.size(); i++) plugins.get(i)->setup(handler);
+  Serial << "Sensor.setup()\n";
   for (int i=0; i < sensors.size(); i++) sensors.get(i)->setup(handler);
+  Serial << "Destination.setup()\n";
   for (int i=0; i < destinations.size(); i++) destinations.get(i)->setup(handler);
 }
 
@@ -92,43 +95,38 @@ void setup() {
 
   //WiFi.begin();
   #if defined(VTHING_CO2) || defined(VTHING_STARTER)
-  SERIAL << "AAAA";
+    SERIAL << "AAAA";
     strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
     strip->Begin();
     strip->SetPixelColor(0, RgbColor(20, 0, 10));
     strip->Show();
   #endif
 
-  pinMode(D8, OUTPUT);     // Initialize the LED_BUILTIN pin as an output
+  pinMode(D8, OUTPUT);    //enable power via D8
   digitalWrite(D8, HIGH);
   delay(1000);
 
-  //Serial.begin(9600);
-  //Serial1.begin(9600);
-  //pinMode(0, INPUT);
-  //pinMode(2, INPUT);
-  //pgpio0 = digitalRead(0);
-  //pgpio2 = digitalRead(2);
   printVersion();
-
   SERIAL << F("ready") << endl;
-
   SERIAL << F("Waiting for auto-connect") << endl;
+
   activeWait();
 
-  MigrateSettingsIfNeeded();
   PropertyList.begin();
+  MigrateSettingsIfNeeded();
+
 
   #ifdef VTHING_STARTER
     initVThingStarter();
   #elif defined(VTHING_CO2)
-    initCO2Handler();
+    //initCO2Handler();
   #elif defined(VTHING_H801_LED)
     h801_setup();
   #endif
 
   //initCO2Handler();
-  registerDestination(&customHTTPDest);
+  //registerDestination(&customHTTPDest);
+
   setupPlugins(&menuHandler);
 
   CommonCommands commCmd;
@@ -151,7 +149,7 @@ void setup() {
 #endif
   menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
 
- setup_IntThrHandler(&menuHandler);
+  setup_IntThrHandler(&menuHandler);
 }
 
 void loop() {

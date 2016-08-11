@@ -5,8 +5,9 @@
 #include <Arduino.h>
 #include "FS.h"
 
-class PropertyListClass {
+class PropertyListClass : public Plugin {
 public:
+  PropertyListClass();
   void begin();
   void putProperty(const __FlashStringHelper *key, const char *value);
   void putProperty(const char *key, const char *value);
@@ -22,6 +23,8 @@ public:
   void putArrayProperty(const __FlashStringHelper *key, int idx, const char *value);
 
   void finalizeChangeFile(File &in, File &out);
+
+  void loop() {};
 
 private:
   String configFileName = "/vs_cfg.txt";

@@ -28,13 +28,13 @@
 void _migrateEESetting(int eeAddr, const __FlashStringHelper *key) {
   char buf[200];
   EEPROM.get(eeAddr, buf);
-  PropertyList.putProperty(key, buf);
+  if (buf[0] != 0 && buf[0] != 255)  PropertyList.putProperty(key, buf);
 }
 
 void _migrateJsonSetting(const __FlashStringHelper *keyJson, const __FlashStringHelper *keyProp) {
   char buf[200];
   getJSONConfig(String(keyJson).c_str(), buf);
-  PropertyList.putProperty(keyProp, buf);
+  if (buf[0]) PropertyList.putProperty(keyProp, buf);
 }
 
 void MigrateSettingsIfNeeded() {

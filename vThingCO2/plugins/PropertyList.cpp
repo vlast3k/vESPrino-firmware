@@ -5,18 +5,32 @@
 
 PropertyListClass PropertyList;
 
+PropertyListClass::PropertyListClass() {
+  registerPlugin(this);
+}
+
 void PropertyListClass::begin() {
   bool res =  SPIFFS.begin();
+  Serial <<"SPFFS begin = " << res << endl;
   if (!res) {
     SPIFFS.format();
     SPIFFS.begin();
   }
   if (!SPIFFS.exists(configFileName)) {
+    Serial << "Created " << configFileName << endl;
     File f = SPIFFS.open(configFileName, "w");
     if (!f) {
       Serial << "Could not open file test" << endl;
     }
     f.close();
+  }
+  File f = SPIFFS.open("/tst.ttt", "w");
+  f << "vvv";
+  f.close();
+  if (!SPIFFS.remove("/tst.ttt")) {
+    Serial << " Could not delete /tst.ttt" << endl;
+  } else {
+    Serial << " successfully deleted" << endl;
   }
 }
 
@@ -41,15 +55,26 @@ void PropertyListClass::finalizeChangeFile(File &in, File &out) {
 void PropertyListClass::putProperty(const char *key, const char *value) {
   File in = SPIFFS.open(configFileName, "r");
   File out= SPIFFS.open(tempFileName, "w");
+  Serial << "Put Property: " << key << " =" << value << "." << endl;
 
   String _key = String(key) + "=";
   while (in.available()) {
     String line = in.readStringUntil('\n');
+    Serial << "line=" << line << endl;
     if (!line.startsWith(_key)) out.println(line);
   }
   out << key << "=" << value << endl;
 
-  finalizeChangeFile(in, out);
+  //finalizeChangeFile(in, out);
+  in.close();
+  out.close();
+
+  if (!SPIFFS.remove(configFileName)) {
+    Serial << F("Could not delete: ") << configFileName<< endl;
+  }
+  if (!SPIFFS.rename(tempFileName, configFileName)) {
+    Serial << F("Could not rename ") << tempFileName << F(" to ") << configFileName << endl;
+  }
 }
 
 char *PropertyListClass::readProperty(const __FlashStringHelper *key) {
