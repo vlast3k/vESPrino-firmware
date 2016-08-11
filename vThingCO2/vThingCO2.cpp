@@ -37,11 +37,7 @@ using namespace std;
 
 
 
-  void onStopLED() {
-   // SERIAL << "STOP LED Executed " << endl;
-      strip->SetPixelColor(0, RgbColor(0, 0,0));
-      strip->Show();
-  }
+
 
 #endif
 int pgpio0, pgpio2;
@@ -75,6 +71,20 @@ void registerDestination(Destination *destination) {
   destinations.add(destination);
 }
 
+void setupPlugins(MenuHandler *handler) {
+  for (int i=0; i < plugins.size(); i++) plugins.get(i)->setup(handler);
+  for (int i=0; i < sensors.size(); i++) sensors.get(i)->setup(handler);
+  for (int i=0; i < destinations.size(); i++) destinations.get(i)->setup(handler);
+}
+
+void loopPlugins() {
+  for (int i=0; i < plugins.size(); i++) plugins.get(i)->loop();
+  for (int i=0; i < sensors.size(); i++) sensors.get(i)->loop();
+  for (int i=0; i < destinations.size(); i++) destinations.get(i)->loop();
+}
+
+
+
 
 
 void setup() {
@@ -105,6 +115,7 @@ void setup() {
 
   SERIAL << F("Waiting for auto-connect") << endl;
   activeWait();
+
   MigrateSettingsIfNeeded();
   PropertyList.begin();
 
@@ -116,9 +127,9 @@ void setup() {
     h801_setup();
   #endif
 
-  initCO2Handler();
+  //initCO2Handler();
   registerDestination(&customHTTPDest);
-
+  setupPlugins(&menuHandler);
 
   CommonCommands commCmd;
   commCmd.registerCommands(&menuHandler);
@@ -130,7 +141,7 @@ void setup() {
   WIFI_registerCommands(&menuHandler);
   MQTT_RegisterCommands(&menuHandler);
 #ifdef VTHING_CO2
-  CO2_registerCommands(&menuHandler);
+  //CO2_registerCommands(&menuHandler);
 #endif
 #ifdef VTHING_H801_LED
   H801_registerCommands(&menuHandler);
@@ -148,8 +159,9 @@ void loop() {
   while (menuHandler.processUserInput()) delay(1000);
   if (SKIP_LOOP) {delay(100); return;}
 
+  loopPlugins();
   #ifdef VTHING_CO2
-    loopCO2Handler();
+  //  loopCO2Handler();
   #elif defined(VTHING_STARTER)
     loopVThingStarter();
   #elif defined(VTHING_H801_LED)

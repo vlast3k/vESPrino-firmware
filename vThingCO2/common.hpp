@@ -215,6 +215,7 @@ extern LinkedList<Plugin *> plugins;
 extern LinkedList<Sensor *> sensors;
 extern LinkedList<Destination *> destinations;
 extern LinkedList<Thr *> thresholds;
+extern LinkedList<Timer *> timers ;
 extern char commonBuffer200[200];
 extern CustomHTTPDest customHTTPDest;
 

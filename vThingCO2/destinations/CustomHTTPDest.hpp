@@ -12,7 +12,7 @@ public:
   CustomHTTPDest();
   void process(LinkedList<Pair*> &data);
   void setup(MenuHandler *handler);
-  void loop();
+  void loop() {};
   static void menuAddCustomUrl(const char *line);
 };
 

@@ -16,10 +16,11 @@ boolean SKIP_LOOP = false;
 MenuHandler menuHandler;
 char atCIPSTART_IP[20];
 char commonBuffer200[200];
-Timer *tmrStopLED;
+
 NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
 
 LinkedList<Plugin *> plugins = LinkedList<Plugin *>();
 LinkedList<Sensor *> sensors = LinkedList<Sensor *>();
 LinkedList<Destination *> destinations = LinkedList<Destination *>();
 LinkedList<Thr *> thresholds = LinkedList<Thr *>();
+LinkedList<Timer *> timers = LinkedList<Timer *>();
