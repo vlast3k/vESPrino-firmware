@@ -1,7 +1,10 @@
 #ifndef PropertyList_h
 #define PropertyList_h
 
+
 #include <Arduino.h>
+#include "FS.h"
+
 class PropertyListClass {
 public:
   void begin();
@@ -14,6 +17,11 @@ public:
   bool hasProperty(const char *key);
   bool hasProperty(const __FlashStringHelper *key);
 
+  char *getArrayProperty(const __FlashStringHelper *key, int idx);
+  void removeArrayProperty(const __FlashStringHelper *key);
+  void putArrayProperty(const __FlashStringHelper *key, int idx, const char *value);
+
+  void finalizeChangeFile(File &in, File &out);
 
 private:
   String configFileName = "/vs_cfg.txt";

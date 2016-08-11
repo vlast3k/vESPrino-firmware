@@ -3,6 +3,8 @@
 #include "PropertyList.hpp"
 #include "common.hpp"
 
+PropertyListClass PropertyList;
+
 void PropertyListClass::begin() {
   bool res =  SPIFFS.begin();
   if (!res) {
@@ -22,24 +24,32 @@ void PropertyListClass::begin() {
 void PropertyListClass::putProperty(const __FlashStringHelper *key, const char *value) {
   putProperty(String(key).c_str(), value);
 }
+
+
+void PropertyListClass::finalizeChangeFile(File &in, File &out) {
+  in.close();
+  out.close();
+
+  if (!SPIFFS.remove(configFileName)) {
+    Serial << F("Could not delete: ") << configFileName<< endl;
+  }
+  if (!SPIFFS.rename(tempFileName, configFileName)) {
+    Serial << F("Could not rename ") << tempFileName << F(" to ") << configFileName << endl;
+  }
+}
+
 void PropertyListClass::putProperty(const char *key, const char *value) {
   File in = SPIFFS.open(configFileName, "r");
   File out= SPIFFS.open(tempFileName, "w");
+
   String _key = String(key) + "=";
   while (in.available()) {
     String line = in.readStringUntil('\n');
     if (!line.startsWith(_key)) out.println(line);
   }
   out << key << "=" << value << endl;
-  in.close();
-  out.close();
 
-  if (!SPIFFS.remove(configFileName)) {
-    Serial << "Could not delete: " << configFileName<< endl;
-  }
-  if (!SPIFFS.rename(tempFileName, configFileName)) {
-    Serial << "Could not rename " << tempFileName << " to " << configFileName << endl;
-  }
+  finalizeChangeFile(in, out);
 }
 
 char *PropertyListClass::readProperty(const __FlashStringHelper *key) {
@@ -79,4 +89,25 @@ long PropertyListClass::readLongProperty(const __FlashStringHelper *key) {
 
 }
 
-PropertyListClass PropertyList;
+char* PropertyListClass::getArrayProperty(const __FlashStringHelper *key, int idx) {
+  String _key = String(key) + idx;
+  return readProperty(_key.c_str());
+}
+
+void PropertyListClass::removeArrayProperty(const __FlashStringHelper *key) {
+  File in = SPIFFS.open(configFileName, "r");
+  File out= SPIFFS.open(tempFileName, "w");
+
+  String _key = String(key);
+  while (in.available()) {
+    String line = in.readStringUntil('\n');
+    if (!line.startsWith(_key)) out.println(line);
+  }
+
+  finalizeChangeFile(in, out);
+}
+
+void PropertyListClass::putArrayProperty(const __FlashStringHelper *key, int idx, const char *value) {
+  String _key = String(key) + idx;
+  putProperty(_key.c_str(), value);
+}

@@ -7,6 +7,8 @@
 #include "interfaces\Plugin.hpp"
 #include "interfaces\Sensor.hpp"
 #include "interfaces\Pair.h"
+#include "sensors\CO2Sensor.hpp"
+#include "destinations\CustomHTTPDest.hpp"
 
 boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
 boolean hasPIR = false;
@@ -24,3 +26,6 @@ LinkedList<Sensor *> sensors = LinkedList<Sensor *>();
 LinkedList<Destination *> destinations = LinkedList<Destination *>();
 LinkedList<Thr *> thresholds = LinkedList<Thr *>();
 LinkedList<Timer *> timers = LinkedList<Timer *>();
+
+CustomHTTPDest customHTTPDest;
+CO2Sensor co2Sensor;

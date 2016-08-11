@@ -11,9 +11,12 @@ class CustomHTTPDest : public Destination {
 public:
   CustomHTTPDest();
   void process(LinkedList<Pair*> &data);
+  void processURL(String &s);
   void setup(MenuHandler *handler);
   void loop() {};
   static void menuAddCustomUrl(const char *line);
+  static void menuCleanCustomUrl(const char *line);
+
 };
 
 #endif

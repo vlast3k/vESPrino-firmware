@@ -8,7 +8,8 @@
 #include "EEPROM.h"
 #include "CO2Sensor.hpp"
 
-CO2Sensor co2Sensor;
+extern CO2Sensor co2Sensor;
+
 CO2Sensor::CO2Sensor() :
     co2Threshold("CO2", 1),
     cubicCo2(&CO2Sensor::onCo2Status_static, EE_RESET_CO2_1B),
