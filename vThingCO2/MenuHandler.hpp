@@ -26,8 +26,9 @@ class MenuHandler {
     void registerCommand(MenuEntry *command);
     void listCommands();
     bool processUserInput();
-  private:
     LinkedList<MenuEntry*> *commands;
+  private:
+    static void cmdHelp(const char *ignore);
 
     byte readLine(int);
     static const int LINE_LEN=250;

@@ -36,6 +36,7 @@ void CustomHTTPDest::menuAddCustomUrl(const char *line) {
 }
 
 void CustomHTTPDest::process(LinkedList<Pair *> &data) {
+  Serial << "CustomHTTPDest::process" << endl;
   int i=1;
   do {
     String s = PropertyList.getArrayProperty(F("custom_url_arr"), i++);
@@ -46,6 +47,7 @@ void CustomHTTPDest::process(LinkedList<Pair *> &data) {
 }
 
 void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
+  Serial << "CustomHTTPDest::replaceUrl = " << s << endl;
   for (int i=0; i < data.size(); i++) {
     Pair *p = data.get(i);
     String skey = String("%") + p->key + String("%");
@@ -54,6 +56,7 @@ void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
 }
 
 void CustomHTTPDest::invokeURL(String &url) {
+  Serial << "CustomHTTPDest::invoke = " << url << endl;
   HTTPClient http;
   http.begin(url);
   //addHCPIOTHeaders(&http, token);

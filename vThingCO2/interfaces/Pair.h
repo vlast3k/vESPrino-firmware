@@ -3,7 +3,7 @@
 #include <Arduino.h>
 struct Pair {
   const char *key;
-  const char *value;
+  String value;
 };
 
 struct Thr {

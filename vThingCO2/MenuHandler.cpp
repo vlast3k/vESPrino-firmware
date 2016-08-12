@@ -2,9 +2,18 @@
 #include <LinkedList.h>
 #include <Arduino.h>
 #include <Streaming.h>
+#include "common.hpp"
 
 MenuHandler::MenuHandler() {
   commands = new LinkedList<MenuEntry*>();
+  registerCommand(new MenuEntry(F("help"), CMD_EXACT, MenuHandler::cmdHelp, F("This help page")));
+
+}
+
+void MenuHandler::cmdHelp(const char *ignore) {
+  for (int i=0; i < menuHandler.commands->size(); i++) {
+    Serial << menuHandler.commands->get(i)->cmd << " - " << menuHandler.commands->get(i)->description << endl;
+  }
 }
 
 void MenuHandler::registerCommand(MenuEntry *command) {
@@ -49,6 +58,8 @@ void MenuHandler::handleCommand(char *line) {
         (!m->cmdExactMatch &&  strstr(String(line).c_str(), String(m->cmd).c_str())) ) {
           Serial <<"calling handler " << endl;
           m->handler(line);
+          return;
     }
   }
+  Serial << F("not found") << endl;
 }
