@@ -26,6 +26,7 @@ extern "C" {
 #include "interfaces\Plugin.hpp"
 #include "interfaces\Sensor.hpp"
 #include "destinations\CustomHTTPDest.hpp"
+#include "plugins\PropertyList.hpp"
 
 #define Cred     RgbColor(255, 0, 0)
 #define Cpink    RgbColor(255, 0, 128)
@@ -218,7 +219,7 @@ extern LinkedList<Thr *> thresholds;
 extern LinkedList<Timer *> timers ;
 extern char commonBuffer200[200];
 extern CustomHTTPDest customHTTPDest;
-
+extern PropertyListClass PropertyList;
 
 #endif
 

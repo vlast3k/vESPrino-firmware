@@ -3,10 +3,33 @@
 #include "PropertyList.hpp"
 #include "common.hpp"
 
-PropertyListClass PropertyList;
+
 
 PropertyListClass::PropertyListClass() {
+  Serial <<"Create Property List";
   registerPlugin(this);
+  configFileName = F("/vs_cfg.txt");
+  tempFileName = F("/vs_cfg.tmp");
+}
+
+void PropertyListClass::setup(MenuHandler *handler) {
+  Serial <<"PropList, register commands\n";
+  handler->registerCommand(new MenuEntry(F("prop_list"), CMD_EXACT, &PropertyListClass::prop_list_cfg, F("prop_list")));
+  handler->registerCommand(new MenuEntry(F("prop_set"), CMD_BEGIN, &PropertyListClass::prop_set, F("prop_set \"key\" \"value\"")));
+
+}
+
+void PropertyListClass::prop_list_cfg(const char *line) {
+  File in = SPIFFS.open(PropertyList.configFileName, "r");
+  while (in.available())  Serial << in.readStringUntil('\n') << endl;
+  in.close();
+}
+
+void PropertyListClass::prop_set(const char *line) {
+  char key[50], value[200];
+  line = extractStringFromQuotes(line, key, sizeof(key));
+  line = extractStringFromQuotes(line, value, sizeof(value));
+  PropertyList.putProperty(key, value);
 }
 
 void PropertyListClass::begin() {
@@ -53,6 +76,7 @@ void PropertyListClass::finalizeChangeFile(File &in, File &out) {
 }
 
 void PropertyListClass::putProperty(const char *key, const char *value) {
+  if (!key[0]) return;
   File in = SPIFFS.open(configFileName, "r");
   File out= SPIFFS.open(tempFileName, "w");
   Serial << "Put Property: " << key << " =" << value << "." << endl;
@@ -63,18 +87,9 @@ void PropertyListClass::putProperty(const char *key, const char *value) {
     Serial << "line=" << line << endl;
     if (!line.startsWith(_key)) out.println(line);
   }
-  out << key << "=" << value << endl;
+  if (value[0]) out << key << "=" << value << endl;
 
-  //finalizeChangeFile(in, out);
-  in.close();
-  out.close();
-
-  if (!SPIFFS.remove(configFileName)) {
-    Serial << F("Could not delete: ") << configFileName<< endl;
-  }
-  if (!SPIFFS.rename(tempFileName, configFileName)) {
-    Serial << F("Could not rename ") << tempFileName << F(" to ") << configFileName << endl;
-  }
+  finalizeChangeFile(in, out);
 }
 
 char *PropertyListClass::readProperty(const __FlashStringHelper *key) {
@@ -82,21 +97,25 @@ char *PropertyListClass::readProperty(const __FlashStringHelper *key) {
 }
 
 char *PropertyListClass::readProperty(const char *key) {
-  File in = SPIFFS.open(configFileName, "r");
-  String _key = String(key) + "=";
-  int r;
-  while (r = in.available()) {
-    String line = in.readStringUntil('\n');
-    if (line.startsWith(_key)) {
-      strcpy(commonBuffer200, line.c_str() + _key.length());
-      return commonBuffer200;
+  if (key[0]) {
+    File in = SPIFFS.open(configFileName, "r");
+    String _key = String(key) + "=";
+    int r;
+    while (r = in.available()) {
+      String line = in.readStringUntil('\n');
+      if (line.startsWith(_key)) {
+        strcpy(commonBuffer200, line.c_str() + _key.length());
+        in.close();
+        return commonBuffer200;
+      }
     }
+    in.close();
   }
   commonBuffer200[0] = 0;
   return commonBuffer200;
 }
 
-bool PropertyListClass::readBoolProperty(char *key) {
+bool PropertyListClass::readBoolProperty(const __FlashStringHelper *key) {
   return readProperty(key)[0] != 0;
 }
 
@@ -120,10 +139,11 @@ char* PropertyListClass::getArrayProperty(const __FlashStringHelper *key, int id
 }
 
 void PropertyListClass::removeArrayProperty(const __FlashStringHelper *key) {
+  String _key = String(key);
+  if (_key.length() == 0) return;
   File in = SPIFFS.open(configFileName, "r");
   File out= SPIFFS.open(tempFileName, "w");
 
-  String _key = String(key);
   while (in.available()) {
     String line = in.readStringUntil('\n');
     if (!line.startsWith(_key)) out.println(line);
@@ -133,6 +153,7 @@ void PropertyListClass::removeArrayProperty(const __FlashStringHelper *key) {
 }
 
 void PropertyListClass::putArrayProperty(const __FlashStringHelper *key, int idx, const char *value) {
+  if (String(key).length() == 0) return;
   String _key = String(key) + idx;
   putProperty(_key.c_str(), value);
 }

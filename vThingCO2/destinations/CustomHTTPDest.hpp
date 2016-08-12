@@ -6,17 +6,22 @@
 #include <LinkedList.h>
 #include "interfaces\Pair.h"
 #include "MenuHandler.hpp"
+#include "Arduino.h"
 
+//#define PROP_CUSTOM_URL_ARR F("custom_url_arr")
 class CustomHTTPDest : public Destination {
 public:
   CustomHTTPDest();
-  void process(LinkedList<Pair*> &data);
-  void processURL(String &s);
   void setup(MenuHandler *handler);
   void loop() {};
   static void menuAddCustomUrl(const char *line);
   static void menuCleanCustomUrl(const char *line);
+  void process(LinkedList<Pair*> &data);
+  void replaceValuesInURL(LinkedList<Pair *> &data, String &s);
+  void invokeURL(String &url);
 
+private:
+  //static const __FlashStringHelper* PROP_CUSTOM_URL_ARR;// = F("custom_url_arr");
 };
 
 #endif

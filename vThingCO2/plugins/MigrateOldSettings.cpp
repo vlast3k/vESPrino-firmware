@@ -38,7 +38,7 @@ void _migrateJsonSetting(const __FlashStringHelper *keyJson, const __FlashString
 }
 
 void MigrateSettingsIfNeeded() {
-  if (PropertyList.readBoolProperty("isMigrated")) return;
+  if (PropertyList.readBoolProperty(F("isMigrated"))) return;
   EEPROM.end();
   EEPROM.begin(3000);
   _migrateEESetting(EE_WIFI_SSID_30B, EE_WIFI_SSID);
@@ -61,4 +61,5 @@ void MigrateSettingsIfNeeded() {
   _migrateJsonSetting(H801_API_KEY, PROP_H801_API_KEY);
 
   EEPROM.end();
+  PropertyList.putProperty(F("isMigrated"), "1");
 }

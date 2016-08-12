@@ -29,3 +29,4 @@ LinkedList<Timer *> timers = LinkedList<Timer *>();
 
 CustomHTTPDest customHTTPDest;
 CO2Sensor co2Sensor;
+PropertyListClass PropertyList;

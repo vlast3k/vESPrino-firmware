@@ -49,15 +49,17 @@ void on_SendValue() {
   for (int i=0; i < destinations.size(); i++) {
     destinations.get(i)->process(values);
   }
+  tmrSendValueTimer->Start();
 }
 
 void onRawRead() {
-  bool shouldSend = false;
+  //bool shouldSend = false;
   for (int i=0; i < sensors.size(); i++) {
     float currentValue = sensors.get(i)->getValue();
     const char* id = sensors.get(i)->getSensorId();
     if (getThreshold(id)->thr > 0 && abs(currentValue - getThreshold(id)->oldValue) > getThreshold(id)->thr) {
       on_SendValue();
+      return;
     }
   }
 }
@@ -104,6 +106,9 @@ void setSendThresholdJson(const char *line) {
   }
 }
 
+void cmdSendNow(const char* ignore) {
+  on_SendValue();
+}
 
 
 void setup_IntThrHandler(MenuHandler *handler) {
@@ -116,6 +121,7 @@ void setup_IntThrHandler(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("wsi"), CMD_BEGIN, setSendInterval , F("")));
   handler->registerCommand(new MenuEntry(F("wst"), CMD_BEGIN, setSendThreshold, F("")));
   handler->registerCommand(new MenuEntry(F("set_thr"), CMD_BEGIN, setSendThresholdJson, F("Json Array[\"key1\", \"value1\", \"key2\", \"value2\", ...]")));
+  handler->registerCommand(new MenuEntry(F("sendNow"), CMD_EXACT, cmdSendNow, F("Process destinatios and send")));
 }
 
 void loop_IntThrHandler() {
