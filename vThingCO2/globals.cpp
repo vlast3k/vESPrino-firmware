@@ -9,6 +9,7 @@
 #include "interfaces\Pair.h"
 #include "sensors\CO2Sensor.hpp"
 #include "destinations\CustomHTTPDest.hpp"
+#include "plugins\PropertyList.hpp"
 
 boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
 boolean hasPIR = false;

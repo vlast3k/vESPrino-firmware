@@ -20,6 +20,8 @@ void handleWifi() {
   ip = WiFi.localIP();
 }
 
+//char x[30], y[30];
+
 int wifiConnectToStoredSSID() {
   String ssid, pass;
   ssid = PropertyList.readProperty(EE_WIFI_SSID);
@@ -28,7 +30,15 @@ int wifiConnectToStoredSSID() {
   WiFi.disconnect();
   delay(500);
   WiFi.mode(WIFI_STA);
+  // strcpy(x, ssid.c_str());
+  // strcpy(y, pass.c_str());
+  // if (y[0] == 'B') {
+  // //  strcpy(x, "vladiHome");
+  //   strcpy(y, "0888414447");
+  // }
+  // SERIAL << F("Connecting to: \"") << x << F("\", \"") << y << F("\"") << endl;
   WiFi.begin(ssid.c_str(), pass.c_str());
+  //WiFi.begin("MarinaResidence", "sdsa");
 }
 void connectToWifi(const char *s1, const char *s2, const char *s3) {
   PropertyList.putProperty(EE_WIFI_SSID, s1);
@@ -87,11 +97,12 @@ void wifiScanNetworks(const char *ignore) {
 }
 
 void setWifi(const char* p) {
-  char s1[30], s2[30], s3[30];
+  SERIAL << "setWifi_sgtart" << endl;
+char s1[30], s2[30], s3[30];
   p = extractStringFromQuotes(p, s1, 29);
   p = extractStringFromQuotes(p, s2, 29);
   p = extractStringFromQuotes(p, s3, 29);
-  //SERIAL << "setWifi" << s1 << s2 << s3 << endl;
+  SERIAL << "setWifi" << s1 << s2 << s3 << endl;
 
   connectToWifi(s1, s2, s3);
 }

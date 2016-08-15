@@ -7,6 +7,7 @@
 #include "plugins\PropertyList.hpp"
 #include "EEPROM.h"
 #include "CO2Sensor.hpp"
+#include <LinkedList.h>
 
 extern CO2Sensor co2Sensor;
 
@@ -46,6 +47,13 @@ float CO2Sensor::getValue() {
   } else {
     return nanf("");
   }
+}
+
+void CO2Sensor::getData(LinkedList<Pair*> *data) {
+  Pair *p = new Pair();
+  p->key = getSensorId();
+  p->value = String(getValue());
+  data->add(p);
 }
 
 void CO2Sensor::onStopLED_static() {

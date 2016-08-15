@@ -40,21 +40,34 @@ void on_SendValue() {
   Serial << "DestHanlder: sendValue" << endl;
   LinkedList<Pair *> values = LinkedList<Pair* >();
   for (int i=0; i < sensors.size(); i++) {
-    const char *id = sensors.get(i)->getSensorId();
-    getThreshold(id)->oldValue = sensors.get(i)->getValue();
-    Pair p;
-    p.key = sensors.get(i)->getSensorId();
-    p.value = String(getThreshold(id)->oldValue);
+    sensors.get(i)->getData(&values);
+    // const char *id = sensors.get(i)->getSensorId();
+    // getThreshold(id)->oldValue = sensors.get(i)->getValue();
+    // Pair *p = new Pair();
+    // p->key = sensors.get(i)->getSensorId();
+    // p->value = String(getThreshold(id)->oldValue);
     // Serial << getThreshold(id)->oldValue << " " << (int)getThreshold(id)->oldValue << " " << String(getThreshold(id)->oldValue) <<" " << String(getThreshold(id)->oldValue).c_str() << endl;
     // p.value = String(getThreshold(id)->oldValue).c_str();
     // Serial << p.key << " = " << p.value << " = " << sensors.get(i)->getValue() << endl;
     // p.value = String("sadsadsadsa").c_str();
-    Serial << "newval: " << p.value << "..."<<endl;
-    values.add(&p);
+    //Serial << "newval: " << p->value << "..."<<endl;
+    //values.add(p);
+  }
+  for (int i=0; i < values.size(); i++) {
+    Serial << values.get(i)->key << " = " << values.get(i)->value << "."<<endl;
   }
   for (int i=0; i < destinations.size(); i++) {
     destinations.get(i)->process(values);
   }
+  for (int i=0; i < values.size(); i++) {
+    Serial << values.get(i)->key << " = " << values.get(i)->value << "."<<endl;
+  }
+  for (int i=0; i < values.size(); i++) {
+    delete  values.get(i);
+  }
+
+  //heap("");
+
   tmrSendValueTimer->Start();
 }
 

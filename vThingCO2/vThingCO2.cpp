@@ -86,10 +86,6 @@ void loopPlugins() {
   for (int i=0; i < destinations.size(); i++) destinations.get(i)->loop();
 }
 
-
-
-
-
 void setup() {
   SERIAL.begin(9600);
 
@@ -111,6 +107,7 @@ void setup() {
   SERIAL << F("Waiting for auto-connect") << endl;
 
   activeWait();
+
 
   PropertyList.begin();
   MigrateSettingsIfNeeded();
@@ -150,6 +147,7 @@ void setup() {
   menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
 
   setup_IntThrHandler(&menuHandler);
+  //WiFi.begin("MarinaResidence","eeeeee");
 }
 
 void loop() {
@@ -166,4 +164,5 @@ void loop() {
     h801_loop();
   #endif
   loop_IntThrHandler();
+  delay(1000);
 }

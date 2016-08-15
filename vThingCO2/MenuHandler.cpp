@@ -54,9 +54,9 @@ void MenuHandler::handleCommand(char *line) {
   Serial << F("Executing: ") << line << endl;
   for (int i=0; i < commands->size(); i++) {
     MenuEntry *m = commands->get(i);
-    if ( (m->cmdExactMatch && !strcmp(String(m->cmd).c_str(), String(line).c_str())) ||
-        (!m->cmdExactMatch &&  strstr(String(line).c_str(), String(m->cmd).c_str())) ) {
-          Serial <<"calling handler " << endl;
+    const char *cmd = String(m->cmd).c_str();
+    if ( (m->cmdExactMatch && !strcmp(line, cmd)) ||
+        (!m->cmdExactMatch &&  strstr(line, cmd) == line) ) {
           m->handler(line);
           return;
     }

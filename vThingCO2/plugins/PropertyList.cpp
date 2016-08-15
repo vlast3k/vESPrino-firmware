@@ -21,7 +21,12 @@ void PropertyListClass::setup(MenuHandler *handler) {
 
 void PropertyListClass::prop_list_cfg(const char *line) {
   File in = SPIFFS.open(PropertyList.configFileName, "r");
-  while (in.available())  Serial << in.readStringUntil('\n') << endl;
+
+  while (in.available())  {
+    String s = in.readStringUntil('\n');
+    s.trim();
+    Serial << s << endl;
+  }
   in.close();
 }
 
@@ -84,6 +89,7 @@ void PropertyListClass::putProperty(const char *key, const char *value) {
   String _key = String(key) + "=";
   while (in.available()) {
     String line = in.readStringUntil('\n');
+    line.trim();
     Serial << "line=" << line << endl;
     if (!line.startsWith(_key)) out.println(line);
   }
@@ -103,6 +109,7 @@ char *PropertyListClass::readProperty(const char *key) {
     int r;
     while (r = in.available()) {
       String line = in.readStringUntil('\n');
+      line.trim();
       if (line.startsWith(_key)) {
         strcpy(commonBuffer200, line.c_str() + _key.length());
         in.close();
@@ -146,6 +153,7 @@ void PropertyListClass::removeArrayProperty(const __FlashStringHelper *key) {
 
   while (in.available()) {
     String line = in.readStringUntil('\n');
+    line.trim();
     if (!line.startsWith(_key)) out.println(line);
   }
 
@@ -156,4 +164,11 @@ void PropertyListClass::putArrayProperty(const __FlashStringHelper *key, int idx
   if (String(key).length() == 0) return;
   String _key = String(key) + idx;
   putProperty(_key.c_str(), value);
+}
+
+void trim(char *str) {
+  char *p = strchr(str, 13);
+  if (p != NULL) *p = 0;
+  p = strchr(str, 10);
+  if (p != NULL) *p = 0;
 }

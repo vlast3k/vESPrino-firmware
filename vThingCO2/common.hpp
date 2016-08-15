@@ -44,7 +44,7 @@ extern "C" {
 #define SERIAL Serial
 #define EE_WIFI_SSID F("wifi.ssid")
 #define EE_WIFI_P1   F("wifi.p1")
-#define EE_WIFI_P2   F("wifi.p1")
+#define EE_WIFI_P2   F("wifi.p2")
 #define EE_IOT_HOST  F("sap.hcp.host")
 #define EE_IOT_PATH  F("sap.hcp.path")
 #define EE_IOT_TOKN  F("sap.hcp.token")
