@@ -86,6 +86,18 @@ void loopPlugins() {
   for (int i=0; i < destinations.size(); i++) destinations.get(i)->loop();
 }
 
+bool isDeepSleepWake() {
+  uint32_t dd;
+  ESP.rtcUserMemoryRead(0, &dd, sizeof(dd));
+  if (dd == 33) {
+    return true;
+  } else {
+    dd = 33;
+    ESP.rtcUserMemoryWrite(0, &dd, sizeof(dd));
+    return false;
+  }
+}
+
 void setup() {
   SERIAL.begin(9600);
 
@@ -106,7 +118,9 @@ void setup() {
   SERIAL << F("ready") << endl;
   SERIAL << F("Waiting for auto-connect") << endl;
 
-  activeWait();
+  deepSleepWake = isDeepSleepWake();
+
+  if (!deepSleepWake) activeWait();
 
 
   PropertyList.begin();
@@ -123,6 +137,9 @@ void setup() {
 
   //initCO2Handler();
   //registerDestination(&customHTTPDest);
+
+  registerPlugin(&TimerManager);
+  registerPlugin(&PowerManager);
 
   setupPlugins(&menuHandler);
 
@@ -152,9 +169,8 @@ void setup() {
 
 void loop() {
   handleWifi();
-  while (menuHandler.processUserInput()) delay(1000);
+  menuHandler.loop();
   if (SKIP_LOOP) {delay(100); return;}
-
   loopPlugins();
   #ifdef VTHING_CO2
   //  loopCO2Handler();
@@ -163,6 +179,9 @@ void loop() {
   #elif defined(VTHING_H801_LED)
     h801_loop();
   #endif
+
   loop_IntThrHandler();
-  delay(1000);
+  menuHandler.loop();
+  PowerManager.loopPowerManager();
+  //delay(1000);
 }

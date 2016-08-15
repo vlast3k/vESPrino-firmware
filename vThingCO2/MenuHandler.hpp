@@ -22,17 +22,24 @@ class MenuEntry {
 class MenuHandler {
   public:
     MenuHandler();
-    void handleCommand(char *line);
+    //id setup(MenuHandler *handler){};
+    void loop();
     void registerCommand(MenuEntry *command);
     void listCommands();
     bool processUserInput();
-    LinkedList<MenuEntry*> *commands;
+    void scheduleCommand(const char *cmd);
+
   private:
+
     static void cmdHelp(const char *ignore);
+    void handleCommand(const char *line);
+    void processCommands();
 
     byte readLine(int);
     static const int LINE_LEN=250;
     char line[LINE_LEN];
+    LinkedList<MenuEntry*> *commands;
+    LinkedList<String*> pendingCommands = LinkedList<String*>();
 
 };
 

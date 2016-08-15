@@ -44,8 +44,8 @@ void handleGesture() {
       default:
         gesture = "NONE";
     }
-    menuHandler.handleCommand("vecmd led_green");
-    menuHandler.handleCommand("vecmd ledmode_2_2");
+    menuHandler.scheduleCommand("vecmd led_green");
+    menuHandler.scheduleCommand("vecmd ledmode_2_2");
     SERIAL << "Gesture: " << gesture << endl;
     char tmp[200], tmp2[200];
     char p2[40], p3[100];

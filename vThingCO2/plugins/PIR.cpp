@@ -8,14 +8,14 @@ void handlePIR() {
   if (hadMotion) {
     if (digitalRead(D6)) return;
     hadMotion = false;
-    menuHandler.handleCommand("vecmd pirOff");
+    menuHandler.scheduleCommand("vecmd pirOff");
     return;
   }
   if (!hadMotion && digitalRead(D6)) {
     delay(100);
     if (digitalRead(D6)) { //to prevend the sporadi fires
       hadMotion=true;
-      menuHandler.handleCommand("vecmd pirOn");
+      menuHandler.scheduleCommand("vecmd pirOn");
     }
   }
 }

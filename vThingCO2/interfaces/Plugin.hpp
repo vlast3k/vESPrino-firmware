@@ -5,8 +5,8 @@
 
 class Plugin {
 public:
-  virtual void setup(MenuHandler *handler);
-  virtual void loop();
+  virtual void setup(MenuHandler *handler){};
+  virtual void loop(){};
 };
 
 #endif

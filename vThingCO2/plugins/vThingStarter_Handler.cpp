@@ -78,7 +78,7 @@ void initVThingStarter() {
   //initSSD1306();
   if (hasPN532) initPN532();
   if (hasSSD1306) oledHandleCommand("     vESPrino\n  IoT made easy\nPlay with sensors");
-  menuHandler.handleCommand("vecmd led_black");
+  menuHandler.scheduleCommand("vecmd led_black");
   //handleCommandVESPrino("vecmd ledmode 1");
   //  pinMode(2, OUTPUT);
   if (hasAPDS9960) initAPDS9960();
