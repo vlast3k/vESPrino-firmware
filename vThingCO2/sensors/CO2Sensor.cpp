@@ -50,10 +50,10 @@ float CO2Sensor::getValue() {
 }
 
 void CO2Sensor::getData(LinkedList<Pair*> *data) {
-  Pair *p = new Pair();
-  p->key = getSensorId();
-  p->value = String(getValue());
-  data->add(p);
+//  Pair *p = new Pair(getSensorId(), String(getValue()));
+  //p->key = getSensorId();
+  //p->value = String(getValue());
+  data->add(new Pair(getSensorId(), String(getValue())));
 }
 
 void CO2Sensor::onStopLED_static() {

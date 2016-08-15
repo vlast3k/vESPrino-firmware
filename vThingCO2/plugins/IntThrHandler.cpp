@@ -73,14 +73,14 @@ void on_SendValue() {
 
 void onRawRead() {
   //bool shouldSend = false;
-  for (int i=0; i < sensors.size(); i++) {
-    float currentValue = sensors.get(i)->getValue();
-    const char* id = sensors.get(i)->getSensorId();
-    if (getThreshold(id)->thr > 0 && abs(currentValue - getThreshold(id)->oldValue) > getThreshold(id)->thr) {
-      on_SendValue();
-      return;
-    }
-  }
+  // for (int i=0; i < sensors.size(); i++) {
+  //   float currentValue = sensors.get(i)->getValue();
+  //   const char* id = sensors.get(i)->getSensorId();
+  //   if (getThreshold(id)->thr > 0 && abs(currentValue - getThreshold(id)->oldValue) > getThreshold(id)->thr) {
+  //     on_SendValue();
+  //     return;
+  //   }
+  // }
 }
 
 void setSendInterval (const char *line) {

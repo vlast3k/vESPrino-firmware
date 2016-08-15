@@ -8,7 +8,7 @@
 void PowerManagerClass::setup(MenuHandler *handler) {
   WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
   //updateDeepSleepWake();
-  timer = TimerManager.registerTimer(new Timer(20000L, PowerManagerClass::onTimeout));
+  timer = TimerManager.registerTimer(new Timer(80000L, PowerManagerClass::onTimeout));
   handler->registerCommand(new MenuEntry(F("nop"), CMD_EXACT, &PowerManagerClass::onNop, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   isLowPower = deepSleepWake;
 }
@@ -32,7 +32,7 @@ void PowerManagerClass::onNopInst() {
 }
 
 void PowerManagerClass::loopPowerManager() {
-  Serial << "Power Manager: " << millis() << endl;
+  //Serial << "Power Manager: " << millis() << endl;
   Serial.flush();
   if (isLowPower) {
     Serial << F("Going into power-safe mode for 20 seconds") << endl;

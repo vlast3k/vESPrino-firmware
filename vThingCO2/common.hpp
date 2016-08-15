@@ -29,6 +29,7 @@ extern "C" {
 #include "plugins\PropertyList.hpp"
 #include "plugins\TimerManager.hpp"
 #include "plugins\PowerManager.hpp"
+#include "sensors\SI7021Sensor.hpp"
 
 #define Cred     RgbColor(255, 0, 0)
 #define Cpink    RgbColor(255, 0, 128)
@@ -224,6 +225,7 @@ extern CustomHTTPDest customHTTPDest;
 extern PropertyListClass PropertyList;
 extern TimerManagerClass TimerManager;
 extern PowerManagerClass PowerManager;
+extern SI7021Sensor si7021Sensor;
 extern bool deepSleepWake;
 
 #endif
@@ -235,3 +237,4 @@ void setup_IntThrHandler(MenuHandler *handler);
 
 void registerDestination(Destination *destination);
 void registerPlugin(Plugin *plugin);
+void registerSensor(Sensor *sensor);

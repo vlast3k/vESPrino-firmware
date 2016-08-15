@@ -2,6 +2,7 @@
 #define Pair_h
 #include <Arduino.h>
 struct Pair {
+  Pair (const char *_key, String _value) : key(_key), value(_value) {};
   const char *key;
   String value;
 };

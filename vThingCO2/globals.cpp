@@ -12,6 +12,7 @@
 #include "plugins\PropertyList.hpp"
 #include "plugins\TimerManager.hpp"
 #include "plugins\PowerManager.hpp"
+#include "sensors\SI7021Sensor.hpp"
 
 boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
 boolean hasPIR = false;
@@ -36,3 +37,4 @@ CO2Sensor co2Sensor;
 PropertyListClass PropertyList;
 PowerManagerClass PowerManager;
 TimerManagerClass TimerManager;
+SI7021Sensor si7021Sensor;
