@@ -70,7 +70,10 @@ void MenuHandler::processCommands() {
     delay(1);
     hadCommands = true;
   }
-  if (hadCommands)  handleCommand("nop");
+  if (hadCommands)  {
+    handleCommand("nop");
+    Serial << F("ready >");
+  }
 }
 
 void MenuHandler::handleCommand(const char *line) {
