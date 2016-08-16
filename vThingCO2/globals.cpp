@@ -14,6 +14,7 @@
 #include "plugins\PowerManager.hpp"
 #include "sensors\SI7021Sensor.hpp"
 #include "sensors\BME280Sensor.hpp"
+#include "destinations\MQTTDest.hpp"
 
 boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
 boolean hasPIR = false;
@@ -40,3 +41,4 @@ PowerManagerClass PowerManager;
 TimerManagerClass TimerManager;
 SI7021Sensor si7021Sensor;
 BME280Sensor bme280Sensor;
+MQTTDest mqttDest;
