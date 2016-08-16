@@ -183,6 +183,7 @@ void setup() {
   menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
 
   setup_IntThrHandler(&menuHandler);
+  heap("");
   //WiFi.begin("MarinaResidence","eeeeee");
 }
 
