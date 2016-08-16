@@ -6,7 +6,7 @@
 #include "common.hpp"
 
 SI7021Sensor::SI7021Sensor() {
-  registerSensor(this);
+//  registerSensor(this);
 }
 
 void SI7021Sensor::setup(MenuHandler *handler) {
@@ -31,7 +31,7 @@ void SI7021Sensor::getData(LinkedList<Pair *> *data) {
 bool SI7021Sensor::initSensor() {
   si7021 = new SI7021();
   //si7021->reset();
-  si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
+  //si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
   Serial << "SI7021 init :" <<  si7021->getDeviceID() << endl;
   if (si7021->getDeviceID() == 255) {
     Serial <<"failed" << endl;

@@ -16,7 +16,7 @@ CO2Sensor::CO2Sensor() :
     cubicCo2(&CO2Sensor::onCo2Status_static, EE_RESET_CO2_1B),
     startedCO2Monitoring(false)
 {
-  sensors.add(this);
+//  sensors.add(this);
 }
 
 

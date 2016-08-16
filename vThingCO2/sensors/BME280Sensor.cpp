@@ -7,7 +7,7 @@
 #include "common.hpp"
 
 BME280Sensor::BME280Sensor() {
-  registerSensor(this);
+  //registerSensor(this);
 }
 
 void BME280Sensor::setup(MenuHandler *handler) {
