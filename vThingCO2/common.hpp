@@ -30,6 +30,7 @@ extern "C" {
 #include "plugins\TimerManager.hpp"
 #include "plugins\PowerManager.hpp"
 #include "sensors\SI7021Sensor.hpp"
+#include "sensors\BME280Sensor.hpp"
 
 #define Cred     RgbColor(255, 0, 0)
 #define Cpink    RgbColor(255, 0, 128)
@@ -226,6 +227,7 @@ extern PropertyListClass PropertyList;
 extern TimerManagerClass TimerManager;
 extern PowerManagerClass PowerManager;
 extern SI7021Sensor si7021Sensor;
+extern BME280Sensor bme280Sensor;
 extern bool deepSleepWake;
 
 #endif

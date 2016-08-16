@@ -26,7 +26,9 @@ public:
   void putArrayProperty(const __FlashStringHelper *key, int idx, const char *value);
   String configFileName;// = F("/vs_cfg.txt");
   String tempFileName;// = F("/vs_cfg.tmp");
-
+  char* getName() {
+    return "PropertyList";
+  }
 
 
 private:

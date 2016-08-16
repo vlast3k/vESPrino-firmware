@@ -15,6 +15,9 @@ public:
   const char* getSensorId();
   float getValue();
   void getData(LinkedList<Pair*> *data);
+  char* getName() {
+    return "CO2";
+  }
 
 private:
   void onCo2Status(CubicStatus status);

@@ -9,6 +9,15 @@ SI7021Sensor::SI7021Sensor() {
   registerSensor(this);
 }
 
+void SI7021Sensor::setup(MenuHandler *handler) {
+  handler->registerCommand(new MenuEntry(F("siInit"), CMD_EXACT, &SI7021Sensor::onCmdInit, F("")));
+
+}
+
+void SI7021Sensor::onCmdInit(const char *ignore) {
+  si7021Sensor.initSensor();
+}
+
 void SI7021Sensor::getData(LinkedList<Pair *> *data) {
   Serial << "SI721 get Data" << endl;
   delay(100);
@@ -21,47 +30,22 @@ void SI7021Sensor::getData(LinkedList<Pair *> *data) {
 
 bool SI7021Sensor::initSensor() {
   si7021 = new SI7021();
-  //si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
+  //si7021->reset();
+  si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
+  Serial << "SI7021 init :" <<  si7021->getDeviceID() << endl;
   if (si7021->getDeviceID() == 255) {
+    Serial <<"failed" << endl;
     delete si7021;
     si7021 = NULL;
     return false;
   }
-//  SERIAL << "Found SI7021 Temperature/Humidity Sensor\n" << endl;
+  SERIAL << "Found SI7021 Temperature/Humidity Sensor-----\n" << endl;
   si7021->setHumidityRes(8); // Humidity = 12-bit / Temperature = 14-bit
   return true;
 }
 
 void SI7021Sensor::closeSensor() {
+  if (!si7021) return;
   delete si7021;
   si7021 = NULL;
 }
-
-// boolean si7021init() {
-//     si7021 = new SI7021();
-//     si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
-//     if (si7021->getDeviceID() == 255) {
-//       delete si7021;
-//       si7021 = NULL;
-//       return false;
-//     }
-//     SERIAL << "Found SI7021 Temperature/Humidity Sensor\n" << endl;
-//     si7021->setHumidityRes(8); // Humidity = 12-bit / Temperature = 14-bit
-//     return true;
-// }
-
-// void onTempRead() {
-//   if (!si7021) return;
-//   float tmp = si7021->readTemp();
-//   float hum = si7021->readHumidity();
-//   SERIAL << F("Humidity : ") << hum << " %\t";
-//   SERIAL << F("Temp : "    ) << tmp << " C" << endl;
-//
-//   String s = String("sndiot ") + tmp;
-//   sndIOT(s.c_str());
-// }
-//
-// void dumpTemp() {
-//   if (!si7021) return;
-//   SERIAL << F("Temp : ")     << si7021->readTemp() << " C" << endl;
-// }

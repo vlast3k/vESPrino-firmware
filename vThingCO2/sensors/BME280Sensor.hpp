@@ -1,24 +1,27 @@
-#ifndef SI7021Sensor_h
-#define SI7021Sensor_h
+#ifndef BME280Sensor_h
+#define BME280Sensor_h
 
-#include <SI7021.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
 #include "interfaces\Sensor.hpp"
 #include <LinkedList.h>
 #include "interfaces\Pair.h"
 
-class SI7021Sensor : public Sensor {
+#define SEALEVELPRESSURE_HPA (1013.25)
+
+class BME280Sensor : public Sensor {
 public:
-  SI7021Sensor();
+  BME280Sensor();
   void setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
   char* getName() {
-    return "SI7021";
+    return "BME280";
   }
   bool initSensor();
   void closeSensor();
 private:
   static void onCmdInit(const char *ignore);
-  SI7021 *si7021;
+  Adafruit_BME280 *bme;
 
 
 };

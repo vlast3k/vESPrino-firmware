@@ -16,6 +16,7 @@
 #include "interfaces\Sensor.hpp"
 #include "interfaces\Plugin.hpp"
 #include "destinations\CustomHTTPDest.hpp"
+#include <Wire.h>
 
 
 
@@ -73,22 +74,41 @@ void registerDestination(Destination *destination) {
 
 void setupPlugins(MenuHandler *handler) {
   Serial << "Plugin.setup()\n";
-  for (int i=0; i < plugins.size(); i++) plugins.get(i)->setup(handler);
+  for (int i=0; i < plugins.size(); i++) {
+  //  Serial << "Setup plugins:" << plugins.get(i)->getName() << endl;
+    plugins.get(i)->setup(handler);
+  }
   Serial << "Sensor.setup()\n";
-  for (int i=0; i < sensors.size(); i++) sensors.get(i)->setup(handler);
+  for (int i=0; i < sensors.size(); i++) {
+//    Serial << "Setup sensors:" << sensors.get(i)->getName() << endl;
+    sensors.get(i)->setup(handler);
+  }
   Serial << "Destination.setup()\n";
-  for (int i=0; i < destinations.size(); i++) destinations.get(i)->setup(handler);
+  for (int i=0; i < destinations.size(); i++) {
+//    Serial << "Setup Destinations:" << destinations.get(i)->getName() << endl;
+    destinations.get(i)->setup(handler);
+  }
 }
 
 void loopPlugins() {
-  for (int i=0; i < plugins.size(); i++) plugins.get(i)->loop();
-  for (int i=0; i < sensors.size(); i++) sensors.get(i)->loop();
-  for (int i=0; i < destinations.size(); i++) destinations.get(i)->loop();
+  for (int i=0; i < plugins.size(); i++) {
+    //Serial << "Loop plugins:" << plugins.get(i)->getName() << endl;
+    plugins.get(i)->loop();
+  }
+  for (int i=0; i < sensors.size(); i++) {
+//    Serial << "Loop sensors:" << sensors.get(i)->getName() << endl;
+    sensors.get(i)->loop();
+  }
+  for (int i=0; i < destinations.size(); i++) {
+//    Serial << "Loop Destinations:" << destinations.get(i)->getName() << endl;
+    destinations.get(i)->loop();
+  }
 }
 
 bool isDeepSleepWake() {
   uint32_t dd;
   ESP.rtcUserMemoryRead(0, &dd, sizeof(dd));
+  //Serial << "rtcUserMem: " << _HEX(dd) << endl;
   if (dd == 33) {
     return true;
   } else {
@@ -100,7 +120,7 @@ bool isDeepSleepWake() {
 
 void setup() {
   SERIAL.begin(9600);
-
+  Wire.begin(D1, D6);
   //WiFi.begin();
   #if defined(VTHING_CO2) || defined(VTHING_STARTER)
     SERIAL << "AAAA";
@@ -121,14 +141,13 @@ void setup() {
   deepSleepWake = isDeepSleepWake();
 
   if (!deepSleepWake) activeWait();
-
-
   PropertyList.begin();
   MigrateSettingsIfNeeded();
 
 
+
   #ifdef VTHING_STARTER
-    initVThingStarter();
+    //initVThingStarter();
   #elif defined(VTHING_CO2)
     //initCO2Handler();
   #elif defined(VTHING_H801_LED)
@@ -140,7 +159,6 @@ void setup() {
 
   registerPlugin(&TimerManager);
   registerPlugin(&PowerManager);
-
   setupPlugins(&menuHandler);
 
   CommonCommands commCmd;

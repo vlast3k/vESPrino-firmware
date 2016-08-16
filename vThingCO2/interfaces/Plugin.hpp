@@ -7,6 +7,9 @@ class Plugin {
 public:
   virtual void setup(MenuHandler *handler){};
   virtual void loop(){};
+  virtual char* getName() {
+    return "No Name";
+  }
 };
 
 #endif

@@ -72,5 +72,7 @@ void scani2c(const char *ignore) {
   scani2cBus(D5, D6);
   Serial << "D6 : D5\n";
   scani2cBus(D6, D5);
+  Serial << "D1 : D6\n";
+  scani2cBus(D1, D6);
 
 }

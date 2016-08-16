@@ -17,6 +17,9 @@ public:
   static void onNop(const char* ignore);
   void onTimeoutInst();
   void onNopInst();
+  char* getName() {
+    return "PowerManager";
+  }
 
 private:
   Timer *timer;

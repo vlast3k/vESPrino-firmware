@@ -17,6 +17,9 @@ public:
       timers.get(i)->Update();
     }
   }
+  char* getName() {
+    return "TimerManager";
+  }
 
 private:
   LinkedList<Timer*> timers = LinkedList<Timer*>();
