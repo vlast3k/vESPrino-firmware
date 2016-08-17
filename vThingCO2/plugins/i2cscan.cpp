@@ -7,76 +7,80 @@ boolean checkI2CDevice(int sda, int sca, int addr) {
   Wire.begin(sda, sca);
   Wire.beginTransmission(addr);
   int res = Wire.endTransmission();
-  SERIAL << "i2c addr:" << addr << ", i2c res: " << _HEX(res) << endl;
+  SERIAL << F("i2c addr:") << addr << F(", i2c res: ") << _HEX(res) << endl;
   return !res;
 }
 
-void scani2cBus(int sda, int sca)
-{
+void i2cPrintAddr(byte address) {
+  if (address<16) Serial.print(F("0"));
+  Serial << _HEX(address) << endl;
+}
+
+bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debug) {
   Wire.begin(sda, sca);
   byte error, address;
   int nDevices;
 
-  Serial.println("Scanning...");
+  if (debug) Serial.printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
 
   nDevices = 0;
-  for(address = 1; address < 127; address++ )
-  {
+  for(address = 1; address < 127; address++ )  {
     // The i2c_scanner uses the return value of
     // the Write.endTransmisstion to see if
     // a device did acknowledge to the address.
     Wire.beginTransmission(address);
     error = Wire.endTransmission();
 
-    if (error == 0)
-    {
-      Serial.print("I2C device found at address 0x");
-      if (address<16)
-        Serial.print("0");
-      Serial.print(address,HEX);
-      Serial.println("  !");
-
+    if (error == 0) {
+      if (debug) {
+        Serial.print(F("I2C device found at address 0x"));
+        i2cPrintAddr(address);
+      }
       nDevices++;
-    }
-    else if (error==4)
-    {
+    } else if (error==4) {
       delay(1);
-      Serial.print("Unknow error at address 0x");
-      if (address<16)
-        Serial.print("0");
-      Serial.println(address,HEX);
+      if (debug) {
+        Serial.print(F("Unknow error at address 0x"));
+        i2cPrintAddr(address);
+      }
     }
   }
-  if (nDevices == 0)
-    Serial.println("No I2C devices found\n");
-  else
-    Serial.println("done\n");
-
-  //delay(5000);           // wait 5 seconds for next scan
+  if (debug) {
+    if (nDevices == 0)  Serial.println(F("No I2C devices found\n"));
+    else                Serial.println(F("done\n"));
+  }
+  return nDevices > 0;
 }
 
-void scani2c(const char *ignore) {
+bool findI2C(int &sda, int &scl, bool debug) {
+  int gpios[] = {D1, D2, D5, D6, D7};
+  String gpios_str[] = {F("D1"), F("D2"), F("D5"), F("D6"), F("D7")};
+  int size = sizeof(gpios) / sizeof(int);
+  bool found = false;
+  for (int i=0; i < size; i++) {
+    for (int k=0; k < size; k++) {
+      if (i == k) continue;
+      if (hasI2CDevices(gpios[i], gpios[k], gpios_str[sda], gpios_str[scl], debug)) {
+        sda = gpios[i];
+        scl = gpios[k];
+        Serial.printf(String(F("Found i2c bus on SDA:SCL = %s:%s (%d:%d)\n")).c_str(), gpios_str[i].c_str(), gpios_str[k].c_str(), sda, scl);
+        return true;
+      }
+      delay(1);
+    }
+  }
+  return false;
+}
 
-  Serial <<"I2C Scan SDA : SCA" << endl;
-  Serial << "D1 : D5\n";
-  scani2cBus(D1, D5);
+void cmdScanI2C(const char *ignore) {
+  int a, b;
+  findI2C(a, b, false);
+}
 
-  Serial << "D5 : D1\n";
-  scani2cBus(D5, D1);
-  Serial << "D7 : D6\n";
-  scani2cBus(D7, D6);
-  Serial << "D6 : D7\n";
-  scani2cBus(D6, D7);
-
-  Serial << "D5 : D6\n";
-  scani2cBus(D5, D6);
-  Serial << "D6 : D5\n";
-  scani2cBus(D6, D5);
-  Serial << "D1 : D6\n";
-  scani2cBus(D1, D6);
-  Serial << "D1 : D2\n";
-  scani2cBus(D1, D2);
-  Serial << "D2 : D1\n";
-  scani2cBus(D2, D1);
-
+void beginI2C() {
+  if (findI2C(i2cSDA, i2cSCL, false)) {
+    Wire.begin(i2cSDA, i2cSCL);
+  } else {
+    Serial << F("No I2C Devices found\n");
+  }
 }

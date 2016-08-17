@@ -90,7 +90,7 @@ void initAPDS9960() {
   attachInterrupt(APDS9960_INT, interruptRoutine, CHANGE);
 
   // Initialize APDS-9960 (configure I2C and initial values)
-  Wire.begin(D6, D1);
+  //Wire.begin(D6, D1);
   if ( apds.init() ) {
     Serial.println(F("APDS-9960 initialization complete"));
   } else {

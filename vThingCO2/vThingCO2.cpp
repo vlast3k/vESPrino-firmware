@@ -123,7 +123,8 @@ bool isDeepSleepWake() {
 void setup() {
   SERIAL.begin(9600);
   //Wire.begin(D6, D5);
-  Wire.begin(D1, D6);
+  beginI2C();
+  //Wire.begin(D1, D6);
   //WiFi.begin();
   #if defined(VTHING_CO2) || defined(VTHING_STARTER)
     SERIAL << "AAAA";

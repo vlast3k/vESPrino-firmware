@@ -27,6 +27,7 @@ MenuHandler menuHandler;
 char atCIPSTART_IP[20];
 char commonBuffer200[200];
 bool deepSleepWake = false;
+int i2cSDA, i2cSCL;
 
 NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
 

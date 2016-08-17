@@ -43,7 +43,7 @@ void CommonCommands::registerCommands(MenuHandler *handler) {
   //MenuEntry *new MenuEntry(F("heap"), CMD_EXACT, &CommonCommands::cmdHeap, F("Free heap"));
   handler->registerCommand(new MenuEntry(F("factory"), CMD_EXACT, factoryReset, F("Return to defaults")));
   handler->registerCommand(new MenuEntry(F("debug"), CMD_EXACT, &CommonCommands::cmdDebug, F("Turn on debug")));
-  handler->registerCommand(new MenuEntry(F("scani2c"), CMD_EXACT, scani2c, F("Scan I2C Bus")));
+  handler->registerCommand(new MenuEntry(F("scani2c"), CMD_EXACT, cmdScanI2C, F("Scan I2C Bus")));
   handler->registerCommand(new MenuEntry(F("dumpCfg"), CMD_EXACT, &CommonCommands::dumpCfg, F("Dump EEPROM Contents")));
   handler->registerCommand(new MenuEntry(F("heap"), CMD_EXACT, &CommonCommands::cmdHeap, F("Free heap")));
   handler->registerCommand(new MenuEntry(F("restart"), CMD_EXACT, espRestart, F("")));

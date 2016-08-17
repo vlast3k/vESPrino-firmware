@@ -144,7 +144,7 @@ char *getJSONConfig(const char *item, char *buf, char *p1 = NULL, char *p3=NULL)
 // void testHttpUpdate();
 void setSAPAuth(const char *);
 char *extractStringFromQuotes(const char* src, char *dest, int destSize=19) ;
-void scani2c(const char *ignore);
+void cmdScanI2C(const char *ignore);
 void printVersion(const char *ignore="");
 void handleCommandVESPrino(char *line);
 byte readLine(int timeout);
@@ -233,8 +233,8 @@ extern BME280Sensor bme280Sensor;
 extern PM2005Sensor pm2005Sensor;
 extern MQTTDest mqttDest;
 extern bool deepSleepWake;
+extern int i2cSDA, i2cSCL;
 
-#endif
 
 void MigrateSettingsIfNeeded();
 void onStopLED();
@@ -244,3 +244,6 @@ void setup_IntThrHandler(MenuHandler *handler);
 void registerDestination(Destination *destination);
 void registerPlugin(Plugin *plugin);
 void registerSensor(Sensor *sensor);
+
+void beginI2C();
+#endif
