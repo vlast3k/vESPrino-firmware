@@ -123,6 +123,7 @@ bool isDeepSleepWake() {
 void setup() {
   SERIAL.begin(9600);
   //Wire.begin(D6, D5);
+  heap("Heap at start");
   beginI2C();
   //Wire.begin(D1, D6);
   //WiFi.begin();
@@ -186,7 +187,7 @@ void setup() {
 menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
 
   setup_IntThrHandler(&menuHandler);
-  heap("");
+  heap("At setup end");
   //WiFi.begin("MarinaResidence","eeeeee");
 }
 //int aa = 0;
