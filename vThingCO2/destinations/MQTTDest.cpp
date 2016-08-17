@@ -77,6 +77,7 @@ void MQTTDest::cmdCleanCustomUrl(const char *line) {
 
 void MQTTDest::process(LinkedList<Pair *> &data) {
   Serial << "MQTTDest::process" << endl;
+  heap("");
   int i=0;
   if (!mqttStart()) {
     mqttEnd(false);
@@ -87,12 +88,14 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
     String s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), i++);
     if (!s.length()) return;
     replaceValuesInURL(data, s);
+    Serial << "Mqtt Dest: sending: " << s << endl;
     if(!client->publish(mqttTopic.c_str(), s.c_str())) {
       mqttEnd(false);
       return;
     }
   } while(true);
   mqttEnd(true);
+  heap("");
 }
 
 bool MQTTDest::mqttStart() {
@@ -107,16 +110,16 @@ bool MQTTDest::mqttStart() {
   mqttClient = PropertyList.readProperty(EE_MQTT_CLIENT);
   mqttUser   = PropertyList.readProperty(EE_MQTT_USER);
   mqttPass   = PropertyList.readProperty(EE_MQTT_PASS);
-  SERIAL << "Sending via MQTT: ";
-  delay(150);
-  SERIAL << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
-  delay(150);
-  SERIAL << mqttUser;
-  delay(150);
-  SERIAL << "," << mqttPass << ",";
-  delay(150);
-  SERIAL << ",";
-  delay(150);
+  // SERIAL << "Sending via MQTT: ";
+  // delay(150);
+  // SERIAL << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
+  // delay(150);
+  // SERIAL << mqttUser;
+  // delay(150);
+  // SERIAL << "," << mqttPass << ",";
+  // delay(150);
+  // SERIAL << ",";
+  // delay(150);
   uint32_t st = millis();
   wclient = new WiFiClient();
 //  PubSubClient client(wclient, mqttServer, mqttPort);
@@ -143,15 +146,15 @@ void MQTTDest::mqttEnd(bool res) {
 }
 
 void MQTTDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
-  Serial << "MQTTDest::replaceUrl = " << s << endl;
-  for (int i=0; i < data.size(); i++) {
-    Serial << data.get(i)->key << " = " << data.get(i)->value << "."<<endl;
-  }
+  // Serial << "MQTTDest::replaceUrl = " << s << endl;
+  // for (int i=0; i < data.size(); i++) {
+  //   Serial << data.get(i)->key << " = " << data.get(i)->value << "."<<endl;
+  // }
   for (int i=0; i < data.size(); i++) {
     Pair *p = data.get(i);
     String skey = String("%") + p->key + String("%");
     s.replace(skey, String(p->value));
-    Serial << "after replace: key << " << skey << "." << p->value<< "." << String(p->value) << " " << s << endl;
+    //Serial << "after replace: key << " << skey << "." << p->value<< "." << String(p->value) << " " << s << endl;
   }
 }
 

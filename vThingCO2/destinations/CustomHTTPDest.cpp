@@ -47,15 +47,15 @@ void CustomHTTPDest::process(LinkedList<Pair *> &data) {
 }
 
 void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
-  Serial << "CustomHTTPDest::replaceUrl = " << s << endl;
-  for (int i=0; i < data.size(); i++) {
-    Serial << data.get(i)->key << " = " << data.get(i)->value << "."<<endl;
-  }
+  //Serial << "CustomHTTPDest::replaceUrl = " << s << endl;
+  // for (int i=0; i < data.size(); i++) {
+  //   Serial << data.get(i)->key << " = " << data.get(i)->value << "."<<endl;
+  // }
   for (int i=0; i < data.size(); i++) {
     Pair *p = data.get(i);
     String skey = String("%") + p->key + String("%");
     s.replace(skey, String(p->value));
-    Serial << "after replace: key << " << skey << "." << p->value<< "." << String(p->value) << " " << s << endl;
+    //Serial << "after replace: key << " << skey << "." << p->value<< "." << String(p->value) << " " << s << endl;
   }
 }
 

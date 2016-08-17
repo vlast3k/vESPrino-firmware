@@ -39,13 +39,13 @@ void PropertyListClass::prop_set(const char *line) {
 
 void PropertyListClass::begin() {
   bool res =  SPIFFS.begin();
-  Serial <<"SPFFS begin = " << res << endl;
+  //Serial <<"SPFFS begin = " << res << endl;
   if (!res) {
     SPIFFS.format();
     SPIFFS.begin();
   }
   if (!SPIFFS.exists(configFileName)) {
-    Serial << "Created " << configFileName << endl;
+    //Serial << "Created " << configFileName << endl;
     File f = SPIFFS.open(configFileName, "w");
     if (!f) {
       Serial << "Could not open file test" << endl;
@@ -53,12 +53,12 @@ void PropertyListClass::begin() {
     f.close();
   }
   File f = SPIFFS.open("/tst.ttt", "w");
-  f << "vvv";
+  //f << "vvv";
   f.close();
   if (!SPIFFS.remove("/tst.ttt")) {
     Serial << " Could not delete /tst.ttt" << endl;
   } else {
-    Serial << " successfully deleted" << endl;
+    //Serial << " successfully deleted" << endl;
   }
 }
 
@@ -84,13 +84,13 @@ void PropertyListClass::putProperty(const char *key, const char *value) {
   if (!key[0]) return;
   File in = SPIFFS.open(configFileName, "r");
   File out= SPIFFS.open(tempFileName, "w");
-  Serial << "Put Property: " << key << " =" << value << "." << endl;
+  //Serial << "Put Property: " << key << " =" << value << "." << endl;
 
   String _key = String(key) + "=";
   while (in.available()) {
     String line = in.readStringUntil('\n');
     line.trim();
-    Serial << "line=" << line << endl;
+    //Serial << "line=" << line << endl;
     if (!line.startsWith(_key)) out.println(line);
   }
   if (value[0]) out << key << "=" << value << endl;
