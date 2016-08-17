@@ -1,6 +1,6 @@
 //H801 build with 1mb / 256k
 //#define VTHING_H801_LED
-#define VTHING_STARTER
+//#define VTHING_VESPRINO
 //#define VAIR
 //#define VTHING_CO2
 
@@ -54,6 +54,8 @@ void printVersion(const char* ignore) {
     SERIAL << F("vThing - H801 FW ");
   #elif defined(VAIR)
     SERIAL << F("vAir - WiFi Module ");
+  #elif defined(VTHING_VESPRINO)
+    SERIAL << F("vESPrino ");
   #endif
   SERIAL << VERSION << endl;
   SERIAL << F("IP address: ") << WiFi.localIP() << endl;
@@ -177,10 +179,10 @@ void setup() {
 #ifdef VTHING_H801_LED
   H801_registerCommands(&menuHandler);
 #endif
-#ifdef VTHING_STARTER
+#ifdef VTHING_VESPRINO
   VESP_registerCommands(&menuHandler);
 #endif
-  menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
+menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
 
   setup_IntThrHandler(&menuHandler);
   heap("");
@@ -195,8 +197,8 @@ void loop() {
   loopPlugins();
   #ifdef VTHING_CO2
   //  loopCO2Handler();
-  #elif defined(VTHING_STARTER)
-    loopVThingStarter();
+  #elif defined(VTHING_VESPRINO)
+  //  loopVThingStarter();
   #elif defined(VTHING_H801_LED)
     h801_loop();
   #endif

@@ -208,7 +208,7 @@ void h801_processConfig(const char *p);
 
 void initCO2Handler();
 void loopCO2Handler();
-
+void dumpArray(const char *s);
 
 //#endif
 extern boolean hasSSD1306, hasSI7021, hasPN532, hasBMP180, hasBH1750, hasAPDS9960, hasPIR;

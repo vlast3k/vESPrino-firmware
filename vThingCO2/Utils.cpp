@@ -116,3 +116,8 @@ void activeWait() {
   }
   SERIAL << endl;
 }
+
+void dumpArray(const char *s) {
+  while (*s) Serial << _HEX(*(s++)) << ",";
+  Serial << endl;
+}

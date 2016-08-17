@@ -53,15 +53,15 @@ void on_SendValue() {
     //Serial << "newval: " << p->value << "..."<<endl;
     //values.add(p);
   }
-  for (int i=0; i < values.size(); i++) {
-    Serial << values.get(i)->key << " = " << values.get(i)->value << "."<<endl;
-  }
+  // for (int i=0; i < values.size(); i++) {
+  //   Serial << values.get(i)->key << " = " << values.get(i)->value << "."<<endl;
+  // }
   for (int i=0; i < destinations.size(); i++) {
     destinations.get(i)->process(values);
   }
-  for (int i=0; i < values.size(); i++) {
-    Serial << values.get(i)->key << " = " << values.get(i)->value << "."<<endl;
-  }
+  // for (int i=0; i < values.size(); i++) {
+  //   Serial << values.get(i)->key << " = " << values.get(i)->value << "."<<endl;
+  // }
   for (int i=0; i < values.size(); i++) {
     delete  values.get(i);
   }

@@ -1,4 +1,4 @@
-#ifdef VTHING_STARTER
+#ifdef VTHING_VESPRINO
 #include "common.hpp"
 #include "SSD1306.h" // alias for `#include "SSD1306Wire.h"`
 

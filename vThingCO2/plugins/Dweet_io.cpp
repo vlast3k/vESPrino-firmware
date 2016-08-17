@@ -1,4 +1,4 @@
-#ifdef VTHING_STARTER
+#ifdef VTHING_VESPRINO
 #include "common.hpp"
 #include "PropertyList.hpp"
 

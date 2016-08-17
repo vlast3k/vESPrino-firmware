@@ -1,4 +1,4 @@
-#ifdef VTHING_STARTER
+#ifdef VTHING_VESPRINO
 #include <PN532_I2C.h>
 #include <PN532.h>
 #include "common.hpp"

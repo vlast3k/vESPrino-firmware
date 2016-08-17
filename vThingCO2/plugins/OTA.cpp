@@ -9,6 +9,8 @@ void doHttpUpdate(int mode, const char *url) {
       url = "http://anker-bg.com/vlast3k/vthing_co2/latest.bin";
     #elif defined(VTHING_STARTER)
       url = "http://anker-bg.com/vlast3k/vthing_starter/latest.bin";
+    #elif defined(VTHING_VESPRINO)
+      url = "http://anker-bg.com/vlast3k/vesprino/latest.bin";
     #elif defined(VTHING_H801_LED)
       url = "http://anker-bg.com/vlast3k/h801/latest.bin";
     #elif defined(VAIR)

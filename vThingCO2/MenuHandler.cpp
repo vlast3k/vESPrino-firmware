@@ -18,13 +18,14 @@ void MenuHandler::cmdHelp(const char *ignore) {
 }
 
 void MenuHandler::registerCommand(MenuEntry *command) {
+  //Serial << "registerCommand:" << command->cmd << endl;
   commands->add(command);
 }
 
 bool MenuHandler::processUserInput() {
 //  Serial.setTimeout(5000);
   //if (!Serial.available()) {
-  if (Serial.read() == -1) {
+  if (!Serial.available()) {
     return false;
   }
 
@@ -83,9 +84,14 @@ void MenuHandler::processCommands() {
 
 void MenuHandler::handleCommand(const char *line) {
   Serial << F("Executing: ") << line << endl;
+  //dumpArray(line);
+  String s1;
   for (int i=0; i < commands->size(); i++) {
     MenuEntry *m = commands->get(i);
-    const char *cmd = String(m->cmd).c_str();
+    s1 = String(m->cmd);
+    const char *cmd = s1.c_str();
+    // Serial <<    cmd << endl;
+    // Serial << m->cmd << endl;
     if ( (m->cmdExactMatch && !strcmp(line, cmd)) ||
         (!m->cmdExactMatch &&  strstr(line, cmd) == line) ) {
           m->handler(line);
