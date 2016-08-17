@@ -108,7 +108,7 @@ void loopPlugins() {
 bool isDeepSleepWake() {
   uint32_t dd;
   ESP.rtcUserMemoryRead(0, &dd, sizeof(dd));
-  //Serial << "rtcUserMem: " << _HEX(dd) << endl;
+  Serial << "rtcUserMem: " << _HEX(dd) << endl;
   if (dd == 33) {
     return true;
   } else {
@@ -120,8 +120,8 @@ bool isDeepSleepWake() {
 
 void setup() {
   SERIAL.begin(9600);
-  Wire.begin(D6, D5);
-  //Wire.begin(D1, D6);
+  //Wire.begin(D6, D5);
+  Wire.begin(D1, D6);
   //WiFi.begin();
   #if defined(VTHING_CO2) || defined(VTHING_STARTER)
     SERIAL << "AAAA";
@@ -186,8 +186,9 @@ void setup() {
   heap("");
   //WiFi.begin("MarinaResidence","eeeeee");
 }
-
+//int aa = 0;
 void loop() {
+  //if ((aa++ % 500) == 0) Serial << "." << endl;
   handleWifi();
   menuHandler.loop();
   if (SKIP_LOOP) {delay(100); return;}

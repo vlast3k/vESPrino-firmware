@@ -32,6 +32,7 @@ extern "C" {
 #include "sensors\SI7021Sensor.hpp"
 #include "sensors\BME280Sensor.hpp"
 #include "sensors\PM2005Sensor.hpp"
+#include "destinations\MQTTDest.hpp"
 
 #define Cred     RgbColor(255, 0, 0)
 #define Cpink    RgbColor(255, 0, 128)
@@ -230,6 +231,7 @@ extern PowerManagerClass PowerManager;
 extern SI7021Sensor si7021Sensor;
 extern BME280Sensor bme280Sensor;
 extern PM2005Sensor pm2005Sensor;
+extern MQTTDest mqttDest;
 extern bool deepSleepWake;
 
 #endif

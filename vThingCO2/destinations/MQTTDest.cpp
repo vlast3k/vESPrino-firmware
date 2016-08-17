@@ -29,6 +29,8 @@ void MQTTDest::cmdMqttSetup(const char *p) {
   p = extractStringFromQuotes(p, mqttUser,   sizeof(mqttUser));
   p = extractStringFromQuotes(p, mqttPass,   sizeof(mqttPass));
   p = extractStringFromQuotes(p, mqttTopic,  sizeof(mqttTopic));
+  Serial << "Gere" << endl;
+  delay(100);
   if (mqttClient[0] == 0) strcpy(mqttTopic, "vThing");
   if (mqttTopic[0] == 0) {
     #ifdef VTHING_H801_LED
@@ -38,7 +40,6 @@ void MQTTDest::cmdMqttSetup(const char *p) {
     #endif
   }
 
-  PropertyList.putProperty(EE_MQTT_SERVER, mqttServer);
   PropertyList.putProperty(EE_MQTT_SERVER, mqttServer);
   PropertyList.putProperty(EE_MQTT_PORT, mqttPortS);
   PropertyList.putProperty(EE_MQTT_CLIENT, mqttClient);
@@ -60,6 +61,7 @@ void MQTTDest::cmdMqttMsgAdd(const char *line) {
   char sidx[10];//, url[200];
   line = extractStringFromQuotes(line, sidx, sizeof(sidx));
   Serial << "Mqtt line:" << line << endl;
+  delay(100);
   //line = extractStringFromQuotes(line, url, sizeof(url));
   if (sidx[0] == 0 || line[0] == 0) {
     Serial << F("Command not recognized");

@@ -22,18 +22,23 @@ void MenuHandler::registerCommand(MenuEntry *command) {
 }
 
 bool MenuHandler::processUserInput() {
-  Serial.setTimeout(500);
-  if (!Serial.available()) {
+//  Serial.setTimeout(5000);
+  //if (!Serial.available()) {
+  if (Serial.read() == -1) {
     return false;
   }
 
-  Serial.setTimeout(30000);
-  if (readLine(30000) >= 0) {
-    Serial.flush();
+  //Serial.setTimeout(30000);
+  if (readLine(2000) >= 0) {
+    //Serial.flush();
+    //Serial.setTimeout(5000);
     scheduleCommand(line);
-   // SERIAL << endl << F("OK") << endl;
-   return true;
+SERIAL << endl << F("OK") << endl;
+    return true;
   }
+  SERIAL << endl << F("OK2") << endl;
+  return false;
+  //Serial.setTimeout(5000);
 }
 
 byte MenuHandler::readLine(int timeout) {

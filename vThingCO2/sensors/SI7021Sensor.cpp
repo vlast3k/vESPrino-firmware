@@ -6,7 +6,7 @@
 #include "common.hpp"
 
 SI7021Sensor::SI7021Sensor() {
-//  registerSensor(this);
+  registerSensor(this);
 }
 
 void SI7021Sensor::setup(MenuHandler *handler) {
