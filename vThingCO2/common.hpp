@@ -32,6 +32,8 @@ extern "C" {
 #include "sensors\SI7021Sensor.hpp"
 #include "sensors\BME280Sensor.hpp"
 #include "sensors\PM2005Sensor.hpp"
+#include "sensors\CDM7160Sensor.hpp"
+
 #include "destinations\MQTTDest.hpp"
 
 #define Cred     RgbColor(255, 0, 0)
@@ -209,6 +211,7 @@ void h801_processConfig(const char *p);
 void initCO2Handler();
 void loopCO2Handler();
 void dumpArray(const char *s);
+void dumpI2CBus(const char *s);
 
 //#endif
 extern boolean hasSSD1306, hasSI7021, hasPN532, hasBMP180, hasBH1750, hasAPDS9960, hasPIR;
@@ -231,6 +234,7 @@ extern PowerManagerClass PowerManager;
 extern SI7021Sensor si7021Sensor;
 extern BME280Sensor bme280Sensor;
 extern PM2005Sensor pm2005Sensor;
+extern CDM7160Sensor cdm7160Sensor;
 extern MQTTDest mqttDest;
 extern bool deepSleepWake;
 extern int i2cSDA, i2cSCL;

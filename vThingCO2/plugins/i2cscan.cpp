@@ -15,16 +15,27 @@ void i2cPrintAddr(byte address) {
   if (address<16) Serial.print(F("0"));
   Serial << _HEX(address) << endl;
 }
+void dumpI2CBus(const char *line) {
+  Wire.begin(D5, D7);
+  byte error, address;
+  int nDevices;
+  for(address = 1; address < 0xff; address++ )  {
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+    Serial << "Address 0x" << _HEX(address) << " = " << error << endl;
+    if ((address%10)==0) delay(1);
+  }
+}
 
 bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debug) {
   Wire.begin(sda, sca);
   byte error, address;
   int nDevices;
 
-  if (debug) Serial.printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
+  //if (debug) Serial.printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
 
   nDevices = 0;
-  for(address = 1; address < 127; address++ )  {
+  for(address = 1; address < 0xff; address++ )  {
     // The i2c_scanner uses the return value of
     // the Write.endTransmisstion to see if
     // a device did acknowledge to the address.
@@ -74,7 +85,7 @@ bool findI2C(int &sda, int &scl, bool debug) {
 
 void cmdScanI2C(const char *ignore) {
   int a, b;
-  findI2C(a, b, false);
+  findI2C(a, b, true);
 }
 
 void beginI2C() {

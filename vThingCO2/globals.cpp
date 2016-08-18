@@ -15,6 +15,7 @@
 #include "sensors\SI7021Sensor.hpp"
 #include "sensors\BME280Sensor.hpp"
 #include "sensors\PM2005Sensor.hpp"
+#include "sensors\CDM7160Sensor.hpp"
 #include "destinations\MQTTDest.hpp"
 
 
@@ -45,4 +46,6 @@ TimerManagerClass TimerManager;
 SI7021Sensor si7021Sensor;
 BME280Sensor bme280Sensor;
 PM2005Sensor pm2005Sensor;
+CDM7160Sensor cdm7160Sensor;
+
 MQTTDest mqttDest;
