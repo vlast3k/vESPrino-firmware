@@ -19,13 +19,13 @@ void CDM7160Sensor::onCmdTest(const char *ignore) {
     //Wire.begin(D7, D5);
     //Wire.begin(D5, D7);
     Wire.beginTransmission(addr);
-    Wire.write(0x3);
+    Wire.write(0x1);
     int r = Wire.endTransmission(false);
 
     Serial << "End trans: " << r << endl;
     if (r != 0) { delay(10);continue;}
     //int r = Wire.requestFrom(addr, (byte)5);
-    Wire.requestFrom((uint8_t)addr, (size_t)2, (bool)false);
+    Wire.requestFrom((uint8_t)addr, (size_t)4, (bool)false);
     byte data[22];
     for (int i=0; i < 50 && !Wire.available(); i++) {
       delay(100);
@@ -34,19 +34,21 @@ void CDM7160Sensor::onCmdTest(const char *ignore) {
     //delay(100);
     Serial << "available = " << Wire.available()<< endl;
 
-    for (int i=0; i < 2; i++) {
+    for (int i=0; i < 4; i++) {
       //Wire.requestFrom((uint8_t)addr, (size_t)1, (bool)false);
       data[i] = Wire.read();
       Serial << _HEX(data[i]) << F(",");
       delay(5);
     }
 //    Wire.endTransmission(true);
-    if (data[1] == 0xFF) {
+    if (data[1] == 0xFF || (data[1]&0x80) > 0) {
       Serial << "Sensor busy" << endl;
       delay(500);
       continue;
     }
-    Serial << (int)data[1]*0xFF + data[0] << " ppm" << endl;
+    Serial << "is busy   : " << (data[1]&0x80) << endl;
+    Serial << "av wokring: " << (data[1]&0x10) << endl;
+    Serial << (int)data[3]*0xFF + data[2] << " ppm" << endl;
     return;
   }
 }
