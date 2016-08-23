@@ -9,11 +9,21 @@ CDM7160Sensor::CDM7160Sensor() {
 }
 
 void CDM7160Sensor::setup(MenuHandler *handler) {
-  handler->registerCommand(new MenuEntry(F("cdmtest"), CMD_EXACT, &CDM7160Sensor::onCmdTest, F("")));
-
+  handler->registerCommand(new MenuEntry(F("cdmtest"), CMD_BEGIN, &CDM7160Sensor::onCmdTest, F("cdmtest - test CDM7160 sensor")));
 }
 
 void CDM7160Sensor::onCmdTest(const char *ignore) {
+  if (strchr(ignore, 'b')) Serial << "Read CO2ddd: " << readCO2(true) << endl;
+  else Serial << "Read CO2: " <<  readCO2(false) << endl;;
+}
+
+void CDM7160Sensor::getData(LinkedList<Pair *> *data) {
+  int ppm = readCO2(true);
+  if (ppm < 0) return;
+  data->add(new Pair("CO2", String(ppm)));
+}
+
+int CDM7160Sensor::readCO2(bool debug) {
   for (int h = 0; h < 8; h++) {
     byte addr = 0x69;
     //Wire.begin(D7, D5);
@@ -22,8 +32,15 @@ void CDM7160Sensor::onCmdTest(const char *ignore) {
     Wire.write(0x1);
     int r = Wire.endTransmission(false);
 
-    Serial << "End trans: " << r << endl;
+    if (debug) {
+      uint32_t a = millis();
+      Serial << F("End trans: ") << r << endl;
+      a = millis() - a;
+      Serial << "millis : " << a << endl;
+    }
+
     if (r != 0) { delay(10);continue;}
+    delay(10);
     //int r = Wire.requestFrom(addr, (byte)5);
     Wire.requestFrom((uint8_t)addr, (size_t)4, (bool)false);
     byte data[22];
@@ -32,74 +49,27 @@ void CDM7160Sensor::onCmdTest(const char *ignore) {
       Serial << ".";
     }
     //delay(100);
-    Serial << "available = " << Wire.available()<< endl;
+    if (debug) Serial << F("available = ") << Wire.available()<< endl;
 
     for (int i=0; i < 4; i++) {
       //Wire.requestFrom((uint8_t)addr, (size_t)1, (bool)false);
       data[i] = Wire.read();
-      Serial << _HEX(data[i]) << F(",");
+      if (debug) Serial << _HEX(data[i]) << F(",");
       delay(5);
     }
 //    Wire.endTransmission(true);
     if (data[1] == 0xFF || (data[1]&0x80) > 0) {
-      Serial << "Sensor busy" << endl;
+      if (debug) Serial << F("Sensor busy") << endl;
       delay(500);
       continue;
     }
-    Serial << "is busy   : " << (data[1]&0x80) << endl;
-    Serial << "av wokring: " << (data[1]&0x10) << endl;
-    Serial << (int)data[3]*0xFF + data[2] << " ppm" << endl;
-    return;
+    int ppm = (int)data[3]*0xFF + data[2];
+    if (debug) {
+      Serial << F("is busy   : ") << (data[1]&0x80) << endl;
+      Serial << F("av wokring: ") << (data[1]&0x10) << endl;
+      Serial << ppm << F(" ppm") << endl;
+    }
+    return ppm;
   }
-}
-
-void CDM7160Sensor::getData(LinkedList<Pair *> *data) {
-  Serial << "CDM7160 get Data" << endl;
-  delay(100);
-  int pm25, pm10;
-  if (!intReadData(pm25, pm10, true)) return;
-  data->add(new Pair("PM25", String(pm25)));
-  data->add(new Pair("PM10", String(pm10)));
-  Serial << "end CDM7160" << endl;
-}
-
-bool CDM7160Sensor::intBegin(int sda, int sca) {
-  if (sda != 0 || sca != 0) Wire.begin(sda, sca);
-  Wire.beginTransmission(0x28);
-  Wire.write(0x51);
-  return Wire.endTransmission(false) == 0;
-}
-
-bool CDM7160Sensor::intReadData(int &pm25, int &pm10, bool debug) {
-  if (!intBegin()) {
-    if (debug) Serial << F("Failed to connect to CDM7160\n");
-    return false;
-  }
-  int r;
-  byte data[22];
-  byte cs = 0;
-  r = Wire.requestFrom(0x28, 22, false);
-  if (r != 22) {
-    if (debug) Serial << "Expected 22 bytes, but got " << r << endl;
-    return false;
-  }
-  for (int i=0; i < 22; i++) {
-    data[i] = Wire.read();
-    if (debug) Serial << _HEX(data[i]) << F(",");
-    if (i < 21) cs ^= data[i];
-  }
-  if (debug) Serial << endl;
-  if (cs != data[21]) {
-    if (debug) Serial << F("Wrong Checksum: ") << cs << F(", expected: ") << data[21] << endl;
-    return false;
-  }
-  if (debug) {
-    Serial << F("Sensor Status: ") << data[2] << endl;
-    Serial << F("PM 2.5 : ") << (data[5] << 2) + data[6] << endl;
-    Serial << F("PM  10 : ") << (data[7] << 2) + data[8] << endl;
-    Serial << F("Measuring Mode : ") << (data[9] << 2) + data[10] << endl;
-  }
-  pm25 = (data[5] << 2) + data[6];
-  pm10 = (data[7] << 2) + data[8];
-  return true;
+  return -1;
 }

@@ -16,7 +16,8 @@ public:
   // void closeSensor();
 private:
   static void onCmdTest(const char *ignore);
-  bool intReadData(int &pm25, int &pm10, bool debug = false);
-  bool intBegin(int sda = 0, int sca = 0);
+  static int readCO2(bool debug);
+  // bool intReadData(int &pm25, int &pm10, bool debug = false);
+  // bool intBegin(int sda = 0, int sca = 0);
 };
 #endif
