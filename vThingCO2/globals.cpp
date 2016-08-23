@@ -16,7 +16,9 @@
 #include "sensors\BME280Sensor.hpp"
 #include "sensors\PM2005Sensor.hpp"
 #include "sensors\CDM7160Sensor.hpp"
+#include "sensors\TestSensor.hpp"
 #include "destinations\MQTTDest.hpp"
+#include "destinations\SerialDumpDest.hpp"
 
 
 boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
@@ -39,6 +41,8 @@ LinkedList<Thr *> thresholds = LinkedList<Thr *>();
 LinkedList<Timer *> timers = LinkedList<Timer *>();
 
 CustomHTTPDest customHTTPDest;
+SerialDumpDest serialDumpDest;
+TestSensor testSensor;
 CO2Sensor co2Sensor;
 PropertyListClass PropertyList;
 PowerManagerClass PowerManager;

@@ -13,7 +13,6 @@ CustomHTTPDest::CustomHTTPDest() {
 }
 
 void CustomHTTPDest::setup(MenuHandler *handler) {
-  Serial <<"Custom http dest.setup" << endl;
   handler->registerCommand(new MenuEntry(F("custom_url_add"), CMD_BEGIN, &CustomHTTPDest::menuAddCustomUrl, F("custom_url_add \"idx\",\"url\"")));
   handler->registerCommand(new MenuEntry(F("custom_url_clean"), CMD_EXACT, &CustomHTTPDest::menuCleanCustomUrl, F("custom_url_clean - clean all custom urls")));
 }

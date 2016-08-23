@@ -37,7 +37,7 @@ void removeThreshold(const char* id) {
 }
 
 void on_SendValue() {
-  Serial << "DestHanlder: sendValue" << endl;
+  Serial << "\n--- DestHanlder: sendValue ---" << endl;
   LinkedList<Pair *> values = LinkedList<Pair* >();
   for (int i=0; i < sensors.size(); i++) {
     sensors.get(i)->getData(&values);
@@ -53,9 +53,9 @@ void on_SendValue() {
     //Serial << "newval: " << p->value << "..."<<endl;
     //values.add(p);
   }
-  for (int i=0; i < values.size(); i++) {
-    Serial << values.get(i)->key << " = " << values.get(i)->value << "."<<endl;
-  }
+  // for (int i=0; i < values.size(); i++) {
+  //   Serial << values.get(i)->key << " = " << values.get(i)->value << "."<<endl;
+  // }
   for (int i=0; i < destinations.size(); i++) {
     destinations.get(i)->process(values);
   }
@@ -66,7 +66,7 @@ void on_SendValue() {
     delete  values.get(i);
   }
 
-  //heap("");
+  heap("");
 
   tmrSendValueTimer->Start();
 }

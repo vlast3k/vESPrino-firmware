@@ -24,6 +24,9 @@ public:
   bool mqttStart();
   void mqttEnd(bool res);
 //  void invokeURL(String &url);
+char* getName() {
+  return "MQTT";
+}
 
 private:
   PubSubClient *client;

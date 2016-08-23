@@ -75,36 +75,42 @@ void registerDestination(Destination *destination) {
 }
 
 void setupPlugins(MenuHandler *handler) {
-  Serial << "Plugin.setup()\n";
+  Serial << F("\n--- Setup PLUGINS ---\n");
   for (int i=0; i < plugins.size(); i++) {
-  //  Serial << "Setup plugins:" << plugins.get(i)->getName() << endl;
+    Serial << F("Setup plugin: ") << plugins.get(i)->getName() << endl;
     plugins.get(i)->setup(handler);
   }
-  Serial << "Sensor.setup()\n";
+  Serial << F("\n--- Setup SENSORS ---\n");
   for (int i=0; i < sensors.size(); i++) {
-//    Serial << "Setup sensors:" << sensors.get(i)->getName() << endl;
+    Serial << F("Setup sensor: ") << sensors.get(i)->getName() << endl;
     sensors.get(i)->setup(handler);
   }
-  Serial << "Destination.setup()\n";
+  Serial << F("\n--- Setup DESTINATIONS ---\n");
   for (int i=0; i < destinations.size(); i++) {
-//    Serial << "Setup Destinations:" << destinations.get(i)->getName() << endl;
+    Serial << F("Setup Destination: ") << destinations.get(i)->getName() << endl;
     destinations.get(i)->setup(handler);
   }
+  Serial << F("\n--- Setup DONE ---\n");
+
 }
 
 void loopPlugins() {
+  //Serial << F("\n--- Loop PLUGINS ---\n");
   for (int i=0; i < plugins.size(); i++) {
-    //Serial << "Loop plugins:" << plugins.get(i)->getName() << endl;
+  //  Serial << F("Loop plugin: ") << plugins.get(i)->getName() << endl;
     plugins.get(i)->loop();
   }
+  //S/erial << F("\n--- Loop SENSORS ---\n");
   for (int i=0; i < sensors.size(); i++) {
-//    Serial << "Loop sensors:" << sensors.get(i)->getName() << endl;
+  //  Serial << F("Loop sensor: ") << sensors.get(i)->getName() << endl;
     sensors.get(i)->loop();
   }
+  //S/erial << F("\n--- Loop DESTINATIONS ---\n");
   for (int i=0; i < destinations.size(); i++) {
-//    Serial << "Loop Destinations:" << destinations.get(i)->getName() << endl;
+    //Serial << F("Loop Destination: ") << destinations.get(i)->getName() << endl;
     destinations.get(i)->loop();
   }
+  //Serial << F("\n--- Loop all DONE ---\n");
 }
 
 bool isDeepSleepWake() {
@@ -124,6 +130,9 @@ void setup() {
   SERIAL.begin(9600);
   //Wire.begin(D6, D5);
   heap("Heap at start");
+  pinMode(D8, OUTPUT);    //enable power via D8
+  digitalWrite(D8, HIGH);
+  delay(1000);
   beginI2C();
   //Wire.begin(D1, D6);
   //WiFi.begin();
@@ -135,9 +144,7 @@ void setup() {
     strip->Show();
   #endif
 
-  pinMode(D8, OUTPUT);    //enable power via D8
-  digitalWrite(D8, HIGH);
-  delay(1000);
+
 
   printVersion();
   SERIAL << F("ready") << endl;

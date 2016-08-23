@@ -26,6 +26,7 @@ extern "C" {
 #include "interfaces\Plugin.hpp"
 #include "interfaces\Sensor.hpp"
 #include "destinations\CustomHTTPDest.hpp"
+#include "destinations\SerialDumpDest.hpp"
 #include "plugins\PropertyList.hpp"
 #include "plugins\TimerManager.hpp"
 #include "plugins\PowerManager.hpp"
@@ -33,6 +34,7 @@ extern "C" {
 #include "sensors\BME280Sensor.hpp"
 #include "sensors\PM2005Sensor.hpp"
 #include "sensors\CDM7160Sensor.hpp"
+#include "sensors\TestSensor.hpp"
 
 #include "destinations\MQTTDest.hpp"
 
@@ -228,6 +230,7 @@ extern LinkedList<Thr *> thresholds;
 extern LinkedList<Timer *> timers ;
 extern char commonBuffer200[200];
 extern CustomHTTPDest customHTTPDest;
+extern SerialDumpDest serialDumpDest;
 extern PropertyListClass PropertyList;
 extern TimerManagerClass TimerManager;
 extern PowerManagerClass PowerManager;
@@ -235,6 +238,7 @@ extern SI7021Sensor si7021Sensor;
 extern BME280Sensor bme280Sensor;
 extern PM2005Sensor pm2005Sensor;
 extern CDM7160Sensor cdm7160Sensor;
+extern TestSensor testSensor;
 extern MQTTDest mqttDest;
 extern bool deepSleepWake;
 extern int i2cSDA, i2cSCL;

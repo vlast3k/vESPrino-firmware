@@ -15,7 +15,6 @@ MQTTDest::MQTTDest() {
 }
 
 void MQTTDest::setup(MenuHandler *handler) {
-  Serial <<"MQTTdest.setup" << endl;
   handler->registerCommand(new MenuEntry(F("mqtt_setup"), CMD_BEGIN, &MQTTDest::cmdMqttSetup, F("mqtt_setup \"idx\"value")));
   handler->registerCommand(new MenuEntry(F("mqtt_msg_add"), CMD_BEGIN, &MQTTDest::cmdMqttMsgAdd, F("mqtt_msg_add \"idx\"value")));
   handler->registerCommand(new MenuEntry(F("mqtt_msg_clean"), CMD_EXACT, &MQTTDest::cmdCleanCustomUrl, F("mqtt_msg_clean - clean all mqtt messages")));
