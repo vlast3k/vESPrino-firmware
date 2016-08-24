@@ -9,17 +9,19 @@ CDM7160Sensor::CDM7160Sensor() {
 }
 
 void CDM7160Sensor::setup(MenuHandler *handler) {
-  handler->registerCommand(new MenuEntry(F("cdmtest"), CMD_BEGIN, &CDM7160Sensor::onCmdTest, F("cdmtest - test CDM7160 sensor")));
+  handler->registerCommand(new MenuEntry(F("cdmtest"), CMD_BEGIN, &CDM7160Sensor::onCmdTest, F("cdmtest b - b for debug - test CDM7160 sensor")));
 }
 
 void CDM7160Sensor::onCmdTest(const char *ignore) {
-  if (strchr(ignore, 'b')) Serial << "Read CO2ddd: " << readCO2(true) << endl;
-  else Serial << "Read CO2: " <<  readCO2(false) << endl;;
+  Serial << F("Read CO2: ") <<  readCO2(strchr(ignore, 'b') != NULL) << endl;;
 }
 
 void CDM7160Sensor::getData(LinkedList<Pair *> *data) {
   int ppm = readCO2(true);
-  if (ppm < 0) return;
+  if (ppm < 0) {
+    menuHandler.scheduleCommand("scani2c");
+    return;
+  }
   data->add(new Pair("CO2", String(ppm)));
 }
 
@@ -32,21 +34,16 @@ int CDM7160Sensor::readCO2(bool debug) {
     Wire.write(0x1);
     int r = Wire.endTransmission(false);
 
-    if (debug) {
-      uint32_t a = millis();
-      Serial << F("End trans: ") << r << endl;
-      a = millis() - a;
-      Serial << "millis : " << a << endl;
-    }
+    if (debug) { Serial << F("End trans: ") << r << endl; }
 
     if (r != 0) { delay(10);continue;}
-    delay(10);
+    delay(10); // without this there is no data read
     //int r = Wire.requestFrom(addr, (byte)5);
     Wire.requestFrom((uint8_t)addr, (size_t)4, (bool)false);
     byte data[22];
     for (int i=0; i < 50 && !Wire.available(); i++) {
       delay(100);
-      Serial << ".";
+      if (debug) Serial << ".";
     }
     //delay(100);
     if (debug) Serial << F("available = ") << Wire.available()<< endl;

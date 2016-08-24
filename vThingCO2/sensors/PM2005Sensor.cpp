@@ -18,13 +18,13 @@ void PM2005Sensor::setup(MenuHandler *handler) {
 // }
 
 void PM2005Sensor::getData(LinkedList<Pair *> *data) {
-  Serial << "PM2005 get Data" << endl;
-  delay(100);
+  //Serial << "PM2005 get Data" << endl;
+  //delay(100);
   int pm25, pm10;
   if (!intReadData(pm25, pm10, true)) return;
   data->add(new Pair("PM25", String(pm25)));
   data->add(new Pair("PM10", String(pm10)));
-  Serial << "end PM2005" << endl;
+  //Serial << "end PM2005" << endl;
 }
 
 bool PM2005Sensor::intBegin(int sda, int sca) {
@@ -44,7 +44,7 @@ bool PM2005Sensor::intReadData(int &pm25, int &pm10, bool debug) {
   byte cs = 0;
   r = Wire.requestFrom(0x28, 22, false);
   if (r != 22) {
-    if (debug) Serial << "Expected 22 bytes, but got " << r << endl;
+    if (debug) Serial << F("Expected 22 bytes, but got ") << r << endl;
     return false;
   }
   for (int i=0; i < 22; i++) {

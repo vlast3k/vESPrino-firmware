@@ -136,12 +136,13 @@ void setup() {
   beginI2C();
   //Wire.begin(D1, D6);
   //WiFi.begin();
-  #if defined(VTHING_CO2) || defined(VTHING_STARTER)
+  #if defined(VTHING_CO2) || defined(VTHING_VESPRINO)
     SERIAL << "AAAA";
-    strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
-    strip->Begin();
-    strip->SetPixelColor(0, RgbColor(20, 0, 10));
-    strip->Show();
+    // strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
+    // strip->Begin();
+    // strip->SetPixelColor(0, RgbColor(5, 0,3));
+    // strip->Show();
+    setLedColor(RgbColor(5, 0,3));
   #endif
 
 

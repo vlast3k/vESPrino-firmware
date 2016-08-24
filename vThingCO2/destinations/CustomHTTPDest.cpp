@@ -36,7 +36,7 @@ void CustomHTTPDest::menuAddCustomUrl(const char *line) {
 
 void CustomHTTPDest::process(LinkedList<Pair *> &data) {
   Serial << "CustomHTTPDest::process" << endl;
-  int i=1;
+  int i=0;
   do {
     String s = PropertyList.getArrayProperty(F("custom_url_arr"), i++);
     if (!s.length()) return;

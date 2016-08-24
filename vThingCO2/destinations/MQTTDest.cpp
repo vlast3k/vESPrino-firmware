@@ -109,6 +109,7 @@ bool MQTTDest::mqttStart() {
   mqttClient = PropertyList.readProperty(EE_MQTT_CLIENT);
   mqttUser   = PropertyList.readProperty(EE_MQTT_USER);
   mqttPass   = PropertyList.readProperty(EE_MQTT_PASS);
+  if (!mqttServer.length()) return false;
   // SERIAL << "Sending via MQTT: ";
   // delay(150);
   // SERIAL << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
