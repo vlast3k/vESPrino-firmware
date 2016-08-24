@@ -31,8 +31,7 @@ bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debu
   Wire.begin(sda, sca);
   byte error, address;
   int nDevices;
-
-  //if (debug) Serial.printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
+  if (debug) Serial.printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
 
   nDevices = 0;
   for(address = 1; address < 0xff; address++ )  {
@@ -71,7 +70,8 @@ bool findI2C(int &sda, int &scl, bool debug) {
   for (int i=0; i < size; i++) {
     for (int k=0; k < size; k++) {
       if (i == k) continue;
-      if (hasI2CDevices(gpios[i], gpios[k], gpios_str[sda], gpios_str[scl], debug)) {
+    //  if (debug) Serial << "Scanning " << gpios_str[sda], << " : " << sca_str << endl;
+      if (hasI2CDevices(gpios[i], gpios[k], gpios_str[i], gpios_str[k], debug)) {
         sda = gpios[i];
         scl = gpios[k];
         Serial.printf(String(F("Found i2c bus on SDA:SCL = %s:%s (%d:%d)\n")).c_str(), gpios_str[i].c_str(), gpios_str[k].c_str(), sda, scl);
@@ -84,6 +84,13 @@ bool findI2C(int &sda, int &scl, bool debug) {
 }
 
 void cmdScanI2C(const char *ignore) {
+
+   pinMode(D8, OUTPUT);    //enable power via D8
+   digitalWrite(D8, LOW);
+   delay(500);
+   digitalWrite(D8, HIGH);
+   delay(500);
+  // pinMode(D8, INPUT);
   int a, b;
   findI2C(a, b, true);
 }
