@@ -2,6 +2,7 @@
 #include <Streaming.h>
 #include <Wire.h>
 #include "common.hpp"
+#include  <brzo_i2c.h>
 
 boolean checkI2CDevice(int sda, int sca, int addr) {
   Wire.begin(sda, sca);
@@ -91,11 +92,13 @@ void cmdScanI2C(const char *ignore) {
    digitalWrite(D8, HIGH);
    delay(1000);
   // pinMode(D8, INPUT);
+  //brzo_i2c_setup(D5, D1, 50000);
   int a, b;
   findI2C(a, b, true);
 }
 
 void beginI2C() {
+//  brzo_i2c_setup(D5, D1, 50000);
   if (findI2C(i2cSDA, i2cSCL, false)) {
     Wire.begin(i2cSDA, i2cSCL);
   } else {

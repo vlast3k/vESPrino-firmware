@@ -27,6 +27,7 @@ private:
   static void endChangeMode();
   static void startChangeMode() ;
   static bool readI2CBytes(int start, uint8_t *buf, int len);
+  static bool readI2CBytesBrzo(int start, uint8_t *buf, int len);
   static const uint8_t CDM_ADDR_WRITE = 0x69;
   static const uint8_t CDM_FAILED_BYTE = 0xFF;
   static const uint8_t CDM_CTL_REG = 0x1;

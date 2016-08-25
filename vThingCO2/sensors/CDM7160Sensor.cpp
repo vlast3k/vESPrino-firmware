@@ -136,14 +136,36 @@ uint8_t CDM7160Sensor::readI2CByte(int reg) {
 }
 
 bool CDM7160Sensor::readI2CBytes(int start, uint8_t *buf, int len) {
+  //return readI2CBytesBrzo(start, buf, len);
   for (int tr = 0; tr < 6; tr ++) {
     Wire.beginTransmission(CDM_ADDR_WRITE);
     Wire.write(start);
     int et = Wire.endTransmission(false);
     delay(10);
-    if (et !=0) continue;
-    if (Wire.requestFrom(CDM_ADDR_WRITE, (size_t)len, (bool)false) < len) continue;
+    if (et !=0) {
+      Serial << et;
+      delay(100);
+      continue;
+    }
+    if (Wire.requestFrom(CDM_ADDR_WRITE, (size_t)len, (bool)false) < len) {
+      Serial << "x";
+      continue;
+    }
     while (len -- > 0)   *(buf++) = Wire.read();
+    return true;
+  }
+  return false;
+}
+
+bool CDM7160Sensor::readI2CBytesBrzo(int start, uint8_t *buf, int len) {
+  for (int tr = 0; tr < 6; tr ++) {
+    brzo_i2c_start_transaction(CDM_ADDR_WRITE, 400);
+    byte xx[1];
+    xx[0] = start;
+    brzo_i2c_write(xx, 1, true);
+    brzo_i2c_read(buf, len, false);
+    int et = brzo_i2c_end_transaction();
+    Serial << "brzo end: " << et <<endl;
     return true;
   }
   return false;
