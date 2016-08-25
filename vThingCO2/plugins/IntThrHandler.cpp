@@ -91,7 +91,7 @@ void setSendInterval (const char *line) {
   PropertyList.putProperty(PROP_SND_INT, String(interval).c_str());
   intSendValue = (uint32_t)interval * 1000;
   tmrSendValueTimer->setInterval(intSendValue);
-  Serial << "Send Interval (ms): " << intSendValue << endl;
+  Serial << "Send Interval (s): " << interval << endl;
 }
 
 void updateThreshold(const char *id, float value) {

@@ -31,7 +31,7 @@ bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debu
   Wire.begin(sda, sca);
   byte error, address;
   int nDevices;
-  if (debug) Serial.printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
+//  if (debug) Serial.printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
 
   nDevices = 0;
   for(address = 1; address < 0xff; address++ )  {
@@ -89,7 +89,7 @@ void cmdScanI2C(const char *ignore) {
    digitalWrite(D8, LOW);
    delay(500);
    digitalWrite(D8, HIGH);
-   delay(500);
+   delay(1000);
   // pinMode(D8, INPUT);
   int a, b;
   findI2C(a, b, true);

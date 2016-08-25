@@ -15,14 +15,27 @@ public:
   // bool initSensor();
   // void closeSensor();
 private:
+  void configureSensor();
+
   static void onCmdTest(const char *ignore);
-  static void onChangeMode(const char *ignore);
-  static int readCO2(bool debug);
+  static void onChangeReg(const char *ignore);
+  static int readCO2Raw(bool debug);
+  static int readCO2AutoRecover();
   static uint8_t readI2CByte(int addr);
   static void writeCfg(uint8_t reg, uint8_t bit, bool value);
   static void writeByte(uint8_t reg, uint8_t value);
   static void endChangeMode();
   static void startChangeMode() ;
+  static bool readI2CBytes(int start, uint8_t *buf, int len);
+  static const uint8_t CDM_ADDR_WRITE = 0x69;
+  static const uint8_t CDM_FAILED_BYTE = 0xFF;
+  static const uint8_t CDM_CTL_REG = 0x1;
+  static const uint8_t CDM_ST1_REG = 0x2;
+  static const uint8_t CDM_AVG_REG = 0x7;
+  static const uint8_t CDM_FMODE = 0x4;
+  static const uint8_t CDM_ST_BUSY = 0x80;
+  static const uint8_t CDM_ST_AVGCOMPLTE = 0x10;
+  static const uint8_t CDM_AVG_DEFAULT = 25;
   // bool intReadData(int &pm25, int &pm10, bool debug = false);
   // bool intBegin(int sda = 0, int sca = 0);
 };
