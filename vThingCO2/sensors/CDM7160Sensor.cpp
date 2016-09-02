@@ -4,12 +4,13 @@
 #include "interfaces\Pair.h"
 #include "common.hpp"
 #include  <brzo_i2c.h>
-
+#include "utils\RTCMemStore.hpp"
 CDM7160Sensor::CDM7160Sensor() {
   registerSensor(this);
 }
 
 void CDM7160Sensor::setup(MenuHandler *handler) {
+  handler->registerCommand(new MenuEntry(F("cdmloop"), CMD_BEGIN, &CDM7160Sensor::onCmdLoop, F("cdmtest b - b for debug - test CDM7160 sensor")));
   handler->registerCommand(new MenuEntry(F("cdmtest"), CMD_BEGIN, &CDM7160Sensor::onCmdTest, F("cdmtest b - b for debug - test CDM7160 sensor")));
   handler->registerCommand(new MenuEntry(F("cdmreg"), CMD_BEGIN, &CDM7160Sensor::onChangeReg, F("cdmreg \"regid\" \"value\"")));
   configureSensor();
@@ -17,27 +18,26 @@ void CDM7160Sensor::setup(MenuHandler *handler) {
 
 void CDM7160Sensor::getData(LinkedList<Pair *> *data) {
   int ppm = readCO2AutoRecover();
-  if (ppm > 0) data->add(new Pair("CO2", String(ppm)));
+  if (ppm > 0) {
+    rtcMemStore.addAverageValue(ppm);
+    data->add(new Pair("CO2", String(rtcMemStore.getAverage())));
+  }
 }
 
 int CDM7160Sensor::readCO2AutoRecover() {
   int ppm=0;
-  for (int i=0; i < 5; i++) {
+  for (int i=0; i < 2; i++) {
     int a = readCO2Raw(true);
     Serial <<"Raw CO2: " << a << endl;
-    if (a > 0) ppm+=a;
-    else {
-      if (a == -1) menuHandler.scheduleCommand("scani2c");
-      return -1;
+    if (a > 0) return a;
+    else if (a == -1) { //maybe some temprary error, retry once more before reseting bus
+      delay(2000);
+    } else if (a == -2) { // cannot recover that fast, e.g. averaging not completed
+      return -2;
     }
-    delay(2000);
   }
-  ppm = ppm / 5;
-  // int ppm = readCO2Raw(true);
-  // if (ppm < 0) {
-  //   if (ppm == -1) menuHandler.scheduleCommand("scani2c");
-  // }
-  return ppm;
+  menuHandler.scheduleCommand("scani2c");
+  return -1;
 }
 
 void CDM7160Sensor::configureSensor() {
@@ -54,6 +54,19 @@ void CDM7160Sensor::configureSensor() {
   }
 }
 
+void CDM7160Sensor::onCmdLoop(const char *ignore) {
+  Serial << "Avg count: " << readI2CByte(7) << endl;
+  int last = 0;
+  for (int i=0; i < 50; i++) {
+    int co2 = readCO2Raw(true);
+    Serial.printf("%2d: %d (%d)\n", i, co2, co2-last);
+    last = co2;
+    delay(3000);
+    //menuHandler.processUserInput();
+    menuHandler.loop();
+    //Serial << i << "\t: " << readCO2Raw(true) << endl;
+  }
+}
 void CDM7160Sensor::onCmdTest(const char *ignore) {
   uint8_t rst = readI2CByte(0);
   Serial << "rst is: " << _HEX(rst) << endl;
@@ -117,14 +130,18 @@ int CDM7160Sensor::readCO2Raw(bool debug) {
       delay(300);
       continue;
     }
-    if ((buf[2] & 0x10) == 0) {
-      if (debug) Serial << F("Averaging not yet completed") << endl;
-    //  delay(500);
-    //  continue;
-      return -2;
-    }
     int ppm = (int)buf[4]*0xFF + buf[3];
-    return ppm;
+
+    if ((buf[2] & 0x10) == 0) {
+      if (debug) Serial << F("Averaging not yet completed: ") << ppm  << endl;
+      //delay(500);
+      //continue;
+      return -2;
+    } else {
+      return ppm;
+    }
+    //int ppm = (int)buf[4]*0xFF + buf[3];
+
   }
   return -2;
 }

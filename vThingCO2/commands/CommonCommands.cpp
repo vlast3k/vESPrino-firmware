@@ -39,6 +39,20 @@ void stopActiveExecution(const char *ignore) {
   SKIP_LOOP = true;
 }
 
+void cmdTestMemStore(const char *ignore) {
+  SERIAL << "Test Mem Store\n";
+  Serial << "avg now 1: "<<     rtcMemStore.getAverage() << endl;
+  rtcMemStore.addAverageValue(1000);
+  Serial << "avg now 2:"<<     rtcMemStore.getAverage() << endl;
+  rtcMemStore.addAverageValue(2000);
+  Serial << "avg now 3:"<<     rtcMemStore.getAverage() << endl;
+  rtcMemStore.addAverageValue(2000);
+  Serial << "avg now 4:"<<     rtcMemStore.getAverage() << endl;
+  rtcMemStore.addAverageValue(2000);
+  Serial << "avg now 5:"<<     rtcMemStore.getAverage() << endl;
+  SKIP_LOOP = true;
+}
+
 void CommonCommands::registerCommands(MenuHandler *handler) {
   //MenuEntry *new MenuEntry(F("heap"), CMD_EXACT, &CommonCommands::cmdHeap, F("Free heap"));
   handler->registerCommand(new MenuEntry(F("factory"), CMD_EXACT, factoryReset, F("Return to defaults")));
@@ -51,5 +65,6 @@ void CommonCommands::registerCommands(MenuHandler *handler) {
   // handler->registerCommand(new MenuEntry(F("jscfg"), CMD_EXACT, printJSONConfig, F("")));
   // handler->registerCommand(new MenuEntry(F("jjj"), CMD_EXACT, testJSON, F("")));
   handler->registerCommand(new MenuEntry(F("sss"), CMD_EXACT, stopActiveExecution, F("")));
+  handler->registerCommand(new MenuEntry(F("tms"), CMD_EXACT, cmdTestMemStore, F("")));
 
 }

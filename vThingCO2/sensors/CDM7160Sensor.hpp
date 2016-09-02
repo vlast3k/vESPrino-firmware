@@ -19,6 +19,8 @@ private:
 
   static void onCmdTest(const char *ignore);
   static void onChangeReg(const char *ignore);
+  static void onCmdLoop(const char *ignore);
+
   static int readCO2Raw(bool debug);
   static int readCO2AutoRecover();
   static uint8_t readI2CByte(int addr);

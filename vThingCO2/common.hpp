@@ -37,6 +37,7 @@ extern "C" {
 #include "sensors\TestSensor.hpp"
 
 #include "destinations\MQTTDest.hpp"
+#include "utils\RTCMemStore.hpp"
 
 #define Cred     RgbColor(255, 0, 0)
 #define Cpink    RgbColor(255, 0, 128)
@@ -242,6 +243,7 @@ extern TestSensor testSensor;
 extern MQTTDest mqttDest;
 extern bool deepSleepWake;
 extern int i2cSDA, i2cSCL;
+extern RTCMemStore rtcMemStore;
 
 
 void MigrateSettingsIfNeeded();
@@ -252,6 +254,6 @@ void setup_IntThrHandler(MenuHandler *handler);
 void registerDestination(Destination *destination);
 void registerPlugin(Plugin *plugin);
 void registerSensor(Sensor *sensor);
-
+void waitForWifi(uint16_t timeoutMs);
 void beginI2C();
 #endif

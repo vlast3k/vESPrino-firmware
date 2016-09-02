@@ -51,8 +51,8 @@ void initVThingStarter() {
 
   si7021init();
   dumpTemp();
-  tmrGetDweets = new Timer(2000L,    onGetDweets);
-  tmrTempRead = new Timer(15000L,    onTempRead);
+  tmrGetDweets = new Timer(2000L,    onGetDweets, millis);
+  tmrTempRead = new Timer(15000L,    onTempRead, millis);
   //tmrCheckPushMsg = new Timer(1000L, handleSAP_IOT_PushService);
   tmrTempRead->Start();
   //tmrCheckPushMsg->Start();

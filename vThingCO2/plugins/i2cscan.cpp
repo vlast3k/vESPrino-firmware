@@ -85,10 +85,10 @@ bool findI2C(int &sda, int &scl, bool debug) {
 }
 
 void cmdScanI2C(const char *ignore) {
-
+  //if ()
    pinMode(D8, OUTPUT);    //enable power via D8
-   digitalWrite(D8, LOW);
-   delay(500);
+  //  digitalWrite(D8, LOW);
+  //  delay(500);
    digitalWrite(D8, HIGH);
    delay(1000);
   // pinMode(D8, INPUT);

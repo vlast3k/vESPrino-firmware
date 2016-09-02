@@ -60,6 +60,7 @@ void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
 
 void CustomHTTPDest::invokeURL(String &url) {
   Serial << "CustomHTTPDest::invoke = " << url << endl;
+  waitForWifi(1000);
   HTTPClient http;
   http.begin(url);
   //addHCPIOTHeaders(&http, token);

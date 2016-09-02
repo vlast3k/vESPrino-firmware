@@ -20,6 +20,23 @@ void handleWifi() {
   ip = WiFi.localIP();
 }
 
+void waitForWifi(uint16_t timeoutMs) {
+  bool putLF = false;
+  int delayFix = 100;
+  //const static uint32_t timeoutMs =1000L;
+  for (int i=0; i*delayFix < timeoutMs; i++) {
+    if (WiFi.status() == WL_CONNECTED) return;
+    delay(delayFix);
+    handleWifi();
+    menuHandler.processUserInput();
+    if ((i%10) == 0) {
+      SERIAL << '.';
+      putLF = true;
+    }
+  }
+}
+
+
 //char x[30], y[30];
 
 int wifiConnectToStoredSSID() {
@@ -140,10 +157,27 @@ void sndIOT(const char *line) {
   }
 }
 
+void cmdSleeptype(const char *line) {
+  int type = atoi(strchr(line, ' ') + 1);
+  Serial << "set sleep type to:" << type<< endl;
+  switch (type) {
+    case 0: WiFi.setSleepMode(WIFI_NONE_SLEEP);
+    case 1: WiFi.setSleepMode(WIFI_MODEM_SLEEP);
+    case 2: WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
+  }
+}
+
+void cmdDelay(const char *line) {
+  int d = atoi(strchr(line, ' ') + 1);
+  Serial << "delay for:" << d<< endl;
+  delay(d);
+}
 
 void WIFI_registerCommands(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("scan"), CMD_EXACT, &wifiScanNetworks, F("")));
   handler->registerCommand(new MenuEntry(F("wifi"), CMD_BEGIN, &setWifi, F("")));
   handler->registerCommand(new MenuEntry(F("ping"), CMD_BEGIN, sendPingPort, F("")));
   handler->registerCommand(new MenuEntry(F("sndiot"), CMD_BEGIN, sndIOT, F("")));
+  handler->registerCommand(new MenuEntry(F("sleeptype"), CMD_BEGIN, cmdSleeptype, F("")));
+  handler->registerCommand(new MenuEntry(F("delay"), CMD_BEGIN, cmdDelay, F("")));
 }

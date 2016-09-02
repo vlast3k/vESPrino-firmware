@@ -111,7 +111,8 @@ void activeWait() {
   for (int i=1; i < 30; i++) {
     delay(100);
     handleWifi();
-    menuHandler.processUserInput();
+    menuHandler.loop();
+    //menuHandler.processUserInput();
     if ((i%10) == 0) SERIAL << '.';
   }
   SERIAL << endl;

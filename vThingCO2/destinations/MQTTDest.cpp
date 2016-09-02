@@ -88,6 +88,7 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
     if (!s.length()) return;
     replaceValuesInURL(data, s);
     Serial << "Mqtt Dest: sending: " << s << endl;
+    waitForWifi(10000);
     if(!client->publish(mqttTopic.c_str(), s.c_str())) {
       mqttEnd(false);
       return;

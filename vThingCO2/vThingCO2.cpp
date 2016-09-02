@@ -151,9 +151,9 @@ void setup() {
   SERIAL << F("ready") << endl;
   SERIAL << F("Waiting for auto-connect") << endl;
 
-  deepSleepWake = isDeepSleepWake();
+//  deepSleepWake = isDeepSleepWake();
 
-  if (!deepSleepWake) activeWait();
+  if (rtcMemStore.getDataExisted() == false) activeWait();
   PropertyList.begin();
   MigrateSettingsIfNeeded();
 
@@ -204,15 +204,8 @@ void loop() {
   handleWifi();
   menuHandler.loop();
   if (SKIP_LOOP) {delay(100); return;}
-  loopPlugins();
-  #ifdef VTHING_CO2
-  //  loopCO2Handler();
-  #elif defined(VTHING_VESPRINO)
-  //  loopVThingStarter();
-  #elif defined(VTHING_H801_LED)
-    h801_loop();
-  #endif
 
+  loopPlugins();
   loop_IntThrHandler();
   menuHandler.loop();
   PowerManager.loopPowerManager();

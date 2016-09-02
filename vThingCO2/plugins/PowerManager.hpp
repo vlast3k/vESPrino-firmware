@@ -20,6 +20,7 @@ public:
   char* getName() {
     return "PowerManager";
   }
+  const static uint8_t IterationDurationS = 15;
 
 private:
   Timer *timer;

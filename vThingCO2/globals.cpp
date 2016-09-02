@@ -19,6 +19,7 @@
 #include "sensors\TestSensor.hpp"
 #include "destinations\MQTTDest.hpp"
 #include "destinations\SerialDumpDest.hpp"
+#include "utils\RTCMemStore.hpp"
 
 
 boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
@@ -53,3 +54,4 @@ PM2005Sensor pm2005Sensor;
 CDM7160Sensor cdm7160Sensor;
 
 MQTTDest mqttDest;
+RTCMemStore rtcMemStore;
