@@ -35,6 +35,7 @@ void CustomHTTPDest::menuAddCustomUrl(const char *line) {
 }
 
 void CustomHTTPDest::process(LinkedList<Pair *> &data) {
+  if (WiFi.status() != WL_CONNECTED) return;
   Serial << "CustomHTTPDest::process" << endl;
   int i=0;
   do {
