@@ -52,6 +52,28 @@ void cmdTestMemStore(const char *ignore) {
   Serial << "avg now 5:"<<     rtcMemStore.getAverage() << endl;
   SKIP_LOOP = true;
 }
+void cmdSerTest(const char *p) {
+  char p1[20],  p2[20];
+  p = extractStringFromQuotes(p, p1, 20);
+  //p = extractStringFromQuotes(p, p2, 20);
+  String s;
+  int strLen = atoi(p1);
+  for (int i=0; i < strLen; i++) s+=".";
+  //s += "\n";
+  for (int i=0; i<30; i++) {
+    Serial << s <<endl;
+    delay(1);
+  }
+  Serial.flush();
+  //Serial << endl << "EEENDDD" << endl;
+  //delay(5000);
+  // int iport = atoi(port);
+  // WiFiClient ccc;
+  // SERIAL << "Test connection to to:" << host << ":" << port << endl;
+  // int res = ccc.connect(host, iport);
+  // SERIAL << "Res: " << res << endl;
+
+}
 
 void CommonCommands::registerCommands(MenuHandler *handler) {
   //MenuEntry *new MenuEntry(F("heap"), CMD_EXACT, &CommonCommands::cmdHeap, F("Free heap"));
@@ -66,5 +88,6 @@ void CommonCommands::registerCommands(MenuHandler *handler) {
   // handler->registerCommand(new MenuEntry(F("jjj"), CMD_EXACT, testJSON, F("")));
   handler->registerCommand(new MenuEntry(F("sss"), CMD_EXACT, stopActiveExecution, F("")));
   handler->registerCommand(new MenuEntry(F("tms"), CMD_EXACT, cmdTestMemStore, F("")));
+  handler->registerCommand(new MenuEntry(F("sertest"), CMD_BEGIN, cmdSerTest, F("")));
 
 }

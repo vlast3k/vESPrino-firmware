@@ -130,9 +130,9 @@ void setup() {
   SERIAL.begin(9600);
   //Wire.begin(D6, D5);
   heap("Heap at start");
-  pinMode(D8, OUTPUT);    //enable power via D8
-  digitalWrite(D8, HIGH);
-  delay(1000);
+  //pinMode(D8, OUTPUT);    //enable power via D8
+//  digitalWrite(D8, HIGH);
+//  delay(1000);
   beginI2C();
   //Wire.begin(D1, D6);
   //WiFi.begin();

@@ -26,6 +26,8 @@ void PropertyListClass::prop_list_cfg(const char *line) {
     String s = in.readStringUntil('\n');
     s.trim();
     Serial << s << endl;
+    Serial.flush();
+    delay(1);
   }
   in.close();
 }
