@@ -32,7 +32,7 @@ public:
    static bool getTest(){return test;};
 private:
   static uint32_t calculateCRC32(const uint8_t *data, size_t length);
-  static void readData();
+  static bool readData();
   static void updateData();
 };
 

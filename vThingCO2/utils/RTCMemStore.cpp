@@ -5,7 +5,7 @@ RTCData *RTCMemStore::rtcData = NULL;
 bool RTCMemStore::dataExisted=false;
 
 void RTCMemStore::init() {
-  //dataExisted = readData();
+  dataExisted = readData();
   updateData();
 }
 
@@ -66,7 +66,7 @@ uint32_t RTCMemStore::calculateCRC32(const uint8_t *data, size_t length) {
   return crc;
 }
 
-void RTCMemStore::readData() {
+bool RTCMemStore::readData() {
   rtcData = new RTCData();
   //RTCData2 r2;
   Serial << "sizeof rtcdat: " <<RTCData::rtcDataSize() << endl;
@@ -76,13 +76,13 @@ void RTCMemStore::readData() {
       Serial.println(F("CRC32 in RTC memory doesn't match CRC32 of data. Data is probably invalid!"));
       delete rtcData;
       rtcData = new RTCData();
-      //return false;
+      return false;
     } else {
       Serial.println(F("CRC32 check ok, data is probably valid."));
-      //return true;
+      return true;
     }
   }
-  //return false;
+  return false;
 }
 
 void RTCMemStore::updateData() {

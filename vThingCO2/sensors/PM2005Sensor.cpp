@@ -10,7 +10,9 @@ PM2005Sensor::PM2005Sensor() {
 
 void PM2005Sensor::setup(MenuHandler *handler) {
 //  handler->registerCommand(new MenuEntry(F("pm2005Init"), CMD_EXACT, &PM2005Sensor::onCmdInit, F("")));
-
+  if (checkI2CDevice(0x28)) {
+    Serial << F("Found PM2005 - Dust / Particle Sensor");
+  }
 }
 
 // void PM2005Sensor::onCmdInit(const char *ignore) {
@@ -21,7 +23,7 @@ void PM2005Sensor::getData(LinkedList<Pair *> *data) {
   //Serial << "PM2005 get Data" << endl;
   //delay(100);
   int pm25, pm10;
-  if (!intReadData(pm25, pm10, true)) return;
+  if (!intReadData(pm25, pm10, false)) return;
   data->add(new Pair("PM25", String(pm25)));
   data->add(new Pair("PM10", String(pm10)));
   //Serial << "end PM2005" << endl;

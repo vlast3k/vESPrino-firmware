@@ -75,7 +75,7 @@ void MQTTDest::cmdCleanCustomUrl(const char *line) {
 }
 
 void MQTTDest::process(LinkedList<Pair *> &data) {
-  Serial << "MQTTDest::process" << endl;
+  Serial << F("MQTTDest::process") << endl;
   heap("");
   int i=0;
   if (!mqttStart()) {
@@ -87,8 +87,8 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
     String s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), i++);
     if (!s.length()) return;
     replaceValuesInURL(data, s);
-    Serial << "Mqtt Dest: sending: " << s << endl;
     waitForWifi(10000);
+    Serial << F("Mqtt Dest: sending: ") << s << endl;
     if(!client->publish(mqttTopic.c_str(), s.c_str())) {
       mqttEnd(false);
       return;

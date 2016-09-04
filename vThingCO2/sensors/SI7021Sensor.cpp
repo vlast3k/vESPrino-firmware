@@ -19,27 +19,27 @@ void SI7021Sensor::onCmdInit(const char *ignore) {
 }
 
 void SI7021Sensor::getData(LinkedList<Pair *> *data) {
-  Serial << "SI721 get Data" << endl;
+  //Serial << "SI721 get Data" << endl;
   delay(100);
    if (!initSensor()) return;
    data->add(new Pair("TEMP", String(si7021->readTemp())));
    data->add(new Pair("HUM", String(si7021->readHumidity())));
    closeSensor();
-     Serial << "end si7021" << endl;
+    // Serial << "end si7021" << endl;
 }
 
 bool SI7021Sensor::initSensor() {
   si7021 = new SI7021();
   //si7021->reset();
   //si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
-  Serial << "SI7021 init :" <<  si7021->getDeviceID() << endl;
+  //Serial << "SI7021 init :" <<  si7021->getDeviceID() << endl;
   if (si7021->getDeviceID() == 255) {
-    Serial <<"failed" << endl;
+    //Serial <<"failed" << endl;
     delete si7021;
     si7021 = NULL;
     return false;
   }
-  SERIAL << "Found SI7021 Temperature/Humidity Sensor-----\n" << endl;
+  SERIAL << "Found SI7021 - Temperature/Humidity Sensor\n" << endl;
   si7021->setHumidityRes(8); // Humidity = 12-bit / Temperature = 14-bit
   return true;
 }

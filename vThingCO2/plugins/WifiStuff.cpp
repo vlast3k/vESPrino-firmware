@@ -24,12 +24,12 @@ void handleWifi() {
   ip = WiFi.localIP();
 }
 
-void waitForWifi(uint16_t timeoutMs) {
+wl_status_t waitForWifi(uint16_t timeoutMs) {
   bool putLF = false;
   int delayFix = 100;
   //const static uint32_t timeoutMs =1000L;
   for (int i=0; i*delayFix < timeoutMs; i++) {
-    if (WiFi.status() == WL_CONNECTED) return;
+    if (WiFi.status() == WL_CONNECTED) break;
     delay(delayFix);
     handleWifi();
     menuHandler.processUserInput();
@@ -38,6 +38,7 @@ void waitForWifi(uint16_t timeoutMs) {
       putLF = true;
     }
   }
+  return WiFi.status();
 }
 
 
@@ -181,7 +182,7 @@ void wifiConnectMulti() {
   if (wifiMulti) delete wifiMulti;
   wifiMulti = new ESP8266WiFiMulti();
   wifiMulti->addAP("vladiHome", "0888414447");
-  wifiMulti->addAP("Ivan", "4506285842");
+  wifiMulti->addAP("Andreev", "4506285842");
   String ssid = PropertyList.readProperty(EE_WIFI_SSID);
   String pass = PropertyList.readProperty(EE_WIFI_P1);
   wifiMulti->addAP(ssid.c_str(), pass.c_str());

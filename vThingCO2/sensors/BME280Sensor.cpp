@@ -20,7 +20,7 @@ void BME280Sensor::onCmdInit(const char *ignore) {
 }
 
 void BME280Sensor::getData(LinkedList<Pair *> *data) {
-  Serial << "BME280 get Data" << endl;
+  //Serial << "BME280 get Data" << endl;
   delay(100);
    if (!initSensor()) return;
    data->add(new Pair("TEMP", String(bme->readTemperature())));
@@ -29,7 +29,7 @@ void BME280Sensor::getData(LinkedList<Pair *> *data) {
    data->add(new Pair("ALT", String(bme->readAltitude(SEALEVELPRESSURE_HPA))));
 
    closeSensor();
-     Serial << "end BME280" << endl;
+    // Serial << "end BME280" << endl;
 }
 
 bool BME280Sensor::initSensor() {
@@ -37,12 +37,12 @@ bool BME280Sensor::initSensor() {
   //BME280->reset();
   bool init = bme->begin(); // Runs : Wire.begin() + reset()
   if (!init) {
-    Serial <<"failed" << endl;
+  //  Serial <<"failed" << endl;
     delete bme;
     bme = NULL;
     return false;
   }
-  SERIAL << "Found BME280 Temperature/Humidity Sensor-----\n" << endl;
+  SERIAL << F("Found BME280 - Temperature/Humidity/Pressure Sensor") << endl;
   return true;
 }
 

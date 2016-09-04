@@ -4,7 +4,13 @@
 #include "common.hpp"
 #include  <brzo_i2c.h>
 
-boolean checkI2CDevice(int sda, int sca, int addr) {
+bool checkI2CDevice(int addr) {
+  Wire.beginTransmission(addr);
+  int res = Wire.endTransmission();
+  return !res;
+}
+
+bool checkI2CDevice(int sda, int sca, int addr) {
   Wire.begin(sda, sca);
   Wire.beginTransmission(addr);
   int res = Wire.endTransmission();

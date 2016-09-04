@@ -27,7 +27,7 @@ void handleCommandVESPrino(const char *line) {
 }
 
 void VESP_registerCommands(MenuHandler *handler) {
-  Serial <<"register vesp\n";
+  //Serial <<"register vesp\n";
   handler->registerCommand(new MenuEntry(F("vesp"), CMD_BEGIN, handleCommandVESPrino, F("")));
   handler->registerCommand(new MenuEntry(F("vecmd"), CMD_BEGIN, handleCommandVESPrino, F("")));
 }

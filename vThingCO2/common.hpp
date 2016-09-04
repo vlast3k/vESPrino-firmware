@@ -197,7 +197,8 @@ void ledHandleColor(char *colorNew);
 void ledSetBrg(char *s);
 void ledHandleMode(char *cmd) ;
 
-boolean checkI2CDevice(int sda, int sca, int addr) ;
+bool checkI2CDevice(int sda, int sca, int addr) ;
+bool checkI2CDevice(int addr);
 
 
 //#endif
@@ -256,7 +257,7 @@ void setup_IntThrHandler(MenuHandler *handler);
 void registerDestination(Destination *destination);
 void registerPlugin(Plugin *plugin);
 void registerSensor(Sensor *sensor);
-void waitForWifi(uint16_t timeoutMs);
+wl_status_t waitForWifi(uint16_t timeoutMs);
 void beginI2C();
 void wifiConnectMulti();
 #endif

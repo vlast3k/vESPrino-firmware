@@ -13,10 +13,14 @@ void CDM7160Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("cdmloop"), CMD_BEGIN, &CDM7160Sensor::onCmdLoop, F("cdmtest b - b for debug - test CDM7160 sensor")));
   handler->registerCommand(new MenuEntry(F("cdmtest"), CMD_BEGIN, &CDM7160Sensor::onCmdTest, F("cdmtest b - b for debug - test CDM7160 sensor")));
   handler->registerCommand(new MenuEntry(F("cdmreg"), CMD_BEGIN, &CDM7160Sensor::onChangeReg, F("cdmreg \"regid\" \"value\"")));
-  configureSensor();
+  if (checkI2CDevice(CDM_ADDR_WRITE)) {
+    Serial << "Found CDM7160 - CO2 Sensor" << endl;
+    configureSensor();
+  }
 }
 
 void CDM7160Sensor::getData(LinkedList<Pair *> *data) {
+  if (!checkI2CDevice(CDM_ADDR_WRITE)) return;
   int ppm = readCO2AutoRecover();
   if (ppm > 0) {
     rtcMemStore.addAverageValue(ppm);

@@ -35,8 +35,8 @@ void CustomHTTPDest::menuAddCustomUrl(const char *line) {
 }
 
 void CustomHTTPDest::process(LinkedList<Pair *> &data) {
-  if (WiFi.status() != WL_CONNECTED) return;
-  Serial << "CustomHTTPDest::process" << endl;
+  if (waitForWifi(10000) != WL_CONNECTED) return;
+  Serial << F("CustomHTTPDest::process") << endl;
   int i=0;
   do {
     String s = PropertyList.getArrayProperty(F("custom_url_arr"), i++);
@@ -60,7 +60,8 @@ void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
 }
 
 void CustomHTTPDest::invokeURL(String &url) {
-  Serial << "CustomHTTPDest::invoke = " << url << endl;
+  if (waitForWifi(10000) != WL_CONNECTED) return;
+  Serial << F("CustomHTTPDest::invoke = ") << url << endl;
   waitForWifi(1000);
   HTTPClient http;
   http.begin(url);

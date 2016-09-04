@@ -133,7 +133,7 @@ void setup() {
   heap("Heap at start");
   pinMode(D8, OUTPUT);    //enable power via D8
   digitalWrite(D8, HIGH);
-  delay(1000);
+  //delay(1000);
   beginI2C();
   //Wire.begin(D1, D6);
   //WiFi.begin();
@@ -153,7 +153,7 @@ void setup() {
   SERIAL << F("Waiting for auto-connect") << endl;
 
 //  deepSleepWake = isDeepSleepWake();
-
+  rtcMemStore.init();
   if (rtcMemStore.getDataExisted() == false) activeWait();
   PropertyList.begin();
   MigrateSettingsIfNeeded();
@@ -197,6 +197,7 @@ menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F(
 
   setup_IntThrHandler(&menuHandler);
   heap("At setup end");
+  setLedColor(RgbColor(5, 0,3));
   //WiFi.begin("MarinaResidence","eeeeee");
 }
 //int aa = 0;
