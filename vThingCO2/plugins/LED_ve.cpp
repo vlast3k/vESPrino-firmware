@@ -22,6 +22,8 @@ void setLedColor(const RgbColor &color) {
   strip.Show();
   delay(1);
   Serial1.end();
+  Serial1.flush();
+  delay(10);
  // currentColor = color;
 }
 

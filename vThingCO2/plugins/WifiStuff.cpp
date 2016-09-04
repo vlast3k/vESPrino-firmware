@@ -9,7 +9,7 @@ ESP8266WiFiMulti  *wifiMulti = NULL;
 IPAddress ip = WiFi.localIP();
 
 void handleWifi() {
-  if (wifiMulti) wifiMulti->run();
+  if (millis() > 8000 && WiFi.status() != WL_CONNECTED) wifiMulti->run();
   //SERIAL << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
   if (ip == WiFi.localIP()) return;
   else if (WiFi.status() == WL_CONNECTED) {
@@ -39,6 +39,17 @@ wl_status_t waitForWifi(uint16_t timeoutMs) {
     }
   }
   return WiFi.status();
+}
+
+void activeWait() {
+  for (int i=1; i < 31; i++) {
+    delay(100);
+    handleWifi();
+    menuHandler.loop();
+    //menuHandler.processUserInput();
+    if ((i%10) == 0) SERIAL << '.';
+  }
+  SERIAL << endl;
 }
 
 

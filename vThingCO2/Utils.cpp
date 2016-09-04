@@ -107,16 +107,7 @@ void putJSONConfig(const char *key, const char *value, boolean valueIsArray, boo
   root.printTo(SERIAL);
  }
 
-void activeWait() {
-  for (int i=1; i < 30; i++) {
-    delay(100);
-    handleWifi();
-    menuHandler.loop();
-    //menuHandler.processUserInput();
-    if ((i%10) == 0) SERIAL << '.';
-  }
-  SERIAL << endl;
-}
+
 
 void dumpArray(const char *s) {
   while (*s) Serial << _HEX(*(s++)) << ",";
