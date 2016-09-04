@@ -38,6 +38,8 @@ extern "C" {
 
 #include "destinations\MQTTDest.hpp"
 #include "utils\RTCMemStore.hpp"
+#include <ESP8266WiFiMulti.h>
+
 
 #define Cred     RgbColor(255, 0, 0)
 #define Cpink    RgbColor(255, 0, 128)
@@ -244,7 +246,7 @@ extern MQTTDest mqttDest;
 extern bool deepSleepWake;
 extern int i2cSDA, i2cSCL;
 extern RTCMemStore rtcMemStore;
-
+extern ESP8266WiFiMulti  *wifiMulti;
 
 void MigrateSettingsIfNeeded();
 void onStopLED();
@@ -256,4 +258,5 @@ void registerPlugin(Plugin *plugin);
 void registerSensor(Sensor *sensor);
 void waitForWifi(uint16_t timeoutMs);
 void beginI2C();
+void wifiConnectMulti();
 #endif

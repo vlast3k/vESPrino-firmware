@@ -2,10 +2,14 @@
 #include "plugins\SAP_HCP_IOT_Plugin.hpp"
 #include "plugins\CustomURL_Plugin.hpp"
 #include "plugins\PropertyList.hpp"
+#include <ESP8266WiFiMulti.h>
 
- IPAddress ip = WiFi.localIP();
+ESP8266WiFiMulti  *wifiMulti = NULL;
+
+IPAddress ip = WiFi.localIP();
 
 void handleWifi() {
+  if (wifiMulti) wifiMulti->run();
   //SERIAL << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
   if (ip == WiFi.localIP()) return;
   else if (WiFi.status() == WL_CONNECTED) {
@@ -171,6 +175,16 @@ void cmdDelay(const char *line) {
   int d = atoi(strchr(line, ' ') + 1);
   Serial << "delay for:" << d<< endl;
   delay(d);
+}
+
+void wifiConnectMulti() {
+  if (wifiMulti) delete wifiMulti;
+  wifiMulti = new ESP8266WiFiMulti();
+  wifiMulti->addAP("vladiHome", "0888414447");
+  wifiMulti->addAP("Ivan", "4506285842");
+  String ssid = PropertyList.readProperty(EE_WIFI_SSID);
+  String pass = PropertyList.readProperty(EE_WIFI_P1);
+  wifiMulti->addAP(ssid.c_str(), pass.c_str());
 }
 
 void WIFI_registerCommands(MenuHandler *handler) {

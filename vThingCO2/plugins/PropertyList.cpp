@@ -21,7 +21,9 @@ void PropertyListClass::setup(MenuHandler *handler) {
 
 void PropertyListClass::prop_list_cfg(const char *line) {
   File in = SPIFFS.open(PropertyList.configFileName, "r");
-
+  Serial << F("---vESPrinoCFG_start---\n");
+  Serial.flush();
+  delay(1);
   while (in.available())  {
     String s = in.readStringUntil('\n');
     s.trim();
@@ -29,6 +31,9 @@ void PropertyListClass::prop_list_cfg(const char *line) {
     Serial.flush();
     delay(1);
   }
+  Serial << F("---vESPrinoCFG_end---\n");
+  Serial.flush();
+  delay(1);
   in.close();
 }
 
