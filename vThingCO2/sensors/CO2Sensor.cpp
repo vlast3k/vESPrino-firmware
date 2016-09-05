@@ -16,7 +16,7 @@ CO2Sensor::CO2Sensor() :
     cubicCo2(&CO2Sensor::onCo2Status_static, EE_RESET_CO2_1B),
     startedCO2Monitoring(false)
 {
-//  sensors.add(this);
+   registerSensor(this);
 }
 
 
@@ -42,10 +42,11 @@ const char* CO2Sensor::getSensorId() {
 float CO2Sensor::getValue() {
   int res = cubicCo2.getCO2(DEBUG);
   startedCO2Monitoring = cubicCo2.hasStarted();
+  //Serial << " CO2 Sensor > startedCO2Mon = " << startedCO2Monitoring << " co2=" << res << endl;
   if (startedCO2Monitoring) {
     return res;
   } else {
-    return nanf("");
+    return -1;
   }
 }
 
@@ -53,7 +54,8 @@ void CO2Sensor::getData(LinkedList<Pair*> *data) {
 //  Pair *p = new Pair(getSensorId(), String(getValue()));
   //p->key = getSensorId();
   //p->value = String(getValue());
-  data->add(new Pair(getSensorId(), String(getValue())));
+  float f = getValue();
+  if (f > 0) data->add(new Pair(getSensorId(), String(f)));
 }
 
 void CO2Sensor::onStopLED_static() {
@@ -61,7 +63,7 @@ void CO2Sensor::onStopLED_static() {
 }
 
 void CO2Sensor::onStopLED() {
-  menuHandler.scheduleCommand("led black");
+  menuHandler.scheduleCommand("ledcolor black");
     // strip->SetPixelColor(0, RgbColor(0, 0,0));
     // strip->Show();
 }
@@ -74,16 +76,16 @@ void CO2Sensor::onCo2Status(CubicStatus status) {
   //SERIAL_PORT << "status = " << status << endl;
   if (status == CB_CALIBRATE) {
    // SERIAL_PORT << "status11111 = " << status << endl;
-    menuHandler.scheduleCommand("led blue");
+    menuHandler.scheduleCommand("ledcolor blue");
 
 //    strip->SetPixelColor(0, RgbColor(0, 0,30));
     tmrStopLED->Stop();
   } else if (status == CB_WARMUP) {
-    menuHandler.scheduleCommand("led yellow");
+    menuHandler.scheduleCommand("ledcolor yellow");
 
 //    strip->SetPixelColor(0, RgbColor(30, 30, 0));
   } else if (status == CB_STARTED) {
-    menuHandler.scheduleCommand("led green");
+    menuHandler.scheduleCommand("ledcolor green");
 //    strip->SetPixelColor(0, RgbColor(0, 30, 0));
     tmrStopLED->Start();
   }

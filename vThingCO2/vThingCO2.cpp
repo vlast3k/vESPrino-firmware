@@ -157,7 +157,7 @@ void setup() {
   PropertyList.begin();
   if (rtcMemStore.getDataExisted() == false) activeWait();
   MigrateSettingsIfNeeded();
-
+  EEPROM.begin(100);
 
 
   #ifdef VTHING_STARTER

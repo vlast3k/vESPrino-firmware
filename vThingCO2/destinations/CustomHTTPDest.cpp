@@ -35,7 +35,6 @@ void CustomHTTPDest::menuAddCustomUrl(const char *line) {
 }
 
 void CustomHTTPDest::process(LinkedList<Pair *> &data) {
-  if (waitForWifi(10000) != WL_CONNECTED) return;
   Serial << F("CustomHTTPDest::process") << endl;
   int i=0;
   do {
@@ -60,9 +59,9 @@ void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
 }
 
 void CustomHTTPDest::invokeURL(String &url) {
-  if (waitForWifi(10000) != WL_CONNECTED) return;
+  if (waitForWifi(1000) != WL_CONNECTED) return;
   Serial << F("CustomHTTPDest::invoke = ") << url << endl;
-  waitForWifi(1000);
+//  waitForWifi(1000);
   HTTPClient http;
   http.begin(url);
   //addHCPIOTHeaders(&http, token);

@@ -87,7 +87,7 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
     String s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), i++);
     if (!s.length()) return;
     replaceValuesInURL(data, s);
-    waitForWifi(10000);
+    if (waitForWifi(1000) != WL_CONNECTED) return;
     Serial << F("Mqtt Dest: sending: ") << s << endl;
     if(!client->publish(mqttTopic.c_str(), s.c_str())) {
       mqttEnd(false);

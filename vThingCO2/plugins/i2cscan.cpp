@@ -70,8 +70,8 @@ bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debu
 }
 
 bool findI2C(int &sda, int &scl, bool debug) {
-  int gpios[] = {D1, D2, D5, D6, D7};
-  String gpios_str[] = {F("D1"), F("D2"), F("D5"), F("D6"), F("D7")};
+  int gpios[] = {D1, D2, D5};
+  String gpios_str[] = {F("D1"), F("D2"), F("D5")};
   int size = sizeof(gpios) / sizeof(int);
   bool found = false;
   for (int i=0; i < size; i++) {
