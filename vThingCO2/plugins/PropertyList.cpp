@@ -173,6 +173,14 @@ void PropertyListClass::putArrayProperty(const __FlashStringHelper *key, int idx
   putProperty(_key.c_str(), value);
 }
 
+void PropertyListClass::factoryReset() {
+  if (!SPIFFS.remove(configFileName)) {
+    Serial << F("Could not delete: ") << configFileName<< endl;
+  } else {
+    Serial << F("SPIFFS configuration removed\n");
+  }
+}
+
 void trim(char *str) {
   char *p = strchr(str, 13);
   if (p != NULL) *p = 0;

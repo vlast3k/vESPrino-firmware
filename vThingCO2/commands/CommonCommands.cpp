@@ -27,6 +27,9 @@ void CommonCommands::factoryReset(const char *ignore) {
   SERIAL_PORT << F("Doing Factory Reset, and restarting...") << endl;
   for (int i=0; i < 3000; i++) EEPROM.write(i, 0xFF);
   EEPROM.commit();
+  PropertyList.factoryReset();
+  Serial.flush();
+  delay(100);
   ESP.restart();
 }
 

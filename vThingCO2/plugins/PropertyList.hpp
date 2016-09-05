@@ -24,6 +24,8 @@ public:
   char *getArrayProperty(const __FlashStringHelper *key, int idx);
   void removeArrayProperty(const __FlashStringHelper *key);
   void putArrayProperty(const __FlashStringHelper *key, int idx, const char *value);
+  void factoryReset();
+
   String configFileName;// = F("/vs_cfg.txt");
   String tempFileName;// = F("/vs_cfg.tmp");
   const char* getName() {
