@@ -186,8 +186,8 @@ void processMessage(String msgIn) {
     //SERIAL << root[0]["messages"][0].asObject().containsKey("color") << endl;
     //SERIAL << " Received cmd: " << root[0]["messages"][0]["color"].asString() << endl;
     if (root[0]["messages"][0]["color"].asString()) {
-      //SERIAL << "to process command" << endl;
-      processCommand(root[0]["messages"][0]["color"].asString());
+      SERIAL << F("to process command") << endl;
+      //processCommand(root[0]["messages"][0]["color"].asString());
     } else {
       SERIAL << F("command not recognized") << endl;
      }

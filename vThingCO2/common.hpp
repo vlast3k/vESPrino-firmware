@@ -1,9 +1,9 @@
 #ifndef common_h
 #define common_h
 
-#include <NeoPixelBus.h>
 #include <CubicGasSensors.h>
 #include <Streaming.h>
+#include <NeoPixelBus.h>
 //#include <EEPROM.h>
 #include <Math.h>
 #include <algorithm>    // std::min
@@ -39,20 +39,10 @@ extern "C" {
 #include "destinations\MQTTDest.hpp"
 #include "utils\RTCMemStore.hpp"
 #include <ESP8266WiFiMulti.h>
+#include "plugins\NeopixelVE.hpp"
 
 
-#define Cred     RgbColor(255, 0, 0)
-#define Cpink    RgbColor(255, 0, 128)
-#define Clila    RgbColor(255, 0, 255)
-#define Cviolet  RgbColor(128, 0, 255)
-#define Cblue    RgbColor(0, 0, 255)
-#define Cmblue   RgbColor(0, 128, 255)
-#define Ccyan    RgbColor(0, 255, 255)
-#define Cgreen   RgbColor(0, 255, 0)
-#define Cyellow  RgbColor(255, 255, 0)
-#define Corange  RgbColor(255, 100, 0)
-#define Cwhite   RgbColor(255, 255, 255)
-#define Cblack   RgbColor(0)
+
 
 #define SERIAL Serial
 #define EE_WIFI_SSID F("wifi.ssid")
@@ -191,11 +181,11 @@ boolean getDweetCommand(char *cmd);
 void onGetDweets();
 void handleDWCommand(char *line);
 
-RgbColor ledNextColor();
-void setLedColor(const RgbColor &color);
-void ledHandleColor(char *colorNew);
-void ledSetBrg(char *s);
-void ledHandleMode(char *cmd) ;
+// RgbColor ledNextColor();
+// void setLedColor(const RgbColor &color);
+// void ledHandleColor(char *colorNew);
+// void ledSetBrg(char *s);
+// void ledHandleMode(char *cmd) ;
 
 bool checkI2CDevice(int sda, int sca, int addr) ;
 bool checkI2CDevice(int addr);
@@ -226,7 +216,6 @@ extern boolean DEBUG;
 extern boolean SKIP_LOOP;
 extern MenuHandler menuHandler;
 extern Timer *tmrStopLED;
-extern NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
 extern LinkedList<Plugin *> plugins;
 extern LinkedList<Sensor *> sensors;
 extern LinkedList<Destination *> destinations;
@@ -248,6 +237,7 @@ extern bool deepSleepWake;
 extern int i2cSDA, i2cSCL;
 extern RTCMemStore rtcMemStore;
 extern ESP8266WiFiMulti  *wifiMulti;
+//extern NeopixelVE neopixel;
 
 void MigrateSettingsIfNeeded();
 void onStopLED();

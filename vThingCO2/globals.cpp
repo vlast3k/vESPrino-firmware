@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include "MenuHandler.hpp"
 #include "Timer.h"
-#include "NeoPixelBus.h"
 #include "LinkedList.h"
 #include "interfaces\Destination.hpp"
 #include "interfaces\Plugin.hpp"
@@ -20,6 +19,7 @@
 #include "destinations\MQTTDest.hpp"
 #include "destinations\SerialDumpDest.hpp"
 #include "utils\RTCMemStore.hpp"
+#include "plugins\NeopixelVE.hpp"
 
 
 boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
@@ -32,8 +32,6 @@ char atCIPSTART_IP[20];
 char commonBuffer200[200];
 bool deepSleepWake = false;
 int i2cSDA, i2cSCL;
-
-NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
 
 LinkedList<Plugin *> plugins = LinkedList<Plugin *>();
 LinkedList<Sensor *> sensors = LinkedList<Sensor *>();
@@ -55,3 +53,4 @@ CDM7160Sensor cdm7160Sensor;
 
 MQTTDest mqttDest;
 RTCMemStore rtcMemStore;
+NeopixelVE neopixel;

@@ -34,9 +34,6 @@ void VESP_registerCommands(MenuHandler *handler) {
 
 void handleDWCommand(char *line) {
        if (strstr(line, "oled_"))      oledHandleCommand(strstr(line, "_")+1);
-  else if (strstr(line, "led_"))       ledHandleColor(strstr(line, "_")+1);
-  else if (strstr(line, "ledbrg_"))    ledSetBrg(strstr(line, "_")+1);
-  else if (strstr(line, "ledmode_"))   ledHandleMode(strstr(line, "_")+1);
   else if (strstr(line, "pirOn"))        onPIR();
   else if (strstr(line, "pirOff"))        onPIROff();
 }

@@ -19,7 +19,7 @@ public:
   static void toggle(const char *line);
   void toggleInst();
 
-  char* getName() {
+  const char* getName() {
     return "SerialDump";
   }
 

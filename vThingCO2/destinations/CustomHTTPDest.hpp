@@ -19,7 +19,7 @@ public:
   void process(LinkedList<Pair*> &data);
   void replaceValuesInURL(LinkedList<Pair *> &data, String &s);
   void invokeURL(String &url);
-  char* getName() {
+  const char* getName() {
     return "CustomHTTP";
   }
 

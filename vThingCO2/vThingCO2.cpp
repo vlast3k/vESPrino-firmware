@@ -17,7 +17,7 @@
 #include "interfaces\Plugin.hpp"
 #include "destinations\CustomHTTPDest.hpp"
 #include <Wire.h>
-
+#include "plugins\NeopixelVE.hpp"
 
 
 using namespace std;
@@ -116,7 +116,7 @@ void loopPlugins() {
 bool isDeepSleepWake() {
   uint32_t dd;
   ESP.rtcUserMemoryRead(0, &dd, sizeof(dd));
-  Serial << "rtcUserMem: " << _HEX(dd) << endl;
+//  Serial << "rtcUserMem: " << _HEX(dd) << endl;
   if (dd == 33) {
     return true;
   } else {
@@ -125,7 +125,7 @@ bool isDeepSleepWake() {
     return false;
   }
 }
-
+extern NeopixelVE neopixel;
 void setup() {
   SERIAL.begin(9600);
   //Wire.begin(D6, D5);
@@ -137,16 +137,16 @@ void setup() {
   beginI2C();
   //Wire.begin(D1, D6);
   //WiFi.begin();
-  #if defined(VTHING_CO2) || defined(VTHING_VESPRINO)
-    SERIAL << "AAAA";
-    // strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
-    // strip->Begin();
-    // strip->SetPixelColor(0, RgbColor(5, 0,3));
-    // strip->Show();
-    setLedColor(RgbColor(5, 0,3));
-  #endif
-
-
+  // #if defined(VTHING_CO2) || defined(VTHING_VESPRINO)
+  //   SERIAL << "AAAA";
+  //   // strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
+  //   // strip->Begin();
+  //   // strip->SetPixelColor(0, RgbColor(5, 0,3));
+  //   // strip->Show();
+  //   setLedColor(RgbColor(5, 0,3));
+  // #endif
+  neopixel.cmdLedHandleColorInst("ledcolor lila");
+  neopixel.cmdLedSetBrgInst("ledbrg 99");
 
   printVersion();
   SERIAL << F("ready") << endl;
@@ -154,8 +154,8 @@ void setup() {
 
 //  deepSleepWake = isDeepSleepWake();
   rtcMemStore.init();
-  if (rtcMemStore.getDataExisted() == false) activeWait();
   PropertyList.begin();
+  if (rtcMemStore.getDataExisted() == false) activeWait();
   MigrateSettingsIfNeeded();
 
 
@@ -197,7 +197,7 @@ menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F(
 
   setup_IntThrHandler(&menuHandler);
   heap("At setup end");
-  setLedColor(RgbColor(5, 0,3));
+  //setLedColor(RgbColor(5, 0,3));
   //WiFi.begin("MarinaResidence","eeeeee");
 }
 //int aa = 0;

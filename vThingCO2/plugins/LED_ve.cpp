@@ -1,4 +1,4 @@
-#ifdef VTHING_VESPRINO
+#ifdef VTHING_VESPRINOd
 #include "common.hpp"
 
 

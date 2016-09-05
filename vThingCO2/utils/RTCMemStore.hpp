@@ -1,6 +1,6 @@
 #ifndef RTCMemStore_h
 #define RTCMemStore_h
-#include <RunningAverageSt.h>
+#include <RunningAverageSt.h> 
 struct RTCData {
   uint32_t crc32;
   uint32_t interations = 0;
