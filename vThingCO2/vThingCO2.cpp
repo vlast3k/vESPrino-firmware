@@ -28,13 +28,13 @@ using namespace std;
 //NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
 
 #ifdef VTHING_H801_LED
-  #define SERIAL Serial1
+  #define SERIAL_PORT Serial1
 #else
   #include <RunningAverage.h>
   #include <NeoPixelBus.h>
   #include <vSAP_Auth.h>
 
-  #define SERIAL Serial
+  #define SERIAL_PORT Serial
 
 
 
@@ -45,20 +45,20 @@ int pgpio0, pgpio2;
 
 String VERSION = "v1.16";
 void printVersion(const char* ignore) {
-  SERIAL << endl;
+  SERIAL_PORT << endl;
   #ifdef VTHING_CO2
-    SERIAL << F("vThing - CO2 Monitor ");
+    SERIAL_PORT << F("vThing - CO2 Monitor ");
   #elif defined(VTHING_STARTER)
-    SERIAL << F("vThing - Starter Edition ");
+    SERIAL_PORT << F("vThing - Starter Edition ");
   #elif defined(VTHING_H801_LED)
-    SERIAL << F("vThing - H801 FW ");
+    SERIAL_PORT << F("vThing - H801 FW ");
   #elif defined(VAIR)
-    SERIAL << F("vAir - WiFi Module ");
+    SERIAL_PORT << F("vAir - WiFi Module ");
   #elif defined(VTHING_VESPRINO)
-    SERIAL << F("vESPrino ");
+    SERIAL_PORT << F("vESPrino ");
   #endif
-  SERIAL << VERSION << endl;
-  SERIAL << F("IP address: ") << WiFi.localIP() << endl;
+  SERIAL_PORT << VERSION << endl;
+  SERIAL_PORT << F("IP address: ") << WiFi.localIP() << endl;
 
 }
 
@@ -127,7 +127,7 @@ bool isDeepSleepWake() {
 }
 extern NeopixelVE neopixel;
 void setup() {
-  SERIAL.begin(9600);
+  SERIAL_PORT.begin(9600);
   //Wire.begin(D6, D5);
   wifiConnectMulti();
   heap("Heap at start");
@@ -138,7 +138,7 @@ void setup() {
   //Wire.begin(D1, D6);
   //WiFi.begin();
   // #if defined(VTHING_CO2) || defined(VTHING_VESPRINO)
-  //   SERIAL << "AAAA";
+  //   SERIAL_PORT << "AAAA";
   //   // strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
   //   // strip->Begin();
   //   // strip->SetPixelColor(0, RgbColor(5, 0,3));
@@ -149,8 +149,8 @@ void setup() {
   neopixel.cmdLedSetBrgInst("ledbrg 99");
 
   printVersion();
-  SERIAL << F("ready") << endl;
-  SERIAL << F("Waiting for auto-connect") << endl;
+  SERIAL_PORT << F("ready") << endl;
+  SERIAL_PORT << F("Waiting for auto-connect") << endl;
 
 //  deepSleepWake = isDeepSleepWake();
   rtcMemStore.init();

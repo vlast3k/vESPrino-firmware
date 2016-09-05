@@ -17,7 +17,7 @@ public:
   static void onNop(const char* ignore);
   void onTimeoutInst();
   void onNopInst();
-  char* getName() {
+  const char* getName() {
     return "PowerManager";
   }
   const static uint8_t IterationDurationS = 15;

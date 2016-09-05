@@ -31,7 +31,7 @@ void CO2Sensor::setup(MenuHandler *handler) {
 
   handler->registerCommand(new MenuEntry(F("rco"), CMD_EXACT, CO2Sensor::resetCO2_static, F("")));
 
-  SERIAL << F("CO2 now: ") << cubicCo2.rawReadCM1106_CO2() << endl;
+  SERIAL_PORT << F("CO2 now: ") << cubicCo2.rawReadCM1106_CO2() << endl;
 }
 
 const char* CO2Sensor::getSensorId() {
@@ -71,9 +71,9 @@ void CO2Sensor::onCo2Status_static(CubicStatus status) {
 }
 
 void CO2Sensor::onCo2Status(CubicStatus status) {
-  //SERIAL << "status = " << status << endl;
+  //SERIAL_PORT << "status = " << status << endl;
   if (status == CB_CALIBRATE) {
-   // SERIAL << "status11111 = " << status << endl;
+   // SERIAL_PORT << "status11111 = " << status << endl;
     menuHandler.scheduleCommand("led blue");
 
 //    strip->SetPixelColor(0, RgbColor(0, 0,30));
@@ -95,7 +95,7 @@ void CO2Sensor::resetCO2_static(const char *ignore) {
 }
 
 void CO2Sensor::resetCO2() {
-  SERIAL << F("Calibration Mode Enabled.\nPlease put the device for 5 minutes at fresh air.\nYou can now put it outside. It will complete calibration once it worked 5 minutes after restart") << endl;
+  SERIAL_PORT << F("Calibration Mode Enabled.\nPlease put the device for 5 minutes at fresh air.\nYou can now put it outside. It will complete calibration once it worked 5 minutes after restart") << endl;
   EEPROM.begin(10);
   EEPROM.put(EE_RESET_CO2_1B, (byte)1);
   EEPROM.commit();

@@ -31,7 +31,7 @@ float ledBrg = 0.7f;
 void ledHandleColor(char *colorNew) {
   static char color[10];
   if (colorNew) strcpy(color, colorNew);
-  //SERIAL << "color: " << color;
+  //SERIAL_PORT << "color: " << color;
   //color.trim();
   RgbColor c;
        if (!strcmp(color, "red"))    c = Cred;
@@ -49,7 +49,7 @@ void ledHandleColor(char *colorNew) {
   else if (!strcmp(color, "next"))   c = ledNextColor();
   else {
     uint32_t data = strtol(color, NULL, 0);
-    //SERIAL << " receveid int: " << data << endl;
+    //SERIAL_PORT << " receveid int: " << data << endl;
     c = RgbColor((data & 0xFF0000) >> 16, (data & 0x00FF00) >> 8, (data & 0x0000FF));
   }
   c = RgbColor::LinearBlend(c, Cblack, ledBrg);

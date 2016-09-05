@@ -50,9 +50,9 @@ void configMQTT(const char *p) {
   PropertyList.putProperty(EE_MQTT_TOPIC, mqttTopic);
 
   EEPROM.commit();
-  SERIAL << F("MQTT Configuration Stored") << endl;
-  SERIAL << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << "," << mqttTopic << endl;
-  SERIAL << F("DONE") << endl;
+  SERIAL_PORT << F("MQTT Configuration Stored") << endl;
+  SERIAL_PORT << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << "," << mqttTopic << endl;
+  SERIAL_PORT << F("DONE") << endl;
 #ifdef VTHING_H801_LED
   h801_mqtt_connect();
 #endif
@@ -69,19 +69,19 @@ void sendMQTT(String msg) {
   mqttPass   = PropertyList.readProperty(EE_MQTT_PASS);
   mqttTopic  = PropertyList.readProperty(EE_MQTT_TOPIC);
   mqttValue  = PropertyList.readProperty(EE_MQTT_VALUE);
-  SERIAL << "Sending via MQTT: ";
+  SERIAL_PORT << "Sending via MQTT: ";
   delay(150);
-  SERIAL << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
+  SERIAL_PORT << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
   delay(150);
-  SERIAL << mqttUser;
+  SERIAL_PORT << mqttUser;
   delay(150);
-  SERIAL << "," << mqttPass << ",";
+  SERIAL_PORT << "," << mqttPass << ",";
   delay(150);
-  SERIAL << mqttTopic;
+  SERIAL_PORT << mqttTopic;
   delay(150);
-  SERIAL << ",";
+  SERIAL_PORT << ",";
   delay(150);
-  SERIAL << mqttValue << endl;
+  SERIAL_PORT << mqttValue << endl;
   delay(150);
   uint32_t st = millis();
   WiFiClient wclient;
@@ -99,20 +99,20 @@ void sendMQTT(String msg) {
       //sprintf(ddd, "{\"data\": %s, \"write\": true,  \"ispublic\": true}", msg.c_str());
       char mqttValue2[80];
       sprintf(mqttValue2, mqttValue.c_str(), msg.c_str());
-      SERIAL << F("Connected. Will publish: ") << mqttValue2 << endl;
+      SERIAL_PORT << F("Connected. Will publish: ") << mqttValue2 << endl;
       boolean res = client.publish(mqttTopic.c_str(), mqttValue2);
-      SERIAL.println(res ? F("CLOSED") : F("Failed!"));
+      SERIAL_PORT.println(res ? F("CLOSED") : F("Failed!"));
     } else {
-        SERIAL.println(F("Could not connect to MQTT server"));
+        SERIAL_PORT.println(F("Could not connect to MQTT server"));
     }
   }
   client.disconnect();
-  SERIAL << "sent in:" << (millis() - st) << endl;
+  SERIAL_PORT << "sent in:" << (millis() - st) << endl;
 }
 
 void configMQTTVal(const char *line) {
   PropertyList.putProperty(EE_MQTT_VALUE, &line[10]);
-  SERIAL << "DONE" << endl;
+  SERIAL_PORT << "DONE" << endl;
 }
 
 void configMQTTTest(const char *ignore) {

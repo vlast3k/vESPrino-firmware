@@ -16,9 +16,9 @@
 //
 //
 // void processCommand(String color) {
-//   //SERIAL << "color: " << color;
+//   //SERIAL_PORT << "color: " << color;
 //   //color.trim();
-//   SERIAL << F("Received Command: ") << color << endl;
+//   SERIAL_PORT << F("Received Command: ") << color << endl;
 //   RgbColor c;
 // //  if (color == "red")         c = red;
 // //  else if (color == "blue")   c = blue;
@@ -34,7 +34,7 @@
 // //  else if (color == "cyan")   c = cyan;
 //   //else {
 //     uint32_t data = strtol(color.c_str(), NULL, 0);
-//     //SERIAL << " receveid int: " << data << endl;
+//     //SERIAL_PORT << " receveid int: " << data << endl;
 //     c = RgbColor((data & 0xFF0000) >> 16, (data & 0x00FF00) >> 8, (data & 0x0000FF));
 //  // }
 //

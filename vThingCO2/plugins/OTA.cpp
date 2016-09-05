@@ -18,7 +18,7 @@ void doHttpUpdate(int mode, const char *url) {
     #endif
   }
 
-  SERIAL << F("Will update from: ") << url << endl;
+  SERIAL_PORT << F("Will update from: ") << url << endl;
 
   menuHandler.handleCommand("ledcolor red");
   menuHandler.handleCommand("ledbrg 80");
@@ -27,16 +27,16 @@ void doHttpUpdate(int mode, const char *url) {
 
   switch(ret) {
     case HTTP_UPDATE_FAILED:
-      SERIAL.println(ESPhttpUpdate.getLastErrorString());
-      SERIAL.println(F("HTTP_UPDATE_FAILED"));
+      SERIAL_PORT.println(ESPhttpUpdate.getLastErrorString());
+      SERIAL_PORT.println(F("HTTP_UPDATE_FAILED"));
       break;
 
     case HTTP_UPDATE_NO_UPDATES:
-      SERIAL.println(F("HTTP_UPDATE_NO_UPDATES"));
+      SERIAL_PORT.println(F("HTTP_UPDATE_NO_UPDATES"));
       break;
 
     case HTTP_UPDATE_OK:
-      SERIAL.println(F("HTTP_UPDATE_OK"));
+      SERIAL_PORT.println(F("HTTP_UPDATE_OK"));
       break;
   }
 }

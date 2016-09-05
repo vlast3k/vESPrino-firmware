@@ -12,19 +12,19 @@ void CommonCommands::cmdHeap(const char *s) {
 
 void CommonCommands::dumpCfg(const char *s) {
   for (int i=0; i < 30; i++) {
-    SERIAL << i << " : " ;
+    SERIAL_PORT << i << " : " ;
     for (int j=0; j < 100; j++) {
       byte b = EEPROM.read(i*100 + j);
       if (b == 0) b = '?';
-      SERIAL << (char)b;
+      SERIAL_PORT << (char)b;
     }
     delay(10);
-    SERIAL << endl;
+    SERIAL_PORT << endl;
   }
 }
 
 void CommonCommands::factoryReset(const char *ignore) {
-  SERIAL << F("Doing Factory Reset, and restarting...") << endl;
+  SERIAL_PORT << F("Doing Factory Reset, and restarting...") << endl;
   for (int i=0; i < 3000; i++) EEPROM.write(i, 0xFF);
   EEPROM.commit();
   ESP.restart();
@@ -35,12 +35,12 @@ void espRestart(const char* ignore) {
 }
 
 void stopActiveExecution(const char *ignore) {
-  SERIAL << "STOP Active execution\n";
+  SERIAL_PORT << "STOP Active execution\n";
   SKIP_LOOP = true;
 }
 
 void cmdTestMemStore(const char *ignore) {
-  SERIAL << "Test Mem Store\n";
+  SERIAL_PORT << "Test Mem Store\n";
   Serial << "avg now 1: "<<     rtcMemStore.getAverage() << endl;
   rtcMemStore.addAverageValue(1000);
   Serial << "avg now 2:"<<     rtcMemStore.getAverage() << endl;
@@ -69,9 +69,9 @@ void cmdSerTest(const char *p) {
   //delay(5000);
   // int iport = atoi(port);
   // WiFiClient ccc;
-  // SERIAL << "Test connection to to:" << host << ":" << port << endl;
+  // SERIAL_PORT << "Test connection to to:" << host << ":" << port << endl;
   // int res = ccc.connect(host, iport);
-  // SERIAL << "Res: " << res << endl;
+  // SERIAL_PORT << "Res: " << res << endl;
 
 }
 

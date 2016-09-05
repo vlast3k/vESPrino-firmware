@@ -11,7 +11,7 @@ public:
   SI7021Sensor();
   void setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
-  char* getName() {
+  const char* getName() {
     return "SI7021";
   }
   bool initSensor();

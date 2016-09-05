@@ -12,7 +12,7 @@ boolean si7021init() {
       si7021 = NULL;
       return false;
     }
-    SERIAL << "Found SI7021 Temperature/Humidity Sensor\n" << endl;
+    SERIAL_PORT << "Found SI7021 Temperature/Humidity Sensor\n" << endl;
     si7021->setHumidityRes(8); // Humidity = 12-bit / Temperature = 14-bit
     return true;
 }
@@ -21,8 +21,8 @@ void onTempRead() {
   if (!si7021) return;
   float tmp = si7021->readTemp();
   float hum = si7021->readHumidity();
-  SERIAL << F("Humidity : ") << hum << " %\t";
-  SERIAL << F("Temp : "    ) << tmp << " C" << endl;
+  SERIAL_PORT << F("Humidity : ") << hum << " %\t";
+  SERIAL_PORT << F("Temp : "    ) << tmp << " C" << endl;
 
   String s = String("sndiot ") + tmp;
   sndIOT(s.c_str());
@@ -30,7 +30,7 @@ void onTempRead() {
 
 void dumpTemp() {
   if (!si7021) return;
-  SERIAL << F("Temp : ")     << si7021->readTemp() << " C" << endl;
+  SERIAL_PORT << F("Temp : ")     << si7021->readTemp() << " C" << endl;
 }
 
 #endif

@@ -23,7 +23,7 @@ class NeopixelVE : public Plugin {
 public:
   NeopixelVE();
   void setup(MenuHandler *handler);
-  char* getName() {
+  const char* getName() {
     return "Neopixel";
   }
   void loop();

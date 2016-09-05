@@ -17,7 +17,7 @@ public:
       timers.get(i)->Update();
     }
   }
-  char* getName() {
+  const char* getName() {
     return "TimerManager";
   }
 

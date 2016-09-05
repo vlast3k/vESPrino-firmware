@@ -14,7 +14,7 @@ bool checkI2CDevice(int sda, int sca, int addr) {
   Wire.begin(sda, sca);
   Wire.beginTransmission(addr);
   int res = Wire.endTransmission();
-  SERIAL << F("i2c addr:") << addr << F(", i2c res: ") << _HEX(res) << endl;
+  SERIAL_PORT << F("i2c addr:") << addr << F(", i2c res: ") << _HEX(res) << endl;
   return !res;
 }
 

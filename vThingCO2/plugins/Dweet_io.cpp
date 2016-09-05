@@ -20,7 +20,7 @@ boolean getDweetCommand(char *cmd) {
     http.begin(url);
     int httpCode = http.GET();
     if(httpCode <= 0) {
-      SERIAL << F("Failed to getDweet from: ") << url << ", due to: " << http.errorToString(httpCode) << endl;
+      SERIAL_PORT << F("Failed to getDweet from: ") << url << ", due to: " << http.errorToString(httpCode) << endl;
       return false;
     }
 
@@ -28,14 +28,14 @@ boolean getDweetCommand(char *cmd) {
     StaticJsonBuffer<400> jsonBuffer;
     JsonObject& root = jsonBuffer.parseObject(payload.c_str());
     if (!root.success()) {
-      SERIAL << F("Parsing failed! : ") << payload.c_str() << endl;
+      SERIAL_PORT << F("Parsing failed! : ") << payload.c_str() << endl;
       return false;
     }
     if (!root.containsKey("this") || strcmp(root["this"].asString(), "succeeded")) return false;
     if (strcmp(lastDweet, root["with"][0]["created"].asString()) == 0) return false;
     strcpy(lastDweet, root["with"][0]["created"].asString());
     strcpy(cmd, root["with"][0]["content"]["cmd"].asString());
-    SERIAL << "New Dweet: " << cmd << endl;
+    SERIAL_PORT << "New Dweet: " << cmd << endl;
     return true;
 }
 

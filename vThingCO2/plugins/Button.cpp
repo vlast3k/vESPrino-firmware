@@ -22,13 +22,13 @@ void checkButtonSend() {
   shouldSend = false;
   //digitalWrite(2, LOW);
   char tmp[200];
-  SERIAL << F("Button Clicked!") << endl;
+  SERIAL_PORT << F("Button Clicked!") << endl;
   if(WiFi.status() != WL_CONNECTED) {
-    SERIAL << F("Will not send: No WiFi") << endl;
+    SERIAL_PORT << F("Will not send: No WiFi") << endl;
     return;
   }
   char p2[40], p3[40];
- // SERIAL <<"getjscfg" <<getJSONConfig("vespBttn", p1, p2, p3)[0] << "!" << endl;
+ // SERIAL_PORT <<"getjscfg" <<getJSONConfig("vespBttn", p1, p2, p3)[0] << "!" << endl;
   if (PropertyList.hasProperty("vespBttn")) {
     if (!strcmp(tmp, "dw")) {
       sprintf(tmp, "http://dweet.io/dweet/for/%s?%s", p2, p3);
@@ -36,7 +36,7 @@ void checkButtonSend() {
       sprintf(tmp, "http://maker.ifttt.com/trigger/%s/with/key/%s", p2, p3);
     }
 
-    SERIAL << "Sending to URL: " << tmp << endl;
+    SERIAL_PORT << "Sending to URL: " << tmp << endl;
     HTTPClient http;
     http.begin(tmp);
     //addHCPIOTHeaders(&http, token);

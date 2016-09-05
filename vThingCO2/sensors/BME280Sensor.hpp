@@ -14,7 +14,7 @@ public:
   BME280Sensor();
   void setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
-  char* getName() {
+  const char* getName() {
     return "BME280";
   }
   bool initSensor();

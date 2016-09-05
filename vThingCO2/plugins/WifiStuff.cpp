@@ -10,14 +10,14 @@ IPAddress ip = WiFi.localIP();
 
 void handleWifi() {
   if (millis() > 8000 && WiFi.status() != WL_CONNECTED) wifiMulti->run();
-  //SERIAL << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
+  //SERIAL_PORT << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
   if (ip == WiFi.localIP()) return;
   else if (WiFi.status() == WL_CONNECTED) {
     ip = WiFi.localIP();
 #ifdef SAP_AUTH
     vSAP_Auth(EE_WIFI_P1_30B, EE_WIFI_P1_30B);
 #endif
-    SERIAL << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
+    SERIAL_PORT << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
     // handleCommandVESPrino("vecmd led_mblue");
     // handleCommandVESPrino("vecmd ledmode_2_3");
   }
@@ -34,7 +34,7 @@ wl_status_t waitForWifi(uint16_t timeoutMs) {
     handleWifi();
     menuHandler.processUserInput();
     if ((i%10) == 0) {
-      SERIAL << '.';
+      SERIAL_PORT << '.';
       putLF = true;
     }
   }
@@ -47,9 +47,9 @@ void activeWait() {
     handleWifi();
     menuHandler.loop();
     //menuHandler.processUserInput();
-    if ((i%10) == 0) SERIAL << '.';
+    if ((i%10) == 0) SERIAL_PORT << '.';
   }
-  SERIAL << endl;
+  SERIAL_PORT << endl;
 }
 
 
@@ -59,7 +59,7 @@ int wifiConnectToStoredSSID() {
   String ssid, pass;
   ssid = PropertyList.readProperty(EE_WIFI_SSID);
   pass = PropertyList.readProperty(EE_WIFI_P1);
-  SERIAL << F("Connecting to: \"") << ssid << F("\", \"") << pass << F("\"") << endl;
+  SERIAL_PORT << F("Connecting to: \"") << ssid << F("\", \"") << pass << F("\"") << endl;
   WiFi.disconnect();
   delay(500);
   WiFi.mode(WIFI_STA);
@@ -69,7 +69,7 @@ int wifiConnectToStoredSSID() {
   // //  strcpy(x, "vladiHome");
   //   strcpy(y, "0888414447");
   // }
-  // SERIAL << F("Connecting to: \"") << x << F("\", \"") << y << F("\"") << endl;
+  // SERIAL_PORT << F("Connecting to: \"") << x << F("\", \"") << y << F("\"") << endl;
   WiFi.begin(ssid.c_str(), pass.c_str());
   //WiFi.begin("MarinaResidence", "sdsa");
 }
@@ -79,7 +79,7 @@ void connectToWifi(const char *s1, const char *s2, const char *s3) {
   PropertyList.putProperty(EE_WIFI_P2, s3);
 
   wifiConnectToStoredSSID();
-  //SERIAL << "Connecting to " << s1 << endl;
+  //SERIAL_PORT << "Connecting to " << s1 << endl;
 //  for (int i=0; i<10 && WiFi.status() != WL_CONNECTED; i--) {
 //    handleWifi();
 //    delay(1000);
@@ -94,33 +94,33 @@ void connectToWifi(const char *s1, const char *s2, const char *s3) {
 
 
 void wifiScanNetworks(const char *ignore) {
-  SERIAL.println("scan start");
+  SERIAL_PORT.println("scan start");
   WiFi.disconnect();
   delay(500);
 
   // WiFi.scanNetworks will return the number of networks found
   int n = WiFi.scanNetworks();
-  SERIAL.println("scan done");
+  SERIAL_PORT.println("scan done");
   if (n == 0)
-    SERIAL.println("no networks found");
+    SERIAL_PORT.println("no networks found");
   else
   {
-    SERIAL.print(n) ;
-    SERIAL.println(" networks found");
+    SERIAL_PORT.print(n) ;
+    SERIAL_PORT.println(" networks found");
     for (int i = 0; i < n; ++i)
     {
       // Print SSID and RSSI for each network found
-      SERIAL.print(i + 1);
-      SERIAL.print(": ");
-      SERIAL.print(WiFi.SSID(i));
-      SERIAL.print(" (");
-      SERIAL.print(WiFi.RSSI(i));
-      SERIAL.print(")");
-      SERIAL.println((WiFi.encryptionType(i) == ENC_TYPE_NONE)?" ":"*");
+      SERIAL_PORT.print(i + 1);
+      SERIAL_PORT.print(": ");
+      SERIAL_PORT.print(WiFi.SSID(i));
+      SERIAL_PORT.print(" (");
+      SERIAL_PORT.print(WiFi.RSSI(i));
+      SERIAL_PORT.print(")");
+      SERIAL_PORT.println((WiFi.encryptionType(i) == ENC_TYPE_NONE)?" ":"*");
       delay(10);
     }
   }
-  SERIAL.println("");
+  SERIAL_PORT.println("");
 
   WiFi.mode(WIFI_STA);
   wifiConnectToStoredSSID();
@@ -130,12 +130,12 @@ void wifiScanNetworks(const char *ignore) {
 }
 
 void setWifi(const char* p) {
-  SERIAL << "setWifi_sgtart" << endl;
+  SERIAL_PORT << "setWifi_sgtart" << endl;
 char s1[30], s2[30], s3[30];
   p = extractStringFromQuotes(p, s1, 29);
   p = extractStringFromQuotes(p, s2, 29);
   p = extractStringFromQuotes(p, s3, 29);
-  SERIAL << "setWifi" << s1 << s2 << s3 << endl;
+  SERIAL_PORT << "setWifi" << s1 << s2 << s3 << endl;
 
   connectToWifi(s1, s2, s3);
 }
@@ -146,15 +146,15 @@ void sendPingPort(const char *p) {
   p = extractStringFromQuotes(p, port, 20);
   int iport = atoi(port);
   WiFiClient ccc;
-  SERIAL << "Test connection to to:" << host << ":" << port << endl;
+  SERIAL_PORT << "Test connection to to:" << host << ":" << port << endl;
   int res = ccc.connect(host, iport);
-  SERIAL << "Res: " << res << endl;
+  SERIAL_PORT << "Res: " << res << endl;
 
 }
 
 void sndIOT(const char *line) {
   if (WiFi.status() != WL_CONNECTED) {
-    SERIAL << F("Cannot send data. No Wifi connection.") << endl;
+    SERIAL_PORT << F("Cannot send data. No Wifi connection.") << endl;
     return;
   }
 //  String path;

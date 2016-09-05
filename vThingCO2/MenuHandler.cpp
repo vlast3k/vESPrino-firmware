@@ -34,10 +34,10 @@ bool MenuHandler::processUserInput() {
     //Serial.flush();
     //Serial.setTimeout(5000);
     scheduleCommand(line);
-SERIAL << endl << F("OK") << endl;
+SERIAL_PORT << endl << F("OK") << endl;
     return true;
   }
-  SERIAL << endl << F("OK2") << endl;
+  SERIAL_PORT << endl << F("OK2") << endl;
   return false;
   //Serial.setTimeout(5000);
 }

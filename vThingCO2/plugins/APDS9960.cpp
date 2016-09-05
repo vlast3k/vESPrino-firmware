@@ -46,7 +46,7 @@ void handleGesture() {
     }
     menuHandler.scheduleCommand("vecmd led_green");
     menuHandler.scheduleCommand("vecmd ledmode_2_2");
-    SERIAL << "Gesture: " << gesture << endl;
+    SERIAL_PORT << "Gesture: " << gesture << endl;
     char tmp[200], tmp2[200];
     char p2[40], p3[100];
     if(WiFi.status() == WL_CONNECTED && PropertyList.readProperty("vespRFID")[0]) {
@@ -64,7 +64,7 @@ void handleGesture() {
       }
       String s = String(tmp);
       //s.replace(" ", "%20");
-      SERIAL << "Sending to URL: " << s << endl;
+      SERIAL_PORT << "Sending to URL: " << s << endl;
       HTTPClient http;
       http.begin(s);
       //addHCPIOTHeaders(&http, token);

@@ -47,9 +47,9 @@ void MQTTDest::cmdMqttSetup(const char *p) {
   PropertyList.putProperty(EE_MQTT_TOPIC, mqttTopic);
 
   EEPROM.commit();
-  SERIAL << F("MQTT Configuration Stored") << endl;
-  SERIAL << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << "," << mqttTopic << endl;
-  SERIAL << F("DONE") << endl;
+  SERIAL_PORT << F("MQTT Configuration Stored") << endl;
+  SERIAL_PORT << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << "," << mqttTopic << endl;
+  SERIAL_PORT << F("DONE") << endl;
 #ifdef VTHING_H801_LED
   h801_mqtt_connect();
 #endif
@@ -111,15 +111,15 @@ bool MQTTDest::mqttStart() {
   mqttUser   = PropertyList.readProperty(EE_MQTT_USER);
   mqttPass   = PropertyList.readProperty(EE_MQTT_PASS);
   if (!mqttServer.length()) return false;
-  // SERIAL << "Sending via MQTT: ";
+  // SERIAL_PORT << "Sending via MQTT: ";
   // delay(150);
-  // SERIAL << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
+  // SERIAL_PORT << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
   // delay(150);
-  // SERIAL << mqttUser;
+  // SERIAL_PORT << mqttUser;
   // delay(150);
-  // SERIAL << "," << mqttPass << ",";
+  // SERIAL_PORT << "," << mqttPass << ",";
   // delay(150);
-  // SERIAL << ",";
+  // SERIAL_PORT << ",";
   // delay(150);
   uint32_t st = millis();
   wclient = new WiFiClient();
@@ -128,12 +128,12 @@ bool MQTTDest::mqttStart() {
   bool res;
   if (mqttUser.length() > 0) res = client->connect(mqttClient.c_str(), mqttUser.c_str(), mqttPass.c_str());
   else res = client->connect(mqttClient.c_str());
-  if (!res) SERIAL.println(F("Could not connect to MQTT server"));
+  if (!res) SERIAL_PORT.println(F("Could not connect to MQTT server"));
   return res;
 }
 
 void MQTTDest::mqttEnd(bool res) {
-  SERIAL.println(res ? F("CLOSED") : F("Failed!"));
+  SERIAL_PORT.println(res ? F("CLOSED") : F("Failed!"));
   if (client) {
     client->disconnect();
     delete client;
@@ -160,6 +160,6 @@ void MQTTDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
 }
 
 // bool MQTTDest::invokeURL(String &url) {
-//   SERIAL << F("Connected. Will publish: ") << url << endl;
+//   SERIAL_PORT << F("Connected. Will publish: ") << url << endl;
 //   return client.publish(mqttTopic.c_str(), url.c_str());
 // }

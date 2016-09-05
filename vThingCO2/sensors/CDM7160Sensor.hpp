@@ -9,7 +9,7 @@ public:
   CDM7160Sensor();
   void setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
-  char* getName() {
+  const char* getName() {
     return "CDM7160";
   }
   // bool initSensor();

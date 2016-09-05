@@ -58,10 +58,10 @@ void initVThingStarter() {
 
       char tmp[200];
     if (PropertyList.hasProperty("vespDWCmd")) {
-      SERIAL << F("Will read dweets from: http://dweet.io/get/latest/dweet/for/") << PropertyList.readProperty("vespDWCmd") << endl;
-      SERIAL << F("Send commands to: https://dweet.io/dweet/for/") << PropertyList.readProperty("vespDWCmd") << F("vladi1?cmd=") << endl;
+      SERIAL_PORT << F("Will read dweets from: http://dweet.io/get/latest/dweet/for/") << PropertyList.readProperty("vespDWCmd") << endl;
+      SERIAL_PORT << F("Send commands to: https://dweet.io/dweet/for/") << PropertyList.readProperty("vespDWCmd") << F("vladi1?cmd=") << endl;
     } else {
-      SERIAL << F("dweet id not set, use vespDWCmd <dweetid> to set it\n");
+      SERIAL_PORT << F("dweet id not set, use vespDWCmd <dweetid> to set it\n");
 
     }
 
@@ -71,7 +71,7 @@ void initVThingStarter() {
   hasBMP180  = checkI2CDevice(D1, D6, 0x77);
   hasBH1750  = checkI2CDevice(D1, D6, 0x23);
   hasAPDS9960= checkI2CDevice(D6, D1, 0x39);
-  SERIAL << "oled: " << hasSSD1306 << ", si7021: " << hasSI7021 << ", pn532: " << hasPN532 << ", bmp180: " << hasBMP180 << ", BH1750: " << hasBH1750 << endl;
+  SERIAL_PORT << "oled: " << hasSSD1306 << ", si7021: " << hasSI7021 << ", pn532: " << hasPN532 << ", bmp180: " << hasBMP180 << ", BH1750: " << hasBH1750 << endl;
   //initSSD1306();
   if (hasPN532) initPN532();
   if (hasSSD1306) oledHandleCommand("     vESPrino\n  IoT made easy\nPlay with sensors");

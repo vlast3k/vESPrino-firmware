@@ -10,7 +10,7 @@ public:
   TestSensor();
   void setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
-  char* getName() {
+  const char* getName() {
     return "TEST";
   }
   static void toggle(const char *line);

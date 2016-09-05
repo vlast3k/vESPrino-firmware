@@ -12,20 +12,20 @@ void SAP_HCP_IOT_Plugin::doSend() {
   if (shouldSend == false) return;
   shouldSend = false;
   char tmp[200];
-  SERIAL << F("Button Clicked!") << endl;
+  SERIAL_PORT << F("Button Clicked!") << endl;
   if(WiFi.status() != WL_CONNECTED) {
-    SERIAL << F("Will not send: No WiFi") << endl;
+    SERIAL_PORT << F("Will not send: No WiFi") << endl;
     return;
   }
   if (!getJSONConfig(SAP_IOT_HOST, tmp)[0]) {
-    SERIAL << F("Will not send: No configuration") << endl;
+    SERIAL_PORT << F("Will not send: No configuration") << endl;
     return;
   }
   HTTPClient http;
   //https://iotmmsi024148trial.hanatrial.ondemand.com/com.sap.iotservices.mms/v1/api/http/push/e46304a8-a410-4979-82f6-ca3da7e43df9
   //{"method":"http", "sender":"My IoT application", "messageType":"42c3546a088b3ef8b8d3", "messages":[{"command":"yellow"}]}
   String rq = String("https://") + getJSONConfig(SAP_IOT_HOST, tmp) + F("/com.sap.iotservices.mms/v1/api/http/data/") + getJSONConfig(SAP_IOT_DEVID, tmp) + "/" + getJSONConfig(SAP_IOT_BTN_MSGID, tmp) + "/sync?button=IA==";
-  SERIAL << "Sending: " << rq << endl;
+  SERIAL_PORT << "Sending: " << rq << endl;
   http.begin(rq);
   http.addHeader("Content-Type",  "application/json;charset=UTF-8");
   //http.setAuthorization("P1940433103", "Abcd1234");
@@ -36,11 +36,11 @@ void SAP_HCP_IOT_Plugin::doSend() {
   // httpCode will be negative on error
   if(httpCode > 0) {
       // HTTP header has been send and Server response header has been handled
-      SERIAL.printf(String(F("[HTTP] GET... code: %d\n")).c_str(), httpCode);
+      SERIAL_PORT.printf(String(F("[HTTP] GET... code: %d\n")).c_str(), httpCode);
       String payload = http.getString();
-      SERIAL.println(payload);
+      SERIAL_PORT.println(payload);
   } else {
-      SERIAL.printf(String(F("[HTTP] GET... failed, error: %s\n")).c_str(), http.errorToString(httpCode).c_str());
+      SERIAL_PORT.printf(String(F("[HTTP] GET... failed, error: %s\n")).c_str(), http.errorToString(httpCode).c_str());
   }
 }
 
@@ -67,31 +67,31 @@ void SAP_HCP_IOT_Plugin::handleSAP_IOT_PushService() {
     String url = String("https://") + getJSONConfig(SAP_IOT_HOST, tmp) + F("/com.sap.iotservices.mms/v1/api/http/data/") + getJSONConfig(SAP_IOT_DEVID, tmp) ;
 //        Serial << " before get json config" << end;
 
-    //SERIAL << url << endl;
-//    SERIAL << getJSONConfig(SAP_IOT_HOST) << endl;
-//    if (getJSONConfig(SAP_IOT_HOST)) SERIAL << "ok" << endl;
-//    else SERIAL << "false" << endl;
-    //SERIAL << (getJSONConfig(SAP_IOT_HOST) == true) << endl;
+    //SERIAL_PORT << url << endl;
+//    SERIAL_PORT << getJSONConfig(SAP_IOT_HOST) << endl;
+//    if (getJSONConfig(SAP_IOT_HOST)) SERIAL_PORT << "ok" << endl;
+//    else SERIAL_PORT << "false" << endl;
+    //SERIAL_PORT << (getJSONConfig(SAP_IOT_HOST) == true) << endl;
     HTTPClient http;
     http.begin(url);
     //Serial << " after begin " << endl;
     http.addHeader("Content-Type",  "application/json;charset=UTF-8");
-//    SERIAL <<  getJSONConfig(SAP_IOT_TOKEN) << endl;
+//    SERIAL_PORT <<  getJSONConfig(SAP_IOT_TOKEN) << endl;
     http.addHeader("Authorization", String("Bearer ") + getJSONConfig(SAP_IOT_TOKEN, tmp));
-    //SERIAL << "make req" << endl;
+    //SERIAL_PORT << "make req" << endl;
  //   Serial << " after begin " << endl;
     int httpCode = http.GET();
-    //SERIAL << "make req " << httpCode << endl;
+    //SERIAL_PORT << "make req " << httpCode << endl;
     // httpCode will be negative on error
     if(httpCode > 0) {
         // HTTP header has been send and Server response header has been handled
-        //SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
+        //SERIAL_PORT.printf("[HTTP] GET... code: %d\n", httpCode);
         String payload = http.getString();
-        //SERIAL.println(payload);
+        //SERIAL_PORT.println(payload);
         processMessage(payload);
     } else {
-      SERIAL << F("Failed to push message to: ") << url << ", due to: " <<http.errorToString(httpCode) << endl;
-        //SERIAL.printf("[HTTP] GET... failed, error: %s, url\n", http.errorToString(httpCode).c_str());
+      SERIAL_PORT << F("Failed to push message to: ") << url << ", due to: " <<http.errorToString(httpCode) << endl;
+        //SERIAL_PORT.printf("[HTTP] GET... failed, error: %s, url\n", http.errorToString(httpCode).c_str());
     }
 
     //lastSAPCheck = millis();
@@ -112,7 +112,7 @@ void SAP_HCP_IOT_Plugin::cfgHCPIOT1(const char *p) {
   p = extractStringFromQuotes(p, buf, sizeof(buf)); // host
   storeToEE(EE_IOT_HOST_60B, buf, 60);     //host
   putJSONConfig(SAP_IOT_HOST, buf);
-  //SERIAL << "IOT Host: " << buf << endl;
+  //SERIAL_PORT << "IOT Host: " << buf << endl;
 
   p = extractStringFromQuotes(p, devId, sizeof(devId));
   putJSONConfig(SAP_IOT_DEVID, devId);
@@ -120,7 +120,7 @@ void SAP_HCP_IOT_Plugin::cfgHCPIOT1(const char *p) {
   p = extractStringFromQuotes(p, varName, sizeof(varName));
   sprintf(buf, String(F("/com.sap.iotservices.mms/v1/api/http/data/%s/%s/sync?%s=")).c_str(), devId, msgId, varName);
   storeToEE(EE_IOT_PATH_140B, buf, 140); // path
-  //SERIAL << "IOT Path: " << buf << endl;
+  //SERIAL_PORT << "IOT Path: " << buf << endl;
   printJSONConfig("");
 
   //heap("");
@@ -130,11 +130,11 @@ void SAP_HCP_IOT_Plugin::cfgHCPIOT2(const char *p) {
   char buf[140];
     p = extractStringFromQuotes(p, buf, sizeof(buf)); // token
   storeToEE(EE_IOT_TOKN_40B, buf, 40);     // token
-  //SERIAL << "IOT OAuth Token: " << buf << endl;
+  //SERIAL_PORT << "IOT OAuth Token: " << buf << endl;
   putJSONConfig(SAP_IOT_TOKEN, buf);
 
   p = extractStringFromQuotes(p, buf, sizeof(buf)); // button messageid
-  //SERIAL << "-" << buf << "-" << endl;
+  //SERIAL_PORT << "-" << buf << "-" << endl;
   putJSONConfig(SAP_IOT_BTN_MSGID, buf);
   printJSONConfig("");
 
@@ -149,14 +149,14 @@ void SAP_HCP_IOT_Plugin::sndHCPIOT(const char *line) {
   EEPROM.get(EE_IOT_TOKN_40B, token);
 
   sprintf(path, "%s%s", path, &line[7]);
-  if (DEBUG) SERIAL << F("Sending to HCP: ") << path << endl;
-//  SERIAL << "hcpiot, token: " << token << endl;
+  if (DEBUG) SERIAL_PORT << F("Sending to HCP: ") << path << endl;
+//  SERIAL_PORT << "hcpiot, token: " << token << endl;
 
   HTTPClient http;
   http.begin(String(HTTPS_STR) + host + path);
   addHCPIOTHeaders(&http, token);
   int rc = AT_FW_Plugin::processResponseCodeATFW(&http, http.POST(""));
-  //SERIAL << "IOT rc: " << http.errorToString(rc).c_str();
+  //SERIAL_PORT << "IOT rc: " << http.errorToString(rc).c_str();
   //heap("");
 }
 
@@ -174,26 +174,26 @@ void processMessage(String msgIn) {
 
   if (!root.success()) {
     //if server has returned empyy response
-    if (DEBUG) SERIAL << F("parseObject() failed: ") << msgIn << endl;
+    if (DEBUG) SERIAL_PORT << F("parseObject() failed: ") << msgIn << endl;
     return;
   }
-  //SERIAL.print(root[0].is<JsonObject&>());
-  //SERIAL  << "type:" << root.get(0) << endl;
+  //SERIAL_PORT.print(root[0].is<JsonObject&>());
+  //SERIAL_PORT  << "type:" << root.get(0) << endl;
   if (root[0].is<JsonObject&>()) {
-    //SERIAL << root[0].asObject().containsKey("messages") << endl;
-    //SERIAL << root[0]["messages"].is<JsonArray&>() << endl;
-    //SERIAL << root[0]["messages"][0].is<JsonObject&>() << endl;
-    //SERIAL << root[0]["messages"][0].asObject().containsKey("color") << endl;
-    //SERIAL << " Received cmd: " << root[0]["messages"][0]["color"].asString() << endl;
+    //SERIAL_PORT << root[0].asObject().containsKey("messages") << endl;
+    //SERIAL_PORT << root[0]["messages"].is<JsonArray&>() << endl;
+    //SERIAL_PORT << root[0]["messages"][0].is<JsonObject&>() << endl;
+    //SERIAL_PORT << root[0]["messages"][0].asObject().containsKey("color") << endl;
+    //SERIAL_PORT << " Received cmd: " << root[0]["messages"][0]["color"].asString() << endl;
     if (root[0]["messages"][0]["color"].asString()) {
-      SERIAL << F("to process command") << endl;
+      SERIAL_PORT << F("to process command") << endl;
       //processCommand(root[0]["messages"][0]["color"].asString());
     } else {
-      SERIAL << F("command not recognized") << endl;
+      SERIAL_PORT << F("command not recognized") << endl;
      }
   }
 //  else {
-//    SERIAL << "no cmd" << endl;
+//    SERIAL_PORT << "no cmd" << endl;
 //  }
 
 }

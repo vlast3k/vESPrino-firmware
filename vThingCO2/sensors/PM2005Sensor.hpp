@@ -9,7 +9,7 @@ public:
   PM2005Sensor();
   void setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
-  char* getName() {
+  const char* getName() {
     return "PM2005";
   }
   // bool initSensor();

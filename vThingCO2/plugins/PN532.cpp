@@ -69,7 +69,7 @@ void    checkForNFCCart() {
         sprintf(tmp2, tmp, suid);
         strcpy(tmp, tmp2);
       }
-      SERIAL << "Sending to URL: " << tmp << endl;
+      SERIAL_PORT << "Sending to URL: " << tmp << endl;
       HTTPClient http;
       http.begin(tmp);
       //addHCPIOTHeaders(&http, token);
