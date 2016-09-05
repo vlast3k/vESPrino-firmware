@@ -20,11 +20,14 @@ void doHttpUpdate(int mode, const char *url) {
 
   SERIAL << F("Will update from: ") << url << endl;
 
+  menuHandler.handleCommand("ledcolor red");
+  menuHandler.handleCommand("ledbrg 80");
   t_httpUpdate_return ret;
   ret= ESPhttpUpdate.update(url);
 
   switch(ret) {
     case HTTP_UPDATE_FAILED:
+      SERIAL.println(ESPhttpUpdate.getLastErrorString());
       SERIAL.println(F("HTTP_UPDATE_FAILED"));
       break;
 

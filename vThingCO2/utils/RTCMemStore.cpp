@@ -69,16 +69,16 @@ uint32_t RTCMemStore::calculateCRC32(const uint8_t *data, size_t length) {
 bool RTCMemStore::readData() {
   rtcData = new RTCData();
   //RTCData2 r2;
-  Serial << "sizeof rtcdat: " <<RTCData::rtcDataSize() << endl;
+  //Serial << "sizeof rtcdat: " <<RTCData::rtcDataSize() << endl;
   if (ESP.rtcUserMemoryRead(0, (uint32_t*) rtcData, RTCData::rtcDataSize())) {
     uint32_t crcOfData = calculateCRC32(((uint8_t*) rtcData) + 4, RTCData::rtcDataSize() - 4);
     if (crcOfData != rtcData->crc32) {
-      Serial.println(F("CRC32 in RTC memory doesn't match CRC32 of data. Data is probably invalid!"));
+    //  Serial.println(F("CRC32 in RTC memory doesn't match CRC32 of data. Data is probably invalid!"));
       delete rtcData;
       rtcData = new RTCData();
       return false;
     } else {
-      Serial.println(F("CRC32 check ok, data is probably valid."));
+    //  Serial.println(F("CRC32 check ok, data is probably valid."));
       return true;
     }
   }
