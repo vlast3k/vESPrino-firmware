@@ -26,9 +26,11 @@ void TestSensor::toggleInst() {
 }
 
 void TestSensor::getData(LinkedList<Pair *> *data) {
+
   Serial << F("TestSensor::getData") << endl;
   data->add(new Pair("t_TEMP", String(F("23.4"))));
   data->add(new Pair("t_HUM", String(F("65"))));
   data->add(new Pair("t_PRES", String(F("1013"))));
   data->add(new Pair("t_ALT", String(F("560"))));
+  data->add(new Pair("t_ALIGHT", String(analogRead(A0))));
 }

@@ -57,7 +57,7 @@ void printVersion(const char* ignore) {
   #elif defined(VTHING_VESPRINO)
     SERIAL_PORT << F("vESPrino ");
   #endif
-  SERIAL_PORT << VERSION << endl;
+  SERIAL_PORT << VERSION << F(" build") << BUILD_NUM << endl;
   SERIAL_PORT << F("IP address: ") << WiFi.localIP() << endl;
 
 }
@@ -197,6 +197,7 @@ menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F(
 
   setup_IntThrHandler(&menuHandler);
   heap("At setup end");
+  menuHandler.scheduleCommand("fupd");
   //setLedColor(RgbColor(5, 0,3));
   //WiFi.begin("MarinaResidence","eeeeee");
 }

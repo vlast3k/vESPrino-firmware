@@ -9,7 +9,7 @@
 Timer *tmrSendValueTimer, *tmrRawRead;
 uint32_t intSendValue   = 120000L;
 //uint32_t intRawRead  = 15000L;
-uint32_t intRawRead  = 5000L;
+uint32_t intRawRead  = 15000L;
 void addThreshold(Thr *t) {
   thresholds.add(t);
 }
