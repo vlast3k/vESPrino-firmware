@@ -34,7 +34,8 @@ bool MenuHandler::processUserInput() {
     //Serial.flush();
     //Serial.setTimeout(5000);
     scheduleCommand(line);
-SERIAL_PORT << endl << F("OK") << endl;
+    scheduleCommand("nop");
+    SERIAL_PORT << endl << F("OK") << endl;
     return true;
   }
   SERIAL_PORT << endl << F("OK2") << endl;
@@ -68,18 +69,18 @@ void MenuHandler::loop() {
 }
 
 void MenuHandler::processCommands() {
-  bool hadCommands = false;
+  //bool hadCommands = false;
   while (pendingCommands.size() > 0) {
     String *s = pendingCommands.shift();
     handleCommand(s->c_str());
     delete s;
     delay(1);
-    hadCommands = true;
+    //hadCommands = true;
   }
-  if (hadCommands)  {
-    handleCommand("nop");
-    Serial << F("ready >");
-  }
+  // if (hadCommands)  {
+  //   handleCommand("nop");
+  //   Serial << F("ready >");
+  // }
 }
 
 void MenuHandler::handleCommand(const char *line) {

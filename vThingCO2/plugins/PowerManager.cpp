@@ -15,7 +15,7 @@ void cmdDeepSleep(const char *line) {
 }
 void PowerManagerClass::setup(MenuHandler *handler) {
   WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
-  timer = TimerManager.registerTimer(new Timer(180000L, PowerManagerClass::onTimeout, millis));
+  timer = TimerManager.registerTimer(new Timer(60000L, PowerManagerClass::onTimeout, millis));
   handler->registerCommand(new MenuEntry(F("nop"), CMD_EXACT, &PowerManagerClass::onNop, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   handler->registerCommand(new MenuEntry(F("deepsleep"), CMD_BEGIN, cmdDeepSleep, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   isLowPower = rtcMemStore.wasInDeepSleep();
