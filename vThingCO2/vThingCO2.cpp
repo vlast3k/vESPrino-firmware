@@ -113,18 +113,18 @@ void loopPlugins() {
   //Serial << F("\n--- Loop all DONE ---\n");
 }
 
-bool isDeepSleepWake() {
-  uint32_t dd;
-  ESP.rtcUserMemoryRead(0, &dd, sizeof(dd));
-//  Serial << "rtcUserMem: " << _HEX(dd) << endl;
-  if (dd == 33) {
-    return true;
-  } else {
-    dd = 33;
-    ESP.rtcUserMemoryWrite(0, &dd, sizeof(dd));
-    return false;
-  }
-}
+// bool isDeepSleepWake() {
+//   uint32_t dd;
+//   ESP.rtcUserMemoryRead(0, &dd, sizeof(dd));
+// //  Serial << "rtcUserMem: " << _HEX(dd) << endl;
+//   if (dd == 33) {
+//     return true;
+//   } else {
+//     dd = 33;
+//     ESP.rtcUserMemoryWrite(0, &dd, sizeof(dd));
+//     return false;
+//   }
+// }
 extern NeopixelVE neopixel;
 void setup() {
   SERIAL_PORT.begin(9600);
@@ -155,7 +155,7 @@ void setup() {
 //  deepSleepWake = isDeepSleepWake();
   rtcMemStore.init();
   PropertyList.begin();
-  if (rtcMemStore.getDataExisted() == false) activeWait();
+  if (rtcMemStore.wasInDeepSleep() == false) activeWait();
   MigrateSettingsIfNeeded();
   EEPROM.begin(100);
 

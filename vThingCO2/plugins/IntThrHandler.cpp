@@ -43,6 +43,7 @@ void conditionalSend(bool forceSend) {
   if (forceSend || someThresholdExceeded) {
     for (int i=0; i < destinations.size(); i++) destinations.get(i)->process(values);
     tmrSendValueTimer->Start();
+    tmrRawRead->Start();
   }
   for (int i=0; i < values.size(); i++)  delete  values.get(i);
   heap("");

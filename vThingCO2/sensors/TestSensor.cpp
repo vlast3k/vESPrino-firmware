@@ -32,5 +32,5 @@ void TestSensor::getData(LinkedList<Pair *> *data) {
   data->add(new Pair("t_HUM", String(F("65"))));
   data->add(new Pair("t_PRES", String(F("1013"))));
   data->add(new Pair("t_ALT", String(F("560"))));
-  data->add(new Pair("t_ALIGHT", String(analogRead(A0))));
+  data->add(new Pair("ALIGHT", String(analogRead(A0))));
 }

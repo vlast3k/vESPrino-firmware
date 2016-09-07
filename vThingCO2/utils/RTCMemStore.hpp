@@ -1,10 +1,11 @@
 #ifndef RTCMemStore_h
 #define RTCMemStore_h
-#include <RunningAverageSt.h> 
+#include <RunningAverageSt.h>
 struct RTCData {
   uint32_t crc32;
   uint32_t interations = 0;
   uint32_t millisStartIteration;
+  uint32_t inDeepSleep = 0;
   RunningAverageSt avg1;
   uint8_t padding[3];
   static int rtcDataSize() {
@@ -25,6 +26,11 @@ public:
   void addAverageValue(double val);
   static uint32_t getMillis();
   void addMillis(uint32_t ms);
+
+  bool wasInDeepSleep();
+  void setDeepSleep(bool state);
+
+
   static RTCData *rtcData;
   static bool dataExisted;
   static bool getDataExisted();
