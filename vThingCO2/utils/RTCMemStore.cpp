@@ -49,10 +49,15 @@ void RTCMemStore::addMillis(uint32_t ms) {
 }
 
 bool RTCMemStore::wasInDeepSleep() {
-  return rtcData->inDeepSleep == 1;
+  readData();
+  bool res = rtcData->inDeepSleep == 1;
+  updateData();
+  return res;
 }
 void RTCMemStore::setDeepSleep(bool state) {
+  readData();
   rtcData->inDeepSleep = state ? 1:0;
+  updateData();
 }
 
 uint32_t RTCMemStore::calculateCRC32(const uint8_t *data, size_t length) {

@@ -15,14 +15,13 @@ void cmdDeepSleep(const char *line) {
 }
 void PowerManagerClass::setup(MenuHandler *handler) {
   WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
-  timer = TimerManager.registerTimer(new Timer(60000L, PowerManagerClass::onTimeout, millis));
+  timer = TimerManager.registerTimer(new Timer(20000L, PowerManagerClass::onTimeout, millis));
   handler->registerCommand(new MenuEntry(F("nop"), CMD_EXACT, &PowerManagerClass::onNop, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   handler->registerCommand(new MenuEntry(F("deepsleep"), CMD_BEGIN, cmdDeepSleep, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   isLowPower = rtcMemStore.wasInDeepSleep();
   if (isLowPower) {
     Serial << F("Device will go to Deep Sleep mode, once data is sent. Press [Enter] to abort\n");
   }
-  rtcMemStore.setDeepSleep(false);
   //isLowPower = rtcMemStore.getTest();
 }
 
@@ -50,9 +49,10 @@ void PowerManagerClass::loopPowerManager() {
   //Serial.flush();
   if (isLowPower) {
     Serial << F("Going into power-safe mode for 20 seconds") << endl;
+    rtcMemStore.setDeepSleep(true);
+    Serial << "is deep sleep1: " <<rtcMemStore.wasInDeepSleep();
     Serial.flush();
     delay(100);
-    rtcMemStore.setDeepSleep(true);
     ESP.deepSleep(20L*1000*1000);
     delay(2000);
   } else {

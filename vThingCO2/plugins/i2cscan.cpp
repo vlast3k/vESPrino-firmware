@@ -70,8 +70,8 @@ bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debu
 }
 
 bool findI2C(int &sda, int &scl, bool debug) {
-  int gpios[] = {D1, D2, D5};
-  String gpios_str[] = {F("D1"), F("D2"), F("D5")};
+  int gpios[] = {D1, D5};
+  String gpios_str[] = {F("D1"), F("D5")};
   int size = sizeof(gpios) / sizeof(int);
   bool found = false;
   for (int i=0; i < size; i++) {
@@ -105,9 +105,11 @@ void cmdScanI2C(const char *ignore) {
 
 void beginI2C() {
 //  brzo_i2c_setup(D5, D1, 50000);
-  if (findI2C(i2cSDA, i2cSCL, false)) {
-    Wire.begin(i2cSDA, i2cSCL);
-  } else {
-    Serial << F("No I2C Devices found\n");
-  }
+  //Wire.begin(D5, D1);
+   if (findI2C(i2cSDA, i2cSCL, false)) {
+     Wire.begin(i2cSDA, i2cSCL);
+  //   Wire.
+   } else {
+     Serial << F("No I2C Devices found\n");
+   }
 }

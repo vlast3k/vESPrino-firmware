@@ -20,7 +20,7 @@ void CDM7160Sensor::setup(MenuHandler *handler) {
 }
 
 void CDM7160Sensor::getData(LinkedList<Pair *> *data) {
-  if (!checkI2CDevice(CDM_ADDR_WRITE)) return;
+  //if (!checkI2CDevice(CDM_ADDR_WRITE)) return;
   int ppm = readCO2AutoRecover();
   if (ppm > 0) {
     rtcMemStore.addAverageValue(ppm);

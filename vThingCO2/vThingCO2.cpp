@@ -145,8 +145,8 @@ void setup() {
   //   // strip->Show();
   //   setLedColor(RgbColor(5, 0,3));
   // #endif
-  neopixel.cmdLedHandleColorInst("ledcolor lila");
   neopixel.cmdLedSetBrgInst("ledbrg 99");
+  neopixel.cmdLedHandleColorInst("ledcolor lila");
 
   printVersion();
   SERIAL_PORT << F("ready") << endl;
@@ -155,7 +155,10 @@ void setup() {
 //  deepSleepWake = isDeepSleepWake();
   rtcMemStore.init();
   PropertyList.begin();
-  if (rtcMemStore.wasInDeepSleep() == false) activeWait();
+  if (rtcMemStore.wasInDeepSleep() == false) {
+    activeWait();
+    menuHandler.scheduleCommand("fupd");
+  }
   MigrateSettingsIfNeeded();
   EEPROM.begin(100);
 
@@ -197,7 +200,6 @@ menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F(
 
   setup_IntThrHandler(&menuHandler);
   heap("At setup end");
-  menuHandler.scheduleCommand("fupd");
   //setLedColor(RgbColor(5, 0,3));
   //WiFi.begin("MarinaResidence","eeeeee");
 }
