@@ -19,6 +19,7 @@ void PowerManagerClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("nop"), CMD_EXACT, &PowerManagerClass::onNop, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   handler->registerCommand(new MenuEntry(F("deepsleep"), CMD_BEGIN, cmdDeepSleep, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   isLowPower = rtcMemStore.wasInDeepSleep();
+  wokeFromDeepSleep = isLowPower;
   if (isLowPower) {
     Serial << F("Device will go to Deep Sleep mode, once data is sent. Press [Enter] to abort\n");
   }
@@ -58,4 +59,8 @@ void PowerManagerClass::loopPowerManager() {
   } else {
     delay(1);
   }
+}
+
+bool PowerManagerClass::isWokeFromDeepSleep() {
+  return wokeFromDeepSleep;
 }

@@ -7,11 +7,10 @@
 #include "interfaces\Plugin.hpp"
 #include "MenuHandler.hpp"
 
-class PropertyListClass : public Plugin {
+class PropertyListClass {
 public:
   PropertyListClass();
-  void setup(MenuHandler *handler);
-  void begin();
+  void begin(MenuHandler *handler);
   void putProperty(const __FlashStringHelper *key, const char *value);
   void putProperty(const char *key, const char *value);
   char *readProperty(const __FlashStringHelper *key);
@@ -34,6 +33,7 @@ public:
 
 
 private:
+  void setupPropList(MenuHandler *handler);
   void finalizeChangeFile(File &in, File &out);
   void loop() {};
   static void prop_list_cfg(const char *line);

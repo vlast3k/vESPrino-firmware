@@ -1,12 +1,12 @@
 #ifndef PowerManager_h
 #define PowerManager_h
 
-#include "interfaces\Plugin.hpp"
+
 #include "MenuHandler.hpp"
 #include <Timer.h>
 
 
-class PowerManagerClass : public Plugin {
+class PowerManagerClass  {
 public:
   PowerManagerClass() {
     isLowPower = false;
@@ -17,6 +17,7 @@ public:
   static void onNop(const char* ignore);
   void onTimeoutInst();
   void onNopInst();
+  bool isWokeFromDeepSleep();
   const char* getName() {
     return "PowerManager";
   }
@@ -25,6 +26,7 @@ public:
 private:
   Timer *timer;
   bool isLowPower;
+  bool wokeFromDeepSleep;
 
 };
 
