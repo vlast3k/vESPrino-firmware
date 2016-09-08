@@ -69,18 +69,18 @@ void MenuHandler::loop() {
 }
 
 void MenuHandler::processCommands() {
-  //bool hadCommands = false;
+  bool hadCommands = false;
   while (pendingCommands.size() > 0) {
     String *s = pendingCommands.shift();
     handleCommand(s->c_str());
     delete s;
     delay(1);
-    //hadCommands = true;
+    hadCommands = true;
   }
-  // if (hadCommands)  {
+   if (hadCommands)  {
   //   handleCommand("nop");
-  //   Serial << F("ready >");
-  // }
+     Serial << F("ready >");
+   }
 }
 
 void MenuHandler::handleCommand(const char *line) {

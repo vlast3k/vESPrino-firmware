@@ -27,7 +27,7 @@ void MQTTDest::cmdMqttSetup(const char *p) {
   p = extractStringFromQuotes(p, mqttClient, sizeof(mqttClient));
   p = extractStringFromQuotes(p, mqttUser,   sizeof(mqttUser));
   p = extractStringFromQuotes(p, mqttPass,   sizeof(mqttPass));
-  p = extractStringFromQuotes(p, mqttTopic,  sizeof(mqttTopic));
+//  p = extractStringFromQuotes(p, mqttTopic,  sizeof(mqttTopic));
   Serial << "Gere" << endl;
   delay(100);
   if (mqttClient[0] == 0) strcpy(mqttTopic, "vThing");
@@ -44,11 +44,11 @@ void MQTTDest::cmdMqttSetup(const char *p) {
   PropertyList.putProperty(EE_MQTT_CLIENT, mqttClient);
   PropertyList.putProperty(EE_MQTT_USER, mqttUser);
   PropertyList.putProperty(EE_MQTT_PASS, mqttPass);
-  PropertyList.putProperty(EE_MQTT_TOPIC, mqttTopic);
+//  PropertyList.putProperty(EE_MQTT_TOPIC, mqttTopic);
 
   EEPROM.commit();
   SERIAL_PORT << F("MQTT Configuration Stored") << endl;
-  SERIAL_PORT << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << "," << mqttTopic << endl;
+  SERIAL_PORT << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << endl;
   SERIAL_PORT << F("DONE") << endl;
 #ifdef VTHING_H801_LED
   h801_mqtt_connect();
@@ -82,13 +82,17 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
     mqttEnd(false);
     return;
   }
-  String mqttTopic  = PropertyList.readProperty(EE_MQTT_TOPIC);
+  String mqttTopic;//  = PropertyList.readProperty(EE_MQTT_TOPIC);
   do {
     String s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), i++);
     if (!s.length()) return;
-    replaceValuesInURL(data, s);
     if (waitForWifi(1000) != WL_CONNECTED) return;
-    Serial << F("Mqtt Dest: sending: ") << s << endl;
+    replaceValuesInURL(data, s);
+    if (s.indexOf(':') > -1) {
+      mqttTopic = s.substring(0,s.indexOf(':'));
+      s = s.substring(s.indexOf(':') + 1);
+    }
+    Serial << F("Mqtt Dest: sending: to topic:") << mqttTopic << ", msg: " << s << endl;
     if(!client->publish(mqttTopic.c_str(), s.c_str())) {
       mqttEnd(false);
       return;
@@ -111,6 +115,7 @@ bool MQTTDest::mqttStart() {
   mqttUser   = PropertyList.readProperty(EE_MQTT_USER);
   mqttPass   = PropertyList.readProperty(EE_MQTT_PASS);
   if (!mqttServer.length()) return false;
+  if (!mqttClient.length()) mqttClient = "vESPrino";
   // SERIAL_PORT << "Sending via MQTT: ";
   // delay(150);
   // SERIAL_PORT << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
