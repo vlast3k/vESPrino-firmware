@@ -7,12 +7,12 @@
 
 PropertyListClass::PropertyListClass() {
   Serial <<"Create Property List";
-  registerPlugin(this);
+  //registerPlugin(this);
   configFileName = F("/vs_cfg.txt");
   tempFileName = F("/vs_cfg.tmp");
 }
 
-void PropertyListClass::setup(MenuHandler *handler) {
+void PropertyListClass::setupPropList(MenuHandler *handler) {
   Serial <<"PropList, register commands\n";
   handler->registerCommand(new MenuEntry(F("prop_list"), CMD_EXACT, &PropertyListClass::prop_list_cfg, F("prop_list")));
   handler->registerCommand(new MenuEntry(F("prop_set"), CMD_BEGIN, &PropertyListClass::prop_set, F("prop_set \"key\" \"value\"")));
@@ -44,7 +44,8 @@ void PropertyListClass::prop_set(const char *line) {
   PropertyList.putProperty(key, value);
 }
 
-void PropertyListClass::begin() {
+void PropertyListClass::begin(MenuHandler *handler) {
+  setupPropList(handler);
   bool res =  SPIFFS.begin();
   //Serial <<"SPFFS begin = " << res << endl;
   if (!res) {

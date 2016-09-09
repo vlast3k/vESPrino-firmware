@@ -90,7 +90,7 @@ void setupPlugins(MenuHandler *handler) {
     Serial << F("Setup Destination: ") << destinations.get(i)->getName() << endl;
     destinations.get(i)->setup(handler);
   }
-  Serial << F("\n--- Setup DONE ---\n");
+//  Serial << F("\n--- Setup DONE ---\n");
 
 }
 
@@ -145,37 +145,43 @@ void setup() {
   //   // strip->Show();
   //   setLedColor(RgbColor(5, 0,3));
   // #endif
-  neopixel.cmdLedSetBrgInst("ledbrg 99");
-  neopixel.cmdLedHandleColorInst("ledcolor lila");
+
 
   printVersion();
-  SERIAL_PORT << F("ready") << endl;
+  menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
+
+  SERIAL_PORT << F("ready >") << endl;
   SERIAL_PORT << F("Waiting for auto-connect") << endl;
 
 //  deepSleepWake = isDeepSleepWake();
   rtcMemStore.init();
-  PropertyList.begin();
-  if (rtcMemStore.wasInDeepSleep() == false) {
+  PropertyList.begin(&menuHandler);
+  PowerManager.setup(&menuHandler);
+  if (PowerManager.isWokeFromDeepSleep() == false) {
     activeWait();
     menuHandler.scheduleCommand("fupd");
+    neopixel.cmdLedSetBrgInst("ledbrg 99");
+    neopixel.cmdLedHandleColorInst("ledcolor lila");
+  } else {
+    neopixel.cmdLedHandleColorInst("ledcolor black");
   }
   MigrateSettingsIfNeeded();
   EEPROM.begin(100);
 
 
-  #ifdef VTHING_STARTER
-    //initVThingStarter();
-  #elif defined(VTHING_CO2)
-    //initCO2Handler();
-  #elif defined(VTHING_H801_LED)
-    h801_setup();
-  #endif
+  // #ifdef VTHING_STARTER
+  //   //initVThingStarter();
+  // #elif defined(VTHING_CO2)
+  //   //initCO2Handler();
+  // #elif defined(VTHING_H801_LED)
+  // //  h801_setup();
+  // #endif
 
   //initCO2Handler();
   //registerDestination(&customHTTPDest);
 
   registerPlugin(&TimerManager);
-  registerPlugin(&PowerManager);
+  //registerPlugin(&PowerManager);
   setupPlugins(&menuHandler);
 
   CommonCommands commCmd;
@@ -196,7 +202,6 @@ void setup() {
 #ifdef VTHING_VESPRINO
   VESP_registerCommands(&menuHandler);
 #endif
-menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
 
   setup_IntThrHandler(&menuHandler);
   heap("At setup end");
