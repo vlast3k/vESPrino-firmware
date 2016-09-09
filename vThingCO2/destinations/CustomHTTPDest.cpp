@@ -60,10 +60,12 @@ void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
 
 void CustomHTTPDest::invokeURL(String &url) {
   if (waitForWifi(1000) != WL_CONNECTED) return;
-  Serial << F("CustomHTTPDest::invoke = ") << url << endl;
+  String x = url;
+  if (url.startsWith("#")) x = url.substring(1);
+  Serial << F("CustomHTTPDest::invoke = ") << x << endl;
 //  waitForWifi(1000);
   HTTPClient http;
-  http.begin(url);
+  http.begin(x);
   //addHCPIOTHeaders(&http, token);
   int rc = AT_FW_Plugin::processResponseCodeATFW(&http, http.GET());
 }

@@ -32,7 +32,7 @@ wl_status_t waitForWifi(uint16_t timeoutMs) {
     if (WiFi.status() == WL_CONNECTED) break;
     delay(delayFix);
     handleWifi();
-    menuHandler.processUserInput();
+    menuHandler.loop();
     if ((i%10) == 0) {
       SERIAL_PORT << '.';
       putLF = true;

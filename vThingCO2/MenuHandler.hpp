@@ -26,12 +26,11 @@ class MenuHandler {
     void loop();
     void registerCommand(MenuEntry *command);
     void listCommands();
-    bool processUserInput();
     void scheduleCommand(const char *cmd);
     void handleCommand(const char *line);
 
   private:
-
+    bool processUserInput();
     static void cmdHelp(const char *ignore);
     void processCommands();
 
