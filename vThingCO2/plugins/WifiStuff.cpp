@@ -9,7 +9,7 @@ ESP8266WiFiMulti  *wifiMulti = NULL;
 IPAddress ip = WiFi.localIP();
 
 void handleWifi() {
-  if (millis() > 8000 && WiFi.status() != WL_CONNECTED) wifiMulti->run();
+  if (millis() > 8000) wifiMulti->run();
   //SERIAL_PORT << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
   if (ip == WiFi.localIP()) return;
   else if (WiFi.status() == WL_CONNECTED) {

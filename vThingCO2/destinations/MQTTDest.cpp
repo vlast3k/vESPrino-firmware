@@ -85,8 +85,8 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
   String mqttTopic;//  = PropertyList.readProperty(EE_MQTT_TOPIC);
   do {
     String s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), i++);
-    if (!s.length()) return;
-    if (waitForWifi(1000) != WL_CONNECTED) return;
+    if (!s.length()) break;
+    if (waitForWifi(1000) != WL_CONNECTED) break;
     replaceValuesInURL(data, s);
     if (s.indexOf(':') > -1) {
       mqttTopic = s.substring(0,s.indexOf(':'));

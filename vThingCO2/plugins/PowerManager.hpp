@@ -23,6 +23,7 @@ public:
   const static uint8_t IterationDurationS = 15;
   void static cmdDeepSleep(const char *line) ;
   void cmdDeepSleepInst(const char *line) ;
+  bool isWokeFromDeepSleep();
   bool isLowPower;
 private:
   Timer *timer;
