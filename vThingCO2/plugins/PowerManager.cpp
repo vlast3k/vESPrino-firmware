@@ -4,12 +4,16 @@
 #include "common.hpp"
 #include <Timer.h>
 
-void cmdDeepSleep(const char *line) {
+void PowerManagerClass::cmdDeepSleep(const char *line) {
+  PowerManager.cmdDeepSleepInst(line);
+}
+void PowerManagerClass::cmdDeepSleepInst(const char *line) {
   int type = atoi(strchr(line, ' ') + 1);
   Serial << "set deepsleep mode:" << type<< endl;
   switch (type) {
-    case 0: ESP.deepSleep(1, WAKE_RF_DISABLED);
-    case 1: ESP.deepSleep(1, WAKE_RF_DEFAULT);
+    case 0: ESP.deepSleep(1, WAKE_RF_DISABLED); break;
+    case 1: ESP.deepSleep(1, WAKE_RF_DEFAULT); break;
+    case 2: isLowPower = true; break;
   }
   delay(1000);
 }
@@ -17,7 +21,7 @@ void PowerManagerClass::setup(MenuHandler *handler) {
   WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
   timer = TimerManager.registerTimer(new Timer(180000L, PowerManagerClass::onTimeout, millis));
   handler->registerCommand(new MenuEntry(F("nop"), CMD_EXACT, &PowerManagerClass::onNop, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
-  handler->registerCommand(new MenuEntry(F("deepsleep"), CMD_BEGIN, cmdDeepSleep, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
+  handler->registerCommand(new MenuEntry(F("deepsleep"), CMD_BEGIN, PowerManagerClass::cmdDeepSleep, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   isLowPower = rtcMemStore.wasInDeepSleep();
   if (isLowPower) {
     Serial << F("Device will go to Deep Sleep mode, once data is sent. Press [Enter] to abort\n");
@@ -53,6 +57,7 @@ void PowerManagerClass::loopPowerManager() {
     Serial << "is deep sleep1: " <<rtcMemStore.wasInDeepSleep();
     Serial.flush();
     delay(100);
+    //ESP.deepSleep(20L*1000*1000);
     ESP.deepSleep(20L*1000*1000);
     delay(2000);
   } else {
