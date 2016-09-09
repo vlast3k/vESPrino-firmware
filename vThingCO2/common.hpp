@@ -59,11 +59,11 @@ extern "C" {
 #define EE_MQTT_USER    F("mqtt.user")
 #define EE_MQTT_PASS    F("mqtt.pass")
 #define EE_MQTT_TOPIC   F("mqtt.topic")
-#define EE_MQTT_VALUE   F("mqtt.valie")
+#define EE_MQTT_VALUE   F("mqtt.value")
 #define EE_RESET_CO2_1B 1
 
 
-#define PROP_SND_INT      F("cubic.co2.interval")
+#define PROP_SND_INT      F("send.interval")
 #define PROP_SND_THR      F("cubic.co2.threshold")
 #define PROP_H801_API_KEY F("h801.api_key")
 // #define EE_WIFI_SSID_30B 0
