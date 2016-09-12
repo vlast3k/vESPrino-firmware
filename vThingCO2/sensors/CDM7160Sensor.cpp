@@ -10,16 +10,19 @@ CDM7160Sensor::CDM7160Sensor() {
 }
 
 void CDM7160Sensor::setup(MenuHandler *handler) {
-  handler->registerCommand(new MenuEntry(F("cdmloop"), CMD_BEGIN, &CDM7160Sensor::onCmdLoop, F("cdmtest b - b for debug - test CDM7160 sensor")));
-  handler->registerCommand(new MenuEntry(F("cdmtest"), CMD_BEGIN, &CDM7160Sensor::onCmdTest, F("cdmtest b - b for debug - test CDM7160 sensor")));
+  handler->registerCommand(new MenuEntry(F("cdmloop"), CMD_BEGIN, &CDM7160Sensor::onCmdLoop, F("cdmtest b - b for DEBUG - test CDM7160 sensor")));
+  handler->registerCommand(new MenuEntry(F("cdmtest"), CMD_BEGIN, &CDM7160Sensor::onCmdTest, F("cdmtest b - b for DEBUG - test CDM7160 sensor")));
   handler->registerCommand(new MenuEntry(F("cdmreg"), CMD_BEGIN, &CDM7160Sensor::onChangeReg, F("cdmreg \"regid\" \"value\"")));
   if (checkI2CDevice(CDM_ADDR_WRITE)) {
-    Serial << "Found CDM7160 - CO2 Sensor" << endl;
+    Serial << "Found" << endl;
     configureSensor();
+    hasSensor = true;
   }
 }
 
 void CDM7160Sensor::getData(LinkedList<Pair *> *data) {
+  if (!hasSensor) return;
+
   //if (!checkI2CDevice(CDM_ADDR_WRITE)) return;
   int ppm = readCO2AutoRecover();
   if (ppm > 0) {
@@ -31,7 +34,7 @@ void CDM7160Sensor::getData(LinkedList<Pair *> *data) {
 int CDM7160Sensor::readCO2AutoRecover() {
   int ppm=0;
   for (int i=0; i < 2; i++) {
-    int a = readCO2Raw(true);
+    int a = readCO2Raw();
     Serial <<"Raw CO2: " << a << endl;
     if (a > 0) return a;
     else if (a == -1) { //maybe some temprary error, retry once more before reseting bus
@@ -62,7 +65,7 @@ void CDM7160Sensor::onCmdLoop(const char *ignore) {
   Serial << "Avg count: " << readI2CByte(7) << endl;
   int last = 0;
   for (int i=0; i < 50; i++) {
-    int co2 = readCO2Raw(true);
+    int co2 = readCO2Raw();
     Serial.printf("%2d: %d (%d)\n", i, co2, co2-last);
     last = co2;
     delay(3000);
@@ -114,30 +117,30 @@ void CDM7160Sensor::onChangeReg(const char *line) {
   onCmdTest("");
 }
 
-int CDM7160Sensor::readCO2Raw(bool debug) {
+int CDM7160Sensor::readCO2Raw() {
   uint8_t buf[5];
   if (Wire.status() != I2C_OK) {
-    if (debug) Serial << F("I2C Bus status: ") << Wire.status() << endl;
+    if (DEBUG) Serial << F("I2C Bus status: ") << Wire.status() << endl;
     return -1;
   }
-  for (int i=0; i < 5; i++) {
+  for (int i=0; i < 3; i++) {
     if (!readI2CBytes(0, buf, sizeof(buf))) {
-      if (debug) Serial << F("Could not connect to Sensor") << endl;
+      if (DEBUG) Serial << F("Could not connect to Sensor") << endl;
       return -1;
     }
     if (buf[0] == (uint8_t) 0xFF) {
-      if (debug) Serial << F("I2C Bus failed") << endl;
+      if (DEBUG) Serial << F("I2C Bus failed") << endl;
       return -1;
     }
     if ((buf[2] & 0x80) > 0) {
-      if (debug) Serial << F("Sensor busy") << endl;
+      if (DEBUG) Serial << F("Sensor busy") << endl;
       delay(300);
       continue;
     }
     int ppm = (int)buf[4]*0xFF + buf[3];
 
     if ((buf[2] & 0x10) == 0) {
-      if (debug) Serial << F("Averaging not yet completed: ") << ppm  << endl;
+      if (DEBUG) Serial << F("Averaging not yet completed: ") << ppm  << endl;
       //delay(500);
       //continue;
       return -2;
@@ -203,78 +206,3 @@ void CDM7160Sensor::writeByte(uint8_t reg, uint8_t value) {
   delay(100);
   Serial << "End trans : " << r << endl;
 }
-
-// void CDM7160Sensor::startChangeMode() {
-//   writeCfg(0x01, 0x2, false);
-// }
-// void CDM7160Sensor::endChangeMode() {
-//   writeCfg(0x01, 0x2, true);
-// }
-// void CDM7160Sensor::writeCfg(uint8_t reg, uint8_t bit, bool value) {
-//   uint8_t currentValue = readI2CByte(reg);
-//   delay(100);
-//   Serial << "Change reg: " << reg << ", old value: " << _BIN(currentValue) << endl;
-//   if (value) {
-//     currentValue = currentValue | bit;
-//   } else {
-//     //bit ^= 0xFF;
-//     currentValue = currentValue & (~bit);
-//   }
-//   Serial << "Change reg: " << reg << ", will set : " << _BIN(currentValue) << endl;
-//
-//   writeByte(reg, currentValue);
-//   delay(100);
-//   currentValue = readI2CByte(reg);
-//   Serial << "Change reg: " << reg << ", currentue: " << _BIN(currentValue) << endl;
-//   delay(100);
-// }
-//
-//
-//
-//
-
-//
-//   for (int h = 0; h < 8; h++) {
-//     byte addr = 0x69;
-//     //Wire.begin(D7, D5);
-//     //Wire.begin(D5, D7);
-//     Wire.beginTransmission(addr);
-//     Wire.write(0x1);
-//     int r = Wire.endTransmission(false);
-//
-//     if (debug) { Serial << F("End trans: ") << r << endl; }
-//
-//     if (r != 0) { delay(10);continue;}
-//     delay(10); // without this there is no data read
-//     //int r = Wire.requestFrom(addr, (byte)5);
-//     Wire.requestFrom((uint8_t)addr, (size_t)4, (bool)false);
-//     byte data[22];
-//     for (int i=0; i < 50 && !Wire.available(); i++) {
-//       delay(100);
-//       if (debug) Serial << ".";
-//     }
-//     //delay(100);
-//     if (debug) Serial << F("available = ") << Wire.available()<< endl;
-//
-//     for (int i=0; i < 4; i++) {
-//       //Wire.requestFrom((uint8_t)addr, (size_t)1, (bool)false);
-//       data[i] = Wire.read();
-//       if (debug) Serial << _HEX(data[i]) << F(",");
-//       delay(5);
-//     }
-// //    Wire.endTransmission(true);
-//     if (data[1] == 0xFF || (data[1]&0x80) > 0) {
-//       if (debug) Serial << F("Sensor busy") << endl;
-//       delay(500);
-//       continue;
-//     }
-//     int ppm = (int)data[3]*0xFF + data[2];
-//     if (debug) {
-//       Serial << F("is busy   : ") << (data[1]&0x80) << endl;
-//       Serial << F("av wokring: ") << (data[1]&0x10) << endl;
-//       Serial << ppm << F(" ppm") << endl;
-//     }
-//     return ppm;
-//   }
-//   return -1;
-// }

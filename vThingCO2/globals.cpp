@@ -37,7 +37,7 @@ LinkedList<Plugin *> plugins = LinkedList<Plugin *>();
 LinkedList<Sensor *> sensors = LinkedList<Sensor *>();
 LinkedList<Destination *> destinations = LinkedList<Destination *>();
 LinkedList<Thr *> thresholds = LinkedList<Thr *>();
-LinkedList<Timer *> timers = LinkedList<Timer *>();
+//LinkedList<Timer *> timers = LinkedList<Timer *>();
 
 CustomHTTPDest customHTTPDest;
 SerialDumpDest serialDumpDest;

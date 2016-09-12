@@ -35,7 +35,8 @@ bool checkThresholds(LinkedList<Pair *> &values) {
 }
 
 void conditionalSend(bool forceSend) {
-  Serial << "\n--- DestHanlder: sendValue ---, forceSend:" << forceSend << endl;
+  Serial << F("\n--- DestHanlder: sendValue ---") << endl;
+  if (DEBUG) Serial << F("forceSend:") << forceSend << endl;
   LinkedList<Pair *> values = LinkedList<Pair* >();
   for (int i=0; i < sensors.size(); i++)  sensors.get(i)->getData(&values);
 
@@ -46,7 +47,7 @@ void conditionalSend(bool forceSend) {
     tmrRawRead->Start();
   }
   for (int i=0; i < values.size(); i++)  delete  values.get(i);
-  heap("");
+  if (DEBUG) heap("");
 }
 
 void on_SendValue() {

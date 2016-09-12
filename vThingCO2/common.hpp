@@ -66,6 +66,7 @@ extern "C" {
 #define PROP_SND_INT      F("send.interval")
 #define PROP_SND_THR      F("cubic.co2.threshold")
 #define PROP_H801_API_KEY F("h801.api_key")
+#define PROP_DEBUG        F("debug")
 // #define EE_WIFI_SSID_30B 0
 // #define EE_WIFI_P1_30B 30
 // #define EE_WIFI_P2_30B 60
@@ -221,7 +222,7 @@ extern LinkedList<Plugin *> plugins;
 extern LinkedList<Sensor *> sensors;
 extern LinkedList<Destination *> destinations;
 extern LinkedList<Thr *> thresholds;
-extern LinkedList<Timer *> timers ;
+//extern LinkedList<Timer *> timers ;
 extern char commonBuffer200[200];
 extern CustomHTTPDest customHTTPDest;
 extern SerialDumpDest serialDumpDest;

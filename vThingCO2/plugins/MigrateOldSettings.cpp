@@ -39,6 +39,7 @@ void _migrateJsonSetting(const __FlashStringHelper *keyJson, const __FlashString
 
 void MigrateSettingsIfNeeded() {
   if (PropertyList.readBoolProperty(F("isMigrated"))) return;
+  Serial << F("Migrating Settings") << endl;
   EEPROM.end();
   EEPROM.begin(3000);
   _migrateEESetting(EE_WIFI_SSID_30B, EE_WIFI_SSID);

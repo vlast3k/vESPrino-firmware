@@ -127,13 +127,13 @@ void loopPlugins() {
 // }
 extern NeopixelVE neopixel;
 void setup() {
+  // pinMode(D8, OUTPUT);    //enable power via D8
+  // digitalWrite(D8, HIGH);
+  // //delay(1000);
   SERIAL_PORT.begin(9600);
   //Wire.begin(D6, D5);
   wifiConnectMulti();
   heap("Heap at start");
-  //pinMode(D8, OUTPUT);    //enable power via D8
-  //digitalWrite(D8, HIGH);
-  //delay(1000);
   beginI2C();
   //Wire.begin(D1, D6);
   //WiFi.begin();
@@ -157,12 +157,17 @@ void setup() {
   rtcMemStore.init();
   PropertyList.begin(&menuHandler);
   PowerManager.setup(&menuHandler);
+
+  DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
+  Serial << "DEBUG is: " << DEBUG;
+
   if (PowerManager.isWokeFromDeepSleep() == false) {
     activeWait();
     menuHandler.scheduleCommand("fupd");
     neopixel.cmdLedSetBrgInst("ledbrg 99");
     neopixel.cmdLedHandleColorInst("ledcolor lila");
   } else {
+    neopixel.cmdLedSetBrgInst("ledbrg 99");
     neopixel.cmdLedHandleColorInst("ledcolor black");
   }
   MigrateSettingsIfNeeded();

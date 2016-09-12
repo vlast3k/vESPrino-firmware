@@ -21,7 +21,7 @@ private:
   static void onChangeReg(const char *ignore);
   static void onCmdLoop(const char *ignore);
 
-  static int readCO2Raw(bool debug);
+  static int readCO2Raw();
   static int readCO2AutoRecover();
   static uint8_t readI2CByte(int addr);
   static void writeCfg(uint8_t reg, uint8_t bit, bool value);

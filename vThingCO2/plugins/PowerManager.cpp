@@ -19,8 +19,9 @@ void PowerManagerClass::cmdDeepSleepInst(const char *line) {
 }
 void PowerManagerClass::setup(MenuHandler *handler) {
   WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
-  timer = TimerManager.registerTimer(new Timer(180000L, PowerManagerClass::onTimeout, millis));
-  handler->registerCommand(new MenuEntry(F("nop"), CMD_EXACT, &PowerManagerClass::onNop, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
+  timeoutIntervalS = 180;
+  timer = TimerManager.registerTimer(new Timer(1000L * timeoutIntervalS, PowerManagerClass::onTimeout, millis));
+  handler->registerCommand(new MenuEntry(F("nop"), CMD_BEGIN, &PowerManagerClass::onNop, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   handler->registerCommand(new MenuEntry(F("deepsleep"), CMD_BEGIN, PowerManagerClass::cmdDeepSleep, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   isLowPower = rtcMemStore.wasInDeepSleep();
   wokeFromDeepSleep = isLowPower;
@@ -40,12 +41,22 @@ void PowerManagerClass::onTimeoutInst() {
   Serial << F("Switched to power-safe mode. Press key during start or restart device to exit.") << endl;
 }
 
-void PowerManagerClass::onNop(const char *ignore) {
-  PowerManager.onNopInst();
+void PowerManagerClass::onNop(const char *line) {
+  PowerManager.onNopInst(line);
 }
 
-void PowerManagerClass::onNopInst() {
-  timer->Start();
+void PowerManagerClass::onNopInst(const char *line) {
+  int t = timeoutIntervalS;
+  if (strchr(line, ' '))  t = atoi(strchr(line, ' ') + 1);
+  if (DEBUG) Serial << F("PowerManager timeout: ") << t << endl;
+  timeoutIntervalS = t;
+  if (t == 0) {
+    timer->Stop();
+    if (DEBUG) Serial << F("PowerManager disabled")<< endl;
+  } else {
+    timer->setInterval(1000L*t);
+    timer->Start();
+  }
   isLowPower = false;
 }
 

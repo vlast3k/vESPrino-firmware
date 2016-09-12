@@ -9,7 +9,7 @@ class CommonCommands {
 public:
   void registerCommands(MenuHandler *handler);
   static void cmdHeap(const char* line);
-  static void cmdDebug(const char* line) { DEBUG = true; }
+  static void cmdDebug(const char* line);
   static void dumpCfg(const char* line);
   static void factoryReset(const char *ignore);
 

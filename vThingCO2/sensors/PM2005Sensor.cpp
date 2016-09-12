@@ -12,6 +12,7 @@ void PM2005Sensor::setup(MenuHandler *handler) {
 //  handler->registerCommand(new MenuEntry(F("pm2005Init"), CMD_EXACT, &PM2005Sensor::onCmdInit, F("")));
   if (checkI2CDevice(0x28)) {
     Serial << F("Found PM2005 - Dust / Particle Sensor");
+    hasSensor = true;
   }
 }
 
@@ -20,6 +21,7 @@ void PM2005Sensor::setup(MenuHandler *handler) {
 // }
 
 void PM2005Sensor::getData(LinkedList<Pair *> *data) {
+  if (!hasSensor) return;
   //Serial << "PM2005 get Data" << endl;
   //delay(100);
   int pm25, pm10;

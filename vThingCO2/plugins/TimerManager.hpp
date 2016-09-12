@@ -5,11 +5,13 @@
 #include <LinkedList.h>
 #include <Timer.h>
 
+#define TMR_START 1
+#define TMR_STOPPED 0
 class TimerManagerClass : public Plugin {
 public:
-  Timer *registerTimer(Timer *t) {
+  Timer *registerTimer(Timer *t, int mode = TMR_START) {
     timers.add(t);
-    t->Start();
+    if (mode == TMR_START) t->Start();
     return t;
   };
   void loop() {

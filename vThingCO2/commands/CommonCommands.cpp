@@ -7,12 +7,18 @@
 
 
 void CommonCommands::cmdHeap(const char *s) {
-    Serial << "Heap: " << ESP.getFreeHeap() << endl;
+    Serial << F("Heap: ") << ESP.getFreeHeap() << endl;
+}
+
+void CommonCommands::cmdDebug(const char *s) {
+  DEBUG = !DEBUG;
+  PropertyList.putProperty(PROP_DEBUG, DEBUG ? "1" : "0");
+  Serial << F("Debug is now: ") << (DEBUG ? F("ENABLED") : F("DISABLED")) << endl;
 }
 
 void CommonCommands::dumpCfg(const char *s) {
   for (int i=0; i < 30; i++) {
-    SERIAL_PORT << i << " : " ;
+    SERIAL_PORT << i << F(" : ");
     for (int j=0; j < 100; j++) {
       byte b = EEPROM.read(i*100 + j);
       if (b == 0) b = '?';
@@ -38,7 +44,7 @@ void espRestart(const char* ignore) {
 }
 
 void stopActiveExecution(const char *ignore) {
-  SERIAL_PORT << "STOP Active execution\n";
+  SERIAL_PORT << F("STOP Active execution\n");
   SKIP_LOOP = true;
 }
 
@@ -90,7 +96,7 @@ void CommonCommands::registerCommands(MenuHandler *handler) {
   // handler->registerCommand(new MenuEntry(F("jscfg"), CMD_EXACT, printJSONConfig, F("")));
   // handler->registerCommand(new MenuEntry(F("jjj"), CMD_EXACT, testJSON, F("")));
   handler->registerCommand(new MenuEntry(F("sss"), CMD_EXACT, stopActiveExecution, F("")));
-  handler->registerCommand(new MenuEntry(F("tms"), CMD_EXACT, cmdTestMemStore, F("")));
+  //handler->registerCommand(new MenuEntry(F("tms"), CMD_EXACT, cmdTestMemStore, F("")));
   handler->registerCommand(new MenuEntry(F("sertest"), CMD_BEGIN, cmdSerTest, F("")));
 
 }

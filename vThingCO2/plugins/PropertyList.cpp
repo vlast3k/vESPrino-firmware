@@ -131,7 +131,8 @@ char *PropertyListClass::readProperty(const char *key) {
 }
 
 bool PropertyListClass::readBoolProperty(const __FlashStringHelper *key) {
-  return readProperty(key)[0] != 0;
+  char ch = readProperty(key)[0];
+  return !(ch == 0 || ch == '0' || ch == 'f')  ;
 }
 
 bool PropertyListClass::hasProperty(const __FlashStringHelper *key) {

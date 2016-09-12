@@ -14,9 +14,9 @@ public:
   void setup(MenuHandler *handler);
   void loopPowerManager();
   static void onTimeout();
-  static void onNop(const char* ignore);
+  static void onNop(const char* line);
   void onTimeoutInst();
-  void onNopInst();
+  void onNopInst(const char* line);
   const char* getName() {
     return "PowerManager";
   }
@@ -28,6 +28,7 @@ public:
 private:
   Timer *timer;
   bool wokeFromDeepSleep;
+  uint8_t timeoutIntervalS;
 
 
 };

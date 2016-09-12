@@ -5,9 +5,12 @@
 #include  <brzo_i2c.h>
 
 bool checkI2CDevice(int addr) {
-  Wire.beginTransmission(addr);
-  int res = Wire.endTransmission();
-  return !res;
+  for (int i=0; i < 4; i++) {
+    Wire.beginTransmission(addr);
+    if (Wire.endTransmission() == 0) return true;
+    delay(10);
+  }
+  return false;
 }
 
 bool checkI2CDevice(int sda, int sca, int addr) {

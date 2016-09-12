@@ -21,10 +21,14 @@ CO2Sensor::CO2Sensor() :
 
 
 void CO2Sensor::setup(MenuHandler *handler) {
-  cubicCo2.init();
+  pinMode(D8, OUTPUT);    //enable power via D8
+  digitalWrite(D8, HIGH);
+  delay(1000);
+  if (!cubicCo2.init(DEBUG)) return;
+  hasSensor = true;
 
   tmrStopLED = new Timer(30000L, CO2Sensor::onStopLED_static, true);
-  timers.add(tmrStopLED);
+  TimerManager.registerTimer(tmrStopLED, TMR_STOPPED);
 
   thresholds.add(&co2Threshold);
 
@@ -32,6 +36,7 @@ void CO2Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("rco"), CMD_EXACT, CO2Sensor::resetCO2_static, F("")));
 
   SERIAL_PORT << F("CO2 now: ") << cubicCo2.rawReadCM1106_CO2() << endl;
+  menuHandler.scheduleCommand("nop 0");
 }
 
 const char* CO2Sensor::getSensorId() {
@@ -51,6 +56,7 @@ float CO2Sensor::getValue() {
 }
 
 void CO2Sensor::getData(LinkedList<Pair*> *data) {
+  if (!hasSensor) return;
 //  Pair *p = new Pair(getSensorId(), String(getValue()));
   //p->key = getSensorId();
   //p->value = String(getValue());
@@ -63,6 +69,7 @@ void CO2Sensor::onStopLED_static() {
 }
 
 void CO2Sensor::onStopLED() {
+  menuHandler.scheduleCommand("ledbrg 98");
   menuHandler.scheduleCommand("ledcolor black");
     // strip->SetPixelColor(0, RgbColor(0, 0,0));
     // strip->Show();
