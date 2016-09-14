@@ -16,7 +16,7 @@ CO2Sensor::CO2Sensor() :
     cubicCo2(&CO2Sensor::onCo2Status_static, EE_RESET_CO2_1B),
     startedCO2Monitoring(false)
 {
-   registerSensor(this);
+  // registerSensor(this);
 }
 
 
@@ -24,7 +24,8 @@ void CO2Sensor::setup(MenuHandler *handler) {
   pinMode(D8, OUTPUT);    //enable power via D8
   digitalWrite(D8, HIGH);
   delay(1000);
-  if (!cubicCo2.init(DEBUG)) return;
+//  if (!cubicCo2.init(DEBUG)) return;
+  cubicCo2.init();// return;
   hasSensor = true;
 
   tmrStopLED = new Timer(30000L, CO2Sensor::onStopLED_static, true);

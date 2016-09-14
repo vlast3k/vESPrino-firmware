@@ -11,6 +11,7 @@ SI7021Sensor::SI7021Sensor() {
 
 void SI7021Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("siInit"), CMD_EXACT, &SI7021Sensor::onCmdInit, F("")));
+  initSensor();
 
 }
 

@@ -104,7 +104,7 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
 
 bool MQTTDest::mqttStart() {
   if (WiFi.status() != WL_CONNECTED) {
-    Serial << F("MQTT Dest: Cannot send while wifi offline\n");
+    if (DEBUG) Serial << F("MQTT Dest: Cannot send while wifi offline\n");
     return false;
   }
   String mqttServer, mqttClient, mqttUser, mqttPass;
@@ -138,7 +138,7 @@ bool MQTTDest::mqttStart() {
 }
 
 void MQTTDest::mqttEnd(bool res) {
-  SERIAL_PORT.println(res ? F("CLOSED") : F("Failed!"));
+  if (DEBUG) SERIAL_PORT.println(res ? F("CLOSED") : F("Failed!"));
   if (client) {
     client->disconnect();
     delete client;

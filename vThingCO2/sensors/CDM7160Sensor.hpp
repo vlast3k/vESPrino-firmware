@@ -20,6 +20,7 @@ private:
   static void onCmdTest(const char *ignore);
   static void onChangeReg(const char *ignore);
   static void onCmdLoop(const char *ignore);
+  static void onPerf(const char *ignore);
 
   static int readCO2Raw();
   static int readCO2AutoRecover();

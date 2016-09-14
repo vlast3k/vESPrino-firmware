@@ -5,7 +5,7 @@
 #include  <brzo_i2c.h>
 
 bool checkI2CDevice(int addr) {
-  for (int i=0; i < 4; i++) {
+  for (int i=0; i < 10; i++) {
     Wire.beginTransmission(addr);
     if (Wire.endTransmission() == 0) return true;
     delay(10);

@@ -64,13 +64,16 @@ void PowerManagerClass::loopPowerManager() {
   //Serial << "Power Manager: " << millis() << endl;
   //Serial.flush();
   if (isLowPower) {
-    Serial << F("Going into power-safe mode for 20 seconds") << endl;
+    uint32_t sec = 20;
+    if (PropertyList.hasProperty(PROP_SND_INT)) sec = PropertyList.readLongProperty(PROP_SND_INT);
+
+    Serial << F("Going into power-safe mode for ") << sec << F(" seconds") << endl;
     rtcMemStore.setDeepSleep(true);
-    Serial << "is deep sleep1: " <<rtcMemStore.wasInDeepSleep();
+    //Serial << "is deep sleep1: " <<rtcMemStore.wasInDeepSleep();
     Serial.flush();
     delay(100);
     //ESP.deepSleep(20L*1000*1000);
-    ESP.deepSleep(20L*1000*1000);
+    ESP.deepSleep(sec*1000*1000);
     delay(2000);
   } else {
     delay(1);
