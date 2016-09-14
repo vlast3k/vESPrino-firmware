@@ -196,7 +196,11 @@ void wifiConnectMulti() {
   wifiMulti->addAP("Andreev", "4506285842");
   String ssid = PropertyList.readProperty(EE_WIFI_SSID);
   String pass = PropertyList.readProperty(EE_WIFI_P1);
-  wifiMulti->addAP(ssid.c_str(), pass.c_str());
+  WiFi.persistent(false);
+  if (ssid.length()) {
+    wifiMulti->addAP(ssid.c_str(), pass.c_str());
+    WiFi.begin(ssid.c_str(), pass.c_str());
+  }
 }
 
 void WIFI_registerCommands(MenuHandler *handler) {

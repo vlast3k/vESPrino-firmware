@@ -159,7 +159,7 @@ void setup() {
   PowerManager.setup(&menuHandler);
 
   DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
-  Serial << "DEBUG is: " << DEBUG;
+  if (DEBUG) Serial << "DEBUG is: " << DEBUG;
 
   if (PowerManager.isWokeFromDeepSleep() == false) {
     activeWait();

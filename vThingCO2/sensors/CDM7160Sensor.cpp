@@ -170,11 +170,14 @@ uint8_t CDM7160Sensor::readI2CByte(int reg) {
 
 bool CDM7160Sensor::readI2CBytes(int start, uint8_t *buf, int len) {
   Wire.status();
+  delay(10);
   for (int tr = 0; tr < 6; tr ++) {
     Wire.beginTransmission(CDM_ADDR_WRITE);
+    //delay(10);
     Wire.write(start);
+    //delay(10);
     int et = Wire.endTransmission(false);
-    delay(10);
+    delay(10);//for some reason, w/o this nothing is received
     if (et !=0) {
       Serial << et;
       delay(100);
