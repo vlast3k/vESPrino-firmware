@@ -12,6 +12,7 @@ BME280Sensor::BME280Sensor() {
 
 void BME280Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("bmeInit"), CMD_EXACT, &BME280Sensor::onCmdInit, F("")));
+  bme280Sensor.initSensor();
 
 }
 
@@ -21,8 +22,10 @@ void BME280Sensor::onCmdInit(const char *ignore) {
 
 void BME280Sensor::getData(LinkedList<Pair *> *data) {
   //Serial << "BME280 get Data" << endl;
-  delay(100);
+   delay(10);
+  //if (millis() < 10000) return; //give time for the BM
    if (!initSensor()) return;
+
    data->add(new Pair("TEMP", String(bme->readTemperature())));
    data->add(new Pair("HUM", String(bme->readHumidity())));
    data->add(new Pair("PRES", String(bme->readPressure() / 100.0F)));

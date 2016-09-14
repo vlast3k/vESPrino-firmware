@@ -10,6 +10,7 @@ void PowerManagerClass::cmdDeepSleep(const char *line) {
 void PowerManagerClass::cmdDeepSleepInst(const char *line) {
   int type = atoi(strchr(line, ' ') + 1);
   Serial << "set deepsleep mode:" << type<< endl;
+  rtcMemStore.setDeepSleep(true);
   switch (type) {
     case 0: ESP.deepSleep(1, WAKE_RF_DISABLED); break;
     case 1: ESP.deepSleep(1, WAKE_RF_DEFAULT); break;
