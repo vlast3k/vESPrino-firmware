@@ -12,9 +12,11 @@ public:
   PropertyListClass();
   void begin(MenuHandler *handler);
   void putProperty(const __FlashStringHelper *key, const char *value);
+  void putProperty(const __FlashStringHelper *key, const __FlashStringHelper *value);
   void putProperty(const char *key, const char *value);
   char *readProperty(const __FlashStringHelper *key);
   char *readProperty(const char *key);
+  char *readProperty(const String &key);
   bool readBoolProperty(const __FlashStringHelper *key);
   long readLongProperty(const __FlashStringHelper *key);
   bool hasProperty(const char *key);

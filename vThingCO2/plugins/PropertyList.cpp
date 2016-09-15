@@ -75,6 +75,10 @@ void PropertyListClass::putProperty(const __FlashStringHelper *key, const char *
   putProperty(String(key).c_str(), value);
 }
 
+void PropertyListClass::putProperty(const __FlashStringHelper *key, const __FlashStringHelper *value) {
+  putProperty(String(key).c_str(), String(value).c_str());
+}
+
 
 void PropertyListClass::finalizeChangeFile(File &in, File &out) {
   in.close();
@@ -108,6 +112,10 @@ void PropertyListClass::putProperty(const char *key, const char *value) {
 
 char *PropertyListClass::readProperty(const __FlashStringHelper *key) {
   return readProperty(String(key).c_str());
+}
+
+char *PropertyListClass::readProperty(const String &key) {
+  return readProperty(key.c_str());
 }
 
 char *PropertyListClass::readProperty(const char *key) {
