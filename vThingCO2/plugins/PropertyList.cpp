@@ -44,6 +44,10 @@ void PropertyListClass::prop_set(const char *line) {
   PropertyList.putProperty(key, value);
 }
 
+bool PropertyListClass::assertInit() {
+  if (!initialized) Serial << F("Property List not yet initialized\n");
+  return initialized;
+}
 void PropertyListClass::begin(MenuHandler *handler) {
   setupPropList(handler);
   bool res =  SPIFFS.begin();
@@ -68,6 +72,7 @@ void PropertyListClass::begin(MenuHandler *handler) {
   } else {
     //Serial << " successfully deleted" << endl;
   }
+  initialized = true;
 }
 
 
@@ -93,6 +98,7 @@ void PropertyListClass::finalizeChangeFile(File &in, File &out) {
 }
 
 void PropertyListClass::putProperty(const char *key, const char *value) {
+  if (!assertInit()) return;
   if (!key[0]) return;
   File in = SPIFFS.open(configFileName, "r");
   File out= SPIFFS.open(tempFileName, "w");
@@ -119,7 +125,7 @@ char *PropertyListClass::readProperty(const String &key) {
 }
 
 char *PropertyListClass::readProperty(const char *key) {
-  if (key[0]) {
+  if (assertInit() && key[0]) {
     File in = SPIFFS.open(configFileName, "r");
     String _key = String(key) + "=";
     int r;
@@ -163,6 +169,8 @@ char* PropertyListClass::getArrayProperty(const __FlashStringHelper *key, int id
 }
 
 void PropertyListClass::removeArrayProperty(const __FlashStringHelper *key) {
+  if (!assertInit()) return;
+
   String _key = String(key);
   if (_key.length() == 0) return;
   File in = SPIFFS.open(configFileName, "r");
@@ -178,6 +186,8 @@ void PropertyListClass::removeArrayProperty(const __FlashStringHelper *key) {
 }
 
 void PropertyListClass::putArrayProperty(const __FlashStringHelper *key, int idx, const char *value) {
+  if (!assertInit()) return;
+
   if (String(key).length() == 0) return;
   String _key = String(key) + idx;
   putProperty(_key.c_str(), value);

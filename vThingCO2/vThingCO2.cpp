@@ -131,6 +131,7 @@ void setup() {
   // digitalWrite(D8, HIGH);
   // //delay(1000);
   SERIAL_PORT.begin(9600);
+  PropertyList.begin(&menuHandler);
   //Wire.begin(D6, D5);
   wifiConnectMulti();
   heap("Heap at start");
@@ -155,7 +156,6 @@ void setup() {
 
 //  deepSleepWake = isDeepSleepWake();
   rtcMemStore.init();
-  PropertyList.begin(&menuHandler);
   PowerManager.setup(&menuHandler);
 
   DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);

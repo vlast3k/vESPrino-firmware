@@ -77,8 +77,8 @@ void connectToWifi(const char *s1, const char *s2, const char *s3) {
   PropertyList.putProperty(EE_WIFI_SSID, s1);
   PropertyList.putProperty(EE_WIFI_P1, s2);
   PropertyList.putProperty(EE_WIFI_P2, s3);
-
-  wifiConnectToStoredSSID();
+  wifiConnectMulti();
+  //wifiConnectToStoredSSID();
   //SERIAL_PORT << "Connecting to " << s1 << endl;
 //  for (int i=0; i<10 && WiFi.status() != WL_CONNECTED; i--) {
 //    handleWifi();
@@ -130,13 +130,10 @@ void wifiScanNetworks(const char *ignore) {
 }
 
 void setWifi(const char* p) {
-  SERIAL_PORT << "setWifi_sgtart" << endl;
-char s1[30], s2[30], s3[30];
+  char s1[30], s2[30], s3[30];
   p = extractStringFromQuotes(p, s1, 29);
   p = extractStringFromQuotes(p, s2, 29);
   p = extractStringFromQuotes(p, s3, 29);
-  SERIAL_PORT << "setWifi" << s1 << s2 << s3 << endl;
-
   connectToWifi(s1, s2, s3);
 }
 
@@ -199,7 +196,10 @@ void wifiConnectMulti() {
   WiFi.persistent(false);
   if (ssid.length()) {
     wifiMulti->addAP(ssid.c_str(), pass.c_str());
-    WiFi.begin(ssid.c_str(), pass.c_str());
+    char x[20], y[20];
+    strcpy(x, ssid.c_str());
+    strcpy(y, pass.c_str());
+    WiFi.begin(x, y);
   }
 }
 
