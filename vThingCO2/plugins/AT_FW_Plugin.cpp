@@ -39,5 +39,7 @@ int AT_FW_Plugin::processResponseCodeATFW(HTTPClient *http, int rc) {
   } else {
     SERIAL_PORT << F("Failed") << endl;
   }
+  Serial.flush();
+  delay(100);
   return rc;
 }

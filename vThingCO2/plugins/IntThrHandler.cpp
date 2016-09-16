@@ -107,6 +107,7 @@ void cmdSendNow(const char* ignore) {
 
 void setup_IntThrHandler(MenuHandler *handler) {
   if (PropertyList.hasProperty(PROP_SND_INT)) intSendValue = PropertyList.readLongProperty(PROP_SND_INT)*1000;
+  else PropertyList.putProperty(PROP_SND_INT, String(intSendValue/1000).c_str());
   //if (PropertyList.hasProperty(PROP_SND_THR)) co2Threshold    = PropertyList.readLongProperty(PROP_SND_THR);
   tmrSendValueTimer = new Timer(intSendValue, on_SendValue, millis);
   tmrRawRead     = new Timer(intRawRead, onRawRead, millis);

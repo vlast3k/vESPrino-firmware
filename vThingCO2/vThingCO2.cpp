@@ -159,7 +159,7 @@ void setup() {
   PowerManager.setup(&menuHandler);
 
   DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
-  if (DEBUG) Serial << "DEBUG is: " << DEBUG;
+  if (DEBUG) Serial << F("DEBUG is: ") << DEBUG;
 
   if (PowerManager.isWokeFromDeepSleep() == false) {
     activeWait();
@@ -205,7 +205,7 @@ void setup() {
   H801_registerCommands(&menuHandler);
 #endif
 #ifdef VTHING_VESPRINO
-  VESP_registerCommands(&menuHandler);
+//  VESP_registerCommands(&menuHandler);
 #endif
 
   setup_IntThrHandler(&menuHandler);

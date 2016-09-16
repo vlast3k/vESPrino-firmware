@@ -17,6 +17,6 @@ public:
   void toggleInst();
 
 private:
-  bool enabled;
+  bool enabled = false;
 };
 #endif

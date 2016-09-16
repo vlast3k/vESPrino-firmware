@@ -5,13 +5,13 @@
 
 String ubik;
 void URLShortcuts::registerCommands(MenuHandler *handler) {
-  handler->registerCommand(new MenuEntry(F("tstest"), CMD_EXACT, &URLShortcuts::sendTS, F("")));
-  handler->registerCommand(new MenuEntry(F("smp"), CMD_EXACT, &URLShortcuts::sndSimple, F("")));
-  handler->registerCommand(new MenuEntry(F("test"), CMD_EXACT, &URLShortcuts::doTest, F("")));
-  handler->registerCommand(new MenuEntry(F("ubi"), CMD_EXACT, &URLShortcuts::testUBI, F("")));
-  handler->registerCommand(new MenuEntry(F("tskey"), CMD_BEGIN, &URLShortcuts::setTSKey, F("")));
-  handler->registerCommand(new MenuEntry(F("ubik"), CMD_BEGIN, &URLShortcuts::setUBIKey, F("")));
-  handler->registerCommand(new MenuEntry(F("ubiv"), CMD_BEGIN, &URLShortcuts::setUBIValue, F("")));
+//  handler->registerCommand(new MenuEntry(F("tstest"), CMD_EXACT, &URLShortcuts::sendTS, F("")));
+//  handler->registerCommand(new MenuEntry(F("smp"), CMD_EXACT, &URLShortcuts::sndSimple, F("")));
+//  handler->registerCommand(new MenuEntry(F("test"), CMD_EXACT, &URLShortcuts::doTest, F("")));
+//  handler->registerCommand(new MenuEntry(F("ubi"), CMD_EXACT, &URLShortcuts::testUBI, F("")));
+//  handler->registerCommand(new MenuEntry(F("tskey"), CMD_BEGIN, &URLShortcuts::setTSKey, F("")));
+//  handler->registerCommand(new MenuEntry(F("ubik"), CMD_BEGIN, &URLShortcuts::setUBIKey, F("")));
+//  handler->registerCommand(new MenuEntry(F("ubiv"), CMD_BEGIN, &URLShortcuts::setUBIValue, F("")));
 }
 
 void URLShortcuts::doTest(const char *line) {

@@ -1,4 +1,4 @@
-#ifdef VTHING_VESPRINO
+#ifdef VTHING_VESPRINO1
 #include "common.hpp"
 #include <Si7021.h>
 #include <Wire.h>

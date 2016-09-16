@@ -73,6 +73,13 @@ bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debu
   return nDevices > 0;
 }
 
+int i2cWireStatus() {
+  for (int i=0; i < 5 && Wire.status() != I2C_OK; i++) delay(5);
+  delay(10);
+  return Wire.status();
+
+}
+
 bool findI2C(int &sda, int &scl, bool debug) {
   int gpios[] = {D1, D5};
   String gpios_str[] = {F("D1"), F("D5")};

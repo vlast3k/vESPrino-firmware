@@ -11,7 +11,7 @@ PM2005Sensor::PM2005Sensor() {
 void PM2005Sensor::setup(MenuHandler *handler) {
 //  handler->registerCommand(new MenuEntry(F("pm2005Init"), CMD_EXACT, &PM2005Sensor::onCmdInit, F("")));
   if (checkI2CDevice(0x28)) {
-    Serial << F("Found PM2005 - Dust / Particle Sensor");
+    Serial << F("Found PM2005 - Dust / Particle Sensor\n");
     hasSensor = true;
     int pm25, pm10, mode, status;
     if (!intReadData(pm25, pm10, status, mode)) return;

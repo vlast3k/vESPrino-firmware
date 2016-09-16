@@ -15,7 +15,7 @@ void CDM7160Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("cdmreg"), CMD_BEGIN, &CDM7160Sensor::onChangeReg, F("cdmreg \"regid\" \"value\"")));
   handler->registerCommand(new MenuEntry(F("cdmperf"), CMD_BEGIN, &CDM7160Sensor::onPerf, F("cdmreg \"regid\" \"value\"")));
   if (checkI2CDevice(CDM_ADDR_WRITE)) {
-    Serial << "Found" << endl;
+    Serial << F("Found CDM7160 CO2 Sensor") << endl;
     configureSensor();
     hasSensor = true;
   }
@@ -45,7 +45,7 @@ int CDM7160Sensor::readCO2AutoRecover() {
   int ppm=0;
   for (int i=0; i < 2; i++) {
     int a = readCO2Raw();
-    Serial <<"Raw CO2: " << a << endl;
+    Serial << F("Raw CO2: ") << a << endl;
     if (a > 0) return a;
     else if (a == -1) { //maybe some temprary error, retry once more before reseting bus
       delay(2000);
@@ -58,8 +58,9 @@ int CDM7160Sensor::readCO2AutoRecover() {
 }
 
 void CDM7160Sensor::configureSensor() {
-  if (Wire.status() != I2C_OK) {
-    Serial << F("I2C Bus status: ") << Wire.status() << endl;
+  if (i2cWireStatus() != I2C_OK) {
+    int stat = Wire.status();
+    Serial << F("I2C Bus status: ") <<  Wire.status() << endl;
     return;
   }
   uint8_t ctl = readI2CByte(CDM_CTL_REG);
@@ -72,11 +73,11 @@ void CDM7160Sensor::configureSensor() {
 }
 
 void CDM7160Sensor::onCmdLoop(const char *ignore) {
-  Serial << "Avg count: " << readI2CByte(7) << endl;
+  Serial << F("Avg count: ") << readI2CByte(7) << endl;
   int last = 0;
   for (int i=0; i < 50; i++) {
     int co2 = readCO2Raw();
-    Serial.printf("%2d: %d (%d)\n", i, co2, co2-last);
+    Serial.printf(String(F("%2d: %d (%d)\n")).c_str(), i, co2, co2-last);
     last = co2;
     delay(3000);
     //menuHandler.processUserInput();
@@ -86,22 +87,22 @@ void CDM7160Sensor::onCmdLoop(const char *ignore) {
 }
 void CDM7160Sensor::onCmdTest(const char *ignore) {
   uint8_t rst = readI2CByte(0);
-  Serial << "rst is: " << _HEX(rst) << endl;
+  Serial << F("rst is: ") << _HEX(rst) << endl;
   // if (rst == (uint8_t)0xFF) {
   //   Serial << " FAILED TO COMMUNICATE WITH SENSOR. Restarting I2C" << endl;
   //   menuHandler.scheduleCommand("scani2c");
   //Serial << " Wire.status = " << Wire.status() <<endl;
-  Serial << "Register 0x00 : " << _BIN(readI2CByte(0)) << endl;
+  Serial << F("Register 0x00 : ") << _BIN(readI2CByte(0)) << endl;
   delay(100);
-  Serial << "Register 0x01 : " << _BIN(readI2CByte(1)) << endl;
+  Serial << F("Register 0x01 : ") << _BIN(readI2CByte(1)) << endl;
   delay(100);
-  Serial << "Register 0x02 : " << _BIN(readI2CByte(2)) << endl;
+  Serial << F("Register 0x02 : ") << _BIN(readI2CByte(2)) << endl;
   delay(100);
-  Serial << "Register 0x03 : " << _BIN(readI2CByte(3)) << endl;
+  Serial << F("Register 0x03 : ") << _BIN(readI2CByte(3)) << endl;
   delay(100);
-  Serial << "Register 0x04 : " << _BIN(readI2CByte(4)) << endl;
+  Serial << F("Register 0x04 : ") << _BIN(readI2CByte(4)) << endl;
   delay(100);
-  Serial << "Register 0x07 : " << _BIN(readI2CByte(7)) << endl;
+  Serial << F("Register 0x07 : ") << _BIN(readI2CByte(7)) << endl;
   delay(100);
   Serial << F("Read CO2: ")  <<  readCO2AutoRecover() << endl;;
 }
@@ -115,11 +116,11 @@ void CDM7160Sensor::onChangeReg(const char *line) {
   for (int i=0; i < 5; i++) {
     uint8_t curVal =  readI2CByte(reg);
     if (curVal == 0xFF) continue;
-    Serial << "Before : " << _HEX(curVal) << " : " << _BIN(curVal) << endl;
+    Serial << F("Before : ") << _HEX(curVal) << F(" : ") << _BIN(curVal) << endl;
     writeByte(reg, val);
     curVal =  readI2CByte(reg);
     if (curVal == 0xFF) continue;
-    Serial << "After : " << _HEX(curVal) << " : " << _BIN(curVal) << endl;
+    Serial << F("After : ") << _HEX(curVal) << F(" : ") << _BIN(curVal) << endl;
     break;
   }
 
@@ -128,7 +129,7 @@ void CDM7160Sensor::onChangeReg(const char *line) {
 
 int CDM7160Sensor::readCO2Raw() {
   uint8_t buf[5];
-  if (Wire.status() != I2C_OK) {
+  if (i2cWireStatus() != I2C_OK) {
     if (DEBUG) Serial << F("I2C Bus status: ") << Wire.status() << endl;
     return -1;
   }
@@ -169,7 +170,7 @@ uint8_t CDM7160Sensor::readI2CByte(int reg) {
 }
 
 bool CDM7160Sensor::readI2CBytes(int start, uint8_t *buf, int len) {
-  Wire.status();
+  i2cWireStatus();
   delay(10);
   for (int tr = 0; tr < 6; tr ++) {
     Wire.beginTransmission(CDM_ADDR_WRITE);
@@ -179,12 +180,12 @@ bool CDM7160Sensor::readI2CBytes(int start, uint8_t *buf, int len) {
     int et = Wire.endTransmission(false);
     delay(10);//for some reason, w/o this nothing is received
     if (et !=0) {
-      Serial << et;
+      if (DEBUG) Serial << et;
       delay(100);
       continue;
     }
     if (Wire.requestFrom(CDM_ADDR_WRITE, (size_t)len, (bool)false) < len) {
-      Serial << "x";
+      if (DEBUG) Serial << F("x");
       continue;
     }
     while (len -- > 0)   *(buf++) = Wire.read();
@@ -193,23 +194,23 @@ bool CDM7160Sensor::readI2CBytes(int start, uint8_t *buf, int len) {
   return false;
 }
 
-bool CDM7160Sensor::readI2CBytesBrzo(int start, uint8_t *buf, int len) {
-  for (int tr = 0; tr < 6; tr ++) {
-    brzo_i2c_start_transaction(CDM_ADDR_WRITE, 400);
-    byte xx[1];
-    xx[0] = start;
-    brzo_i2c_write(xx, 1, true);
-    brzo_i2c_read(buf, len, false);
-    int et = brzo_i2c_end_transaction();
-    Serial << "brzo end: " << et <<endl;
-    return true;
-  }
-  return false;
-}
-
+// bool CDM7160Sensor::readI2CBytesBrzo(int start, uint8_t *buf, int len) {
+//   for (int tr = 0; tr < 6; tr ++) {
+//     brzo_i2c_start_transaction(CDM_ADDR_WRITE, 400);
+//     byte xx[1];
+//     xx[0] = start;
+//     brzo_i2c_write(xx, 1, true);
+//     brzo_i2c_read(buf, len, false);
+//     int et = brzo_i2c_end_transaction();
+//     Serial << "brzo end: " << et <<endl;
+//     return true;
+//   }
+//   return false;
+// }
+//
 void CDM7160Sensor::writeByte(uint8_t reg, uint8_t value) {
-  Serial << "WriteByte :reg: "<< reg << ", " << _BIN(value) <<endl;
-  Wire.status();
+  Serial << F("WriteByte :reg: ") << reg << F(", ") << _BIN(value) <<endl;
+  i2cWireStatus();
   byte addr = 0x69;
   Wire.beginTransmission(addr);
   Wire.write(reg);
@@ -217,5 +218,5 @@ void CDM7160Sensor::writeByte(uint8_t reg, uint8_t value) {
   delay(100);
   int r = Wire.endTransmission(true);
   delay(100);
-  Serial << "End trans : " << r << endl;
+  Serial << F("End trans : ") << r << endl;
 }

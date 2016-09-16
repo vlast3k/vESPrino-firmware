@@ -79,7 +79,7 @@ void NeopixelVE::cmdLedHandleModeInst(const char *line) {
         }
       }
     }
-    Serial << "Will Blink " << blinks << "x, on:" << blOn << " ms, off:" << blOff << " ms" << endl;
+  //  Serial << "Will Blink " << blinks << "x, on:" << blOn << " ms, off:" << blOff << " ms" << endl;
     for (int i=0; i<blinks; i++) {
       cmdLedHandleColor(NULL);
       delay(blOn);
@@ -90,12 +90,12 @@ void NeopixelVE::cmdLedHandleModeInst(const char *line) {
 }
 
 void NeopixelVE::loop() {
-  if (ledMode == 1) {
-    if (millis() - lastChange > 500) {
-      handleDWCommand("led_next");
-      lastChange = millis();
-    }
-  }
+  // if (ledMode == 1) {
+  //   if (millis() - lastChange > 500) {
+  //     handleDWCommand("led_next");
+  //     lastChange = millis();
+  //   }
+  // }
 }
 
 RgbColor NeopixelVE::ledNextColor() {

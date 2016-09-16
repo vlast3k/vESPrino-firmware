@@ -63,6 +63,8 @@ void CustomHTTPDest::invokeURL(String &url) {
   String x = url;
   if (url.startsWith("#")) x = url.substring(1);
   Serial << F("CustomHTTPDest::invoke = ") << x << endl;
+  Serial.flush();
+  delay(100);
 //  waitForWifi(1000);
   HTTPClient http;
   http.begin(x);

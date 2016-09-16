@@ -77,6 +77,7 @@ void connectToWifi(const char *s1, const char *s2, const char *s3) {
   PropertyList.putProperty(EE_WIFI_SSID, s1);
   PropertyList.putProperty(EE_WIFI_P1, s2);
   PropertyList.putProperty(EE_WIFI_P2, s3);
+  SERIAL_PORT << F("Connecting to: \"") << s1 << F("\", \"") << s2 << F("\"") << endl;
   wifiConnectMulti();
   //wifiConnectToStoredSSID();
   //SERIAL_PORT << "Connecting to " << s1 << endl;
@@ -94,29 +95,29 @@ void connectToWifi(const char *s1, const char *s2, const char *s3) {
 
 
 void wifiScanNetworks(const char *ignore) {
-  SERIAL_PORT.println("scan start");
+  SERIAL_PORT.println(F("scan start"));
   WiFi.disconnect();
   delay(500);
 
   // WiFi.scanNetworks will return the number of networks found
   int n = WiFi.scanNetworks();
-  SERIAL_PORT.println("scan done");
+  SERIAL_PORT.println(F("scan done"));
   if (n == 0)
-    SERIAL_PORT.println("no networks found");
+    SERIAL_PORT.println(F("no networks found"));
   else
   {
     SERIAL_PORT.print(n) ;
-    SERIAL_PORT.println(" networks found");
+    SERIAL_PORT.println(F(" networks found"));
     for (int i = 0; i < n; ++i)
     {
       // Print SSID and RSSI for each network found
       SERIAL_PORT.print(i + 1);
-      SERIAL_PORT.print(": ");
+      SERIAL_PORT.print(F(": "));
       SERIAL_PORT.print(WiFi.SSID(i));
-      SERIAL_PORT.print(" (");
+      SERIAL_PORT.print(F(" ("));
       SERIAL_PORT.print(WiFi.RSSI(i));
-      SERIAL_PORT.print(")");
-      SERIAL_PORT.println((WiFi.encryptionType(i) == ENC_TYPE_NONE)?" ":"*");
+      SERIAL_PORT.print(F(")"));
+      SERIAL_PORT.println((WiFi.encryptionType(i) == ENC_TYPE_NONE)?F(" "):F("*"));
       delay(10);
     }
   }

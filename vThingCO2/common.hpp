@@ -191,6 +191,7 @@ void handleDWCommand(char *line);
 
 bool checkI2CDevice(int sda, int sca, int addr) ;
 bool checkI2CDevice(int addr);
+int i2cWireStatus();
 
 
 //#endif

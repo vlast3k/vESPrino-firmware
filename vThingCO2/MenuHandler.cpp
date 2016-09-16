@@ -13,7 +13,7 @@ MenuHandler::MenuHandler() {
 
 void MenuHandler::cmdHelp(const char *ignore) {
   for (int i=0; i < menuHandler.commands->size(); i++) {
-    Serial << menuHandler.commands->get(i)->cmd << " - " << menuHandler.commands->get(i)->description << endl;
+    Serial << menuHandler.commands->get(i)->cmd << F(" - ") << menuHandler.commands->get(i)->description << endl;
   }
 }
 
