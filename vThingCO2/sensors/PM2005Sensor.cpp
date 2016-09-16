@@ -13,6 +13,12 @@ void PM2005Sensor::setup(MenuHandler *handler) {
   if (checkI2CDevice(0x28)) {
     Serial << F("Found PM2005 - Dust / Particle Sensor");
     hasSensor = true;
+    int pm25, pm10, mode, status;
+    if (!intReadData(pm25, pm10, status, mode)) return;
+    if (mode != 5) {
+      setDynamicMode();
+      intReadData(pm25, pm10, status, mode);
+    }
   }
 }
 
@@ -24,50 +30,69 @@ void PM2005Sensor::getData(LinkedList<Pair *> *data) {
   if (!hasSensor) return;
   //Serial << "PM2005 get Data" << endl;
   //delay(100);
-  int pm25, pm10;
-  if (!intReadData(pm25, pm10, false)) return;
+  int pm25, pm10, mode, status;
+  if (!intReadData(pm25, pm10, status, mode)) return;
   data->add(new Pair("PM25", String(pm25)));
   data->add(new Pair("PM10", String(pm10)));
   //Serial << "end PM2005" << endl;
 }
 
-bool PM2005Sensor::intBegin(int sda, int sca) {
-  if (sda != 0 || sca != 0) Wire.begin(sda, sca);
+bool PM2005Sensor::intBegin() {
+//  if (sda != 0 || sca != 0) Wire.begin(sda, sca);
+  //Wire.status();
   Wire.beginTransmission(0x28);
   Wire.write(0x51);
   return Wire.endTransmission(false) == 0;
 }
 
-bool PM2005Sensor::intReadData(int &pm25, int &pm10, bool debug) {
+void PM2005Sensor::setDynamicMode() {
+  //Wire.status();
+  Wire.beginTransmission(0x28);
+  Wire.write(0x50);
+
+  Wire.write(0x16);
+  Wire.write(7);
+  Wire.write(5);
+  Wire.write(0);
+  Wire.write(0);
+  Wire.write(0);
+  Wire.write(0x14);
+  int res = Wire.endTransmission();
+  if (DEBUG) Serial << F("PM2005 setDynamicMode res = ") << res << endl;
+}
+
+bool PM2005Sensor::intReadData(int &pm25, int &pm10, int &status, int &mode) {
   if (!intBegin()) {
-    if (debug) Serial << F("Failed to connect to PM2005\n");
+    if (DEBUG) Serial << F("\nFailed to connect to PM2005\n");
     return false;
   }
   int r;
   byte data[22];
   byte cs = 0;
-  r = Wire.requestFrom(0x28, 22, false);
+  r = Wire.requestFrom((uint8_t)0x28, (size_t)22, false);
   if (r != 22) {
-    if (debug) Serial << F("Expected 22 bytes, but got ") << r << endl;
+    if (DEBUG) Serial << F("Expected 22 bytes, but got ") << r << endl;
     return false;
   }
   for (int i=0; i < 22; i++) {
     data[i] = Wire.read();
-    if (debug) Serial << _HEX(data[i]) << F(",");
+    if (DEBUG) Serial << _HEX(data[i]) << F(",");
     if (i < 21) cs ^= data[i];
   }
-  if (debug) Serial << endl;
+  if (DEBUG) Serial << endl;
   if (cs != data[21]) {
-    if (debug) Serial << F("Wrong Checksum: ") << cs << F(", expected: ") << data[21] << endl;
+    if (DEBUG) Serial << F("Wrong Checksum: ") << cs << F(", expected: ") << data[21] << endl;
     return false;
   }
-  if (debug) {
-    Serial << F("Sensor Status: ") << data[2] << endl;
-    Serial << F("PM 2.5 : ") << (data[5] << 2) + data[6] << endl;
-    Serial << F("PM  10 : ") << (data[7] << 2) + data[8] << endl;
-    Serial << F("Measuring Mode : ") << (data[9] << 2) + data[10] << endl;
-  }
+  status = data[2];
   pm25 = (data[5] << 2) + data[6];
   pm10 = (data[7] << 2) + data[8];
+  mode = (data[9] << 2) + data[10];
+  if (DEBUG) {
+    Serial << F("Sensor Status: ") << status << endl;
+    Serial << F("PM 2.5 : ") << pm25 << endl;
+    Serial << F("PM  10 : ") << pm10 << endl;
+    Serial << F("Measuring Mode : ") << mode << endl;
+  }
   return true;
 }

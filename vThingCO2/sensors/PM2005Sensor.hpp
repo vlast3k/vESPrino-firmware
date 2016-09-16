@@ -16,7 +16,8 @@ public:
   // void closeSensor();
 private:
 //  static void onCmdInit(const char *ignore);
-  bool intReadData(int &pm25, int &pm10, bool debug = false);
-  bool intBegin(int sda = 0, int sca = 0);
+  bool intReadData(int &pm25, int &pm10, int &status, int &mode) ;
+  bool intBegin();
+  void setDynamicMode();
 };
 #endif

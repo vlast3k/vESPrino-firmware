@@ -84,7 +84,7 @@ void MenuHandler::processCommands() {
 }
 
 void MenuHandler::handleCommand(const char *line) {
-  Serial << F("Executing: ") << line << endl;
+  if (DEBUG) Serial << F("Executing: ") << line << endl;
   //dumpArray(line);
   String s1;
   for (int i=0; i < commands->size(); i++) {
@@ -99,5 +99,5 @@ void MenuHandler::handleCommand(const char *line) {
           return;
     }
   }
-  Serial << F("not found") << endl;
+  Serial << F("not found: ") << line << endl;
 }

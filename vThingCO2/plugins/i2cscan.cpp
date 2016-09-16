@@ -39,6 +39,7 @@ void dumpI2CBus(const char *line) {
 
 bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debug) {
   Wire.begin(sda, sca);
+  Wire.setClock(20000);
   byte error, address;
   int nDevices;
 //  if (debug) Serial.printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
@@ -111,6 +112,7 @@ void beginI2C() {
   //Wire.begin(D5, D1);
    if (findI2C(i2cSDA, i2cSCL, false)) {
      Wire.begin(i2cSDA, i2cSCL);
+     Wire.setClock(20000);
   //   Wire.
    } else {
      Serial << F("No I2C Devices found\n");
