@@ -133,8 +133,12 @@ void setup() {
   SERIAL_PORT.begin(9600);
   PropertyList.begin(&menuHandler);
   //Wire.begin(D6, D5);
-  wifiConnectMulti();
+  Serial << "xxxxx" << endl;
+  Serial.flush();
+  delay(100);
+
   heap("Heap at start");
+  Serial.flush();
   beginI2C();
   //Wire.begin(D1, D6);
   //WiFi.begin();
@@ -170,6 +174,8 @@ void setup() {
     neopixel.cmdLedSetBrgInst("ledbrg 99");
     neopixel.cmdLedHandleColorInst("ledcolor black");
   }
+
+  wifiConnectMulti();
   MigrateSettingsIfNeeded();
   EEPROM.begin(100);
 

@@ -25,10 +25,18 @@
 #define XX_SND_INT   F("xxSndInt")
 #define XX_SND_THR   F("xxSndThr")
 
+bool checkForFF(const char* c, int len) {
+  for (int i=0; i < len; i++) {
+    if (!c[i]) return false;
+    if (c[i] == 0xFF) return true;
+  }
+  return false;
+}
+
 void _migrateEESetting(int eeAddr, const __FlashStringHelper *key) {
   char buf[200];
   EEPROM.get(eeAddr, buf);
-  if (buf[0] != 0 && buf[0] != 255)  PropertyList.putProperty(key, buf);
+  if (buf[0] != 0 && buf[0] != 255 && !checkForFF(buf, sizeof(buf)))  PropertyList.putProperty(key, buf);
 }
 
 void _migrateJsonSetting(const __FlashStringHelper *keyJson, const __FlashStringHelper *keyProp) {

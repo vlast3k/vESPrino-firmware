@@ -195,7 +195,7 @@ void wifiConnectMulti() {
   String ssid = PropertyList.readProperty(EE_WIFI_SSID);
   String pass = PropertyList.readProperty(EE_WIFI_P1);
   WiFi.persistent(false);
-  if (ssid.length()) {
+  if (ssid.length() && ssid.length() < 40 && pass.length() < 100) {
     wifiMulti->addAP(ssid.c_str(), pass.c_str());
     char x[20], y[20];
     strcpy(x, ssid.c_str());

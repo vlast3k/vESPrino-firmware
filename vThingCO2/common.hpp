@@ -43,7 +43,7 @@ extern "C" {
 
 
 
-#define BUILD_NUM "20160914"
+#define BUILD_NUM "20160917"
 
 #define SERIAL_PORT Serial
 #define EE_WIFI_SSID F("wifi.ssid")
