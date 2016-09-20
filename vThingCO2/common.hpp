@@ -37,13 +37,14 @@ extern "C" {
 #include "sensors\TestSensor.hpp"
 
 #include "destinations\MQTTDest.hpp"
+#include "destinations\RFDest.hpp"
 #include "utils\RTCMemStore.hpp"
 #include <ESP8266WiFiMulti.h>
 #include "plugins\NeopixelVE.hpp"
 
 
 
-#define BUILD_NUM "20160917"
+#define BUILD_NUM "20160920"
 
 #define SERIAL_PORT Serial
 #define EE_WIFI_SSID F("wifi.ssid")
@@ -240,6 +241,7 @@ extern bool deepSleepWake;
 extern int i2cSDA, i2cSCL;
 extern RTCMemStore rtcMemStore;
 extern ESP8266WiFiMulti  *wifiMulti;
+extern RFDest rfDest;
 //extern NeopixelVE neopixel;
 
 void MigrateSettingsIfNeeded();

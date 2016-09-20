@@ -18,6 +18,7 @@
 #include "sensors\TestSensor.hpp"
 #include "destinations\MQTTDest.hpp"
 #include "destinations\SerialDumpDest.hpp"
+#include "destinations\RFDest.hpp"
 #include "utils\RTCMemStore.hpp"
 #include "plugins\NeopixelVE.hpp"
 
@@ -54,3 +55,4 @@ CDM7160Sensor cdm7160Sensor;
 MQTTDest mqttDest;
 RTCMemStore rtcMemStore;
 NeopixelVE neopixel;
+RFDest rfDest;

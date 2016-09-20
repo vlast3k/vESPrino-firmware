@@ -23,16 +23,17 @@ public:
   void loop() {};
 
   void process(LinkedList<Pair*> &data);
-
+  void sendPing(int num);
   const char* getName() {
     return "RFX10";
   }
 
 private:
   bool enabled = false;
-  int port = D7;
+  int port = D6;
   void checkIfDefaultsAreSet();
   static void cmdSetAddr(const char *line);
+  static void cmdTest(const char *line);
 
   void rfBegin(uint8_t tx_pin, uint8_t led_pin, uint8_t rf_repeats);
   void RFXmeter(uint8_t rfxm_address, uint8_t rfxm_packet_type, long rfxm_value);

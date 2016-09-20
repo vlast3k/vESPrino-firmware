@@ -14,19 +14,30 @@ RFDest::RFDest() {
 
 void RFDest::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("rf_setaddr"), CMD_BEGIN, &RFDest::cmdSetAddr, F("rf_setaddr \"CO2\" \"136\"")));
+  handler->registerCommand(new MenuEntry(F("rf_test"), CMD_BEGIN, &RFDest::cmdTest, F("rf_setaddr \"CO2\" \"136\"")));
   checkIfDefaultsAreSet();
   enabled = PropertyList.readBoolProperty(F("rf.enabled"));
-  if (enabled) rfBegin(port, 0, 1);
+  if (enabled) {
+    Serial << F("enabled\n");
+    // rfBegin(D6, 0, 1);
+    // delay(1000);
+    // RFXmeter(12, 0, 1111);
+    // delay(1000);
+    // RFXmeter(12, 0, 1111);
+    // delay(1000);
+    // RFXmeter(12, 0, 1111);
+    // delay(1000);
+  }
 }
 
 void RFDest::checkIfDefaultsAreSet() {
   if (!PropertyList.hasProperty(F("rf.CO2")))  PropertyList.putProperty(F("rf.CO2"),  F("136"));
   if (!PropertyList.hasProperty(F("rf.PM25"))) PropertyList.putProperty(F("rf.PM25"), F("137"));
-  if (!PropertyList.hasProperty(F("rf.PM10"))) PropertyList.putProperty(F("rf.CO2"),  F("138"));
-  if (!PropertyList.hasProperty(F("rf.TEMP"))) PropertyList.putProperty(F("rf.TEMP"), F("139"));
-  if (!PropertyList.hasProperty(F("rf.HUM")))  PropertyList.putProperty(F("rf.HUM"),  F("140"));
-  if (!PropertyList.hasProperty(F("rf.PRES"))) PropertyList.putProperty(F("rf.PRES"), F("141"));
-  if (!PropertyList.hasProperty(F("rf.GEN")))  PropertyList.putProperty(F("rf.GEN"),  F("142"));
+  if (!PropertyList.hasProperty(F("rf.PM10"))) PropertyList.putProperty(F("rf.PM10"), F("138"));
+  if (!PropertyList.hasProperty(F("rf.TEMP"))) PropertyList.putProperty(F("rf.TEMP"), F("140"));
+  if (!PropertyList.hasProperty(F("rf.HUM")))  PropertyList.putProperty(F("rf.HUM"),  F("141"));
+  if (!PropertyList.hasProperty(F("rf.PRES"))) PropertyList.putProperty(F("rf.PRES"), F("142"));
+  if (!PropertyList.hasProperty(F("rf.GEN")))  PropertyList.putProperty(F("rf.GEN"),  F("143"));
 }
 
 void RFDest::cmdSetAddr(const char *line) {
@@ -37,6 +48,20 @@ void RFDest::cmdSetAddr(const char *line) {
   s += key;
   PropertyList.putProperty(s.c_str(), addr);
   Serial << F("Set RF Address: ") << key << F("=") << addr << endl;;
+}
+
+void RFDest::cmdTest(const char *line) {
+  rfDest.sendPing(1000);
+  rfDest.sendPing(1001);
+  rfDest.sendPing(1002);
+}
+
+void RFDest::sendPing(int num) {
+  if (!enabled) return;
+  rfBegin(port, 0, 1);
+  delay(1);
+  RFXmeter(0x42, 0, num);
+  delay(700);
 }
 
 void RFDest::process(LinkedList<Pair *> &data) {
@@ -52,7 +77,10 @@ void RFDest::process(LinkedList<Pair *> &data) {
     if (addr < 0) continue;
     long value = atof(p->value.c_str()) * 100;
     if (DEBUG) Serial.printf(String(F("RF X10 Meter: addr=%d, value=%d\n")).c_str(), addr, value);
+    rfBegin(port, 0, 1);
+    delay(1);
     RFXmeter(addr, 0, value);
+    delay(700);
   }
 }
 

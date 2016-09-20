@@ -58,7 +58,11 @@ void printVersion(const char* ignore) {
     SERIAL_PORT << F("vESPrino ");
   #endif
   SERIAL_PORT << VERSION << F(" build") << BUILD_NUM << endl;
+  Serial.flush();
+  delay(100);
   SERIAL_PORT << F("IP address: ") << WiFi.localIP() << endl;
+  Serial.flush();
+  delay(100);
 
 }
 
@@ -131,9 +135,9 @@ void setup() {
   // digitalWrite(D8, HIGH);
   // //delay(1000);
   SERIAL_PORT.begin(9600);
+
   PropertyList.begin(&menuHandler);
   //Wire.begin(D6, D5);
-  Serial << "xxxxx" << endl;
   Serial.flush();
   delay(100);
 
@@ -154,6 +158,10 @@ void setup() {
 
   printVersion();
   menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
+  CommonCommands commCmd;
+  commCmd.registerCommands(&menuHandler);
+  OTA_registerCommands(&menuHandler);
+  WIFI_registerCommands(&menuHandler);
 
   SERIAL_PORT << F("ready >") << endl;
   SERIAL_PORT << F("Waiting for auto-connect") << endl;
@@ -161,6 +169,8 @@ void setup() {
 //  deepSleepWake = isDeepSleepWake();
   rtcMemStore.init();
   PowerManager.setup(&menuHandler);
+
+
 
   DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
   if (DEBUG) Serial << F("DEBUG is: ") << DEBUG;
@@ -176,7 +186,9 @@ void setup() {
   }
 
   wifiConnectMulti();
+
   MigrateSettingsIfNeeded();
+
   EEPROM.begin(100);
 
 
@@ -195,14 +207,10 @@ void setup() {
   //registerPlugin(&PowerManager);
   setupPlugins(&menuHandler);
 
-  CommonCommands commCmd;
-  commCmd.registerCommands(&menuHandler);
   SAP_HCP_IOT_Plugin::registerCommands(&menuHandler);
   AT_FW_Plugin::registerCommands(&menuHandler);
   CustomURL_Plugin::registerCommands(&menuHandler);
   URLShortcuts::registerCommands(&menuHandler);
-  OTA_registerCommands(&menuHandler);
-  WIFI_registerCommands(&menuHandler);
   MQTT_RegisterCommands(&menuHandler);
 #ifdef VTHING_CO2
   //CO2_registerCommands(&menuHandler);
@@ -215,7 +223,10 @@ void setup() {
 #endif
 
   setup_IntThrHandler(&menuHandler);
+  rfDest.sendPing(1000);
+  rfDest.sendPing(1000);
   heap("At setup end");
+
   //setLedColor(RgbColor(5, 0,3));
   //WiFi.begin("MarinaResidence","eeeeee");
 }

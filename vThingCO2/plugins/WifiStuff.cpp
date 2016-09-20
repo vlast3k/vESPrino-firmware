@@ -44,7 +44,7 @@ wl_status_t waitForWifi(uint16_t timeoutMs) {
 void activeWait() {
   for (int i=1; i < 31; i++) {
     delay(100);
-    handleWifi();
+  //  handleWifi();
     menuHandler.loop();
     //menuHandler.processUserInput();
     if ((i%10) == 0) SERIAL_PORT << '.';
