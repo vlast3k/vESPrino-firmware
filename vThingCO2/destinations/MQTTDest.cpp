@@ -76,17 +76,20 @@ void MQTTDest::cmdCleanCustomUrl(const char *line) {
 
 void MQTTDest::process(LinkedList<Pair *> &data) {
   Serial << F("MQTTDest::process") << endl;
-  heap("");
-  int i=0;
+//  heap("");
+  String s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), 0);
+  if (!s.length()) return;
+  if (waitForWifi() != WL_CONNECTED) return;
+
   if (!mqttStart()) {
     mqttEnd(false);
     return;
   }
-  String mqttTopic;//  = PropertyList.readProperty(EE_MQTT_TOPIC);
-  do {
-    String s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), i++);
+  //int i=0;
+  String mqttTopic = "vair";//  = PropertyList.readProperty(EE_MQTT_TOPIC);
+  for (int i=0; ; i++) {
+    s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), i);
     if (!s.length()) break;
-    if (waitForWifi(1000) != WL_CONNECTED) break;
     replaceValuesInURL(data, s);
     if (s.indexOf(':') > -1) {
       mqttTopic = s.substring(0,s.indexOf(':'));
@@ -97,9 +100,9 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
       mqttEnd(false);
       return;
     }
-  } while(true);
+  }
   mqttEnd(true);
-  heap("");
+  //heap("");
 }
 
 bool MQTTDest::mqttStart() {

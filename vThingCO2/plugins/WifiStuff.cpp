@@ -25,7 +25,9 @@ void handleWifi() {
 }
 
 wl_status_t waitForWifi(uint16_t timeoutMs) {
-  bool putLF = false;
+  if (WiFi.status() == WL_CONNECTED)  return WL_CONNECTED;
+  Serial << F("Waiting for WiFi ");
+  //bool putLF = false;
   int delayFix = 100;
   //const static uint32_t timeoutMs =1000L;
   for (int i=0; i*delayFix < timeoutMs; i++) {
@@ -33,11 +35,9 @@ wl_status_t waitForWifi(uint16_t timeoutMs) {
     delay(delayFix);
     handleWifi();
     menuHandler.loop();
-    if ((i%10) == 0) {
-      SERIAL_PORT << '.';
-      putLF = true;
-    }
+    if ((i%10) == 0) SERIAL_PORT << '.';
   }
+  Serial << endl;
   return WiFi.status();
 }
 

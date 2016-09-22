@@ -44,7 +44,7 @@ extern "C" {
 
 
 
-#define BUILD_NUM "20160920"
+#define BUILD_NUM "20160922"
 
 #define SERIAL_PORT Serial
 #define EE_WIFI_SSID F("wifi.ssid")
@@ -252,7 +252,7 @@ void setup_IntThrHandler(MenuHandler *handler);
 void registerDestination(Destination *destination);
 void registerPlugin(Plugin *plugin);
 void registerSensor(Sensor *sensor);
-wl_status_t waitForWifi(uint16_t timeoutMs);
+wl_status_t waitForWifi(uint16_t timeoutMs = 15000);
 void beginI2C();
 void wifiConnectMulti();
 #endif

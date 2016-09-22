@@ -59,7 +59,7 @@ void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
 }
 
 void CustomHTTPDest::invokeURL(String &url) {
-  if (waitForWifi(1000) != WL_CONNECTED) return;
+  if (waitForWifi() != WL_CONNECTED) return;
   String x = url;
   if (url.startsWith("#")) x = url.substring(1);
   Serial << F("CustomHTTPDest::invoke = ") << x << endl;

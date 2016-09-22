@@ -81,7 +81,7 @@ String getForceUpdateBuild() {
 }
 
 void autoUpdateIfForced(const char *ignore) {
-  Serial << F("Waiting for Wifi connection\n");
+  //Serial << F("Waiting for Wifi connection\n");
   if (waitForWifi(10000) != WL_CONNECTED) return;
   String forcedUpdate = getForceUpdateBuild();
   if (!forcedUpdate.length()) return;

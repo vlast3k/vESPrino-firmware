@@ -13,6 +13,7 @@ TestSensor::TestSensor() {
 
 void TestSensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("testSensor"), CMD_EXACT, &TestSensor::toggle, F("testSensor toggle testSesnor")));
+  enabled = PropertyList.readBoolProperty(F("test.sensor"));
 
 }
 
@@ -21,8 +22,9 @@ void TestSensor::toggle(const char *ignore) {
 }
 
 void TestSensor::toggleInst() {
-  enabled != enabled;
+  enabled = !enabled;
   Serial << F("Test Sensor:") << (enabled ? F("ENABLED") : F("DISABLED")) << endl;
+  PropertyList.putProperty(F("test.sensor"), enabled?F("1"): F(""));
 }
 
 void TestSensor::getData(LinkedList<Pair *> *data) {
