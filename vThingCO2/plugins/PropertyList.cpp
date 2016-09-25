@@ -6,14 +6,14 @@
 
 
 PropertyListClass::PropertyListClass() {
-  Serial <<"Create Property List";
+  //Serial <<"Create Property List";
   //registerPlugin(this);
   configFileName = F("/vs_cfg.txt");
   tempFileName = F("/vs_cfg.tmp");
 }
 
 void PropertyListClass::setupPropList(MenuHandler *handler) {
-  Serial <<"PropList, register commands\n";
+//  Serial <<"PropList, register commands\n";
   handler->registerCommand(new MenuEntry(F("prop_list"), CMD_EXACT, &PropertyListClass::prop_list_cfg, F("prop_list")));
   handler->registerCommand(new MenuEntry(F("prop_set"), CMD_BEGIN, &PropertyListClass::prop_set, F("prop_set \"key\" \"value\"")));
 

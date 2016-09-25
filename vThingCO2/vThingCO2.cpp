@@ -19,7 +19,7 @@
 #include <Wire.h>
 #include "plugins\NeopixelVE.hpp"
 
-
+//#include <wiring_private.h>
 using namespace std;
 
 //  Timer *tmrStopLED;
@@ -61,6 +61,7 @@ void printVersion(const char* ignore) {
   Serial.flush();
   delay(100);
   SERIAL_PORT << F("IP address: ") << WiFi.localIP() << endl;
+  SERIAL_PORT << F("Chip ID: ")    << _HEX(ESP.getChipId()) << endl;
   Serial.flush();
   delay(100);
 
@@ -129,13 +130,25 @@ void loopPlugins() {
 //     return false;
 //   }
 // }
-extern NeopixelVE neopixel;
+
+// void onButton1() {
+//   Serial << digitalRead(D3) << endl;
+//   //if (digitalRead(D3) == 0) {
+//     shouldSend = true;
+//   //}
+// }
+//
+// void attachButton1() {
+//   //pinMode(BTTN_PIN, INPUT_PULLUP);
+//   attachInterrupt(D3, onButton1, CHANGE);
+// }
+
+extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 void setup() {
   // pinMode(D8, OUTPUT);    //enable power via D8
   // digitalWrite(D8, HIGH);
   // //delay(1000);
   SERIAL_PORT.begin(9600);
-
   PropertyList.begin(&menuHandler);
   //Wire.begin(D6, D5);
   Serial.flush();
@@ -175,14 +188,15 @@ void setup() {
   DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
   if (DEBUG) Serial << F("DEBUG is: ") << DEBUG;
 
+
   if (PowerManager.isWokeFromDeepSleep() == false) {
     activeWait();
-    menuHandler.scheduleCommand("fupd");
-    neopixel.cmdLedSetBrgInst("ledbrg 99");
-    neopixel.cmdLedHandleColorInst("ledcolor lila");
+    menuHandler.scheduleCommand(F("fupd"));
+    neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
+    neopixel.cmdLedHandleColorInst(F("ledcolor lila"));
   } else {
-    neopixel.cmdLedSetBrgInst("ledbrg 99");
-    neopixel.cmdLedHandleColorInst("ledcolor black");
+    neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
+    neopixel.cmdLedHandleColorInst(F("ledcolor black"));
   }
 
   wifiConnectMulti();
@@ -225,14 +239,37 @@ void setup() {
   setup_IntThrHandler(&menuHandler);
   rfDest.sendPing(1000);
   rfDest.sendPing(1000);
+
   heap("At setup end");
 
   //setLedColor(RgbColor(5, 0,3));
   //WiFi.begin("MarinaResidence","eeeeee");
 }
 //int aa = 0;
+uint32_t wfStart = 0;
 void loop() {
   //if ((aa++ % 500) == 0) Serial << "." << endl;
+  if (shouldSend == false && digitalRead(D3) == 0) {
+    Serial << millis() - wfStart << endl;
+    if (wfStart == 0) {
+      wfStart =millis();
+      neopixel.cmdLedSetBrgInst(F("ledbrg 90"));
+      neopixel.cmdLedHandleColorInst(F("ledcolor cyan"));
+    } else if (millis() - wfStart > 4000) {
+      //Serial << "SSSSSSSSSSSS" << endl;
+      startAutoWifiConfig();
+      shouldSend = true;
+    }
+    delay(100);
+    return;
+  } else if (wfStart > 0) {
+    wfStart = 0;
+    neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
+    neopixel.cmdLedHandleColorInst(F("ledcolor black"));
+  }
+
+
+
   handleWifi();
   menuHandler.loop();
   if (SKIP_LOOP) {delay(100); return;}
@@ -242,4 +279,5 @@ void loop() {
   menuHandler.loop();
   PowerManager.loopPowerManager();
   //delay(1000);
+
 }

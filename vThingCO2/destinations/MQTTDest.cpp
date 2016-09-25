@@ -28,7 +28,7 @@ void MQTTDest::cmdMqttSetup(const char *p) {
   p = extractStringFromQuotes(p, mqttUser,   sizeof(mqttUser));
   p = extractStringFromQuotes(p, mqttPass,   sizeof(mqttPass));
 //  p = extractStringFromQuotes(p, mqttTopic,  sizeof(mqttTopic));
-  Serial << "Gere" << endl;
+  //Serial << "Gere" << endl;
   delay(100);
   if (mqttClient[0] == 0) strcpy(mqttTopic, "vThing");
   if (mqttTopic[0] == 0) {

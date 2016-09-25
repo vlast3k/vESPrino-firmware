@@ -7,6 +7,7 @@ void ex2_attachInterrupt(void (*)());
 
 uint32_t lastBttn=0;
 void onButton() {
+  Serial << digitalRead(BTTN_PIN) << endl;
   if (digitalRead(BTTN_PIN) == 0) {
     shouldSend = true;
   }

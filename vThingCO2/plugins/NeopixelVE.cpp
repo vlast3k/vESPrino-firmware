@@ -55,7 +55,7 @@ void NeopixelVE::cmdLedSetBrgInst(const char *line) {
   line = strstr(line, " ");
   if (!line) return;
   ledBrg = ((float)atoi(line + 1))/100;
-  cmdLedHandleColorInst(NULL);
+  cmdLedHandleColorInst((const char *)NULL);
 }
 
 

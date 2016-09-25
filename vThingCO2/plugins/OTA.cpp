@@ -64,10 +64,11 @@ void OTA_registerCommands(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("fupd"), CMD_EXACT, autoUpdateIfForced, F("HCP Cfg 2")));
 }
 
-String getForceUpdateBuild() {
+String getHTTPFile(String url) {
     HTTPClient http;
     String payload;
-    http.begin("http://anker-bg.com/vlast3k/vesprino/forced.txt"); //HTTP
+  //  Serial << "Retriving HTTP: " << url << endl;
+    http.begin(url); //HTTP
     int httpCode = http.GET();
     if(httpCode > 0) {
         if (DEBUG) Serial << F("[HTTP] GET... code:") << httpCode << endl;
@@ -83,14 +84,24 @@ String getForceUpdateBuild() {
 void autoUpdateIfForced(const char *ignore) {
   //Serial << F("Waiting for Wifi connection\n");
   if (waitForWifi(10000) != WL_CONNECTED) return;
-  String forcedUpdate = getForceUpdateBuild();
-  if (!forcedUpdate.length()) return;
+  String urlGen = String(F("http://anker-bg.com/vlast3k/vesprino/"));
+  String chipid =  String(ESP.getChipId(), 16);
+  chipid.toUpperCase();
+  String urlChip = String(F("http://anker-bg.com/vlast3k/vesprino/")) + chipid + String(F("/"));
+  String forcedUpdateGen  = getHTTPFile(urlGen + F("forced.txt"));
+  String forcedUpdateChip = getHTTPFile(urlChip + F("forced.txt"));
+  uint32_t fc = atol(forcedUpdateChip.c_str());
+  uint32_t fg = atol(forcedUpdateGen.c_str());
+  uint32_t bn = atol(BUILD_NUM);
+  //Serial.printf("fg: %d, fc: %d, bn:%d\n", fg, fc, bn);
+  if (bn > fc && bn > fg) return;
+  String forcedUpdate = (fc >= fg) ? forcedUpdateChip : forcedUpdateGen;
+  String urlUpdate    = (fc >= fg) ? urlChip : urlGen;
   if (DEBUG) {
     Serial << F("OTA: current Build: ") << atol(BUILD_NUM) << endl;
     Serial << F("OTA: forced  Build: ") << atol(forcedUpdate.c_str()) << endl;
   }
-  if (atol(BUILD_NUM) >= atol(forcedUpdate.c_str())) return;
-  String url = "http://anker-bg.com/vlast3k/vesprino/firmware";
-  url += forcedUpdate + F(".bin");
+  //if (atol(BUILD_NUM) >= atol(forcedUpdateGen.c_str())) return;
+  String url = urlUpdate + F("firmware") + forcedUpdate + F(".bin");
   doHttpUpdate(0, url.c_str());
 }
