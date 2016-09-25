@@ -93,8 +93,8 @@ void autoUpdateIfForced(const char *ignore) {
   uint32_t fc = atol(forcedUpdateChip.c_str());
   uint32_t fg = atol(forcedUpdateGen.c_str());
   uint32_t bn = atol(BUILD_NUM);
-  //Serial.printf("fg: %d, fc: %d, bn:%d\n", fg, fc, bn);
-  if (bn > fc && bn > fg) return;
+  Serial.printf("fg: %d, fc: %d, bn:%d\n", fg, fc, bn);
+  if (bn >= fc && bn >= fg) return;
   String forcedUpdate = (fc >= fg) ? forcedUpdateChip : forcedUpdateGen;
   String urlUpdate    = (fc >= fg) ? urlChip : urlGen;
   if (DEBUG) {
