@@ -93,17 +93,17 @@ void CDM7160Sensor::onCmdTest(const char *ignore) {
   //   menuHandler.scheduleCommand("scani2c");
   //Serial << " Wire.status = " << Wire.status() <<endl;
   Serial << F("Register 0x00 : ") << _BIN(readI2CByte(0)) << endl;
-  delay(100);
+//  delay(100);
   Serial << F("Register 0x01 : ") << _BIN(readI2CByte(1)) << endl;
-  delay(100);
+//  delay(100);
   Serial << F("Register 0x02 : ") << _BIN(readI2CByte(2)) << endl;
-  delay(100);
+//  delay(100);
   Serial << F("Register 0x03 : ") << _BIN(readI2CByte(3)) << endl;
-  delay(100);
+//  delay(100);
   Serial << F("Register 0x04 : ") << _BIN(readI2CByte(4)) << endl;
-  delay(100);
+//  delay(100);
   Serial << F("Register 0x07 : ") << _BIN(readI2CByte(7)) << endl;
-  delay(100);
+//  delay(100);
   Serial << F("Read CO2: ")  <<  readCO2AutoRecover() << endl;;
 }
 
@@ -179,12 +179,12 @@ bool CDM7160Sensor::readI2CBytes(int start, uint8_t *buf, int len) {
     Wire.write(start);
     //delay(10);
     int et = Wire.endTransmission(false);
-    delay(10);//for some reason, w/o this nothing is received
-    if (et !=0) {
-      if (DEBUG) Serial << et;
-      delay(100);
-      continue;
-    }
+    delay(20);//for some reason, w/o this nothing is received
+    // if (et !=0) {
+    //   if (DEBUG) Serial << et;
+    //   delay(100);
+    //   continue;
+    // }
     if (Wire.requestFrom(CDM_ADDR_WRITE, (size_t)len, (bool)false) < len) {
       if (DEBUG) Serial << F("x");
       continue;
@@ -216,20 +216,20 @@ int CDM7160Sensor::writeByte(uint8_t reg, uint8_t value) {
   //Wire.setClockStretchLimit(100000L);
   int r;
   for (int i=0; i < 20; i++) {
-    if (i2cWireStatus() != I2C_OK) {
-      Serial << F("I2C Bus status: ") <<  Wire.status() << endl;
-    }
+    // if (i2cWireStatus() != I2C_OK) {
+    //   Serial << F("I2C Bus status: ") <<  Wire.status() << endl;
+    // }
     Wire.beginTransmission(addr);
     Wire.write(reg);
     Wire.write(value);
-    if (i2cWireStatus() != I2C_OK) {
-      Serial << F("I2C Bus status: ") <<  Wire.status() << endl;
-    }
+    // if (i2cWireStatus() != I2C_OK) {
+    //   Serial << F("I2C Bus status: ") <<  Wire.status() << endl;
+    // }
     r = Wire.endTransmission(true);
     if (r == 0) break;
     Serial << F("End trans : ") << r << endl;
     Serial.flush();
-    delay(100);
+//    delay(100);
     //Wire.begin();
   }
   Serial << F("End trans : ") << r << endl;
