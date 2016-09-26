@@ -190,6 +190,7 @@ void cmdDelay(const char *line) {
 
 void wifiConnectMulti() {
   if (wifiMulti) delete wifiMulti;
+  WiFi.mode(WIFI_STA);
   wifiMulti = new ESP8266WiFiMulti();
   wifiMulti->addAP("vladiHome", "0888414447");
   wifiMulti->addAP("Andreev", "4506285842");
