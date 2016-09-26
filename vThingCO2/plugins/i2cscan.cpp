@@ -5,6 +5,7 @@
 #include  <brzo_i2c.h>
 
 bool checkI2CDevice(int addr) {
+  i2cHigh();
   for (int i=0; i < 10; i++) {
     Wire.beginTransmission(addr);
     if (Wire.endTransmission() == 0) return true;
@@ -43,7 +44,9 @@ bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debu
   byte error, address;
   int nDevices;
 //  if (debug) Serial.printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
-
+  pinMode(sda, HIGH);
+  pinMode(sca, HIGH);
+  delay(100);
   nDevices = 0;
   for(address = 1; address < 0xff; address++ )  {
     // The i2c_scanner uses the return value of
@@ -99,6 +102,12 @@ bool findI2C(int &sda, int &scl, bool debug) {
     }
   }
   return false;
+}
+
+void i2cHigh() {
+  pinMode(i2cSDA, INPUT);
+  pinMode(i2cSCL, INPUT);
+  delay(100);
 }
 
 void cmdScanI2C(const char *ignore) {

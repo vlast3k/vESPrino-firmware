@@ -256,4 +256,5 @@ wl_status_t waitForWifi(uint16_t timeoutMs = 15000);
 void beginI2C();
 void wifiConnectMulti();
 void startAutoWifiConfig();
+void i2cHigh();
 #endif

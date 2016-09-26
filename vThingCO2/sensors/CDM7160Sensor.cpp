@@ -176,9 +176,7 @@ uint8_t CDM7160Sensor::readI2CByte(int reg) {
 
 bool CDM7160Sensor::readI2CBytes(int start, uint8_t *buf, int len) {
   i2cWireStatus();
-  pinMode(i2cSDA, INPUT);
-  pinMode(i2cSCL, INPUT);
-  delay(50);
+  i2cHigh();
   for (int tr = 0; tr < 6; tr ++) {
     Wire.beginTransmission(CDM_ADDR_WRITE);
     //delay(10);
@@ -188,9 +186,7 @@ bool CDM7160Sensor::readI2CBytes(int start, uint8_t *buf, int len) {
     delay(20);//for some reason, w/o this nothing is received
     if (et !=0) {
        if (DEBUG) Serial << et;
-       pinMode(i2cSDA, INPUT);
-       pinMode(i2cSCL, INPUT);
-       delay(50);
+       i2cHigh();
        continue;
     }
     if (Wire.requestFrom(CDM_ADDR_READ, (size_t)len, (bool)false) < len) {
