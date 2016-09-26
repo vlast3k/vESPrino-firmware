@@ -24,6 +24,7 @@ void BME280Sensor::getData(LinkedList<Pair *> *data) {
   //Serial << "BME280 get Data" << endl;
    delay(10);
   //if (millis() < 10000) return; //give time for the BM
+
    if (!initSensor()) return;
 
    data->add(new Pair("TEMP", String(bme->readTemperature())));
@@ -38,9 +39,14 @@ void BME280Sensor::getData(LinkedList<Pair *> *data) {
 bool BME280Sensor::initSensor() {
   bme = new Adafruit_BME280();
   //BME280->reset();
-  bool init = bme->begin(); // Runs : Wire.begin() + reset()
+  bool init = false;
+  for (int i=0; i < 5; i++) {
+    init = bme->begin();
+    if (init) break;
+    delay(10);
+
+  }
   if (!init) {
-  //  Serial <<"failed" << endl;
     delete bme;
     bme = NULL;
     return false;

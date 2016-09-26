@@ -40,24 +40,33 @@ void PM2005Sensor::getData(LinkedList<Pair *> *data) {
 bool PM2005Sensor::intBegin() {
 //  if (sda != 0 || sca != 0) Wire.begin(sda, sca);
   //Wire.status();
-  Wire.beginTransmission(0x28);
-  Wire.write(0x51);
-  return Wire.endTransmission(false) == 0;
+  for (int i=0; i < 5; i++) {
+    Wire.beginTransmission(0x28);
+    Wire.write(0x51);
+    if (!Wire.endTransmission(false)) return true;
+    delay(100);
+  }
+  return false;
 }
 
 void PM2005Sensor::setDynamicMode() {
   //Wire.status();
-  Wire.beginTransmission(0x28);
-  Wire.write(0x50);
+  int res = 3;
+  for (int i=0; i<5; i++) {
+    Wire.beginTransmission(0x28);
+    Wire.write(0x50);
 
-  Wire.write(0x16);
-  Wire.write(7);
-  Wire.write(5);
-  Wire.write(0);
-  Wire.write(0);
-  Wire.write(0);
-  Wire.write(0x14);
-  int res = Wire.endTransmission();
+    Wire.write(0x16);
+    Wire.write(7);
+    Wire.write(5);
+    Wire.write(0);
+    Wire.write(0);
+    Wire.write(0);
+    Wire.write(0x14);
+    res = Wire.endTransmission();
+    if (res == 0) break;
+    delay(100);
+  }
   if (DEBUG) Serial << F("PM2005 setDynamicMode res = ") << res << endl;
 }
 

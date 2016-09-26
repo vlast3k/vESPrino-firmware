@@ -34,8 +34,14 @@ bool SI7021Sensor::initSensor() {
   //si7021->reset();
   //si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
   //Serial << "SI7021 init :" <<  si7021->getDeviceID() << endl;
-  if (si7021->getDeviceID() == 255) {
-    //Serial <<"failed" << endl;
+  bool init = false;
+  for (int i=0; i < 5; i++) {
+      init = si7021->begin();
+      if (init) break;
+      delay(10);
+  }
+
+  if (!init) {
     delete si7021;
     si7021 = NULL;
     return false;
