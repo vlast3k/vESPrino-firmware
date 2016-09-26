@@ -117,7 +117,8 @@ void CDM7160Sensor::onChangeReg(const char *line) {
     uint8_t curVal =  readI2CByte(reg);
     if (curVal == 0xFF) continue;
     Serial << F("Before : ") << _HEX(curVal) << F(" : ") << _BIN(curVal) << endl;
-    writeByte(reg, val);
+    int ret = writeByte(reg, val);
+    if (ret > 0) continue;
     curVal =  readI2CByte(reg);
     if (curVal == 0xFF) continue;
     Serial << F("After : ") << _HEX(curVal) << F(" : ") << _BIN(curVal) << endl;
@@ -208,15 +209,29 @@ bool CDM7160Sensor::readI2CBytes(int start, uint8_t *buf, int len) {
 //   return false;
 // }
 //
-void CDM7160Sensor::writeByte(uint8_t reg, uint8_t value) {
+int CDM7160Sensor::writeByte(uint8_t reg, uint8_t value) {
   Serial << F("WriteByte :reg: ") << reg << F(", ") << _BIN(value) <<endl;
-  i2cWireStatus();
   byte addr = 0x69;
-  Wire.beginTransmission(addr);
-  Wire.write(reg);
-  Wire.write(value);
-  delay(100);
-  int r = Wire.endTransmission(true);
-  delay(100);
+  //Wire.setClock(9000L);
+  //Wire.setClockStretchLimit(100000L);
+  int r;
+  for (int i=0; i < 20; i++) {
+    if (i2cWireStatus() != I2C_OK) {
+      Serial << F("I2C Bus status: ") <<  Wire.status() << endl;
+    }
+    Wire.beginTransmission(addr);
+    Wire.write(reg);
+    Wire.write(value);
+    if (i2cWireStatus() != I2C_OK) {
+      Serial << F("I2C Bus status: ") <<  Wire.status() << endl;
+    }
+    r = Wire.endTransmission(true);
+    if (r == 0) break;
+    Serial << F("End trans : ") << r << endl;
+    Serial.flush();
+    delay(100);
+    //Wire.begin();
+  }
   Serial << F("End trans : ") << r << endl;
+  return r;
 }

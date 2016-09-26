@@ -26,7 +26,7 @@ private:
   static int readCO2AutoRecover();
   static uint8_t readI2CByte(int addr);
   static void writeCfg(uint8_t reg, uint8_t bit, bool value);
-  static void writeByte(uint8_t reg, uint8_t value);
+  static int writeByte(uint8_t reg, uint8_t value);
   static void endChangeMode();
   static void startChangeMode() ;
   static bool readI2CBytes(int start, uint8_t *buf, int len);
