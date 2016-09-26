@@ -191,7 +191,7 @@ void cmdDelay(const char *line) {
 void wifiConnectMulti() {
   if (wifiMulti) delete wifiMulti;
   wifiMulti = new ESP8266WiFiMulti();
-  wifiMulti->addAP("vladiHomePPP", "0888414447");
+  wifiMulti->addAP("vladiHome", "0888414447");
   wifiMulti->addAP("Andreev", "4506285842");
   String ssid = PropertyList.readProperty(EE_WIFI_SSID);
   String pass = PropertyList.readProperty(EE_WIFI_P1);

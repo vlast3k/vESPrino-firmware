@@ -26,7 +26,7 @@ void i2cPrintAddr(byte address) {
   Serial << _HEX(address) << endl;
 }
 void dumpI2CBus(const char *line) {
-  Wire.begin(D5, D7);
+  //Wire.begin(D5, D7);
   byte error, address;
   int nDevices;
   for(address = 1; address < 0xff; address++ )  {
