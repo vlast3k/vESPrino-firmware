@@ -58,11 +58,11 @@ int CDM7160Sensor::readCO2AutoRecover() {
 }
 
 void CDM7160Sensor::configureSensor() {
-  if (i2cWireStatus() != I2C_OK) {
-    int stat = Wire.status();
-    Serial << F("I2C Bus status: ") <<  Wire.status() << endl;
-    return;
-  }
+  // if (i2cWireStatus() != I2C_OK) {
+  //   int stat = Wire.status();
+  //   Serial << F("I2C Bus status: ") <<  Wire.status() << endl;
+  //   return;
+  // }
   uint8_t ctl = readI2CByte(CDM_CTL_REG);
   uint8_t avg = readI2CByte(CDM_AVG_REG);
   if ((ctl & CDM_FMODE) > 0)  writeByte(CDM_CTL_REG, 0x02);
@@ -130,11 +130,11 @@ void CDM7160Sensor::onChangeReg(const char *line) {
 
 int CDM7160Sensor::readCO2Raw() {
   uint8_t buf[5];
-  if (i2cWireStatus() != I2C_OK) {
-    if (DEBUG) Serial << F("I2C Bus status: ") << Wire.status() << endl;
-    return -1;
-  }
-  for (int i=0; i < 3; i++) {
+  // if (i2cWireStatus() != I2C_OK) {
+  //   if (DEBUG) Serial << F("I2C Bus status: ") << Wire.status() << endl;
+  //   return -1;
+  // }
+  for (int i=0; i < 5; i++) {
     if (!readI2CBytes(0, buf, sizeof(buf))) {
       if (DEBUG) Serial << F("Could not connect to Sensor") << endl;
       return -1;
@@ -146,6 +146,10 @@ int CDM7160Sensor::readCO2Raw() {
     if ((buf[2] & 0x80) > 0) {
       if (DEBUG) Serial << F("Sensor busy") << endl;
       delay(300);
+      continue;
+    }
+    if (buf[4] == 0xFF) {
+      delay(10);
       continue;
     }
     int ppm = (int)buf[4]*0xFF + buf[3];
@@ -229,7 +233,7 @@ int CDM7160Sensor::writeByte(uint8_t reg, uint8_t value) {
     if (r == 0) break;
     Serial << F("End trans : ") << r << endl;
     Serial.flush();
-//    delay(100);
+    delay(50);
     //Wire.begin();
   }
   Serial << F("End trans : ") << r << endl;
