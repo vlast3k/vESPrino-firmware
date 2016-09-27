@@ -65,6 +65,10 @@ void CDM7160Sensor::configureSensor() {
   // }
   uint8_t ctl = readI2CByte(CDM_CTL_REG);
   uint8_t avg = readI2CByte(CDM_AVG_REG);
+  if (ctl == 0xFF || avg == 0xFF) {
+    Serial << F("ERROR: Could not read sensor config") << endl;
+    return;
+  }
   if ((ctl & CDM_FMODE) > 0)  writeByte(CDM_CTL_REG, 0x02);
   if (avg != CDM_AVG_DEFAULT) writeByte(CDM_AVG_REG, CDM_AVG_DEFAULT);
   if ((ctl & CDM_FMODE) > 0 || avg != CDM_AVG_DEFAULT) {
@@ -186,6 +190,7 @@ bool CDM7160Sensor::readI2CBytes(int start, uint8_t *buf, int len) {
     delay(20);//for some reason, w/o this nothing is received
     if (et !=0) {
        if (DEBUG) Serial << et;
+       i2cWireStatus();
        i2cHigh();
        continue;
     }
@@ -230,10 +235,13 @@ int CDM7160Sensor::writeByte(uint8_t reg, uint8_t value) {
     //   Serial << F("I2C Bus status: ") <<  Wire.status() << endl;
     // }
     r = Wire.endTransmission(true);
+    delay(10);
     if (r == 0) break;
     Serial << F("End trans : ") << r << endl;
     Serial.flush();
-    delay(50);
+    i2cWireStatus();
+    i2cHigh();
+    delay(10);
     //Wire.begin();
   }
   Serial << F("End trans : ") << r << endl;
