@@ -1,5 +1,3 @@
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BME280.h>
 #include <Wire.h>
 #include "sensors\TestSensor.hpp"
 #include <LinkedList.h>

@@ -42,6 +42,7 @@ extern "C" {
 #include <ESP8266WiFiMulti.h>
 #include "plugins\NeopixelVE.hpp"
 
+#include "utils\SlowWire.hpp"
 
 
 #define BUILD_NUM "20160926"
@@ -242,6 +243,7 @@ extern int i2cSDA, i2cSCL;
 extern RTCMemStore rtcMemStore;
 extern ESP8266WiFiMulti  *wifiMulti;
 extern RFDest rfDest;
+extern SlowWireClass SlowWire;
 //extern NeopixelVE neopixel;
 
 void MigrateSettingsIfNeeded();
@@ -257,4 +259,5 @@ void beginI2C();
 void wifiConnectMulti();
 void startAutoWifiConfig();
 void i2cHigh();
+int i2cSlowWireStatus();
 #endif

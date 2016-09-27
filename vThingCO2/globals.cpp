@@ -21,7 +21,7 @@
 #include "destinations\RFDest.hpp"
 #include "utils\RTCMemStore.hpp"
 #include "plugins\NeopixelVE.hpp"
-
+#include "utils\SlowWire.hpp"
 
 boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
 boolean hasPIR = false;
@@ -56,3 +56,4 @@ MQTTDest mqttDest;
 RTCMemStore rtcMemStore;
 NeopixelVE neopixel;
 RFDest rfDest;
+SlowWireClass SlowWire;

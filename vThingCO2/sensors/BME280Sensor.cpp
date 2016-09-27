@@ -1,5 +1,5 @@
 #include <Adafruit_Sensor.h>
-#include <Adafruit_BME280.h>
+#include "lib\Adafruit_BME280.h"
 #include <Wire.h>
 #include "sensors\BME280Sensor.hpp"
 #include <LinkedList.h>
@@ -43,10 +43,12 @@ bool BME280Sensor::initSensor() {
   for (int i=0; i < 5; i++) {
     init = bme->begin();
     if (init) break;
-    delay(10);
+    i2cHigh();
+    delay(100);
 
   }
   if (!init) {
+    Serial << F("BME280 - init failed!") << endl;
     delete bme;
     bme = NULL;
     return false;

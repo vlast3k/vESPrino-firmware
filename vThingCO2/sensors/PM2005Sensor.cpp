@@ -38,12 +38,21 @@ void PM2005Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool PM2005Sensor::intBegin() {
+  i2cWireStatus();
+  i2cHigh();
 //  if (sda != 0 || sca != 0) Wire.begin(sda, sca);
   //Wire.status();
+  int res;
   for (int i=0; i < 5; i++) {
     Wire.beginTransmission(0x28);
     Wire.write(0x51);
-    if (!Wire.endTransmission(false)) return true;
+    if (!(res = Wire.endTransmission(false))) {
+      delay(20);
+      return true;
+    }
+    delay(20);
+    Serial << "PM2005 init res: " << res << endl;
+    i2cHigh();
     delay(100);
   }
   return false;

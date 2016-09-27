@@ -39,33 +39,37 @@ void dumpI2CBus(const char *line) {
 }
 
 bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debug) {
-  Wire.begin(sda, sca);
+  SlowWire.begin(sda, sca);
   //Wire.setClock(20000);
   byte error, address;
   int nDevices;
 //  if (debug) Serial.printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
-  pinMode(sda, HIGH);
-  pinMode(sca, HIGH);
-  delay(100);
+  //
+  // pinMode(sda, HIGH);
+  // pinMode(sca, HIGH);
+  // delay(100);
   nDevices = 0;
   for(address = 1; address < 0xff; address++ )  {
     // The i2c_scanner uses the return value of
     // the Write.endTransmisstion to see if
     // a device did acknowledge to the address.
-    Wire.beginTransmission(address);
-    error = Wire.endTransmission();
+    for (int i=0; i < 5; i++) {
+      SlowWire.beginTransmission(address);
+      error = SlowWire.endTransmission();
 
-    if (error == 0) {
-      if (debug) {
-        Serial.print(F("I2C device found at address 0x"));
-        i2cPrintAddr(address);
-      }
-      nDevices++;
-    } else if (error==4) {
-      delay(1);
-      if (debug) {
-        Serial.print(F("Unknow error at address 0x"));
-        i2cPrintAddr(address);
+      if (error == 0) {
+        if (debug) {
+          Serial.print(F("I2C device found at address 0x"));
+          i2cPrintAddr(address);
+        }
+        nDevices++;
+        break;
+      } else if (error==4) {
+        delay(1);
+        if (debug) {
+          Serial.print(F("SDA Line High 0x"));
+          i2cPrintAddr(address);
+        }
       }
     }
   }
@@ -81,6 +85,12 @@ int i2cWireStatus() {
   delay(10);
   return Wire.status();
 
+}
+
+int i2cSlowWireStatus() {
+  for (int i=0; i < 5 && SlowWire.status() != I2C_OK; i++) delay(5);
+  delay(10);
+  return SlowWire.status();
 }
 
 bool findI2C(int &sda, int &scl, bool debug) {
@@ -107,7 +117,7 @@ bool findI2C(int &sda, int &scl, bool debug) {
 void i2cHigh() {
   pinMode(i2cSDA, INPUT);
   pinMode(i2cSCL, INPUT);
-  delay(100);
+  delay(1);
 }
 
 void cmdScanI2C(const char *ignore) {

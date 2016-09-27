@@ -16,7 +16,7 @@ void CDM7160Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("cdmperf"), CMD_BEGIN, &CDM7160Sensor::onPerf, F("cdmreg \"regid\" \"value\"")));
   if (checkI2CDevice(CDM_ADDR_WRITE)) {
     Serial << F("Found CDM7160 CO2 Sensor") << endl;
-    configureSensor();
+    if (!PowerManager.isWokeFromDeepSleep()) configureSensor();
     hasSensor = true;
   }
 }
