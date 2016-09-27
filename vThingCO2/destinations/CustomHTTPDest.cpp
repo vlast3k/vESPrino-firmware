@@ -14,6 +14,7 @@ CustomHTTPDest::CustomHTTPDest() {
 
 void CustomHTTPDest::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("custom_url_add"), CMD_BEGIN, &CustomHTTPDest::menuAddCustomUrl, F("custom_url_add \"idx\",\"url\"")));
+  handler->registerCommand(new MenuEntry(F("custom_url_jadd"), CMD_BEGIN, &CustomHTTPDest::menuAddCustomUrlJ, F("custom_url_add \"idx\",\"url\"")));
   handler->registerCommand(new MenuEntry(F("custom_url_clean"), CMD_EXACT, &CustomHTTPDest::menuCleanCustomUrl, F("custom_url_clean - clean all custom urls")));
 }
 
@@ -33,15 +34,48 @@ void CustomHTTPDest::menuAddCustomUrl(const char *line) {
   int idx = atoi(sidx);
   PropertyList.putArrayProperty(F("custom_url_arr"), idx, url);
 }
+void CustomHTTPDest::menuAddCustomUrlJ(const char *line) {
+  //Serial << "menuAddCustomUrl" << endl;
+  char sidx[10];
+  line = extractStringFromQuotes(line, sidx, sizeof(sidx));
+  if (sidx[0] == 0) {
+    Serial << F("Command not recognized");
+    return;
+  }
+  int idx = atoi(sidx);
+  PropertyList.putArrayProperty(F("custom_url_arr"), idx, line);
+}
+
+bool CustomHTTPDest::parseJSONUrl(String &s, String &url, String &method, String &ct, String &pay) {
+  StaticJsonBuffer<400> jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(s.c_str());
+  if (!root.success()) {
+    SERIAL_PORT << F("Parsing failed! : ") << s.c_str() << endl;
+    return false;
+  }
+  if (root.containsKey("url"))    url    = root["url"].asString();
+  if (root.containsKey("method")) method = root["method"].asString();
+  if (root.containsKey("ct"))     ct     = root["ct"].asString();
+  if (root.containsKey("pay"))    pay    = root["pay"].asString();
+  return true;
+}
 
 void CustomHTTPDest::process(LinkedList<Pair *> &data) {
   Serial << F("CustomHTTPDest::process") << endl;
   int i=0;
   do {
     String s = PropertyList.getArrayProperty(F("custom_url_arr"), i++);
+    String url, method = "GET", contentType = "", pay = "";
     if (!s.length()) return;
-    replaceValuesInURL(data, s);
-    invokeURL(s);
+    if (s.charAt(0) == '#') s = s.substring(1);
+    if (s.charAt(0) == '{') {
+      if (!parseJSONUrl(s, url, method, contentType, pay)) continue;
+    } else {
+      url = s;
+    }
+    replaceValuesInURL(data, url);
+    replaceValuesInURL(data, pay);
+    invokeURL(url, method, contentType, pay);
   } while(true);
 }
 
@@ -58,16 +92,16 @@ void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
   }
 }
 
-void CustomHTTPDest::invokeURL(String &url) {
+void CustomHTTPDest::invokeURL(String &url, String &method, String &contentType, String &pay) {
   if (waitForWifi() != WL_CONNECTED) return;
-  String x = url;
-  if (url.startsWith("#")) x = url.substring(1);
-  Serial << F("CustomHTTPDest::invoke = ") << x << endl;
+  Serial << F("CustomHTTPDest::invoke = ") << url << endl;
+  if (pay.length()) Serial << F("CustomHTTPDest::payload = ") << pay << endl;
   Serial.flush();
-  delay(100);
-//  waitForWifi(1000);
   HTTPClient http;
-  http.begin(x);
+  http.begin(url);
+  if (contentType.length()) http.addHeader(F("Content-Type"), contentType);
+  if (method == "POST") AT_FW_Plugin::processResponseCodeATFW(&http, http.POST(pay));
+  if (method == "GET")  AT_FW_Plugin::processResponseCodeATFW(&http, http.GET());
   //addHCPIOTHeaders(&http, token);
-  int rc = AT_FW_Plugin::processResponseCodeATFW(&http, http.GET());
+
 }

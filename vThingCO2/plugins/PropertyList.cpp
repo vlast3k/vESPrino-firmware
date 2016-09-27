@@ -16,7 +16,7 @@ void PropertyListClass::setupPropList(MenuHandler *handler) {
 //  Serial <<"PropList, register commands\n";
   handler->registerCommand(new MenuEntry(F("prop_list"), CMD_EXACT, &PropertyListClass::prop_list_cfg, F("prop_list")));
   handler->registerCommand(new MenuEntry(F("prop_set"), CMD_BEGIN, &PropertyListClass::prop_set, F("prop_set \"key\" \"value\"")));
-
+  handler->registerCommand(new MenuEntry(F("prop_jset"), CMD_BEGIN, &PropertyListClass::prop_jset, F("prop_jset \"key\"=value")));
 }
 
 void PropertyListClass::prop_list_cfg(const char *line) {
@@ -42,6 +42,12 @@ void PropertyListClass::prop_set(const char *line) {
   line = extractStringFromQuotes(line, key, sizeof(key));
   line = extractStringFromQuotes(line, value, sizeof(value));
   PropertyList.putProperty(key, value);
+}
+
+void PropertyListClass::prop_jset(const char *line) {
+  char key[50];
+  line = extractStringFromQuotes(line, key, sizeof(key));
+  PropertyList.putProperty(key, line);
 }
 
 bool PropertyListClass::assertInit() {

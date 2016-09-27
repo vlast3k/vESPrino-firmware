@@ -38,7 +38,7 @@ class MenuHandler {
     void processCommands();
 
     byte readLine(int);
-    static const int LINE_LEN=250;
+    static const int LINE_LEN=450;
     char line[LINE_LEN];
     LinkedList<MenuEntry*> *commands;
     LinkedList<String*> pendingCommands = LinkedList<String*>();

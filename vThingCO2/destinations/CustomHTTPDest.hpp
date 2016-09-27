@@ -15,10 +15,12 @@ public:
   void setup(MenuHandler *handler);
   void loop() {};
   static void menuAddCustomUrl(const char *line);
+  static void menuAddCustomUrlJ(const char *line);
   static void menuCleanCustomUrl(const char *line);
   void process(LinkedList<Pair*> &data);
   void replaceValuesInURL(LinkedList<Pair *> &data, String &s);
-  void invokeURL(String &url);
+  void invokeURL(String &url, String &method, String &contentType, String &pay);
+  bool parseJSONUrl(String &s, String &url, String &method, String &ct, String &pay);
   const char* getName() {
     return "CustomHTTP";
   }
