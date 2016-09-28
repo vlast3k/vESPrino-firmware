@@ -100,8 +100,7 @@ void CustomHTTPDest::invokeURL(String &url, String &method, String &contentType,
   HTTPClient http;
   http.begin(url);
   if (contentType.length()) http.addHeader(F("Content-Type"), contentType);
-  if (method == "POST") AT_FW_Plugin::processResponseCodeATFW(&http, http.POST(pay));
-  if (method == "GET")  AT_FW_Plugin::processResponseCodeATFW(&http, http.GET());
+  AT_FW_Plugin::processResponseCodeATFW(&http, http.sendRequest(method.c_str(), pay));
   //addHCPIOTHeaders(&http, token);
 
 }
