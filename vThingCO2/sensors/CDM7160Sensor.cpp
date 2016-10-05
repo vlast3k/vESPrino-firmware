@@ -222,8 +222,6 @@ bool CDM7160Sensor::readI2CBytes(int start, uint8_t *buf, int len) {
 int CDM7160Sensor::writeByte(uint8_t reg, uint8_t value) {
   Serial << F("WriteByte :reg: ") << reg << F(", ") << _BIN(value) <<endl;
   byte addr = 0x69;
-  //Wire.setClock(9000L);
-  //Wire.setClockStretchLimit(100000L);
   int r;
   for (int i=0; i < 20; i++) {
     // if (i2cWireStatus() != I2C_OK) {

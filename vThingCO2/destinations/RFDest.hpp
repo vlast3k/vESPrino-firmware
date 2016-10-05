@@ -31,7 +31,8 @@ public:
 private:
   bool enabled = false;
 //  int port = D6;
-  int port = D1;
+//  int port = D1;
+  int getGPIO();
   void checkIfDefaultsAreSet();
   static void cmdSetAddr(const char *line);
   static void cmdTest(const char *line);

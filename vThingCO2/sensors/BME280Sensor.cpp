@@ -48,7 +48,7 @@ bool BME280Sensor::initSensor() {
 
   }
   if (!init) {
-    Serial << F("BME280 - init failed!") << endl;
+    if (DEBUG) Serial << F("BME280 - init failed!") << endl;
     delete bme;
     bme = NULL;
     return false;

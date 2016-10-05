@@ -7,6 +7,9 @@
 #include "MenuHandler.hpp"
 #include "plugins\PropertyList.hpp"
 #include "plugins\AT_FW_Plugin.hpp"
+#include "sensors\CO2Sensor.hpp"
+
+extern CO2Sensor co2Sensor;
 
 RFDest::RFDest() {
   registerDestination(this);
@@ -58,12 +61,16 @@ void RFDest::cmdTest(const char *line) {
 
 void RFDest::sendPing(int num) {
   if (!enabled) return;
-  rfBegin(port, 0, 1);
+  rfBegin(getGPIO(), 0, 1);
   delay(1);
   RFXmeter(0x42, 0, num);
   delay(700);
 }
 
+int RFDest::getGPIO() {
+  if (co2Sensor.hasSensor) return D1;
+  else return D6;
+}
 void RFDest::process(LinkedList<Pair *> &data) {
   Serial << F("RFDest::process") << endl;
   if (!enabled) return;
@@ -77,7 +84,7 @@ void RFDest::process(LinkedList<Pair *> &data) {
     if (addr < 0) continue;
     long value = atof(p->value.c_str()) * 100;
     if (DEBUG) Serial.printf(String(F("RF X10 Meter: addr=%d, value=%d\n")).c_str(), addr, value);
-    rfBegin(port, 0, 1);
+    rfBegin(getGPIO(), 0, 1);
     delay(1);
     RFXmeter(addr, 0, value);
     delay(700);
@@ -93,7 +100,7 @@ void RFDest::rfBegin(uint8_t tx_pin, uint8_t led_pin, uint8_t rf_repeats) {
 }
 
 void RFDest::RFXmeter(uint8_t rfxm_address, uint8_t rfxm_packet_type, long rfxm_value){
-	uint8_t x10buff[5]; // Set message buffer
+	uint8_t x10buff[6]; // Set message buffer
 	x10buff[0] = rfxm_address;
 	x10buff[1] = (~x10buff[0] & 0xF0) + (x10buff[0] & 0xF); // Calculate byte1 (byte 1 complement upper nibble of byte0)
 	if (rfxm_value > 0xFFFFFF) rfxm_value = 0; 	// We only have 3 byte for data. Is overflowed set to 0
@@ -169,7 +176,7 @@ void RFDest::SendCommand(uint8_t *data, uint8_t size){
 	for (int i = 0; i < _rf_repeats; i++){
 		SEND_HIGH();delayMicroseconds(X10_RF_SB_LONG);
 		SEND_LOW();delayMicroseconds(X10_RF_SB_SHORT);
-		for(int i=0; i <= size; i++) {
+		for(int i=0; i < size; i++) {
 			SendX10RfByte(data[i]);
 		}
 	SendX10RfBit(1);
