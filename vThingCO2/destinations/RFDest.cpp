@@ -85,11 +85,11 @@ void RFDest::process(LinkedList<Pair *> &data) {
 }
 
 void RFDest::rfBegin(uint8_t tx_pin, uint8_t led_pin, uint8_t rf_repeats) {
-    pinMode(_tx_pin, OUTPUT);
-   	if (_led_pin > 0) pinMode(_led_pin, OUTPUT);
 		_tx_pin = tx_pin;
 		_led_pin = led_pin;
 		_rf_repeats = rf_repeats;
+    pinMode(_tx_pin, OUTPUT);
+   	if (_led_pin > 0) pinMode(_led_pin, OUTPUT);
 }
 
 void RFDest::RFXmeter(uint8_t rfxm_address, uint8_t rfxm_packet_type, long rfxm_value){
