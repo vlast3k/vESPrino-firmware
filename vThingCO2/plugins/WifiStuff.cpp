@@ -8,6 +8,7 @@
 ESP8266WiFiMulti  *wifiMulti = NULL;
 
 IPAddress ip = WiFi.localIP();
+extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 
 void handleWifi() {
   if (millis() > 8000) wifiMulti->run();
@@ -18,6 +19,7 @@ void handleWifi() {
 #ifdef SAP_AUTH
     vSAP_Auth(EE_WIFI_P1_30B, EE_WIFI_P1_30B);
 #endif
+    //neopixel.cmdLedHandleColorInst(F("ledcolor blue"));
     SERIAL_PORT << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
     // handleCommandVESPrino("vecmd led_mblue");
     // handleCommandVESPrino("vecmd ledmode_2_3");
@@ -31,12 +33,21 @@ wl_status_t waitForWifi(uint16_t timeoutMs) {
   //bool putLF = false;
   int delayFix = 100;
   //const static uint32_t timeoutMs =1000L;
+  bool a=true;
   for (int i=0; i*delayFix < timeoutMs; i++) {
     if (WiFi.status() == WL_CONNECTED) break;
     delay(delayFix);
     handleWifi();
     menuHandler.loop();
-    if ((i%10) == 0) SERIAL_PORT << '.';
+    if ((i%10) == 0)  {
+      SERIAL_PORT << '.';
+      // if (a) {
+      //   neopixel.cmdLedSetBrgInst(F("ledbrg 90"));
+      // } else {
+      //   neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
+      // }
+      // a = !a;
+    }
   }
   Serial << endl;
   return WiFi.status();

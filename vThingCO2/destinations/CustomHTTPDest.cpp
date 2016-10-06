@@ -7,6 +7,7 @@
 #include "MenuHandler.hpp"
 #include "plugins\PropertyList.hpp"
 #include "plugins\AT_FW_Plugin.hpp"
+extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 
 CustomHTTPDest::CustomHTTPDest() {
   registerDestination(this);
@@ -75,6 +76,7 @@ void CustomHTTPDest::process(LinkedList<Pair *> &data) {
     }
     replaceValuesInURL(data, url);
     replaceValuesInURL(data, pay);
+    //if (url.indexOf("%CO2%") > -1 || pay.indexOf("%CO2%") > -1) continue;
     invokeURL(url, method, contentType, pay);
   } while(true);
 }
@@ -94,6 +96,7 @@ void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
 
 void CustomHTTPDest::invokeURL(String &url, String &method, String &contentType, String &pay) {
   if (waitForWifi() != WL_CONNECTED) return;
+  //neopixel.cmdLedHandleColorInst(F("ledcolor yellow"));
   Serial << F("CustomHTTPDest::invoke = ") << url << endl;
   if (pay.length()) Serial << F("CustomHTTPDest::payload = ") << pay << endl;
   Serial.flush();

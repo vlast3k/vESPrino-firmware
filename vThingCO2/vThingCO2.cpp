@@ -149,6 +149,7 @@ void setup() {
   // pinMode(D8, OUTPUT);    //enable power via D8
   // digitalWrite(D8, HIGH);
   // //delay(1000);
+  //neopixel.cmdLedHandleColorInst(F("ledcolor green"));
   SERIAL_PORT.begin(9600);
   PropertyList.begin(&menuHandler);
   //Wire.begin(D6, D5);
@@ -242,7 +243,7 @@ void setup() {
   rfDest.sendPing(1000);
 
   heap("At setup end");
-
+  //neopixel.cmdLedHandleColorInst(F("ledcolor red"));
   //setLedColor(RgbColor(5, 0,3));
   //WiFi.begin("MarinaResidence","eeeeee");
 }
