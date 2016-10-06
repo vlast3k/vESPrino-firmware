@@ -34,13 +34,13 @@ void CDM7160Sensor::getData(LinkedList<Pair *> *data) {
   if (!hasSensor) return;
 
   //if (!checkI2CDevice(CDM_ADDR_WRITE)) return;
-  for (int i=0; i < 3; i++) {
+//  for (int i=0; i < 3; i++) {
     int ppm = readCO2AutoRecover();
     if (ppm > 0) {
       rtcMemStore.addAverageValue(ppm);
     }
-    delay(5000);
-  }
+  //  delay(5000);
+//  }
   if (rtcMemStore.getAverage() > 1) data->add(new Pair("CO2", String(rtcMemStore.getAverage())));
 
 }
