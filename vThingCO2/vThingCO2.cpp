@@ -239,8 +239,10 @@ void setup() {
 #endif
 
   setup_IntThrHandler(&menuHandler);
-  rfDest.sendPing(1000);
-  rfDest.sendPing(1000);
+
+  //rfDest.sendPing(1000);
+
+//  menuHandler.scheduleCommand(F("sendNow"));
 
   heap("At setup end");
   //neopixel.cmdLedHandleColorInst(F("ledcolor red"));

@@ -21,7 +21,7 @@ class RTCMemStore {
 public:
   void init();
   uint8_t getIterations();
-  void addIteration();
+  void setIterations(uint8_t i);
   double getAverage();
   void addAverageValue(double val);
   static uint32_t getMillis();

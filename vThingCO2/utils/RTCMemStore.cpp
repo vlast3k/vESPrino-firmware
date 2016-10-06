@@ -16,9 +16,9 @@ uint8_t RTCMemStore::getIterations() {
   return x;
 }
 
-void RTCMemStore::addIteration() {
+void RTCMemStore::setIterations(uint8_t i) {
   readData();
-  rtcData->interations ++;
+  rtcData->interations = i;
   updateData();
 }
 

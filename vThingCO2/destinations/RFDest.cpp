@@ -22,6 +22,7 @@ void RFDest::setup(MenuHandler *handler) {
   enabled = PropertyList.readBoolProperty(F("rf.enabled"));
   if (enabled) {
     Serial << F("enabled\n");
+    sendPing(1000);
     // rfBegin(D6, 0, 1);
     // delay(1000);
     // RFXmeter(12, 0, 1111);
