@@ -80,7 +80,7 @@ void registerDestination(Destination *destination) {
 }
 
 void setupPlugins(MenuHandler *handler) {
-  menuHandler.handleCommand(F("scani2c"));
+  //menuHandler.handleCommand(F("scani2c"));
   Serial << F("\n--- Setup PLUGINS ---\n");
   for (int i=0; i < plugins.size(); i++) {
     Serial << F("Setup plugin: ") << plugins.get(i)->getName() << endl;

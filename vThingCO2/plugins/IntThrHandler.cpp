@@ -41,7 +41,7 @@ void conditionalSend(bool forceSend) {
   Serial.flush();
   if (rtcIt == 0) forceSend = true;
   rtcIt ++;
-  if (rtcIt == PropertyList.readLongProperty(PROP_SND_ITER)) rtcIt = 0;
+  if (rtcIt >= PropertyList.readLongProperty(PROP_SND_ITER)) rtcIt = 0;
   rtcMemStore.setIterations(rtcIt);
 
   Serial << F("\n--- DestHanlder: sendValue ---") << endl;
