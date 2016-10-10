@@ -82,7 +82,7 @@ void setSendInterval (const char *line) {
   }
   int iterations = std::max(1, interval / PowerManagerClass::IterationDurationS);
 
-  PropertyList.putProperty(PROP_SND_INT, String(iterations* PowerManagerClass::IterationDurationS).c_str());
+  PropertyList.putProperty(PROP_SND_INT, String(iterations * PowerManagerClass::IterationDurationS).c_str());
   PropertyList.putProperty(PROP_SND_ITER, String(iterations).c_str());
   //intSendValue = (uint32_t)interval * 1000;
   //tmrSendValueTimer->setInterval(intSendValue);

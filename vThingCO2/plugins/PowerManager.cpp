@@ -19,7 +19,9 @@ void PowerManagerClass::cmdDeepSleepInst(const char *line) {
   delay(1000);
 }
 void PowerManagerClass::setup(MenuHandler *handler) {
-  WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
+  //WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
+  WiFi.setSleepMode(WIFI_NONE_SLEEP);
+
   timeoutIntervalS = 180;
   timer = TimerManager.registerTimer(new Timer(1000L * timeoutIntervalS, PowerManagerClass::onTimeout, millis));
   handler->registerCommand(new MenuEntry(F("nop"), CMD_BEGIN, &PowerManagerClass::onNop, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));

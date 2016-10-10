@@ -90,7 +90,7 @@ void CDM7160Sensor::onCmdLoop(const char *ignore) {
     Serial.printf(String(F("%2d: %d (%d)\n")).c_str(), i, co2, co2-last);
     Serial.flush();
     last = co2;
-    delay(3000);
+    delay(15000);
     //menuHandler.processUserInput();
     menuHandler.loop();
     //Serial << i << "\t: " << readCO2Raw(true) << endl;
