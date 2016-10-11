@@ -169,7 +169,7 @@ void setup() {
   //   // strip->Show();
   //   setLedColor(RgbColor(5, 0,3));
   // #endif
-
+  //WiFi.mode(WIFI_OFF);
 
   printVersion();
   menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
@@ -249,7 +249,7 @@ void setup() {
   //setLedColor(RgbColor(5, 0,3));
   //WiFi.begin("MarinaResidence","eeeeee");
   menuHandler.scheduleCommand("nop 0");
-  WiFi.mode(WIFI_OFF);
+
 
 }
 //int aa = 0;
@@ -264,7 +264,7 @@ void loop() {
       neopixel.cmdLedHandleColorInst(F("ledcolor cyan"));
     } else if (millis() - wfStart > 4000) {
       //Serial << "SSSSSSSSSSSS" << endl;
-      //startAutoWifiConfig();
+      startAutoWifiConfig();
       shouldSend = true;
     }
     delay(100);

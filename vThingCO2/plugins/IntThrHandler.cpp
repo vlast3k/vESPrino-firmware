@@ -51,11 +51,14 @@ void conditionalSend(bool forceSend) {
 
   //bool someThresholdExceeded = checkThresholds(values);
 //  if (forceSend || someThresholdExceeded) {
+  wifiConnectMulti();
 
   if (forceSend) {
     for (int i=0; i < destinations.size(); i++) destinations.get(i)->process(values);
   //tmrSendValueTimer->Start();
   }
+  wifiOff();
+
   for (int i=0; i < values.size(); i++)  delete  values.get(i);
   if (DEBUG) heap("");
   tmrRawRead->setInterval(PowerManagerClass::IterationDurationS * 1000);

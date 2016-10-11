@@ -1,3 +1,4 @@
+
 #ifndef PowerManager_h
 #define PowerManager_h
 

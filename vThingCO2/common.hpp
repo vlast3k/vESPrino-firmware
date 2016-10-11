@@ -261,4 +261,5 @@ void wifiConnectMulti();
 void startAutoWifiConfig();
 void i2cHigh();
 int i2cSlowWireStatus();
+void wifiOff();
 #endif

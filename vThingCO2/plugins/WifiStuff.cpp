@@ -11,7 +11,7 @@ IPAddress ip = WiFi.localIP();
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 
 void handleWifi() {
-  if (millis() > 8000) wifiMulti->run();
+  if (wifiMulti && millis() > 8000) wifiMulti->run();
   //SERIAL_PORT << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
   if (ip == WiFi.localIP()) return;
   else if (WiFi.status() == WL_CONNECTED) {
@@ -201,19 +201,27 @@ void cmdDelay(const char *line) {
 
 void wifiConnectMulti() {
   if (wifiMulti) delete wifiMulti;
+  WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
   wifiMulti = new ESP8266WiFiMulti();
   wifiMulti->addAP("vladiHome", "0888414447");
   wifiMulti->addAP("Andreev", "4506285842");
   String ssid = PropertyList.readProperty(EE_WIFI_SSID);
   String pass = PropertyList.readProperty(EE_WIFI_P1);
-  WiFi.persistent(false);
   if (ssid.length() && ssid.length() < 40 && pass.length() < 100) {
     wifiMulti->addAP(ssid.c_str(), pass.c_str());
     char x[120], y[120];
     strcpy(x, ssid.c_str());
     strcpy(y, pass.c_str());
     WiFi.begin(x, y);
+  }
+}
+
+void wifiOff() {
+  WiFi.disconnect(true); //mode = wifi Off
+  if (wifiMulti) {
+    delete wifiMulti;
+    wifiMulti = NULL;
   }
 }
 
