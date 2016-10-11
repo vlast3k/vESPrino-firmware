@@ -13,6 +13,7 @@
 #include "plugins\PowerManager.hpp"
 #include "sensors\SI7021Sensor.hpp"
 #include "sensors\BME280Sensor.hpp"
+#include "sensors\BMP085Sensor.hpp"
 #include "sensors\PM2005Sensor.hpp"
 #include "sensors\CDM7160Sensor.hpp"
 #include "sensors\TestSensor.hpp"
@@ -49,6 +50,7 @@ PowerManagerClass PowerManager;
 TimerManagerClass TimerManager;
 SI7021Sensor si7021Sensor;
 BME280Sensor bme280Sensor;
+BMP085Sensor bmp085Sensor;
 PM2005Sensor pm2005Sensor;
 CDM7160Sensor cdm7160Sensor;
 

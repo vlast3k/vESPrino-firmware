@@ -32,6 +32,7 @@ extern "C" {
 #include "plugins\PowerManager.hpp"
 #include "sensors\SI7021Sensor.hpp"
 #include "sensors\BME280Sensor.hpp"
+#include "sensors\BMP085Sensor.hpp"
 #include "sensors\PM2005Sensor.hpp"
 #include "sensors\CDM7160Sensor.hpp"
 #include "sensors\TestSensor.hpp"
@@ -235,6 +236,7 @@ extern TimerManagerClass TimerManager;
 extern PowerManagerClass PowerManager;
 extern SI7021Sensor si7021Sensor;
 extern BME280Sensor bme280Sensor;
+extern BMP085Sensor bmp085Sensor;
 extern PM2005Sensor pm2005Sensor;
 extern CDM7160Sensor cdm7160Sensor;
 extern TestSensor testSensor;
