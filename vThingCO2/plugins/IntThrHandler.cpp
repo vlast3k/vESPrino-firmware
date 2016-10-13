@@ -37,11 +37,11 @@ uint32_t intRawRead  = 15000L;
 
 void conditionalSend(bool forceSend) {
   int rtcIt = rtcMemStore.getIterations();
-  Serial << "rtcit = " << rtcIt << endl;
-  Serial.flush();
+  //Serial << "rtcit = " << rtcIt << endl;
+  //Serial.flush();
   if (rtcIt == 0) forceSend = true;
   rtcIt ++;
-  if (rtcIt >= PropertyList.readLongProperty(PROP_SND_ITER)) rtcIt = 0;
+  if (rtcIt >= PropertyList.readLongProperty(PROP_SND_INT) / PowerManagerClass::IterationDurationS) rtcIt = 0;
   rtcMemStore.setIterations(rtcIt);
 
   Serial << F("\n--- DestHanlder: sendValue ---") << endl;
@@ -86,7 +86,7 @@ void setSendInterval (const char *line) {
   int iterations = std::max(1, interval / PowerManagerClass::IterationDurationS);
 
   PropertyList.putProperty(PROP_SND_INT, String(iterations * PowerManagerClass::IterationDurationS).c_str());
-  PropertyList.putProperty(PROP_SND_ITER, String(iterations).c_str());
+  //PropertyList.putProperty(PROP_SND_ITER, String(iterations).c_str());
   //intSendValue = (uint32_t)interval * 1000;
   //tmrSendValueTimer->setInterval(intSendValue);
   Serial << F("Send Interval (s): ") << iterations* PowerManagerClass::IterationDurationS << endl;

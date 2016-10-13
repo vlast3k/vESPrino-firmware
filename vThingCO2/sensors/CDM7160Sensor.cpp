@@ -75,9 +75,15 @@ void CDM7160Sensor::configureSensor() {
     Serial << F("ERROR: Could not read sensor config") << endl;
     return;
   }
-  if ((ctl & CDM_FMODE) > 0)  writeByte(CDM_CTL_REG, 0x02);
+  //if ((ctl & CDM_FMODE) > 0)  writeByte(CDM_CTL_REG, 0x02);
+  if (ctl != 6) {
+    writeByte(CDM_CTL_REG, 0x00);
+    delay(100);
+    writeByte(CDM_CTL_REG, 0x06);
+  }
+
   if (avg != CDM_AVG_DEFAULT) writeByte(CDM_AVG_REG, CDM_AVG_DEFAULT);
-  if ((ctl & CDM_FMODE) > 0 || avg != CDM_AVG_DEFAULT) {
+  if (ctl != 6 || avg != CDM_AVG_DEFAULT) {
     Serial << F("Sensor Configuration updated") << endl;
   }
 }
@@ -89,6 +95,10 @@ void CDM7160Sensor::onCmdLoop(const char *ignore) {
     int co2 = readCO2Raw();
     Serial.printf(String(F("%2d: %d (%d)\n")).c_str(), i, co2, co2-last);
     Serial.flush();
+    String s = "oled ";
+    s += co2;
+    s += ".";
+    menuHandler.scheduleCommand(s.c_str());
     last = co2;
     delay(3000);
     //menuHandler.processUserInput();

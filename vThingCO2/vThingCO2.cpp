@@ -249,6 +249,7 @@ void setup() {
   //setLedColor(RgbColor(5, 0,3));
   //WiFi.begin("MarinaResidence","eeeeee");
   menuHandler.scheduleCommand("nop 0");
+  menuHandler.scheduleCommand("oled Started");
 
 
 }

@@ -67,7 +67,7 @@ extern "C" {
 
 
 #define PROP_SND_INT      F("send.interval")
-#define PROP_SND_ITER     F("send.iterations")
+//#define PROP_SND_ITER     F("send.iterations")
 #define PROP_SND_THR      F("cubic.co2.threshold")
 #define PROP_H801_API_KEY F("h801.api_key")
 #define PROP_DEBUG        F("debug")
@@ -153,7 +153,7 @@ void handleCommandVESPrino(char *line);
 byte readLine(int timeout);
 int handleCommand();
 void sendPingPort(const char *p);
-void oledHandleCommand(char *cmd);
+void oledHandleCommand(const char *cmd);
 void loopNeoPixel();
 void checkButtonSend();
 

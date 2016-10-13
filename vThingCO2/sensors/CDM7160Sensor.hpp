@@ -40,7 +40,7 @@ private:
   static const uint8_t CDM_FMODE = 0x4;
   static const uint8_t CDM_ST_BUSY = 0x80;
   static const uint8_t CDM_ST_AVGCOMPLTE = 0x10;
-  static const uint8_t CDM_AVG_DEFAULT = 15;
+  static const uint8_t CDM_AVG_DEFAULT = 1;
   // bool intReadData(int &pm25, int &pm10, bool debug = false);
   // bool intBegin(int sda = 0, int sca = 0);
 };
