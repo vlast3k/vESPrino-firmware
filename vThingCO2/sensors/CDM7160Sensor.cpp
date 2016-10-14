@@ -51,6 +51,12 @@ int CDM7160Sensor::readCO2AutoRecover() {
   int ppm=0;
   for (int i=0; i < 2; i++) {
     int a = readCO2Raw();
+    for (int k=0; k < 4 ; k++) {
+      int b = readCO2Raw();
+      if (a == b) break;
+      a = b;
+    }
+    //int a = readCO2Raw();
     Serial << F("Raw CO2: ") << a << endl;
     if (a > 0) return a;
     else if (a == -1) { //maybe some temprary error, retry once more before reseting bus
@@ -93,16 +99,20 @@ void CDM7160Sensor::onCmdLoop(const char *ignore) {
   int last = 0;
   for (int i=0; i < 50; i++) {
     int co2 = readCO2Raw();
-    Serial.printf(String(F("%2d: %d (%d)\n")).c_str(), i, co2, co2-last);
+    char x[50];
+    sprintf(x, String(F("%2d: %d (%d)\n")).c_str(), i, co2, co2-last);
+    Serial.printf(x);
     Serial.flush();
     String s = "oled ";
-    s += co2;
-    s += ".";
+    s += x;
     menuHandler.scheduleCommand(s.c_str());
     last = co2;
-    delay(3000);
-    //menuHandler.processUserInput();
     menuHandler.loop();
+
+    delay(2000);
+    //menuHandler.processUserInput();
+    //menuHandler.processUserInput();
+    //menuHandler.loop();
     //Serial << i << "\t: " << readCO2Raw(true) << endl;
   }
 }

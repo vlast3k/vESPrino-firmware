@@ -274,6 +274,7 @@ void loop() {
     wfStart = 0;
     neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
     neopixel.cmdLedHandleColorInst(F("ledcolor black"));
+    menuHandler.scheduleCommand("cdmloop");
   }
 
 
