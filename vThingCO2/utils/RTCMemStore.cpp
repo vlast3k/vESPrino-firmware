@@ -29,9 +29,9 @@ double RTCMemStore::getAverage() {
   return x;
 }
 
-void RTCMemStore::addAverageValue(double val) {
+void RTCMemStore::addAverageValue(double val, int weight) {
   readData();
-  rtcData->avg1.addValue(val);
+  for (int i=0; i < weight; i++) rtcData->avg1.addValue(val);
   updateData();
 }
 

@@ -35,10 +35,14 @@ void CDM7160Sensor::getData(LinkedList<Pair *> *data) {
 
   //if (!checkI2CDevice(CDM_ADDR_WRITE)) return;
 //  for (int i=0; i < 3; i++) {
-    int ppm = readCO2AutoRecover();
-    if (ppm > 0) {
-      rtcMemStore.addAverageValue(ppm);
-    }
+  int ppm = readCO2AutoRecover();
+  if (ppm > 0) {
+    int weight = 1;
+    int diff = abs(ppm - rtcMemStore.getAverage());
+    if (diff > 100) weight = 6;
+    else if (diff > 50) weight = 2;
+    rtcMemStore.addAverageValue(ppm, weight);
+  }
   //  delay(5000);
 //  }
   //if (rtcMemStore.getAverage() > 1) data->add(new Pair("CO2", String(rtcMemStore.getAverage())));
@@ -51,11 +55,11 @@ int CDM7160Sensor::readCO2AutoRecover() {
   int ppm=0;
   for (int i=0; i < 2; i++) {
     int a = readCO2Raw();
-    for (int k=0; k < 4 ; k++) {
-      int b = readCO2Raw();
-      if (a == b) break;
-      a = b;
-    }
+    // for (int k=0; k < 4 ; k++) {
+    //   int b = readCO2Raw();
+    //   if (a == b) break;
+    //   a = b;
+    // }
     //int a = readCO2Raw();
     Serial << F("Raw CO2: ") << a << endl;
     if (a > 0) return a;
@@ -86,6 +90,7 @@ void CDM7160Sensor::configureSensor() {
     writeByte(CDM_CTL_REG, 0x00);
     delay(100);
     writeByte(CDM_CTL_REG, 0x06);
+    delay(100);
   }
 
   if (avg != CDM_AVG_DEFAULT) writeByte(CDM_AVG_REG, CDM_AVG_DEFAULT);

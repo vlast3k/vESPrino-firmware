@@ -9,7 +9,7 @@ void PowerManagerClass::cmdDeepSleep(const char *line) {
 }
 void PowerManagerClass::cmdDeepSleepInst(const char *line) {
   int type = atoi(strchr(line, ' ') + 1);
-  Serial << "set deepsleep mode:" << type<< endl;
+//  Serial << "set deepsleep mode:" << type<< endl;
   rtcMemStore.setDeepSleep(true);
   switch (type) {
     case 0: ESP.deepSleep(1, WAKE_RF_DISABLED); break;
@@ -19,8 +19,8 @@ void PowerManagerClass::cmdDeepSleepInst(const char *line) {
   delay(1000);
 }
 void PowerManagerClass::setup(MenuHandler *handler) {
-  //WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
-  WiFi.setSleepMode(WIFI_NONE_SLEEP);
+  WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
+  //WiFi.setSleepMode(WIFI_NONE_SLEEP);
 
   timeoutIntervalS = 180;
   timer = TimerManager.registerTimer(new Timer(1000L * timeoutIntervalS, PowerManagerClass::onTimeout, millis));

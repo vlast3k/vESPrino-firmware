@@ -51,7 +51,7 @@ bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debu
   nDevices = 0;
   for(address = 1; address < 0xff; address++ )  {
     yield();
-    Serial << ".";
+    //Serial << ".";
     // The i2c_scanner uses the return value of
     // the Write.endTransmisstion to see if
     // a device did acknowledge to the address.

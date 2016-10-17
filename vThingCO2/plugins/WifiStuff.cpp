@@ -201,8 +201,8 @@ void cmdDelay(const char *line) {
 
 void wifiConnectMulti() {
   if (wifiMulti) delete wifiMulti;
-  WiFi.forceSleepWake();
-  delay(100);
+  //WiFi.forceSleepWake();
+  //delay(100);
   WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
   wifiMulti = new ESP8266WiFiMulti();
@@ -225,7 +225,7 @@ void wifiOff() {
     delete wifiMulti;
     wifiMulti = NULL;
   }
-  WiFi.forceSleepBegin();
+  //WiFi.forceSleepBegin();
 }
 
 void WIFI_registerCommands(MenuHandler *handler) {

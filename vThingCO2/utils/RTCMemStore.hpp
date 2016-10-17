@@ -23,7 +23,7 @@ public:
   uint8_t getIterations();
   void setIterations(uint8_t i);
   double getAverage();
-  void addAverageValue(double val);
+  void addAverageValue(double val, int weight = 1);
   static uint32_t getMillis();
   void addMillis(uint32_t ms);
 

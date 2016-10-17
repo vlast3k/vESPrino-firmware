@@ -248,8 +248,8 @@ void setup() {
   //neopixel.cmdLedHandleColorInst(F("ledcolor red"));
   //setLedColor(RgbColor(5, 0,3));
   //WiFi.begin("MarinaResidence","eeeeee");
-  menuHandler.scheduleCommand("nop 0");
-  menuHandler.scheduleCommand("oled Started");
+  //menuHandler.scheduleCommand("nop 0");
+  //menuHandler.scheduleCommand("oled Started");
 
 
 }
@@ -274,7 +274,7 @@ void loop() {
     wfStart = 0;
     neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
     neopixel.cmdLedHandleColorInst(F("ledcolor black"));
-    menuHandler.scheduleCommand("cdmloop");
+//    menuHandler.scheduleCommand("cdmloop");
   }
 
 
