@@ -9,12 +9,14 @@ PM2005Sensor::PM2005Sensor() {
 }
 
 void PM2005Sensor::setup(MenuHandler *handler) {
-//  handler->registerCommand(new MenuEntry(F("pm2005Init"), CMD_EXACT, &PM2005Sensor::onCmdInit, F("")));
+  handler->registerCommand(new MenuEntry(F("pm2005quiet"), CMD_BEGIN, &PM2005Sensor::onCmdQuiet, F("pm2005quiet 2200,0300,-2 (zulu start, zulu end, tz offset in hours)")));
+  handler->registerCommand(new MenuEntry(F("pm2005int"), CMD_BEGIN, &PM2005Sensor::onCmdInterval, F("pm2005int 0,60 (measure time in minutes - active, quiet (<5 min = dynamic mode)")));
   if (checkI2CDevice(0x28)) {
     Serial << F("Found PM2005 - Dust / Particle Sensor\n");
     hasSensor = true;
     int pm25, pm10, mode, status;
     if (!intReadData(pm25, pm10, status, mode)) return;
+    if (TimerManager::)
     if (mode != 5) {
       setDynamicMode();
       intReadData(pm25, pm10, status, mode);
@@ -25,6 +27,26 @@ void PM2005Sensor::setup(MenuHandler *handler) {
 // void PM2005Sensor::onCmdInit(const char *ignore) {
 //   pm2005Sensor.initSensor();
 // }
+void PM2005Sensor::onCmdQuiet(const char *line) {
+  char *s = strchr(line, ' ') + 1;
+  int zstart = atoi(s);
+  s = strchr(s, ',') + 1;
+  int zend   = atoi(s);
+  s = strchr(s, ',') + 1;
+  int tzoff  = atoi(s);
+  PropertyList.putLongProperty(PROP_PM2005_QSTART, zstart);
+  PropertyList.putLongProperty(PROP_PM2005_QEND, zstart);
+  PropertyList.putLongProperty(PROP_TZOFFSET, tzoff);
+}
+
+void PM2005Sensor::onCmdInterval(const char *line) {
+  char *s = strchr(line, ' ') + 1;
+  int active = atoi(s);
+  s = strchr(s, ',') + 1;
+  int quiet  = atoi(s);
+  PropertyList.putLongProperty(PROP_PM2005_INT_ACT, active);
+  PropertyList.putLongProperty(PROP_PM2005_INT_QUIET, quiet);
+}
 
 void PM2005Sensor::getData(LinkedList<Pair *> *data) {
   if (!hasSensor) return;
@@ -59,24 +81,26 @@ bool PM2005Sensor::intBegin() {
 }
 
 void PM2005Sensor::setDynamicMode() {
-  //Wire.status();
-  int res = 3;
+  uint8_t toSend[8] = {0x50, 0x16, 7, 5, 0, 0, 0, 0};
+  sendCommand(toSend);
+}
+
+void PM2005Sensor::setTimingMeasuringMode(int intervalSec) {
+  uint8_t toSend[8] = {0x50, 0x16, 7, 4, (uint8_t)(intervalSec >> 2), (uint8_t)(intervalSec & 0xFF), 0, 0};
+  sendCommand(toSend);
+}
+
+void PM2005Sensor::sendCommand(uint8_t *toSend) {
+  int res = -1;
+  for (int i=1; i <=6; i++) toSend[7] ^= toSend[i];
   for (int i=0; i<5; i++) {
     Wire.beginTransmission(0x28);
-    Wire.write(0x50);
-
-    Wire.write(0x16);
-    Wire.write(7);
-    Wire.write(5);
-    Wire.write(0);
-    Wire.write(0);
-    Wire.write(0);
-    Wire.write(0x14);
+    for (int k=0; k < 8; k++) Wire.write(toSend[k]);
     res = Wire.endTransmission();
     if (res == 0) break;
     delay(100);
   }
-  if (DEBUG) Serial << F("PM2005 setDynamicMode res = ") << res << endl;
+  if (DEBUG) Serial << F("PM2005 setMode res = ") << res << endl;
 }
 
 bool PM2005Sensor::intReadData(int &pm25, int &pm10, int &status, int &mode) {

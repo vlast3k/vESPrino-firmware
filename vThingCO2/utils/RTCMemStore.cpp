@@ -48,6 +48,20 @@ void RTCMemStore::addMillis(uint32_t ms) {
   updateData();
 }
 
+uint32_t RTCMemStore::getGenData(int idx) {
+  readData();
+  uint32_t x = rtcData->genData[idx];
+  updateData();
+  return x;
+}
+
+void RTCMemStore::setGenData(int idx, uint32_t value){
+  readData();
+  rtcData->genData[idx] = value;
+  updateData();
+}
+
+
 bool RTCMemStore::wasInDeepSleep() {
   readData();
   bool res = rtcData->inDeepSleep == 1;

@@ -6,6 +6,7 @@ struct RTCData {
   uint32_t interations = 0;
   uint32_t millisStartIteration;
   uint32_t inDeepSleep = 0;
+  uint32_t genData[5];
   RunningAverageSt avg1;
   uint8_t padding[3];
   static int rtcDataSize() {
@@ -35,11 +36,15 @@ public:
   static bool dataExisted;
   static bool getDataExisted();
   static bool test;
-   static bool getTest(){return test;};
+  static bool getTest() { return test; };
+  static const GEN_MSCOUNTER = 0;
+  static const GEN_LASTTIME = 1;
 private:
   static uint32_t calculateCRC32(const uint8_t *data, size_t length);
   static bool readData();
   static void updateData();
+  static uint32_t getGenData(int idx);
+  static void setGenData(int idx, uint32_t value);
 };
 
 

@@ -4,6 +4,11 @@
 #include <LinkedList.h>
 #include "interfaces\Pair.h"
 
+#define PROP_PM2005_QSTART F("pm2005.qstart")
+#define PROP_PM2005_QEND   F("pm2005.qend")
+#define PROP_PM2005_INT_ACT F("pm2005.int.active")
+#define PROP_PM2005_INT_QUIET F("pm2005.int.quiet")
+
 class PM2005Sensor : public Sensor {
 public:
   PM2005Sensor();
