@@ -31,15 +31,18 @@ void CommonCommands::dumpCfg(const char *s) {
 
 void CommonCommands::factoryReset(const char *ignore) {
   SERIAL_PORT << F("Doing Factory Reset, and restarting...") << endl;
-  for (int i=0; i < 3000; i++) EEPROM.write(i, 0xFF);
+  //SERIAL_PORT << "was in deep sleep: "<< rtcMemStore.wasInDeepSleep()<< endl;
+  for (int i=0; i < 100; i++) EEPROM.write(i, 0xFF);
   EEPROM.commit();
   PropertyList.factoryReset();
+  //SERIAL_PORT << "was in deep sleep: "<< rtcMemStore.wasInDeepSleep()<< endl;
   Serial.flush();
   delay(100);
   ESP.restart();
 }
 
 void espRestart(const char* ignore) {
+  rtcMemStore.clear();
   ESP.restart();
 }
 

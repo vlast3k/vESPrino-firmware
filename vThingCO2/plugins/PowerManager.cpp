@@ -78,7 +78,7 @@ void PowerManagerClass::loopPowerManager() {
     //delay(100);
     //ESP.deepSleep(20L*1000*1000);
 
-    rtcMemStore.setGenData(RTCMemStore::GEN_MSCOUNTER, 100 + millis() + rtcMemStore.getGenData(RTCMemStore::GEN_MSCOUNTER));
+    rtcMemStore.setGenData(GEN_MSCOUNTER, 100 + millis() + rtcMemStore.getGenData(GEN_MSCOUNTER));
     ESP.deepSleep(sec*1000*1000);
     delay(2000);
   } else {

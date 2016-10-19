@@ -1,6 +1,9 @@
 #ifndef RTCMemStore_h
 #define RTCMemStore_h
 #include <RunningAverageSt.h>
+
+#define GEN_MSCOUNTER 0
+#define GEN_LASTTIME 1
 struct RTCData {
   uint32_t crc32;
   uint32_t interations = 0;
@@ -27,24 +30,22 @@ public:
   void addAverageValue(double val, int weight = 1);
   static uint32_t getMillis();
   void addMillis(uint32_t ms);
-
+  static uint32_t getGenData(int idx);
+  static void setGenData(int idx, uint32_t value);
   bool wasInDeepSleep();
   void setDeepSleep(bool state);
-
+  void clear();
 
   static RTCData *rtcData;
   static bool dataExisted;
   static bool getDataExisted();
   static bool test;
   static bool getTest() { return test; };
-  static const GEN_MSCOUNTER = 0;
-  static const GEN_LASTTIME = 1;
 private:
   static uint32_t calculateCRC32(const uint8_t *data, size_t length);
   static bool readData();
   static void updateData();
-  static uint32_t getGenData(int idx);
-  static void setGenData(int idx, uint32_t value);
+
 };
 
 

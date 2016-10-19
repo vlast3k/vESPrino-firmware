@@ -44,8 +44,7 @@ void conditionalSend(bool forceSend) {
   if (rtcIt >= PropertyList.readLongProperty(PROP_SND_INT) / PowerManagerClass::IterationDurationS) rtcIt = 0;
   rtcMemStore.setIterations(rtcIt);
 
-  Serial << F("\n--- DestHanlder: sendValue ---") << endl;
-  if (DEBUG) Serial << F("forceSend:") << forceSend << endl;
+  Serial << F("\n--- DestHanlder: sendValue --- ") << forceSend<< endl;
   LinkedList<Pair *> values = LinkedList<Pair* >();
   for (int i=0; i < sensors.size(); i++)  sensors.get(i)->getData(&values);
 

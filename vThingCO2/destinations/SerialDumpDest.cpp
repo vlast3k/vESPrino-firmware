@@ -15,7 +15,7 @@ SerialDumpDest::SerialDumpDest() {
 
 void SerialDumpDest::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("serial_dump_toggle"), CMD_EXACT, &SerialDumpDest::toggle, F("serial_dump_toggle toggle serial dump output")));
-  handler->registerCommand(new MenuEntry(F("ser"), CMD_EXACT, &SerialDumpDest::toggle, F("serial_dump_toggle toggle serial dump output")));
+  //handler->registerCommand(new MenuEntry(F("ser"), CMD_EXACT, &SerialDumpDest::toggle, F("serial_dump_toggle toggle serial dump output")));
 }
 
 void SerialDumpDest::toggle(const char *line) {

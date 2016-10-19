@@ -43,7 +43,7 @@ bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debu
   //Wire.setClock(20000);
   byte error, address;
   int nDevices;
-//  if (debug) Serial.printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
+  if (debug) Serial.printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
   //
   // pinMode(sda, HIGH);
   // pinMode(sca, HIGH);
@@ -96,14 +96,14 @@ int i2cSlowWireStatus() {
 }
 
 bool findI2C(int &sda, int &scl, bool debug) {
-  int gpios[] = {D1, D5};
-  String gpios_str[] = {F("D1"), F("D5")};
+  int gpios[] = {D1, D5, D2, D5, D6};
+  String gpios_str[] = {F("D1"), F("D5"), F("D2"), F("D5"), F("D6")};
   int size = sizeof(gpios) / sizeof(int);
   bool found = false;
   for (int i=0; i < size; i++) {
     for (int k=0; k < size; k++) {
       if (i == k) continue;
-    //  if (debug) Serial << "Scanning " << gpios_str[sda], << " : " << sca_str << endl;
+      //if (debug) Serial << "Scanning " << gpios_str[sda], << " : " << gpios_str[sca] << endl;
       if (hasI2CDevices(gpios[i], gpios[k], gpios_str[i], gpios_str[k], debug)) {
         sda = gpios[i];
         scl = gpios[k];
