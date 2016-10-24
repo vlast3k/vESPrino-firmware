@@ -12,6 +12,7 @@ struct RTCData {
   uint32_t genData[5];
   RunningAverageSt avg1;
   uint8_t padding[3];
+  char lastDweetCreated[30];
   static int rtcDataSize() {
     return (sizeof(struct RTCData)/4) * 4;
   }
@@ -35,6 +36,9 @@ public:
   bool wasInDeepSleep();
   void setDeepSleep(bool state);
   void clear();
+
+  void setLastDweet(const char *s);
+  void getLastDweet(char *buf);
 
   static RTCData *rtcData;
   static bool dataExisted;

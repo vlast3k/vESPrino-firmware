@@ -20,6 +20,7 @@ void DweetIOClass::cmdDweetStart(const char *cmd) {
   if (DweetIOClass::timer == NULL) DweetIOClass::timer = TimerManager.registerTimer(new Timer(intervalSec*1000, onGetDweets));
   if (intervalSec == 0) DweetIOClass::timer->Stop();
   else DweetIOClass::timer->setInterval(intervalSec*1000);
+  onGetDweets();
 }
 
 void DweetIOClass::onGetDweets() {
@@ -29,7 +30,8 @@ void DweetIOClass::onGetDweets() {
 }
 
 bool DweetIOClass::getDweetCommand(char *cmd) {
-    static char lastDweet[30];
+    char lastDweet[30];
+    rtcMemStore.getLastDweet(lastDweet);
     uint32_t mstart = millis();
 
     if (!PropertyList.hasProperty(PROP_DWEET_CMDKEY)) return false;
@@ -55,7 +57,8 @@ bool DweetIOClass::getDweetCommand(char *cmd) {
     if (DEBUG) Serial << F("Got Dweets for: ") << millis() - mstart << F(" ms\n");
     if (!root.containsKey("this") || strcmp(root["this"].asString(), "succeeded")) return false;
     if (strcmp(lastDweet, root["with"][0]["created"].asString()) == 0) return false;
-    strcpy(lastDweet, root["with"][0]["created"].asString());
+    rtcMemStore.setLastDweet(root["with"][0]["created"].asString());
+    //strcpy(lastDweet, root["with"][0]["created"].asString());
     strcpy(cmd, root["with"][0]["content"]["cmd"].asString());
     if (DEBUG) SERIAL_PORT << F("New Dweet: ") << cmd << endl;
     return true;

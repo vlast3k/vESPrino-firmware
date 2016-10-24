@@ -9,6 +9,18 @@ void RTCMemStore::init() {
   updateData();
 }
 
+void RTCMemStore::setLastDweet(const char *s) {
+  readData();
+  strcpy(rtcData->lastDweetCreated, s);
+  updateData();
+}
+
+void RTCMemStore::getLastDweet(char *buf) {
+  readData();
+  strcpy(buf, rtcData->lastDweetCreated);
+  updateData();
+}
+
 uint8_t RTCMemStore::getIterations() {
   readData();
   uint8_t x = rtcData->interations;
