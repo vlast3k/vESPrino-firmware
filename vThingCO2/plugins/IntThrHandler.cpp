@@ -70,11 +70,16 @@ void conditionalSend(bool forceSend) {
 // }
 
 void onRawRead() {
-  conditionalSend(false);
+  menuHandler.scheduleCommand("sendNowCond");
+  //conditionalSend(false);
 }
 
 void cmdSendNow(const char* ignore) {
   conditionalSend(true);
+}
+
+void cmdSendNowCond(const char* ignore) {
+  conditionalSend(false);
 }
 
 void setSendInterval (const char *line) {
@@ -137,6 +142,7 @@ void setup_IntThrHandler(MenuHandler *handler) {
   //handler->registerCommand(new MenuEntry(F("wst"), CMD_BEGIN, setSendThreshold, F("")));
   //handler->registerCommand(new MenuEntry(F("set_thr"), CMD_BEGIN, setSendThresholdJson, F("Json Array[\"key1\", \"value1\", \"key2\", \"value2\", ...]")));
   handler->registerCommand(new MenuEntry(F("sendNow"), CMD_EXACT, cmdSendNow, F("Process destinatios and send")));
+  handler->registerCommand(new MenuEntry(F("sendNowCond"), CMD_EXACT, cmdSendNowCond, F("Process destinatios and send")));
 
   //tmrSendValueTimer->Start();
   tmrRawRead->Start();

@@ -61,10 +61,10 @@ byte MenuHandler::readLine(int timeout) {
   return i;
 }
 
-void MenuHandler::scheduleCommandListFromProperty(const char *prop) {
+void MenuHandler::scheduleCommandProperty(const char *prop) {
   if (DEBUG)  Serial << F("schedule commands from prop: ") << prop << endl;
   char *list = PropertyList.readProperty(prop);
-  cmdListN(list);
+  scheduleCommand(list);
 }
 
 void MenuHandler::cmdListN(const char *list) {
@@ -89,6 +89,7 @@ void MenuHandler::loop() {
 }
 
 void MenuHandler::processCommands() {
+  if (!schedulingEnabled) return;
   bool hadCommands = false;
   while (pendingCommands.size() > 0) {
     String *s = pendingCommands.shift();

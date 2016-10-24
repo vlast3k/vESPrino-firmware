@@ -35,7 +35,7 @@ bool DweetIOClass::getDweetCommand(char *cmd) {
     uint32_t mstart = millis();
 
     if (!PropertyList.hasProperty(PROP_DWEET_CMDKEY)) return false;
-    if (waitForWifi() != WL_CONNECTED) return;
+    if (waitForWifi() != WL_CONNECTED) return false ;
     String url = String(F("http://dweet.io/get/latest/dweet/for/")) + PropertyList.readProperty(PROP_DWEET_CMDKEY);
 
     HTTPClient http;

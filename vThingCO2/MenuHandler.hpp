@@ -30,7 +30,9 @@ class MenuHandler {
     void handleCommand(const char *line);
     void scheduleCommand(const __FlashStringHelper *s) {scheduleCommand(String(s).c_str());};
     void handleCommand(const __FlashStringHelper *s) {handleCommand(String(s).c_str());};
-    void scheduleCommandListFromProperty(const char *prop);
+    void scheduleCommandProperty(const char *prop);
+    void setSchedulingEnabled(bool val) {schedulingEnabled = val;};
+
 
   private:
     bool processUserInput();
@@ -43,6 +45,7 @@ class MenuHandler {
     char line[LINE_LEN];
     LinkedList<MenuEntry*> *commands;
     LinkedList<String*> pendingCommands = LinkedList<String*>();
+    bool schedulingEnabled = true;
 
 };
 

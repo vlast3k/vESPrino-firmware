@@ -1,4 +1,5 @@
 #ifndef WebServerH
+#define WebServerH
 #include "common.hpp"
 #include "PropertyList.hpp"
 #include "interfaces\Plugin.hpp"

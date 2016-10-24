@@ -1,4 +1,5 @@
 #ifndef DWEET_IO_H
+#define DWEET_IO_H
 #include "common.hpp"
 #include "PropertyList.hpp"
 #include "interfaces\Plugin.hpp"

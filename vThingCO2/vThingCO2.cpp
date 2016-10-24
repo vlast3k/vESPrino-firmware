@@ -148,7 +148,7 @@ void loopPlugins() {
 void fireEvent(const char *name) {
   String s = "event.";
   s += name;
-  menuHandler.scheduleCommandListFromProperty(s.c_str());
+  menuHandler.scheduleCommandProperty(s.c_str());
 }
 
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
@@ -265,25 +265,25 @@ void setup() {
 uint32_t wfStart = 0;
 void loop() {
   //if ((aa++ % 500) == 0) Serial << "." << endl;
-  if (shouldSend == false && digitalRead(D3) == 0) {
-    Serial << millis() - wfStart << endl;
-    if (wfStart == 0) {
-      wfStart =millis();
-      neopixel.cmdLedSetBrgInst(F("ledbrg 90"));
-      neopixel.cmdLedHandleColorInst(F("ledcolor cyan"));
-    } else if (millis() - wfStart > 4000) {
-      //Serial << "SSSSSSSSSSSS" << endl;
-      startAutoWifiConfig();
-      shouldSend = true;
-    }
-    delay(100);
-    return;
-  } else if (wfStart > 0) {
-    wfStart = 0;
-    neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
-    neopixel.cmdLedHandleColorInst(F("ledcolor black"));
-//    menuHandler.scheduleCommand("cdmloop");
-  }
+//   if (shouldSend == false && digitalRead(D3) == 0) {
+//     Serial << millis() - wfStart << endl;
+//     if (wfStart == 0) {
+//       wfStart =millis();
+//       neopixel.cmdLedSetBrgInst(F("ledbrg 90"));
+//       neopixel.cmdLedHandleColorInst(F("ledcolor cyan"));
+//     } else if (millis() - wfStart > 4000) {
+//       //Serial << "SSSSSSSSSSSS" << endl;
+//       startAutoWifiConfig();
+//       shouldSend = true;
+//     }
+//     delay(100);
+//     return;
+//   } else if (wfStart > 0) {
+//     wfStart = 0;
+//     neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
+//     neopixel.cmdLedHandleColorInst(F("ledcolor black"));
+// //    menuHandler.scheduleCommand("cdmloop");
+//   }
 
 
 
