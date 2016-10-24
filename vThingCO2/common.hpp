@@ -46,7 +46,7 @@ extern "C" {
 #include "utils\SlowWire.hpp"
 
 
-#define BUILD_NUM "20161023"
+#define BUILD_NUM "20161024"
 
 #define SERIAL_PORT Serial
 #define EE_WIFI_SSID F("wifi.ssid")

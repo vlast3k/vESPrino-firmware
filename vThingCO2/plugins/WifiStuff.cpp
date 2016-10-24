@@ -7,6 +7,12 @@
 
 ESP8266WiFiMulti  *wifiMulti = NULL;
 
+#define PROP_WIFI_STATIC_IP F("wifi.static_ip")
+#define PROP_WIFI_GATEWAY F("wifi.gateway")
+#define PROP_WIFI_SUBNET F("wifi.subnet")
+#define PROP_WIFI_DNS1 F("wifi.dns1")
+#define PROP_WIFI_DNS2 F("wifi.dns2")
+
 IPAddress ip = WiFi.localIP();
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 
@@ -202,12 +208,25 @@ void cmdDelay(const char *line) {
   delay(d);
 }
 
+void applyStaticWifiConfig() {
+  if (PropertyList.hasProperty(PROP_WIFI_STATIC_IP)) {
+    IPAddress ip, gw, su, d1, d2;
+    ip.fromString(PropertyList.readProperty(PROP_WIFI_STATIC_IP));
+    gw.fromString(PropertyList.readProperty(PROP_WIFI_GATEWAY));
+    su.fromString(PropertyList.readProperty(PROP_WIFI_SUBNET));
+    d1.fromString(PropertyList.readProperty(PROP_WIFI_DNS1));
+    d2.fromString(PropertyList.readProperty(PROP_WIFI_DNS2));
+    WiFi.config(ip, gw, su, d1, d2);
+  }
+}
+
 void wifiConnectMulti() {
   if (wifiMulti) delete wifiMulti;
   //WiFi.forceSleepWake();
   //delay(100);
   WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
+  applyStaticWifiConfig();
   wifiMulti = new ESP8266WiFiMulti();
   wifiMulti->addAP("vladiHome", "0888414447");
   wifiMulti->addAP("Andreev", "4506285842");
@@ -231,13 +250,53 @@ void wifiOff() {
   //WiFi.forceSleepBegin();
 }
 
+#define PROP_WIFI_STATIC_IP F("wifi.static_ip")
+#define PROP_WIFI_GATEWAY F("wifi.gateway")
+#define PROP_WIFI_SUBNET F("wifi.subnet")
+#define PROP_WIFI_DNS1 F("wifi.dns1")
+#define PROP_WIFI_DNS2 F("wifi.dns2")
+void setStaticWifi(const char* cmd) {
+  cmd = strchr(cmd, ' ') + 1;
+  char *x = strchr(cmd, ',');
+  *x = 0;
+  PropertyList.putProperty(PROP_WIFI_STATIC_IP, cmd);
+
+  cmd = x+1;
+  x = strchr(cmd, ',');
+  *x = 0;
+  PropertyList.putProperty(PROP_WIFI_GATEWAY, cmd);
+  cmd = x+1;
+  x = strchr(cmd, ',');
+  *x = 0;
+  PropertyList.putProperty(PROP_WIFI_SUBNET, cmd);
+  cmd = x+1;
+  x = strchr(cmd, ',');
+  *x = 0;
+  PropertyList.putProperty(PROP_WIFI_DNS1, cmd);
+  cmd = x+1;
+  x = strchr(cmd, ',');
+  *x = 0;
+  PropertyList.putProperty(PROP_WIFI_DNS2, cmd);
+  applyStaticWifiConfig();
+}
+
+void cmdIPConfig(const char *ignore) {
+  Serial << F("IP: ") << WiFi.localIP() << endl;
+  Serial << F("GW: ") << WiFi.gatewayIP() << endl;
+  Serial << F("SU: ") << WiFi.subnetMask() << endl;
+  Serial << F("D1: ") << WiFi.dnsIP(0) << endl;
+  Serial << F("D2: ") << WiFi.dnsIP(1) << endl;
+}
+
 void WIFI_registerCommands(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("scan"), CMD_EXACT, &wifiScanNetworks, F("")));
   handler->registerCommand(new MenuEntry(F("wifi"), CMD_BEGIN, &setWifi, F("")));
+  handler->registerCommand(new MenuEntry(F("static_wifi"), CMD_BEGIN, &setStaticWifi, F("")));
   handler->registerCommand(new MenuEntry(F("ping"), CMD_BEGIN, sendPingPort, F("")));
   handler->registerCommand(new MenuEntry(F("sndiot"), CMD_BEGIN, sndIOT, F("")));
   handler->registerCommand(new MenuEntry(F("sleeptype"), CMD_BEGIN, cmdSleeptype, F("")));
   handler->registerCommand(new MenuEntry(F("delay"), CMD_BEGIN, cmdDelay, F("")));
+  handler->registerCommand(new MenuEntry(F("ipconfig"), CMD_EXACT, cmdIPConfig, F("")));
 }
 
 extern NeopixelVE neopixel;
