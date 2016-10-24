@@ -24,6 +24,8 @@
 #include "plugins\NeopixelVE.hpp"
 #include "utils\SlowWire.hpp"
 #include "plugins\Dweet_io.hpp"
+#include "plugins\WebServer.hpp"
+
 
 boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
 boolean hasPIR = false;
@@ -61,3 +63,4 @@ NeopixelVE neopixel;
 RFDest rfDest;
 SlowWireClass SlowWire;
 DweetIOClass DweetIO;
+WebServerClass WebServer;
