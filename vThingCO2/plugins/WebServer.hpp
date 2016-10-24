@@ -5,7 +5,7 @@
 #include "interfaces\Plugin.hpp"
 #include <Timer.h>
 #include <ESP8266WebServer.h>
-
+#define PROP_ESP_HOSTNAME F("hostname")
 class WebServerClass : public Plugin {
 public:
   WebServerClass() ;

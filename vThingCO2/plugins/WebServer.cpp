@@ -2,6 +2,8 @@
 #include "MenuHandler.hpp"
 #include <Timer.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266NetBIOS.h>
+#include <ESP8266mDNS.h>
 
 const char* apiKey = "Qw8rdb20aV";
 //http://randomkeygen.com/
@@ -33,6 +35,18 @@ void WebServerClass::cmdStartWebServerInst() {
   Serial.print("\n\nOpen http://");
   Serial.print(WiFi.localIP());
   Serial.println("/ in your browser to see it working");
+
+  String hostname = PropertyList.readProperty(PROP_ESP_HOSTNAME);
+  if (hostname.length() == 0) hostname = "vthing";
+  Serial << "Web Server accessible on :" << endl;
+  Serial << "   http://" << WiFi.localIP() << endl;
+  if (MDNS.begin(hostname.c_str())) {
+    Serial << "   http://" << hostname << ".local/" << endl;
+    MDNS.addService("http", "tcp", 80);
+  }
+  NBNS.begin(hostname.c_str());
+  Serial << "   http://" << hostname << "/" << endl;
+
 }
 
 void WebServerClass::onCommand() {
