@@ -8,6 +8,7 @@
 MenuHandler::MenuHandler() {
   commands = new LinkedList<MenuEntry*>();
   registerCommand(new MenuEntry(F("help"), CMD_EXACT, MenuHandler::cmdHelp, F("This help page")));
+  registerCommand(new MenuEntry(F("##"), CMD_BEGIN, MenuHandler::cmdListN, F("##cmd1##cmd2##..##cmdN##")));
 
 }
 
@@ -56,6 +57,23 @@ byte MenuHandler::readLine(int timeout) {
   }
   line[i] = 0;
   return i;
+}
+
+void MenuHandler::scheduleCommandListFromProperty(const char *prop) {
+  if (DEBUG)  Serial << F("schedule commands from prop: ") << prop << endl;
+  char *list = PropertyList.readProperty(prop);
+  cmdListN(list);
+}
+
+void MenuHandler::cmdListN(const char *list) {
+  list = list + 2;
+  char *x;
+  while ((x = strstr(list, "##")) != NULL) {
+    *x = 0;
+    menuHandler.scheduleCommand(list);
+    list = x+2;
+  }
+  //if (DEBUG)  Serial << F("schedule command liast  from prop DONE") << endl;
 }
 
 void MenuHandler::scheduleCommand(const char *cmd) {

@@ -21,6 +21,8 @@ void handleWifi() {
 #endif
     //neopixel.cmdLedHandleColorInst(F("ledcolor blue"));
     SERIAL_PORT << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
+    fireEvent("wifiConnected");
+
     // handleCommandVESPrino("vecmd led_mblue");
     // handleCommandVESPrino("vecmd ledmode_2_3");
   }
@@ -29,6 +31,7 @@ void handleWifi() {
 
 wl_status_t waitForWifi(uint16_t timeoutMs) {
   if (WiFi.status() == WL_CONNECTED)  return WL_CONNECTED;
+  fireEvent("wifiSearching");
   Serial << F("Waiting for WiFi ");
   //bool putLF = false;
   int delayFix = 100;

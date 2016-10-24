@@ -144,6 +144,12 @@ void loopPlugins() {
 //   attachInterrupt(D3, onButton1, CHANGE);
 // }
 
+void fireEvent(const char *name) {
+  String s = "event.";
+  s += name;
+  menuHandler.scheduleCommandListFromProperty(s.c_str());
+}
+
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 void setup() {
   // pinMode(D8, OUTPUT);    //enable power via D8
@@ -245,6 +251,7 @@ void setup() {
 //  menuHandler.scheduleCommand(F("sendNow"));
 
   heap("At setup end");
+  fireEvent("setupEnd");
   //neopixel.cmdLedHandleColorInst(F("ledcolor red"));
   //setLedColor(RgbColor(5, 0,3));
   //WiFi.begin("MarinaResidence","eeeeee");

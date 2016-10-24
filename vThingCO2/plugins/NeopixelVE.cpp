@@ -104,12 +104,12 @@ RgbColor NeopixelVE::ledNextColor() {
 }
 
 void NeopixelVE::setLedColor(const RgbColor &color) {
-  // NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> strip(1, 2);
-  // strip.Begin();
-  // strip.SetPixelColor(0, color);
-  // strip.Show();
-  // delay(1);
-  // Serial1.end();
-  // Serial1.flush();
-  // delay(10);
+  NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> strip(1, 2);
+  strip.Begin();
+  strip.SetPixelColor(0, color);
+  strip.Show();
+  delay(1);
+  Serial1.end();
+  Serial1.flush();
+  delay(10);
 }

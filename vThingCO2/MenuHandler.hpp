@@ -30,11 +30,12 @@ class MenuHandler {
     void handleCommand(const char *line);
     void scheduleCommand(const __FlashStringHelper *s) {scheduleCommand(String(s).c_str());};
     void handleCommand(const __FlashStringHelper *s) {handleCommand(String(s).c_str());};
+    void scheduleCommandListFromProperty(const char *prop);
 
-;
   private:
     bool processUserInput();
     static void cmdHelp(const char *ignore);
+    static void cmdListN(const char *list);
     void processCommands();
 
     byte readLine(int);
