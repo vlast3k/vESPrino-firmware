@@ -24,6 +24,7 @@ void WebServerClass::loop() {
 
 void WebServerClass::cmdStartWebServerInst() {
   if (server != NULL) delete server;
+  if (waitForWifi() != WL_CONNECTED) return;
   server = new ESP8266WebServer(80);
 
   server->on("/", WebServerClass::onCommand);
