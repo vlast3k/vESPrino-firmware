@@ -209,7 +209,7 @@ void cmdDelay(const char *line) {
 }
 
 void applyStaticWifiConfig() {
-  if (PropertyList.hasProperty(PROP_WIFI_STATIC_IP)) {
+  //if (PropertyList.hasProperty(PROP_WIFI_STATIC_IP)) {
     IPAddress ip, gw, su, d1, d2;
     ip.fromString(PropertyList.readProperty(PROP_WIFI_STATIC_IP));
     gw.fromString(PropertyList.readProperty(PROP_WIFI_GATEWAY));
@@ -217,7 +217,7 @@ void applyStaticWifiConfig() {
     d1.fromString(PropertyList.readProperty(PROP_WIFI_DNS1));
     d2.fromString(PropertyList.readProperty(PROP_WIFI_DNS2));
     WiFi.config(ip, gw, su, d1, d2);
-  }
+  //}
 }
 
 void wifiConnectMulti() {
