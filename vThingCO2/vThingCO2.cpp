@@ -18,6 +18,7 @@
 #include "destinations\CustomHTTPDest.hpp"
 #include <Wire.h>
 #include "plugins\NeopixelVE.hpp"
+#include "plugins\Dweet_io.hpp"
 
 //#include <wiring_private.h>
 using namespace std;
