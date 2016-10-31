@@ -20,7 +20,7 @@ public:
   void closeSensor();
 private:
   static void onCmdInit(const char *ignore);
-  Adafruit_BME280 *bme;
+  Adafruit_BME280 *bme = NULL;
 
 
 };

@@ -24,7 +24,8 @@ void CO2Sensor::setup(MenuHandler *handler) {
   pinMode(D8, OUTPUT);    //enable power via D8
   digitalWrite(D8, HIGH);
   delay(1000);
-  if (!cubicCo2.init(DEBUG)) {
+  int8_t i2cBus[] = {i2cSDA, i2cSCL, -1};
+  if (!cubicCo2.init(DEBUG, i2cBus)) {
     hasSensor = false;
     return;
   }

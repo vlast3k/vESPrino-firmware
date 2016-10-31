@@ -18,7 +18,7 @@ public:
   void closeSensor();
 private:
   static void onCmdInit(const char *ignore);
-  SI7021 *si7021;
+  SI7021 *si7021 = NULL;
 
 
 };

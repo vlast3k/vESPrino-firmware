@@ -17,6 +17,7 @@
 #include "sensors\PM2005Sensor.hpp"
 #include "sensors\CDM7160Sensor.hpp"
 #include "sensors\TestSensor.hpp"
+#include "sensors\TSL2561Sensor.hpp"
 #include "destinations\MQTTDest.hpp"
 #include "destinations\SerialDumpDest.hpp"
 #include "destinations\RFDest.hpp"
@@ -37,7 +38,7 @@ MenuHandler menuHandler;
 char atCIPSTART_IP[20];
 char commonBuffer200[200];
 bool deepSleepWake = false;
-int i2cSDA, i2cSCL;
+int i2cSDA = -1, i2cSCL = -1;
 
 LinkedList<Plugin *> plugins = LinkedList<Plugin *>();
 LinkedList<Sensor *> sensors = LinkedList<Sensor *>();
@@ -66,3 +67,4 @@ SlowWireClass SlowWire;
 DweetIOClass DweetIO;
 WebServerClass WebServer;
 ButtonClass Button;
+TSL2561Sensor tsl2561Sensor;

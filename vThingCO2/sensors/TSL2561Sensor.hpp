@@ -1,26 +1,24 @@
-#ifndef BMP085Sensor_h
-#define BMP085Sensor_h
+#ifndef TSL2561Sensor_h
+#define TSL2561Sensor_h
 
 #include "interfaces\Sensor.hpp"
 #include <LinkedList.h>
 #include "interfaces\Pair.h"
-#include "lib\Adafruit_BMP085.h"
+#include "lib\TSL2561.h"
 
-//#define SEALEVELPRESSURE_HPA (1013.25)
-
-class BMP085Sensor : public Sensor {
+class TSL2561Sensor : public Sensor {
 public:
-  BMP085Sensor();
+  TSL2561Sensor();
   void setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
   const char* getName() {
-    return "BMP085";
+    return "TSL2561";
   }
   bool initSensor();
   void closeSensor();
 private:
   static void onCmdInit(const char *ignore);
-  Adafruit_BMP085 *bme = NULL;
+  TSL2561 *tsl = NULL;
 
 
 };

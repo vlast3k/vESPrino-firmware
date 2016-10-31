@@ -37,6 +37,7 @@ void BME280Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool BME280Sensor::initSensor() {
+  closeSensor();
   bme = new Adafruit_BME280();
   //BME280->reset();
   bool init = false;

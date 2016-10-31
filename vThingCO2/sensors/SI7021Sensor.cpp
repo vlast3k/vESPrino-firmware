@@ -30,6 +30,7 @@ void SI7021Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool SI7021Sensor::initSensor() {
+  closeSensor();
   si7021 = new SI7021();
   //si7021->reset();
   //si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
