@@ -18,6 +18,8 @@
 #include "sensors\CDM7160Sensor.hpp"
 #include "sensors\TestSensor.hpp"
 #include "sensors\TSL2561Sensor.hpp"
+#include "sensors\BH1750Sensor.hpp"
+#include "sensors\APDS9960Sensor.hpp"
 #include "destinations\MQTTDest.hpp"
 #include "destinations\SerialDumpDest.hpp"
 #include "destinations\RFDest.hpp"
@@ -27,6 +29,7 @@
 #include "plugins\Dweet_io.hpp"
 #include "plugins\WebServer.hpp"
 #include "plugins\Button.hpp"
+#include "plugins\GPIO.hpp"
 
 
 boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
@@ -68,3 +71,6 @@ DweetIOClass DweetIO;
 WebServerClass WebServer;
 ButtonClass Button;
 TSL2561Sensor tsl2561Sensor;
+BH1750Sensor bh1750Sensor;
+GPIOClass gpioHandler;
+APDS9960Sensor _APDS9960Sensor;

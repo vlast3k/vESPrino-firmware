@@ -1,4 +1,4 @@
-#ifdef VTHING_VESPRINO
+#ifdef VTHING_VESPRINO4
 #include "common.hpp"
 #include "plugins\AT_FW_Plugin.hpp"
 #include "PropertyList.hpp"

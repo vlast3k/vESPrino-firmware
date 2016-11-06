@@ -66,8 +66,8 @@ void CustomHTTPDest::process(LinkedList<Pair *> &data) {
   int i=0;
   do {
     String s = PropertyList.getArrayProperty(F("custom_url_arr"), i++);
-    String url, method = "GET", contentType = "", pay = "";
     if (!s.length()) return;
+    String url, method = "GET", contentType = "", pay = "";
     if (s.charAt(0) == '#') s = s.substring(1);
     if (s.charAt(0) == '{') {
       if (!parseJSONUrl(s, url, method, contentType, pay)) continue;
