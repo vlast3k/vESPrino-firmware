@@ -42,6 +42,8 @@ void BH1750Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool BH1750Sensor::initSensor() {
+  if (i2cSDA == -1) return false;
+  closeSensor();
   bool init = false;
   tsl = new BH1750FVI();
   for (int i=0; i < 5; i++) {

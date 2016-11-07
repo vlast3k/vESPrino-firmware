@@ -36,6 +36,7 @@ void BMP085Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool BMP085Sensor::initSensor() {
+  if (i2cSDA == -1) return false;
   closeSensor();
   bme = new Adafruit_BMP085();
   //BME280->reset();

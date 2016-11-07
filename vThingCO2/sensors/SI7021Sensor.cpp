@@ -30,6 +30,7 @@ void SI7021Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool SI7021Sensor::initSensor() {
+  if (i2cSDA == -1) return false;
   closeSensor();
   si7021 = new SI7021();
   //si7021->reset();

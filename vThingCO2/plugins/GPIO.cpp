@@ -19,9 +19,9 @@ void GPIOClass::setup(MenuHandler *handler) {
 
 void GPIOClass::cmdGPIOSet(const char *line) {
   char *s = strchr(line, ' ');
+  if (!s) return;
   int gpio;
   bool mode;
-  if (!s) return;
   gpio = atoi(s+1);
   s = strchr(s+1, ' ');
   if (!s) return;
@@ -35,6 +35,7 @@ void GPIOClass::cmdGPIOSet(const char *line) {
 
 void GPIOClass::initPortsFromString(const char *s) {
   //,H4,L12,H1
+  if (*s)   menuHandler.scheduleCommand("nop 0");
   while ((s=strchr(s, ',')) != NULL) {
     s++;
     int gpio = atoi(s+1);
@@ -56,8 +57,9 @@ bool GPIOClass::isBitSet(uint32_t val, int bit) {
 
 uint32_t GPIOClass::getGPIOState() {
   uint32_t state = 0;
-  for(int i=0; i < 32; i++) {
+  for(int i=0; i < 16; i++) {
     if (isBitSet(ports, i)) {
+      //Serial << "Port: " << i <<  digitalRead(i) << endl;
       setBit(state, i, digitalRead(i));
     }
   }
@@ -87,4 +89,6 @@ void GPIOClass::loop() {
     }
   }
   oldState = currentState;
+
+  //delay(100);
 }

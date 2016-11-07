@@ -26,6 +26,8 @@ void TSL2561Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool TSL2561Sensor::initSensor() {
+  if (i2cSDA == -1) return false;
+  closeSensor();
   bool init = false;
   tsl = new TSL2561();
   for (int i=0; i < 5; i++) {
