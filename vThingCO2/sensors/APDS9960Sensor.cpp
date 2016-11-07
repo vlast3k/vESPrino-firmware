@@ -58,6 +58,9 @@ bool APDS9960Sensor::initSensor() {
 
 void APDS9960Sensor::loop() {
   if( isr_flag == 1 ) {
+    Serial <<"AAAAAA" << endl;
+    Serial.flush();
+    delay(100);
     detachInterrupt(APDS9960_INT);
     handleGesture();
     isr_flag = 0;

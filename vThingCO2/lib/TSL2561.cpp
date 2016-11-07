@@ -59,22 +59,21 @@ boolean TSL2561::begin(void) {
 
  // Initialise I2C
   Wire.beginTransmission(_addr);
-#if ARDUINO >= 100
   Wire.write(TSL2561_REGISTER_ID);
-#else
-  Wire.send(TSL2561_REGISTER_ID);
-#endif
   int r = Wire.endTransmission();
   if (r != 0) return false;
   Wire.requestFrom(_addr, 1);
-#if ARDUINO >= 100
-  int x = Wire.read();
-#else
-  int x = Wire.receive();
-#endif
+  //Serial << "len = " << len << endl;
+// #if ARDUINO >= 100
+   int x = Wire.read();
+// #else
+//   int x = Wire.receive();
+// #endif
   //Serial.print("0x"); Serial.println(x, HEX);
-  if (x & 0x0A ) {
-    //Serial.println("Found TSL2561");
+//Serial.print("0x"); Serial.println(Wire.read(), HEX);
+  //if (x & 0x0A ) {
+  if (x == 0x0A ) {
+    Serial.println("Found TSL2561");
   } else {
     return false;
   }
