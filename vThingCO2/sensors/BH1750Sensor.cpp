@@ -3,20 +3,36 @@
 #include <LinkedList.h>
 #include "interfaces\Pair.h"
 #include "common.hpp"
-#include <BH1750FVI.h>
+#include "lib\BH1750FVI.h"
 
+extern BH1750Sensor bh1750Sensor;
 BH1750Sensor::BH1750Sensor() {
   registerSensor(this);
 }
 
 void BH1750Sensor::setup(MenuHandler *handler) {
-  //handler->regsterCommand(new MenuEntry(F("tslInit"), CMD_EXACT, &BH1750Sensor::onCmdInit, F("")));
+  handler->registerCommand(new MenuEntry(F("bhTest"), CMD_EXACT, &BH1750Sensor::onCmdTest, F("")));
   initSensor();
   closeSensor();
 }
 
-void BH1750Sensor::onCmdInit(const char *ignore) {
-  //BH1750Sensor.initSensor();
+void BH1750Sensor::onCmdTest(const char *ignore) {
+  bh1750Sensor.onCmdTestInst();
+}
+
+void BH1750Sensor::onCmdTestInst() {
+  if (!initSensor()) return;
+  tsl->SetSensitivity(1.00F);
+  for (int i=0; i < 100; i++) {
+    Serial << "AutoLux: "<< tsl->getLuxAutoScale() << endl;
+    measureMT(31);
+    measureMT(69);
+    measureMT(254);
+    Serial << endl;
+    menuHandler.loop();
+    delay(1000);
+  }
+  closeSensor();
 }
 
 void BH1750Sensor::getData(LinkedList<Pair *> *data) {
@@ -46,4 +62,29 @@ void BH1750Sensor::closeSensor() {
   if (!tsl) return;
   delete tsl;
   tsl = NULL;
+}
+
+void BH1750Sensor::measure() {
+  tsl->SetMode(Continuous_H);
+  delay(600);
+  Serial << "\tH: " << tsl->GetLux();
+  Serial.flush();
+
+  tsl->SetMode(Continuous_H2);
+  delay(600);
+  Serial << ",\tH2: " << tsl->GetLux();
+  Serial.flush();
+
+  tsl->SetMode(Continuous_L);
+  delay(60);
+  Serial << ",\tL: " << tsl->GetLux();
+  Serial.flush();
+
+}
+
+void BH1750Sensor::measureMT(uint8_t mt) {
+  tsl->SetMTReg(mt);
+  Serial.printf("MT=%3d : ", mt);
+  measure();
+  Serial << endl;
 }

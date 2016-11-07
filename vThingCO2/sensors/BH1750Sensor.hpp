@@ -4,7 +4,7 @@
 #include "interfaces\Sensor.hpp"
 #include <LinkedList.h>
 #include "interfaces\Pair.h"
-#include <BH1750FVI.h>
+#include "lib\BH1750FVI.h"
 
 class BH1750Sensor : public Sensor {
 public:
@@ -16,9 +16,12 @@ public:
   }
   bool initSensor();
   void closeSensor();
+  void onCmdTestInst();
 private:
-  static void onCmdInit(const char *ignore);
+  static void onCmdTest(const char *ignore);
   BH1750FVI *tsl = NULL;
+   void measureMT(uint8_t mt);
+   void measure();
 
 
 };
