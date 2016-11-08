@@ -157,6 +157,8 @@ void setup() {
   // digitalWrite(D8, HIGH);
   // //delay(1000);
   //neopixel.cmdLedHandleColorInst(F("ledcolor green"));
+  // pinMode(D8, OUTPUT);
+  // digitalWrite(D8, HIGH);
   SERIAL_PORT.begin(9600);
   PropertyList.begin(&menuHandler);
   //Wire.begin(D6, D5);

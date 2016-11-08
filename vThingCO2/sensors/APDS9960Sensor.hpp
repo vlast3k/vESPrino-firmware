@@ -18,12 +18,13 @@ public:
   }
   void loop();
   bool initSensor();
-  static int isr_flag;
+  void closeSensor();
+  //static int isr_flag;
 private:
   static void onCmdInit(const char *ignore);
   SparkFun_APDS9960 *sensor = NULL;
 
-  static void interruptRoutine();
+  //static void interruptRoutine();
   void handleGesture();
 
 

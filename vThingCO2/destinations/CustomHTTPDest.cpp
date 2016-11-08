@@ -17,6 +17,7 @@ void CustomHTTPDest::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("custom_url_add"), CMD_BEGIN, &CustomHTTPDest::menuAddCustomUrl, F("custom_url_add \"idx\",\"url\"")));
   handler->registerCommand(new MenuEntry(F("custom_url_jadd"), CMD_BEGIN, &CustomHTTPDest::menuAddCustomUrlJ, F("custom_url_add \"idx\",\"url\"")));
   handler->registerCommand(new MenuEntry(F("custom_url_clean"), CMD_EXACT, &CustomHTTPDest::menuCleanCustomUrl, F("custom_url_clean - clean all custom urls")));
+  handler->registerCommand(new MenuEntry(F("call_url"), CMD_BEGIN, &CustomHTTPDest::cmdCallUrl, F("call_url http://xxx  or call_url {\"url\"=\"<url>\", \"method\"=\"POST|GET..\", \"ct\"=\"content-type\", \"pay\"=\"body payload\"}")));
 }
 
 void CustomHTTPDest::menuCleanCustomUrl(const char *line) {
@@ -35,8 +36,8 @@ void CustomHTTPDest::menuAddCustomUrl(const char *line) {
   int idx = atoi(sidx);
   PropertyList.putArrayProperty(F("custom_url_arr"), idx, url);
 }
+
 void CustomHTTPDest::menuAddCustomUrlJ(const char *line) {
-  //Serial << "menuAddCustomUrl" << endl;
   char sidx[10];
   line = extractStringFromQuotes(line, sidx, sizeof(sidx));
   if (sidx[0] == 0) {
@@ -45,6 +46,14 @@ void CustomHTTPDest::menuAddCustomUrlJ(const char *line) {
   }
   int idx = atoi(sidx);
   PropertyList.putArrayProperty(F("custom_url_arr"), idx, line);
+}
+
+void CustomHTTPDest::cmdCallUrl(const char *line) {
+  line = strchr(line, ' ');
+  if (!line) return;
+  String s = line;
+  LinkedList<Pair *> values = LinkedList<Pair* >();
+  customHTTPDest.invokeURL(s, values);
 }
 
 bool CustomHTTPDest::parseJSONUrl(String &s, String &url, String &method, String &ct, String &pay) {
@@ -67,43 +76,39 @@ void CustomHTTPDest::process(LinkedList<Pair *> &data) {
   do {
     String s = PropertyList.getArrayProperty(F("custom_url_arr"), i++);
     if (!s.length()) return;
-    String url, method = "GET", contentType = "", pay = "";
-    if (s.charAt(0) == '#') s = s.substring(1);
-    if (s.charAt(0) == '{') {
-      if (!parseJSONUrl(s, url, method, contentType, pay)) continue;
-    } else {
-      url = s;
-    }
-    replaceValuesInURL(data, url);
-    replaceValuesInURL(data, pay);
-    //if (url.indexOf("%CO2%") > -1 || pay.indexOf("%CO2%") > -1) continue;
-    invokeURL(url, method, contentType, pay);
+    invokeURL(s, data);
   } while(true);
 }
 
 void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
-  //Serial << "CustomHTTPDest::replaceUrl = " << s << endl;
-  // for (int i=0; i < data.size(); i++) {
-  //   Serial << data.get(i)->key << " = " << data.get(i)->value << "."<<endl;
-  // }
   for (int i=0; i < data.size(); i++) {
     Pair *p = data.get(i);
     String skey = String("%") + p->key + String("%");
     s.replace(skey, String(p->value));
-    //Serial << "after replace: key << " << skey << "." << p->value<< "." << String(p->value) << " " << s << endl;
   }
+}
+
+void CustomHTTPDest::invokeURL(String &s, LinkedList<Pair *> &data) {
+  if (!s.length()) return;
+  String url, method = "GET", contentType = "", pay = "";
+  if (s.charAt(0) == '#') s = s.substring(1);
+  if (s.charAt(0) == '{') {
+    if (!parseJSONUrl(s, url, method, contentType, pay)) return;
+  } else {
+    url = s;
+  }
+  replaceValuesInURL(data, url);
+  replaceValuesInURL(data, pay);
+  invokeURL(url, method, contentType, pay);
 }
 
 void CustomHTTPDest::invokeURL(String &url, String &method, String &contentType, String &pay) {
   if (waitForWifi() != WL_CONNECTED) return;
-  //neopixel.cmdLedHandleColorInst(F("ledcolor yellow"));
-  Serial << F("CustomHTTPDest::invoke = ") << url << endl;
+  Serial << F("Calling HTTP: ") << url << endl;
   if (pay.length()) Serial << F("CustomHTTPDest::payload = ") << pay << endl;
   Serial.flush();
   HTTPClient http;
   http.begin(url);
   if (contentType.length()) http.addHeader(F("Content-Type"), contentType);
   AT_FW_Plugin::processResponseCodeATFW(&http, http.sendRequest(method.c_str(), pay));
-  //addHCPIOTHeaders(&http, token);
-
 }
