@@ -97,8 +97,8 @@ int i2cSlowWireStatus() {
 
 bool findI2C(int &sda, int &scl, bool debug) {
 //  int gpios[] = {D1, D5, D2, D5, D6};
-  int gpios[] = {D1, D5, D7, D6};
-  String gpios_str[] = {F("D1"), F("D5"), F("D7"), F("D6")};
+  int gpios[] = {D1, D5, D7};//, D6};
+  String gpios_str[] = {F("D1"), F("D5"), F("D7")};//, F("D6")};
   int size = sizeof(gpios) / sizeof(int);
   bool found = false;
   for (int i=0; i < size; i++) {

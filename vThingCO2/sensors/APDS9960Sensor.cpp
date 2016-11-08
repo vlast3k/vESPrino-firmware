@@ -76,6 +76,9 @@ void APDS9960Sensor::handleGesture() {
       cmd.replace("%GESTURE%", gesture);
       menuHandler.scheduleCommand(cmd.c_str());
     }
+    String event = "onGesture_";
+    event += gesture;
+    fireEvent(event.c_str());
   }
 }
 

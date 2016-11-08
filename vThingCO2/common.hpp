@@ -71,6 +71,7 @@ extern "C" {
 #define PROP_SND_THR      F("cubic.co2.threshold")
 #define PROP_H801_API_KEY F("h801.api_key")
 #define PROP_DEBUG        F("debug")
+#define PROP_SERVO_PORT F("servo.port")
 // #define EE_WIFI_SSID_30B 0
 // #define EE_WIFI_P1_30B 30
 // #define EE_WIFI_P2_30B 60

@@ -6,8 +6,6 @@
 #include "interfaces\Pair.h"
 #include "lib\SparkFun_APDS9960.h"
 
-#define APDS9960_INT    D6
-
 class APDS9960Sensor : public Sensor {
 public:
   APDS9960Sensor();

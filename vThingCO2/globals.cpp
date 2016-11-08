@@ -30,6 +30,7 @@
 #include "plugins\WebServer.hpp"
 #include "plugins\Button.hpp"
 #include "plugins\GPIO.hpp"
+#include "plugins\ServoV.hpp"
 
 
 boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
@@ -74,3 +75,4 @@ TSL2561Sensor tsl2561Sensor;
 BH1750Sensor bh1750Sensor;
 GPIOClass gpioHandler;
 APDS9960Sensor _APDS9960Sensor;
+ServoV _ServoV;

@@ -24,7 +24,10 @@ void CO2Sensor::setup(MenuHandler *handler) {
   pinMode(D8, OUTPUT);    //enable power via D8
   digitalWrite(D8, HIGH);
   delay(1000);
-  int8_t i2cBus[] = {i2cSDA, i2cSCL, -1};
+  //this is needed as if the Serial Port querries the port of the servo, then servo no longer wifiScanNetworks
+  //maybe due to the timers...
+  String servoPort = PropertyList.readProperty(PROP_SERVO_PORT);
+  int8_t i2cBus[] = {i2cSDA, i2cSCL, atoi(servoPort.c_str()), -1};
   if (!cubicCo2.init(DEBUG, i2cBus)) {
     hasSensor = false;
     return;

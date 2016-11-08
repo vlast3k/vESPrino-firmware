@@ -6,7 +6,7 @@
 SI7021 *si7021;
 boolean si7021init() {
     si7021 = new SI7021();
-    si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
+    //si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
     if (si7021->getDeviceID() == 255) {
       delete si7021;
       si7021 = NULL;
