@@ -1,11 +1,11 @@
 
-#include "plugins\TimerManager.hpp"
-#include "interfaces\Plugin.hpp"
+#include "plugins/TimerManager.hpp"
+#include "interfaces/Plugin.hpp"
 #include <LinkedList.h>
 #include <Timer.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
-#include <plugins\PropertyList.hpp>
+#include <plugins/PropertyList.hpp>
 #include <Streaming.h>
 
 

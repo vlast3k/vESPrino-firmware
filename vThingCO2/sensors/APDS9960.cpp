@@ -1,6 +1,6 @@
 #ifdef VTHING_VESPRINO4
 #include "common.hpp"
-#include "plugins\AT_FW_Plugin.hpp"
+#include "plugins/AT_FW_Plugin.hpp"
 #include "PropertyList.hpp"
 #include <Wire.h>
 #include <SparkFun_APDS9960.h>

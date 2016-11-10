@@ -1,10 +1,10 @@
 #ifndef CustomHTTPDest_h
 #define CustomHTTPDest_h
 
-#include "interfaces\Destination.hpp"
-#include "interfaces\Plugin.hpp"
+#include "interfaces/Destination.hpp"
+#include "interfaces/Plugin.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 #include "MenuHandler.hpp"
 #include "Arduino.h"
 

@@ -16,7 +16,7 @@
  ***************************************************************************/
 #include "Arduino.h"
 #include "common.hpp"
-//#include "utils\SlowWire.hpp"
+//#include "utils/SlowWire.hpp"
 #ifdef SPI
 #include <SPI.h>
 #endif

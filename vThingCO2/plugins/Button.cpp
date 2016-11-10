@@ -1,8 +1,8 @@
 #include "common.hpp"
-#include "plugins\AT_FW_Plugin.hpp"
-#include "plugins\PropertyList.hpp"
-#include "plugins\Button.hpp"
-#include "interfaces\Plugin.hpp"
+#include "plugins/AT_FW_Plugin.hpp"
+#include "plugins/PropertyList.hpp"
+#include "plugins/Button.hpp"
+#include "interfaces/Plugin.hpp"
 
 int BTTN_PIN = D3;
 //void ex2_attachInterrupt(void (*)());

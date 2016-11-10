@@ -2,7 +2,7 @@
 #define GPIO_H
 #include "common.hpp"
 #include "PropertyList.hpp"
-#include "interfaces\Plugin.hpp"
+#include "interfaces/Plugin.hpp"
 #include <Timer.h>
 
 class GPIOClass : public Plugin {

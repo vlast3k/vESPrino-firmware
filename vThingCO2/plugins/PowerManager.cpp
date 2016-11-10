@@ -1,4 +1,4 @@
-#include "plugins\PowerManager.hpp"
+#include "plugins/PowerManager.hpp"
 #include "MenuHandler.hpp"
 #include <ESP8266WiFi.h>
 #include "common.hpp"

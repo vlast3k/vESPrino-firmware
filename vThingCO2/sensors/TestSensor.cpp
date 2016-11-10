@@ -1,7 +1,7 @@
 #include <Wire.h>
-#include "sensors\TestSensor.hpp"
+#include "sensors/TestSensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 #include "common.hpp"
 
 TestSensor::TestSensor() {

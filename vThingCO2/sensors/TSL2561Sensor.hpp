@@ -1,10 +1,10 @@
 #ifndef TSL2561Sensor_h
 #define TSL2561Sensor_h
 
-#include "interfaces\Sensor.hpp"
+#include "interfaces/Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
-#include "lib\TSL2561.h"
+#include "interfaces/Pair.h"
+#include "lib/TSL2561.h"
 
 class TSL2561Sensor : public Sensor {
 public:

@@ -1,10 +1,10 @@
 #include "Timer.h"
-#include "plugins\PropertyList.hpp"
+#include "plugins/PropertyList.hpp"
 #include "common.hpp"
 #include <LinkedList.h>
 #include <HashMap.h>
-#include "interfaces\Pair.h"
-#include "plugins\PowerManager.hpp"
+#include "interfaces/Pair.h"
+#include "plugins/PowerManager.hpp"
 
 //Timer *tmrSendValueTimer;
 Timer *tmrRawRead;

@@ -2,7 +2,7 @@
 #define WebServerH
 #include "common.hpp"
 #include "PropertyList.hpp"
-#include "interfaces\Plugin.hpp"
+#include "interfaces/Plugin.hpp"
 #include <Timer.h>
 #include <ESP8266WebServer.h>
 #define PROP_ESP_HOSTNAME F("hostname")

@@ -1,8 +1,8 @@
 #include <SI7021.h>
 #include <Wire.h>
-#include "sensors\SI7021Sensor.hpp"
+#include "sensors/SI7021Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 #include "common.hpp"
 
 SI7021Sensor::SI7021Sensor() {

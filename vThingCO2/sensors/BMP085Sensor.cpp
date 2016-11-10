@@ -1,9 +1,9 @@
 
-#include "lib\Adafruit_BMP085.h"
+#include "lib/Adafruit_BMP085.h"
 #include <Wire.h>
-#include "sensors\BMP085Sensor.hpp"
+#include "sensors/BMP085Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 #include "common.hpp"
 
 BMP085Sensor::BMP085Sensor() {

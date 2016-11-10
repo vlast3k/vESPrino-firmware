@@ -1,9 +1,9 @@
 #include <Wire.h>
-#include "sensors\TSL2561Sensor.hpp"
+#include "sensors/TSL2561Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 #include "common.hpp"
-#include "lib\TSL2561.h"
+#include "lib/TSL2561.h"
 
 TSL2561Sensor::TSL2561Sensor() {
   registerSensor(this);

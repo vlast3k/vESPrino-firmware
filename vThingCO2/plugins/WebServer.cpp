@@ -1,4 +1,4 @@
-#include "plugins\WebServer.hpp"
+#include "plugins/WebServer.hpp"
 #include "MenuHandler.hpp"
 #include <Timer.h>
 #include <ESP8266WebServer.h>

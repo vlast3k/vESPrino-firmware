@@ -2,7 +2,7 @@
 #define ServoV_H
 #include "common.hpp"
 #include "PropertyList.hpp"
-#include "interfaces\Plugin.hpp"
+#include "interfaces/Plugin.hpp"
 #include <Servo.h>
 
 class ServoV : public Plugin {

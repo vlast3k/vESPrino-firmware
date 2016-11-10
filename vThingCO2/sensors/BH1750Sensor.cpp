@@ -1,9 +1,9 @@
 #include <Wire.h>
-#include "sensors\BH1750Sensor.hpp"
+#include "sensors/BH1750Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 #include "common.hpp"
-#include "lib\BH1750FVI.h"
+#include "lib/BH1750FVI.h"
 
 extern BH1750Sensor bh1750Sensor;
 BH1750Sensor::BH1750Sensor() {

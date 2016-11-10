@@ -1,10 +1,10 @@
 #ifndef APDS9960Sensor_h
 #define APDS9960Sensor_h
 
-#include "interfaces\Sensor.hpp"
+#include "interfaces/Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
-#include "lib\SparkFun_APDS9960.h"
+#include "interfaces/Pair.h"
+#include "lib/SparkFun_APDS9960.h"
 
 class APDS9960Sensor : public Sensor {
 public:

@@ -1,8 +1,8 @@
 #ifndef CDM7160Sensor_h
 #define CDM7160Sensor_h
-#include "interfaces\Sensor.hpp"
+#include "interfaces/Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 
 class CDM7160Sensor : public Sensor {
 public:

@@ -19247,10 +19247,10 @@
 13591 verbose unlock done using C:\Users\vladi\AppData\Roaming\npm-cache\_locks\homebridge-a836e122e97f924d.lock for C:\Users\vladi\AppData\Roaming\npm\node_modules\homebridge
 13592 verbose stack Error: mdns@2.3.3 install: `node-gyp rebuild`
 13592 verbose stack Exit status 1
-13592 verbose stack     at EventEmitter.<anonymous> (C:\Program Files\nodejs\node_modules\npm\lib\utils\lifecycle.js:217:16)
+13592 verbose stack     at EventEmitter.<anonymous> (C:\Program Files\nodejs\node_modules\npm\lib/utils/lifecycle.js:217:16)
 13592 verbose stack     at emitTwo (events.js:87:13)
 13592 verbose stack     at EventEmitter.emit (events.js:172:7)
-13592 verbose stack     at ChildProcess.<anonymous> (C:\Program Files\nodejs\node_modules\npm\lib\utils\spawn.js:24:14)
+13592 verbose stack     at ChildProcess.<anonymous> (C:\Program Files\nodejs\node_modules\npm\lib/utils/spawn.js:24:14)
 13592 verbose stack     at emitTwo (events.js:87:13)
 13592 verbose stack     at ChildProcess.emit (events.js:172:7)
 13592 verbose stack     at maybeClose (internal/child_process.js:829:16)

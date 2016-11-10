@@ -2,7 +2,7 @@
 #include <PN532_I2C.h>
 #include <PN532.h>
 #include "common.hpp"
-#include "plugins\AT_FW_Plugin.hpp"
+#include "plugins/AT_FW_Plugin.hpp"
 #include <Wire.h>
 PN532_I2C pn532i2c(Wire);
 PN532 nfc(pn532i2c);

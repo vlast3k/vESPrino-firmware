@@ -1,9 +1,9 @@
 #include <Adafruit_Sensor.h>
-#include "lib\Adafruit_BME280.h"
+#include "lib/Adafruit_BME280.h"
 #include <Wire.h>
-#include "sensors\BME280Sensor.hpp"
+#include "sensors/BME280Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 #include "common.hpp"
 
 BME280Sensor::BME280Sensor() {

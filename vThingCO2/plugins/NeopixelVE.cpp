@@ -1,4 +1,4 @@
-#include "plugins\NeopixelVE.hpp"
+#include "plugins/NeopixelVE.hpp"
 #include "MenuHandler.hpp"
 #include "common.hpp"
 #include <NeoPixelBus.h>

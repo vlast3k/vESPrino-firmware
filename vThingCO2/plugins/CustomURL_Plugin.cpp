@@ -1,5 +1,5 @@
-#include "plugins\CustomURL_Plugin.hpp"
-#include "plugins\AT_FW_Plugin.hpp"
+#include "plugins/CustomURL_Plugin.hpp"
+#include "plugins/AT_FW_Plugin.hpp"
 #include "common.hpp"
 #include "PropertyList.hpp"
 

@@ -1,9 +1,9 @@
 #include "common.hpp"
-#include "plugins\SAP_HCP_IOT_Plugin.hpp"
-#include "plugins\CustomURL_Plugin.hpp"
-#include "plugins\PropertyList.hpp"
+#include "plugins/SAP_HCP_IOT_Plugin.hpp"
+#include "plugins/CustomURL_Plugin.hpp"
+#include "plugins/PropertyList.hpp"
 #include <ESP8266WiFiMulti.h>
-#include "lib\WiFiManager.h"
+#include "lib/WiFiManager.h"
 
 ESP8266WiFiMulti  *wifiMulti = NULL;
 

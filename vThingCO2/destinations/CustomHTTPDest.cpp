@@ -1,12 +1,12 @@
-#include "interfaces\Destination.hpp"
-#include "interfaces\Plugin.hpp"
+#include "interfaces/Destination.hpp"
+#include "interfaces/Plugin.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 #include "CustomHTTPDest.hpp"
 #include "common.hpp"
 #include "MenuHandler.hpp"
-#include "plugins\PropertyList.hpp"
-#include "plugins\AT_FW_Plugin.hpp"
+#include "plugins/PropertyList.hpp"
+#include "plugins/AT_FW_Plugin.hpp"
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 
 CustomHTTPDest::CustomHTTPDest() {

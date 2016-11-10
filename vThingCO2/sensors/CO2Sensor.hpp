@@ -1,8 +1,8 @@
 #ifndef CO2Sensor_h
 #define CO2Sensor_h
-#include "interfaces\Sensor.hpp"
-#include "interfaces\Plugin.hpp"
-#include "interfaces\Pair.h"
+#include "interfaces/Sensor.hpp"
+#include "interfaces/Plugin.hpp"
+#include "interfaces/Pair.h"
 #include "Timer.h"
 #include "CubicGasSensors.h"
 #include "common.hpp"

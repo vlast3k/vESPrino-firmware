@@ -1,7 +1,7 @@
 #ifndef Neopixel_ve_h
 #define Neopixel_ve_h
 
-#include "interfaces\Plugin.hpp"
+#include "interfaces/Plugin.hpp"
 #include "MenuHandler.hpp"
 #include "common.hpp"
 #include <NeoPixelBus.h>

@@ -1,12 +1,12 @@
-#include "interfaces\Destination.hpp"
-#include "interfaces\Plugin.hpp"
+#include "interfaces/Destination.hpp"
+#include "interfaces/Plugin.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 #include "SerialDumpDest.hpp"
 #include "common.hpp"
 #include "MenuHandler.hpp"
-#include "plugins\PropertyList.hpp"
-#include "plugins\AT_FW_Plugin.hpp"
+#include "plugins/PropertyList.hpp"
+#include "plugins/AT_FW_Plugin.hpp"
 
 SerialDumpDest::SerialDumpDest() {
   enabled = true;

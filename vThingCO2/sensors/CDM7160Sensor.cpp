@@ -1,10 +1,10 @@
 #include <Wire.h>
-#include "sensors\CDM7160Sensor.hpp"
+#include "sensors/CDM7160Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 #include "common.hpp"
 #include  <brzo_i2c.h>
-#include "utils\RTCMemStore.hpp"
+#include "utils/RTCMemStore.hpp"
 CDM7160Sensor::CDM7160Sensor() {
   registerSensor(this);
 }

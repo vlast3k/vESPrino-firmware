@@ -1,9 +1,9 @@
 #include <Wire.h>
-#include "sensors\APDS9960Sensor.hpp"
+#include "sensors/APDS9960Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 #include "common.hpp"
-#include "lib\SparkFun_APDS9960.h"
+#include "lib/SparkFun_APDS9960.h"
 
 //int APDS9960Sensor::isr_flag = 0;
 APDS9960Sensor::APDS9960Sensor() {

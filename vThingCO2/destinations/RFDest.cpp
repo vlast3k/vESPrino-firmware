@@ -1,13 +1,13 @@
-#include "interfaces\Destination.hpp"
-#include "interfaces\Plugin.hpp"
+#include "interfaces/Destination.hpp"
+#include "interfaces/Plugin.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 #include "RFDest.hpp"
 #include "common.hpp"
 #include "MenuHandler.hpp"
-#include "plugins\PropertyList.hpp"
-#include "plugins\AT_FW_Plugin.hpp"
-#include "sensors\CO2Sensor.hpp"
+#include "plugins/PropertyList.hpp"
+#include "plugins/AT_FW_Plugin.hpp"
+#include "sensors/CO2Sensor.hpp"
 
 extern CO2Sensor co2Sensor;
 

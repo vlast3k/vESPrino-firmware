@@ -4,7 +4,7 @@
 #include "Timer.h"
 #include "CubicGasSensors.h"
 #include "common.hpp"
-#include "plugins\PropertyList.hpp"
+#include "plugins/PropertyList.hpp"
 #include "EEPROM.h"
 #include "CO2Sensor.hpp"
 #include <LinkedList.h>

@@ -1,9 +1,9 @@
 #include <Wire.h>
-#include "sensors\PM2005Sensor.hpp"
+#include "sensors/PM2005Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 #include "common.hpp"
-#include "plugins\TimerManager.hpp"
+#include "plugins/TimerManager.hpp"
 
 PM2005Sensor::PM2005Sensor() {
   registerSensor(this);

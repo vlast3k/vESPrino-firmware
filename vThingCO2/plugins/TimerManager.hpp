@@ -1,12 +1,12 @@
 #ifndef TimerManager_h
 #define TimerManager_h
 
-#include "interfaces\Plugin.hpp"
+#include "interfaces/Plugin.hpp"
 #include <LinkedList.h>
 #include <Timer.h>
 #include <ESP8266HTTPClient.h>
-#include <plugins\PropertyList.hpp>
-#include <utils\RTCMemStore.hpp>
+#include <plugins/PropertyList.hpp>
+#include <utils/RTCMemStore.hpp>
 
 #define TMR_START 1
 #define TMR_STOPPED 0

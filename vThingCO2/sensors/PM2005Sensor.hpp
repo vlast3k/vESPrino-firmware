@@ -1,8 +1,8 @@
 #ifndef PM2005Sensor_h
 #define PM2005Sensor_h
-#include "interfaces\Sensor.hpp"
+#include "interfaces/Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 
 #define PROP_PM2005_QSTART F("pm2005.qstart")
 #define PROP_PM2005_QEND   F("pm2005.qend")

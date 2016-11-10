@@ -2,9 +2,9 @@
 #define SI7021Sensor_h
 
 #include <SI7021.h>
-#include "interfaces\Sensor.hpp"
+#include "interfaces/Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
+#include "interfaces/Pair.h"
 
 class SI7021Sensor : public Sensor {
 public:

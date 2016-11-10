@@ -1,10 +1,10 @@
 #ifndef BH1750Sensor_h
 #define BH1750Sensor_h
 
-#include "interfaces\Sensor.hpp"
+#include "interfaces/Sensor.hpp"
 #include <LinkedList.h>
-#include "interfaces\Pair.h"
-#include "lib\BH1750FVI.h"
+#include "interfaces/Pair.h"
+#include "lib/BH1750FVI.h"
 
 class BH1750Sensor : public Sensor {
 public:

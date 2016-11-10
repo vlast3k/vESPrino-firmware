@@ -1,6 +1,6 @@
 #include "common.hpp"
 #include "SAP_HCP_IOT_Plugin.hpp"
-#include "plugins\AT_FW_Plugin.hpp"
+#include "plugins/AT_FW_Plugin.hpp"
 #define COLOR_COUNT 10
 
 void SAP_HCP_IOT_Plugin::registerCommands(MenuHandler *handler) {

@@ -1,5 +1,5 @@
-#include "plugins\AT_FW_Plugin.hpp"
-#include "plugins\URLShortcuts.hpp"
+#include "plugins/AT_FW_Plugin.hpp"
+#include "plugins/URLShortcuts.hpp"
 #include "CustomURL_Plugin.hpp"
 #include "SAP_HCP_IOT_Plugin.hpp"
 

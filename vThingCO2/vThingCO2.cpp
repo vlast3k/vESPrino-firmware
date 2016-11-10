@@ -3,22 +3,22 @@
 //#define VTHING_VESPRINO
 //#define VAIR
 //#define VTHING_CO2
-
+#include "Arduino.h"
 #include "common.hpp"
 #include <CubicGasSensors.h>
-#include "commands\CommonCommands.hpp"
-#include "plugins\SAP_HCP_IOT_Plugin.hpp"
-#include "plugins\AT_FW_Plugin.hpp"
-#include "plugins\CustomURL_Plugin.hpp"
-#include "plugins\URLShortcuts.hpp"
-#include "plugins\PropertyList.hpp"
+#include "commands/CommonCommands.hpp"
+#include "plugins/SAP_HCP_IOT_Plugin.hpp"
+#include "plugins/AT_FW_Plugin.hpp"
+#include "plugins/CustomURL_Plugin.hpp"
+#include "plugins/URLShortcuts.hpp"
+#include "plugins/PropertyList.hpp"
 #include <LinkedList.h>
-#include "interfaces\Sensor.hpp"
-#include "interfaces\Plugin.hpp"
-#include "destinations\CustomHTTPDest.hpp"
+#include "interfaces/Sensor.hpp"
+#include "interfaces/Plugin.hpp"
+#include "destinations/CustomHTTPDest.hpp"
 #include <Wire.h>
-#include "plugins\NeopixelVE.hpp"
-#include "plugins\Dweet_io.hpp"
+#include "plugins/NeopixelVE.hpp"
+#include "plugins/Dweet_io.hpp"
 
 //#include <wiring_private.h>
 using namespace std;

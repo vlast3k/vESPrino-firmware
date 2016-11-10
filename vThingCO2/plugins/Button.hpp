@@ -4,7 +4,7 @@
 
 
 #include "MenuHandler.hpp"
-#include "interfaces\Plugin.hpp"
+#include "interfaces/Plugin.hpp"
 #define BTTN_FUNC_INTERVAL 2000
 class ButtonClass : public Plugin {
 public:

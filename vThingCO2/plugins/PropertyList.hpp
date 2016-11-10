@@ -4,7 +4,7 @@
 
 #include <Arduino.h>
 #include "FS.h"
-#include "interfaces\Plugin.hpp"
+#include "interfaces/Plugin.hpp"
 #include "MenuHandler.hpp"
 
 class PropertyListClass {

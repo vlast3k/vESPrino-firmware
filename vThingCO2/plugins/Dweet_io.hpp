@@ -2,7 +2,7 @@
 #define DWEET_IO_H
 #include "common.hpp"
 #include "PropertyList.hpp"
-#include "interfaces\Plugin.hpp"
+#include "interfaces/Plugin.hpp"
 #include <Timer.h>
 
 class DweetIOClass : public Plugin {
