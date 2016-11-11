@@ -171,26 +171,26 @@ void sendPingPort(const char *p) {
 
 }
 
-void sndIOT(const char *line) {
-  if (WiFi.status() != WL_CONNECTED) {
-    SERIAL_PORT << F("Cannot send data. No Wifi connection.") << endl;
-    return;
-  }
-//  String path;
-//  path = PropertyList.hasProperty(EE_IOT_PATH);
-  if (PropertyList.hasProperty(EE_IOT_PATH)) {
-    SAP_HCP_IOT_Plugin::sndHCPIOT(line);
-  }
-
-
-  if (PropertyList.hasProperty(EE_GENIOT_PATH)) {
-    CustomURL_Plugin::sndGENIOT(line);
-  }
-
-  if (PropertyList.hasProperty(EE_MQTT_SERVER)) {
-    sendMQTT(&line[7]);
-  }
-}
+// void sndIOT(const char *line) {
+//   if (WiFi.status() != WL_CONNECTED) {
+//     SERIAL_PORT << F("Cannot send data. No Wifi connection.") << endl;
+//     return;
+//   }
+// //  String path;
+// //  path = PropertyList.hasProperty(EE_IOT_PATH);
+//   if (PropertyList.hasProperty(EE_IOT_PATH)) {
+//     SAP_HCP_IOT_Plugin::sndHCPIOT(line);
+//   }
+//
+//
+//   if (PropertyList.hasProperty(EE_GENIOT_PATH)) {
+//     CustomURL_Plugin::sndGENIOT(line);
+//   }
+//
+//   if (PropertyList.hasProperty(EE_MQTT_SERVER)) {
+//     sendMQTT(&line[7]);
+//   }
+// }
 
 void cmdSleeptype(const char *line) {
   int type = atoi(strchr(line, ' ') + 1);
@@ -293,7 +293,7 @@ void WIFI_registerCommands(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("wifi"), CMD_BEGIN, &setWifi, F("")));
   handler->registerCommand(new MenuEntry(F("static_wifi"), CMD_BEGIN, &setStaticWifi, F("")));
   handler->registerCommand(new MenuEntry(F("ping"), CMD_BEGIN, sendPingPort, F("")));
-  handler->registerCommand(new MenuEntry(F("sndiot"), CMD_BEGIN, sndIOT, F("")));
+  //handler->registerCommand(new MenuEntry(F("sndiot"), CMD_BEGIN, sndIOT, F("")));
   handler->registerCommand(new MenuEntry(F("sleeptype"), CMD_BEGIN, cmdSleeptype, F("")));
   handler->registerCommand(new MenuEntry(F("delay"), CMD_BEGIN, cmdDelay, F("")));
   handler->registerCommand(new MenuEntry(F("ipconfig"), CMD_EXACT, cmdIPConfig, F("")));

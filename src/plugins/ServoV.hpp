@@ -16,7 +16,7 @@ public:
   static void cmdSetServoPos(const char *cmd);
   void cmdSetServoPosInst(const char *cmd);
   void initServo();
-  Servo *servo = NULL;
+  //Servo *servo = NULL;
   Servo s;
 };
 #endif

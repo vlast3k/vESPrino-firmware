@@ -7,14 +7,13 @@ extern ServoV _ServoV;
 
 ServoV::ServoV() {
   registerPlugin(this);
-
 }
 
 void ServoV::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("setServoPort"), CMD_BEGIN, ServoV::cmdSetServoPort, F("setServoPort [0:16]? (blank for off)")));
   handler->registerCommand(new MenuEntry(F("setServoPos"), CMD_BEGIN, ServoV::cmdSetServoPos, F("setServoPos [0:180]")));
-  s.attach(D6);
-  //initServo();
+  //s.attach(D6);
+  initServo();
 }
 
 void ServoV::cmdSetServoPort(const char *cmd) {
@@ -27,39 +26,35 @@ void ServoV::cmdSetServoPort(const char *cmd) {
 }
 
 void ServoV::cmdSetServoPos(const char *cmd) {
-  _ServoV.cmdSetServoPosInst(cmd);
+   _ServoV.cmdSetServoPosInst(cmd);
 }
 
 void ServoV::cmdSetServoPosInst(const char *cmd) {
-  //if (servo) {
-    cmd = strchr(cmd, ' ');
-    if (cmd != NULL) {
-      int pos = atoi(cmd+1);
-
-
-      s.write(pos);
-      // servo->attach(D6);
-      // servo->write(pos);
-      Serial << "Move Servo to: " << pos << endl;
-      delay(500);
-    }
-
-  //}
+  cmd = strchr(cmd, ' ');
+  if (cmd != NULL) {
+    int pos = atoi(cmd+1);
+    s.write(pos);
+    Serial << F("Move Servo to: ") << pos << endl;
+    delay(500);
+  }
 }
 
 void ServoV::initServo() {
   String sport = PropertyList.readProperty(PROP_SERVO_PORT);
   if (sport.length() == 0) {
-    if (servo) {
-      servo->detach();
-      delete servo;
-      servo = NULL;
-    }
+    s.detach();
+    // if (servo) {
+    //   servo->detach();
+    //   delete servo;
+    //   servo = NULL;
+    // }
   } else {
     int port = atoi(sport.c_str());
-    if (servo == NULL) servo = new Servo();
-    servo->detach();
-    Serial << "Attach Servo to: " << port << endl;
-    servo->attach(port);
+    // if (servo == NULL) servo = new Servo();
+    //servo->detach();
+    s.detach();
+    Serial << F("Attach Servo to: ") << port << endl;
+    //s.attach(port);
+    //servo->attach(port);
   }
 }

@@ -3,12 +3,12 @@
 //#define VTHING_VESPRINO
 //#define VAIR
 //#define VTHING_CO2
-#include "ESP8266WiFi.h"
-#include "Arduino.h"
+//#include "ESP8266WiFi.h"
+//#include "Arduino.h"
 #include "common.hpp"
-#include <CubicGasSensors.h>
+//#include <CubicGasSensors.h>
 #include "commands/CommonCommands.hpp"
-#include "plugins/SAP_HCP_IOT_Plugin.hpp"
+//#include "plugins/SAP_HCP_IOT_Plugin.hpp"
 #include "plugins/AT_FW_Plugin.hpp"
 #include "plugins/CustomURL_Plugin.hpp"
 #include "plugins/URLShortcuts.hpp"
@@ -16,10 +16,8 @@
 #include <LinkedList.h>
 #include "interfaces/Sensor.hpp"
 #include "interfaces/Plugin.hpp"
-#include "destinations/CustomHTTPDest.hpp"
 #include <Wire.h>
 #include "plugins/NeopixelVE.hpp"
-#include "plugins/Dweet_io.hpp"
 
 //#include <wiring_private.h>
 using namespace std;
@@ -233,7 +231,7 @@ void setup() {
   //registerPlugin(&PowerManager);
   setupPlugins(&menuHandler);
 
-  SAP_HCP_IOT_Plugin::registerCommands(&menuHandler);
+  //SAP_HCP_IOT_Plugin::registerCommands(&menuHandler);
   AT_FW_Plugin::registerCommands(&menuHandler);
   CustomURL_Plugin::registerCommands(&menuHandler);
   URLShortcuts::registerCommands(&menuHandler);
