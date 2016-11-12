@@ -25,7 +25,6 @@
 #include "destinations/RFDest.hpp"
 #include "utils/RTCMemStore.hpp"
 #include "plugins/NeopixelVE.hpp"
-#include "utils/SlowWire.hpp"
 #include "plugins/Dweet_io.hpp"
 #include "plugins/WebServer.hpp"
 #include "plugins/Button.hpp"
@@ -54,7 +53,6 @@ PowerManagerClass PowerManager;
 TimerManagerClass TimerManager;
 RTCMemStore rtcMemStore;
 NeopixelVE neopixel;
-SlowWireClass SlowWire;
 
 CustomHTTPDest customHTTPDest;
 SerialDumpDest serialDumpDest;

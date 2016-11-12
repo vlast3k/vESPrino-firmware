@@ -4,7 +4,7 @@
 #include "interfaces/Sensor.hpp"
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
-#include "lib/TSL2561.h"
+#include "TSL2561.h"
 
 class TSL2561Sensor : public Sensor {
 public:

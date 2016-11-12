@@ -91,8 +91,8 @@ void CommonCommands::registerCommands(MenuHandler *handler) {
   //MenuEntry *new MenuEntry(F("heap"), CMD_EXACT, &CommonCommands::cmdHeap, F("Free heap"));
   handler->registerCommand(new MenuEntry(F("factory"), CMD_EXACT, factoryReset, F("Return to defaults")));
   handler->registerCommand(new MenuEntry(F("debug"), CMD_EXACT, &CommonCommands::cmdDebug, F("Turn on debug")));
-  handler->registerCommand(new MenuEntry(F("scani2c"), CMD_EXACT, cmdScanI2C, F("Scan I2C Bus")));
-  handler->registerCommand(new MenuEntry(F("dumpi2c"), CMD_EXACT, dumpI2CBus, F("Scan I2C Bus")));
+  handler->registerCommand(new MenuEntry(F("scani2c"), CMD_EXACT, I2CHelper::cmdScanI2C, F("Scan I2C Bus")));
+  handler->registerCommand(new MenuEntry(F("dumpi2c"), CMD_EXACT, I2CHelper::dumpI2CBus, F("Scan I2C Bus")));
   handler->registerCommand(new MenuEntry(F("dumpCfg"), CMD_EXACT, &CommonCommands::dumpCfg, F("Dump EEPROM Contents")));
   handler->registerCommand(new MenuEntry(F("heap"), CMD_EXACT, &CommonCommands::cmdHeap, F("Free heap")));
   handler->registerCommand(new MenuEntry(F("restart"), CMD_EXACT, espRestart, F("")));
@@ -102,6 +102,6 @@ void CommonCommands::registerCommands(MenuHandler *handler) {
   //handler->registerCommand(new MenuEntry(F("tms"), CMD_EXACT, cmdTestMemStore, F("")));
   handler->registerCommand(new MenuEntry(F("sertest"), CMD_BEGIN, cmdSerTest, F("")));
   handler->registerCommand(new MenuEntry(F("oled"), CMD_BEGIN, oledHandleCommand, F("")));
-  
+
 
 }

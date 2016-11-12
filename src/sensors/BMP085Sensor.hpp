@@ -4,7 +4,7 @@
 #include "interfaces/Sensor.hpp"
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
-#include "lib/Adafruit_BMP085.h"
+#include "Adafruit_BMP085.h"
 
 //#define SEALEVELPRESSURE_HPA (1013.25)
 

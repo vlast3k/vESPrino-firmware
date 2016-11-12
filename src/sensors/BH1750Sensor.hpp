@@ -4,7 +4,7 @@
 #include "interfaces/Sensor.hpp"
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
-#include "lib/BH1750FVI.h"
+#include "BH1750FVI.h"
 
 class BH1750Sensor : public Sensor {
 public:

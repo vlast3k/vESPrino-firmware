@@ -15,8 +15,8 @@
   BSD license, all text above must be included in any redistribution
  ***************************************************************************/
 #include "Arduino.h"
-#include "common.hpp"
-//#include "utils/SlowWire.hpp"
+//#include "Wire.hpp"
+#include <I2CHelper.hpp>
 #ifdef SPI
 #include <SPI.h>
 #endif
@@ -46,7 +46,7 @@ bool Adafruit_BME280::begin(uint8_t a) {
 
   if (_cs == -1) {
     // i2c
-    SlowWire.begin();
+    Wire.begin();
   } else {
 #ifdef SPI
     digitalWrite(_cs, HIGH);
@@ -104,10 +104,10 @@ uint8_t Adafruit_BME280::spixfer(uint8_t x) {
 void Adafruit_BME280::write8(byte reg, byte value)
 {
   if (_cs == -1) {
-    SlowWire.beginTransmission((uint8_t)_i2caddr);
-    SlowWire.write((uint8_t)reg);
-    SlowWire.write((uint8_t)value);
-    SlowWire.endTransmission();
+    Wire.beginTransmission((uint8_t)_i2caddr);
+    Wire.write((uint8_t)reg);
+    Wire.write((uint8_t)value);
+    I2CHelper::slowEndTransmission();
   } else {
 #ifdef SPI
 
@@ -134,11 +134,11 @@ uint8_t Adafruit_BME280::read8(byte reg)
   uint8_t value;
 
   if (_cs == -1) {
-    SlowWire.beginTransmission((uint8_t)_i2caddr);
-    SlowWire.write((uint8_t)reg);
-    SlowWire.endTransmission();
-    SlowWire.requestFrom((uint8_t)_i2caddr, (byte)1);
-    value = SlowWire.read();
+    Wire.beginTransmission((uint8_t)_i2caddr);
+    Wire.write((uint8_t)reg);
+    Wire.endTransmission();
+    Wire.requestFrom((uint8_t)_i2caddr, (byte)1);
+    value = Wire.read();
 
   } else {
 #ifdef SPI
@@ -165,11 +165,11 @@ uint16_t Adafruit_BME280::read16(byte reg)
   uint16_t value;
 
   if (_cs == -1) {
-    SlowWire.beginTransmission((uint8_t)_i2caddr);
-    SlowWire.write((uint8_t)reg);
-    SlowWire.endTransmission();
-    SlowWire.requestFrom((uint8_t)_i2caddr, (byte)2);
-    value = (SlowWire.read() << 8) | SlowWire.read();
+    Wire.beginTransmission((uint8_t)_i2caddr);
+    Wire.write((uint8_t)reg);
+    Wire.endTransmission();
+    Wire.requestFrom((uint8_t)_i2caddr, (byte)2);
+    value = (Wire.read() << 8) | Wire.read();
 
   } else {
 #ifdef SPI
@@ -222,16 +222,16 @@ uint32_t Adafruit_BME280::read24(byte reg)
   uint32_t value;
 
   if (_cs == -1) {
-    SlowWire.beginTransmission((uint8_t)_i2caddr);
-    SlowWire.write((uint8_t)reg);
-    SlowWire.endTransmission();
-    SlowWire.requestFrom((uint8_t)_i2caddr, (byte)3);
+    Wire.beginTransmission((uint8_t)_i2caddr);
+    Wire.write((uint8_t)reg);
+    I2CHelper::slowEndTransmission();
+    Wire.requestFrom((uint8_t)_i2caddr, (byte)3);
 
-    value = SlowWire.read();
+    value = Wire.read();
     value <<= 8;
-    value |= SlowWire.read();
+    value |= Wire.read();
     value <<= 8;
-    value |= SlowWire.read();
+    value |= Wire.read();
 
   } else {
 #ifdef SPI

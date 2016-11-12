@@ -18,6 +18,7 @@
 #include "interfaces/Plugin.hpp"
 #include <Wire.h>
 #include "plugins/NeopixelVE.hpp"
+#include <I2CHelper.hpp>
 
 //#include <wiring_private.h>
 using namespace std;
@@ -166,7 +167,7 @@ void setup() {
 
   heap("Heap at start");
   Serial.flush();
-  beginI2C();
+  I2CHelper::beginI2C();
   //Wire.begin(D1, D6);
   //WiFi.begin();
   // #if defined(VTHING_CO2) || defined(VTHING_VESPRINO)

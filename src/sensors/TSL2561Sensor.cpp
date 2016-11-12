@@ -3,7 +3,8 @@
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
 #include "common.hpp"
-#include "lib/TSL2561.h"
+#include "TSL2561.h"
+#include <I2CHelper.hpp>
 
 TSL2561Sensor::TSL2561Sensor() {
   registerSensor(this);
@@ -26,14 +27,14 @@ void TSL2561Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool TSL2561Sensor::initSensor() {
-  if (i2cSDA == -1) return false;
+  if (I2CHelper::I2CHelper::i2cSDA ==  -1) return false;
   closeSensor();
   bool init = false;
   tsl = new TSL2561();
   for (int i=0; i < 5; i++) {
     init = tsl->begin();
     if (init) break;
-    i2cHigh();
+    I2CHelper::I2CHelper::i2cHigh();
     delay(100);
   }
   if (!init) {

@@ -1,10 +1,11 @@
 
-#include "lib/Adafruit_BMP085.h"
+#include "Adafruit_BMP085.h"
 #include <Wire.h>
 #include "sensors/BMP085Sensor.hpp"
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
 #include "common.hpp"
+#include <I2CHelper.hpp>
 
 BMP085Sensor::BMP085Sensor() {
   registerSensor(this);
@@ -36,7 +37,7 @@ void BMP085Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool BMP085Sensor::initSensor() {
-  if (i2cSDA == -1) return false;
+  if (I2CHelper::i2cSDA ==  -1) return false;
   closeSensor();
   bme = new Adafruit_BMP085();
   //BME280->reset();
@@ -44,7 +45,7 @@ bool BMP085Sensor::initSensor() {
   for (int i=0; i < 5; i++) {
     init = bme->begin();
     if (init) break;
-    i2cHigh();
+    I2CHelper::i2cHigh();
     delay(100);
 
   }

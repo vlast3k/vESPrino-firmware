@@ -15,7 +15,7 @@
   BSD license, all text above must be included in any redistribution
  ****************************************************/
 #include "Arduino.h"
-#include "common.hpp"
+#include <I2CHelper.hpp>
 #include "Adafruit_BMP085.h"
 
 Adafruit_BMP085::Adafruit_BMP085() {
@@ -27,7 +27,7 @@ boolean Adafruit_BMP085::begin(uint8_t mode, int sda, int scl) {
     mode = BMP085_ULTRAHIGHRES;
   oversampling = mode;
 
-  SlowWire.begin();
+  Wire.begin();
   //Wire.begin(sda, scl);
 
   if (read8(0xD0) != 0x55) return false;

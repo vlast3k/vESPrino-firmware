@@ -3,7 +3,7 @@
 #include "plugins/CustomURL_Plugin.hpp"
 #include "plugins/PropertyList.hpp"
 #include <ESP8266WiFiMulti.h>
-#include "lib/WiFiManager.h"
+#include "WiFiManager.h"
 
 ESP8266WiFiMulti  *wifiMulti = NULL;
 

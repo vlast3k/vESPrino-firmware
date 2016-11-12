@@ -1,5 +1,5 @@
 #include <Adafruit_Sensor.h>
-#include "lib/Adafruit_BME280.h"
+#include "Adafruit_BME280.h"
 #include <Wire.h>
 #include "sensors/BME280Sensor.hpp"
 #include <LinkedList.h>
@@ -37,7 +37,7 @@ void BME280Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool BME280Sensor::initSensor() {
-  if (i2cSDA == -1) return false;
+  if (I2CHelper::i2cSDA ==  -1) return false;
   closeSensor();
   bme = new Adafruit_BME280();
   //BME280->reset();
@@ -45,7 +45,7 @@ bool BME280Sensor::initSensor() {
   for (int i=0; i < 5; i++) {
     init = bme->begin();
     if (init) break;
-    i2cHigh();
+    I2CHelper::i2cHigh();
     delay(100);
 
   }

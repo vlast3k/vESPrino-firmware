@@ -1,10 +1,12 @@
+#include <I2CHelper.hpp>
 #include <Arduino.h>
 #include <Streaming.h>
 #include <Wire.h>
-#include "common.hpp"
 
+int I2CHelper::i2cSDA = -1;
+int I2CHelper::i2cSCL = -1;
 
-bool checkI2CDevice(int addr) {
+bool I2CHelper::checkI2CDevice(int addr) {
   i2cHigh();
   for (int i=0; i < 10; i++) {
     Wire.beginTransmission(addr);
@@ -14,19 +16,19 @@ bool checkI2CDevice(int addr) {
   return false;
 }
 
-bool checkI2CDevice(int sda, int sca, int addr) {
+bool I2CHelper::checkI2CDevice(int sda, int sca, int addr) {
   Wire.begin(sda, sca);
   Wire.beginTransmission(addr);
   int res = Wire.endTransmission();
-  SERIAL_PORT << F("i2c addr:") << addr << F(", i2c res: ") << _HEX(res) << endl;
+  Serial << F("i2c addr:") << addr << F(", i2c res: ") << _HEX(res) << endl;
   return !res;
 }
 
-void i2cPrintAddr(byte address) {
+void I2CHelper::i2cPrintAddr(byte address) {
   if (address<16) Serial.print(F("0"));
   Serial << _HEX(address) << endl;
 }
-void dumpI2CBus(const char *line) {
+void I2CHelper::dumpI2CBus(const char *line) {
   //Wire.begin(D5, D7);
   byte error, address;
   int nDevices;
@@ -38,8 +40,8 @@ void dumpI2CBus(const char *line) {
   }
 }
 
-bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debug) {
-  SlowWire.begin(sda, sca);
+bool I2CHelper::hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debug) {
+  Wire.begin(sda, sca);
   //Wire.setClock(20000);
   byte error, address;
   int nDevices;
@@ -56,8 +58,8 @@ bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debu
     // the Write.endTransmisstion to see if
     // a device did acknowledge to the address.
     for (int i=0; i < 5; i++) {
-      SlowWire.beginTransmission(address);
-      error = SlowWire.endTransmission();
+      Wire.beginTransmission(address);
+      error = slowEndTransmission();
 
       if (error == 0) {
         if (debug) {
@@ -82,20 +84,20 @@ bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debu
   return nDevices > 0;
 }
 
-int i2cWireStatus() {
+int I2CHelper::i2cWireStatus() {
   for (int i=0; i < 5 && Wire.status() != I2C_OK; i++) delay(5);
   delay(10);
   return Wire.status();
 
 }
 
-int i2cSlowWireStatus() {
-  for (int i=0; i < 5 && SlowWire.status() != I2C_OK; i++) delay(5);
+int I2CHelper::i2cSlowWireStatus() {
+  for (int i=0; i < 5 && Wire.status() != I2C_OK; i++) delay(5);
   delay(10);
-  return SlowWire.status();
+  return Wire.status();
 }
 
-bool findI2C(int &sda, int &scl, bool debug) {
+bool I2CHelper::findI2C(int &sda, int &scl, bool debug) {
 //  int gpios[] = {D1, D5, D2, D5, D6};
   int gpios[] = {D1, D5, D7};//, D6};
   String gpios_str[] = {F("D1"), F("D5"), F("D7")};//, F("D6")};
@@ -117,13 +119,13 @@ bool findI2C(int &sda, int &scl, bool debug) {
   return false;
 }
 
-void i2cHigh() {
+void I2CHelper::i2cHigh() {
   pinMode(i2cSDA, INPUT);
   pinMode(i2cSCL, INPUT);
   delay(1);
 }
 
-void cmdScanI2C(const char *ignore) {
+void I2CHelper::cmdScanI2C(const char *ignore) {
   //if ()
    //pinMode(D8, OUTPUT);    //enable power via D8
   //  digitalWrite(D8, LOW);
@@ -136,7 +138,7 @@ void cmdScanI2C(const char *ignore) {
   findI2C(a, b, true);
 }
 
-void beginI2C() {
+void I2CHelper::beginI2C() {
 //  brzo_i2c_setup(D5, D1, 50000);
   //Wire.begin(D5, D1);
    if (findI2C(i2cSDA, i2cSCL, false)) {
@@ -147,4 +149,24 @@ void beginI2C() {
      Serial << F("No I2C Devices found\n");
      i2cSDA = i2cSCL = -1;
    }
+}
+
+uint8_t I2CHelper::slowEndTransmission(uint8_t sendStop) {
+  #ifdef SLOWWIRE
+    int8_t ret;
+    for (int i=0; i < 5; i++) {
+      ret = twi_writeTo(TwoWire::txAddress, TwoWire::txBuffer, TwoWire::txBufferLength, sendStop);
+      if (ret == 4) {
+        delay(20);
+        i2cSlowWireStatus();
+        i2cHigh();
+        continue;
+      }
+      break;
+    }
+    Wire.flush();
+    return ret;
+  #else
+    return Wire.endTransmission(sendStop);
+  #endif
 }

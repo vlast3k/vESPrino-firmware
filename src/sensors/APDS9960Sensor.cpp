@@ -3,7 +3,7 @@
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
 #include "common.hpp"
-#include "lib/SparkFun_APDS9960.h"
+#include "SparkFun_APDS9960.h"
 
 //int APDS9960Sensor::isr_flag = 0;
 APDS9960Sensor::APDS9960Sensor() {
@@ -30,7 +30,7 @@ bool APDS9960Sensor::initSensor() {
   for (int i=0; i < 5; i++) {
     init = sensor->init();
     if (init) break;
-    i2cHigh();
+    I2CHelper::i2cHigh();
     delay(10);
   }
 

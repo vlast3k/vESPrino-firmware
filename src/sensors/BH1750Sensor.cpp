@@ -3,7 +3,7 @@
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
 #include "common.hpp"
-#include "lib/BH1750FVI.h"
+#include "BH1750FVI.h"
 
 extern BH1750Sensor bh1750Sensor;
 BH1750Sensor::BH1750Sensor() {
@@ -42,14 +42,14 @@ void BH1750Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool BH1750Sensor::initSensor() {
-  if (i2cSDA == -1) return false;
+  if (I2CHelper::i2cSDA ==  -1) return false;
   closeSensor();
   bool init = false;
   tsl = new BH1750FVI();
   for (int i=0; i < 5; i++) {
     init = tsl->begin();
     if (init) break;
-    i2cHigh();
+    I2CHelper::i2cHigh();
     delay(100);
   }
   if (!init) {

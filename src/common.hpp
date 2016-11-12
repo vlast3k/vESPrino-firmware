@@ -43,9 +43,7 @@ extern "C" {
 #include "utils/RTCMemStore.hpp"
 #include <ESP8266WiFiMulti.h>
 #include "plugins/NeopixelVE.hpp"
-
-#include "utils/SlowWire.hpp"
-
+#include <I2CHelper.hpp>
 
 #define BUILD_NUM "20161107"
 
@@ -195,10 +193,6 @@ void handleDWCommand(char *line);
 // void ledSetBrg(char *s);
 // void ledHandleMode(char *cmd) ;
 
-bool checkI2CDevice(int sda, int sca, int addr) ;
-bool checkI2CDevice(int addr);
-int i2cWireStatus();
-
 
 //#endif
 
@@ -216,7 +210,6 @@ void h801_processConfig(const char *p);
 void initCO2Handler();
 void loopCO2Handler();
 void dumpArray(const char *s);
-void dumpI2CBus(const char *s);
 
 //#endif
 extern boolean hasSSD1306, hasSI7021, hasPN532, hasBMP180, hasBH1750, hasAPDS9960, hasPIR;
@@ -244,11 +237,9 @@ extern CDM7160Sensor cdm7160Sensor;
 extern TestSensor testSensor;
 extern MQTTDest mqttDest;
 extern bool deepSleepWake;
-extern int i2cSDA, i2cSCL;
 extern RTCMemStore rtcMemStore;
 extern ESP8266WiFiMulti  *wifiMulti;
 extern RFDest rfDest;
-extern SlowWireClass SlowWire;
 //extern NeopixelVE neopixel;
 
 void MigrateSettingsIfNeeded();
@@ -260,11 +251,8 @@ void registerDestination(Destination *destination);
 void registerPlugin(Plugin *plugin);
 void registerSensor(Sensor *sensor);
 wl_status_t waitForWifi(uint16_t timeoutMs = 15000);
-void beginI2C();
 void wifiConnectMulti();
 void startAutoWifiConfig();
-void i2cHigh();
-int i2cSlowWireStatus();
 void wifiOff();
 void fireEvent(const char *name);
 #endif

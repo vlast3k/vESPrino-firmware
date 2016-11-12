@@ -43,7 +43,7 @@
 #include <stdlib.h>
 
 #include "TSL2561.h"
-#include "common.hpp"
+#include <I2CHelper.hpp>
 
 TSL2561::TSL2561(uint8_t addr) {
   _addr = addr;
@@ -55,7 +55,7 @@ TSL2561::TSL2561(uint8_t addr) {
 }
 
 boolean TSL2561::begin(void) {
-  SlowWire.begin();
+  Wire.begin();
 
  // Initialise I2C
   Wire.beginTransmission(_addr);

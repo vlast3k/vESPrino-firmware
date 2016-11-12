@@ -4,7 +4,7 @@
 #include "interfaces/Sensor.hpp"
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
-#include "lib/SparkFun_APDS9960.h"
+#include "SparkFun_APDS9960.h"
 
 class APDS9960Sensor : public Sensor {
 public:

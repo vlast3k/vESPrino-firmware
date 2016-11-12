@@ -3,6 +3,7 @@
 #include "interfaces/Sensor.hpp"
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
+#include <I2CHelper.hpp>
 
 class CDM7160Sensor : public Sensor {
 public:

@@ -4,6 +4,7 @@
 #include "interfaces/Pair.h"
 #include "common.hpp"
 #include "plugins/TimerManager.hpp"
+#include <I2CHelper.hpp>
 
 PM2005Sensor::PM2005Sensor() {
   registerSensor(this);
@@ -17,8 +18,8 @@ void dump(uint8_t *r, int len) {
 void PM2005Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("pm2005quiet"), CMD_BEGIN, &PM2005Sensor::onCmdQuiet, F("pm2005quiet 22:00,03:00,180 (zulu start, zulu end, tz offset in minutes)")));
   handler->registerCommand(new MenuEntry(F("pm2005int"), CMD_BEGIN, &PM2005Sensor::onCmdInterval, F("pm2005int 20,3600 (measure time in seconds - active, quiet (<30sec = dynamic mode)")));
-  if (i2cSDA == -1) return ;
-  if (checkI2CDevice(0x28)) {
+  if (I2CHelper::i2cSDA ==  -1) return ;
+  if (I2CHelper::checkI2CDevice(0x28)) {
     Serial << F("Found PM2005 - Dust / Particle Sensor\n");
     hasSensor = true;
     checkMode();
@@ -26,6 +27,7 @@ void PM2005Sensor::setup(MenuHandler *handler) {
 }
 
 void PM2005Sensor::checkMode() {
+  Wire.setClock(10000);
   int pm25, pm10, mode, status;
   if (!intReadData(pm25, pm10, status, mode)) return;
   String qs = PropertyList.readProperty(PROP_PM2005_QSTART);
@@ -47,6 +49,7 @@ void PM2005Sensor::checkMode() {
 }
 
 void PM2005Sensor::onCmdQuiet(const char *line) {
+  Wire.setClock(10000);
   char *s = strchr(line, ' ') + 1;
   char *e = strchr(s, ',');
   *e = 0;
@@ -60,6 +63,7 @@ void PM2005Sensor::onCmdQuiet(const char *line) {
 }
 
 void PM2005Sensor::onCmdInterval(const char *line) {
+  Wire.setClock(10000);
   char *s = strchr(line, ' ') + 1;
   char *e = strchr(s, ',');
   *e = 0;
@@ -78,8 +82,9 @@ void PM2005Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool PM2005Sensor::intBegin() {
-  i2cWireStatus();
-  i2cHigh();
+  Wire.setClock(10000);
+  I2CHelper::i2cWireStatus();
+  I2CHelper::i2cHigh();
   int res;
   for (int i=0; i < 5; i++) {
     Wire.beginTransmission(0x28);
@@ -90,7 +95,7 @@ bool PM2005Sensor::intBegin() {
     }
     delay(20);
     //Serial << "PM2005 init res: " << res << endl;
-    i2cHigh();
+    I2CHelper::i2cHigh();
     delay(100);
   }
   return false;
@@ -110,7 +115,7 @@ void PM2005Sensor::setTimingMeasuringMode(uint16_t intervalSec) {
 }
 
 void PM2005Sensor::sendCommand(uint8_t *toSend) {
-
+  Wire.setClock(10000);
   int res = -1;
   for (int i=1; i <=6; i++) toSend[7] ^= toSend[i];
   dump(toSend, 8);
