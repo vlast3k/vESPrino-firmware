@@ -54,7 +54,9 @@ void ServoV::initServo() {
     //servo->detach();
     s.detach();
     Serial << F("Attach Servo to: ") << port << endl;
-    //s.attach(port);
+    #ifndef ESPSTAGE
+    s.attach(port);
+    #endif
     //servo->attach(port);
   }
 }
