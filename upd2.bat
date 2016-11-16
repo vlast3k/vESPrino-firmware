@@ -1,1 +1,1 @@
-"C:\Users\i024148\.platformio\packages\tool-esptool\esptool" -vv -cd nodemcu -cb 256000 -cp "COM5" -cf .pioenvs\nodemcu\firmware.bin
+"C:\Users\i024148\.platformio\packages\tool-esptool\esptool" -vv -cd nodemcu -cb 256000 -cp "COM24" -cf fw\latest.bin
