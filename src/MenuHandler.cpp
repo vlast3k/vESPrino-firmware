@@ -105,7 +105,10 @@ void MenuHandler::processCommands() {
 }
 
 void MenuHandler::handleCommand(const char *line) {
-  if (DEBUG) Serial << F("Executing: ") << line << endl;
+  if (DEBUG) {
+    Serial << F("Executing: ") << line << endl;
+    Serial.flush();
+  }
   //dumpArray(line);
   String s1;
   for (int i=0; i < commands->size(); i++) {

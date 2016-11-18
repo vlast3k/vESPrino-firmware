@@ -289,14 +289,14 @@ void cmdIPConfig(const char *ignore) {
 }
 
 void WIFI_registerCommands(MenuHandler *handler) {
-  handler->registerCommand(new MenuEntry(F("scan"), CMD_EXACT, &wifiScanNetworks, F("")));
-  handler->registerCommand(new MenuEntry(F("wifi"), CMD_BEGIN, &setWifi, F("")));
-  handler->registerCommand(new MenuEntry(F("static_wifi"), CMD_BEGIN, &setStaticWifi, F("")));
+  handler->registerCommand(new MenuEntry(F("scan"), CMD_EXACT, &wifiScanNetworks, F("Scan available WiFi networks")));
+  handler->registerCommand(new MenuEntry(F("wifi"), CMD_BEGIN, &setWifi, F("wifi \"SSID\", \"PASS\"")));
+  handler->registerCommand(new MenuEntry(F("static_ip"), CMD_BEGIN, &setStaticWifi, F("static_ip ip,gateway,subnetMask,dns1,dns2")));
   handler->registerCommand(new MenuEntry(F("ping"), CMD_BEGIN, sendPingPort, F("")));
   //handler->registerCommand(new MenuEntry(F("sndiot"), CMD_BEGIN, sndIOT, F("")));
   handler->registerCommand(new MenuEntry(F("sleeptype"), CMD_BEGIN, cmdSleeptype, F("")));
   handler->registerCommand(new MenuEntry(F("delay"), CMD_BEGIN, cmdDelay, F("")));
-  handler->registerCommand(new MenuEntry(F("ipconfig"), CMD_EXACT, cmdIPConfig, F("")));
+  handler->registerCommand(new MenuEntry(F("ipconfig"), CMD_EXACT, cmdIPConfig, F("Dump IP configuration")));
 }
 
 extern NeopixelVE neopixel;

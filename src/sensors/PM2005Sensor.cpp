@@ -33,6 +33,7 @@ void PM2005Sensor::checkMode() {
   String qs = PropertyList.readProperty(PROP_PM2005_QSTART);
   String qe = PropertyList.readProperty(PROP_PM2005_QEND);
   int interval = PropertyList.readLongProperty(PROP_PM2005_INT_ACT);
+  if (!interval) interval = 360; // by defaul if property is missing, use timing mode each 6 minutes
   if (qs.length() > 0) {
     if (TimerManagerClass::isTimeInPeriod(qs.c_str(), qe.c_str()) != TP_OUT) {
       interval = PropertyList.readLongProperty(PROP_PM2005_INT_QUIET);
