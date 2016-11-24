@@ -84,17 +84,20 @@ void setupPlugins(MenuHandler *handler) {
   //menuHandler.handleCommand(F("scani2c"));
   Serial << F("\n--- Setup PLUGINS ---\n");
   for (int i=0; i < plugins.size(); i++) {
-    Serial << F("Setup plugin: ") << plugins.get(i)->getName() << endl;
+//    Serial << F("Setup plugin: ") << plugins.get(i)->getName() << endl;
+    Serial << plugins.get(i)->getName() << endl;
     plugins.get(i)->setup(handler);
   }
   Serial << F("\n--- Setup SENSORS ---\n");
   for (int i=0; i < sensors.size(); i++) {
-    Serial << F("Setup sensor: ") << sensors.get(i)->getName() << endl;
+//    Serial << F("Setup sensor: ") << sensors.get(i)->getName() << endl;
+    Serial << sensors.get(i)->getName() << endl;
     sensors.get(i)->setup(handler);
   }
   Serial << F("\n--- Setup DESTINATIONS ---\n");
   for (int i=0; i < destinations.size(); i++) {
-    Serial << F("Setup Destination: ") << destinations.get(i)->getName() << endl;
+    Serial << destinations.get(i)->getName() << endl;
+    //Serial << F("Setup Destination: ") << destinations.get(i)->getName() << endl;
     destinations.get(i)->setup(handler);
   }
 //  Serial << F("\n--- Setup DONE ---\n");
@@ -153,8 +156,8 @@ void fireEvent(const char *name) {
 
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 void setup() {
-  // pinMode(D8, OUTPUT);    //enable power via D8
-  // digitalWrite(D8, HIGH);
+  pinMode(D8, OUTPUT);    //enable power via D8
+  digitalWrite(D8, HIGH);
   // //delay(1000);
   //neopixel.cmdLedHandleColorInst(F("ledcolor green"));
   // pinMode(D8, OUTPUT);
@@ -162,12 +165,11 @@ void setup() {
   SERIAL_PORT.begin(9600);
   PropertyList.begin(&menuHandler);
   //Wire.begin(D6, D5);
-  Serial.flush();
-  delay(100);
+  //Serial.flush();
+  //delay(100);
 
   heap("Heap at start");
   Serial.flush();
-  I2CHelper::beginI2C();
   //Wire.begin(D1, D6);
   //WiFi.begin();
   // #if defined(VTHING_CO2) || defined(VTHING_VESPRINO)
@@ -193,7 +195,8 @@ void setup() {
 //  deepSleepWake = isDeepSleepWake();
   rtcMemStore.init();
   PowerManager.setup(&menuHandler);
-
+  I2CHelper::beginI2C();
+  pinMode(D8, INPUT);
 
 
   DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
@@ -209,6 +212,7 @@ void setup() {
     neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
     neopixel.cmdLedHandleColorInst(F("ledcolor black"));
   }
+
 
   wifiConnectMulti();
 
@@ -260,7 +264,6 @@ void setup() {
   //WiFi.begin("MarinaResidence","eeeeee");
   //menuHandler.scheduleCommand("nop 0");
   //menuHandler.scheduleCommand("oled Started");
-
 
 }
 //int aa = 0;

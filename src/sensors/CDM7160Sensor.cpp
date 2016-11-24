@@ -3,22 +3,26 @@
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
 #include "common.hpp"
-#include "utils/RTCMemStore.hpp"
 CDM7160Sensor::CDM7160Sensor() {
   registerSensor(this);
 }
 
 void CDM7160Sensor::setup(MenuHandler *handler) {
+  if (!rtcMemStore.hasSensor(RTC_SENSOR_CDM7160)) {
+    hasSensor = false;
+    return;
+  }
   handler->registerCommand(new MenuEntry(F("cdmloop"), CMD_BEGIN, &CDM7160Sensor::onCmdLoop, F("cdmtest b - b for DEBUG - test CDM7160 sensor")));
   handler->registerCommand(new MenuEntry(F("cdmtest"), CMD_BEGIN, &CDM7160Sensor::onCmdTest, F("cdmtest b - b for DEBUG - test CDM7160 sensor")));
   handler->registerCommand(new MenuEntry(F("cdmswitch"), CMD_BEGIN, &CDM7160Sensor::onCdmSwitch, F("cdmtest b - b for DEBUG - test CDM7160 sensor")));
   handler->registerCommand(new MenuEntry(F("cdmreg"), CMD_BEGIN, &CDM7160Sensor::onChangeReg, F("cdmreg \"regid\" \"value\"")));
   handler->registerCommand(new MenuEntry(F("cdmperf"), CMD_BEGIN, &CDM7160Sensor::onPerf, F("cdmreg \"regid\" \"value\"")));
-  if (I2CHelper::i2cSDA ==  -1) return;
-  if (I2CHelper::checkI2CDevice(CDM_ADDR_WRITE)) {
+  if (I2CHelper::i2cSDA > -1 && I2CHelper::checkI2CDevice(CDM_ADDR_WRITE)) {
     Serial << F("Found CDM7160 CO2 Sensor") << endl;
     if (!PowerManager.isWokeFromDeepSleep()) configureSensor();
     hasSensor = true;
+  } else {
+    rtcMemStore.setSensorState(RTC_SENSOR_CDM7160, false);
   }
 }
 

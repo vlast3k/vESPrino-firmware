@@ -64,7 +64,7 @@ byte MenuHandler::readLine(int timeout) {
 void MenuHandler::scheduleCommandProperty(const char *prop) {
   if (DEBUG)  Serial << F("schedule commands from prop: ") << prop << endl;
   char *list = PropertyList.readProperty(prop);
-  scheduleCommand(list);
+  if (*list) scheduleCommand(list);
 }
 
 void MenuHandler::cmdListN(const char *list) {

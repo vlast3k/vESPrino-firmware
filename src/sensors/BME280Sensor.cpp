@@ -37,6 +37,7 @@ void BME280Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool BME280Sensor::initSensor() {
+  if (!rtcMemStore.hasSensor(RTC_SENSOR_BME280)) return false;
   if (I2CHelper::i2cSDA ==  -1) return false;
   closeSensor();
   bme = new Adafruit_BME280();
@@ -53,6 +54,7 @@ bool BME280Sensor::initSensor() {
     if (DEBUG) Serial << F("BME280 - init failed!") << endl;
     delete bme;
     bme = NULL;
+    rtcMemStore.setSensorState(RTC_SENSOR_BME280, false);
     return false;
   }
   SERIAL_PORT << F("Found BME280 - Temperature/Humidity/Pressure Sensor") << endl;

@@ -6,7 +6,8 @@
 #include "MenuHandler.hpp"
 #include <Timer.h>
 
-
+#define PROP_ITERATION_DURATION F("pwr.iterdur")
+#define PROP_TIMEOUT_INTERVAL F("pwr.timeoutint")
 class PowerManagerClass  {
 public:
   PowerManagerClass() {
@@ -21,7 +22,7 @@ public:
   const char* getName() {
     return "PowerManager";
   }
-  const static uint8_t IterationDurationS = 120;
+  static uint8_t IterationDurationS;
   void static cmdDeepSleep(const char *line) ;
   void cmdDeepSleepInst(const char *line) ;
   bool isWokeFromDeepSleep();

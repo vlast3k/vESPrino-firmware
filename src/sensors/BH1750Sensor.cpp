@@ -42,6 +42,7 @@ void BH1750Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool BH1750Sensor::initSensor() {
+  if (!rtcMemStore.hasSensor(RTC_SENSOR_BH1750)) return false;
   if (I2CHelper::i2cSDA ==  -1) return false;
   closeSensor();
   bool init = false;
@@ -54,6 +55,7 @@ bool BH1750Sensor::initSensor() {
   }
   if (!init) {
     if (DEBUG) Serial << F("BH1750 - init failed!") << endl;
+    rtcMemStore.setSensorState(RTC_SENSOR_BH1750, false);
     return false;
   }
   SERIAL_PORT << F("Found BH1750 - LUX Sensor") << endl;

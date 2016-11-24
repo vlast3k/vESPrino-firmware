@@ -27,6 +27,7 @@ void TSL2561Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool TSL2561Sensor::initSensor() {
+  if (!rtcMemStore.hasSensor(RTC_SENSOR_TSL2561)) return false;
   if (I2CHelper::I2CHelper::i2cSDA ==  -1) return false;
   closeSensor();
   bool init = false;
@@ -39,6 +40,7 @@ bool TSL2561Sensor::initSensor() {
   }
   if (!init) {
     if (DEBUG) Serial << F("TSL2561 - init failed!") << endl;
+    rtcMemStore.setSensorState(RTC_SENSOR_TSL2561, false);
     return false;
   }
   SERIAL_PORT << F("Found TSL2561 - LUX Sensor") << endl;

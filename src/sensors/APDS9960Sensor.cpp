@@ -22,6 +22,7 @@ void APDS9960Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool APDS9960Sensor::initSensor() {
+  if (!rtcMemStore.hasSensor(RTC_SENSOR_APDS9960)) return false;
   bool init = false;
   pinMode(D8, OUTPUT);
   bool d8prev = digitalRead(D8);
@@ -37,8 +38,8 @@ bool APDS9960Sensor::initSensor() {
   if (!init) {
     if (DEBUG) Serial << F("APDS9960 - init failed!") << endl;
     digitalWrite(D8, d8prev);
+    rtcMemStore.setSensorState(RTC_SENSOR_APDS9960, false);
     return false;
-
   }
   SERIAL_PORT << F("Found APDS9960 - Gesture Sensor") << endl;
 

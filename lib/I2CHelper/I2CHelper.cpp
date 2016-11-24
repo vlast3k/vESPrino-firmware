@@ -2,9 +2,13 @@
 #include <Arduino.h>
 #include <Streaming.h>
 #include <Wire.h>
+#include <RTCMemStore.hpp>
+
+
 
 int I2CHelper::i2cSDA = -1;
 int I2CHelper::i2cSCL = -1;
+extern RTCMemStore rtcMemStore;
 
 bool I2CHelper::checkI2CDevice(int addr) {
   i2cHigh();
@@ -113,7 +117,7 @@ bool I2CHelper::findI2C(int &sda, int &scl, bool debug) {
         Serial.printf(String(F("Found i2c bus on SDA:SCL = %s:%s (%d:%d)\n")).c_str(), gpios_str[i].c_str(), gpios_str[k].c_str(), sda, scl);
         return true;
       }
-      delay(1);
+      yield();
     }
   }
   return false;
@@ -141,14 +145,25 @@ void I2CHelper::cmdScanI2C(const char *ignore) {
 void I2CHelper::beginI2C() {
 //  brzo_i2c_setup(D5, D1, 50000);
   //Wire.begin(D5, D1);
-   if (findI2C(i2cSDA, i2cSCL, false)) {
-     Wire.begin(i2cSDA, i2cSCL);
-     //Wire.setClock(20000);
-  //   Wire.
-   } else {
+  uint32_t rtcI2c = rtcMemStore.getGenData(GEN_I2C_BUS);
+  if (rtcI2c) {
+    i2cSDA = (int8_t) rtcI2c & 0xFF;
+    i2cSCL = (int8_t) ((rtcI2c >> 8) & 0xFF);
+    Serial << F("I2C Bus on SDA:SCA (") << i2cSDA << F(":") << i2cSCL << F(")");
+  } else if (!findI2C(i2cSDA, i2cSCL, false)) {
      Serial << F("No I2C Devices found\n");
      i2cSDA = i2cSCL = -1;
-   }
+  }
+
+  if (i2cSDA > -1) {
+     Wire.begin(i2cSDA, i2cSCL);
+  }
+  if (!rtcI2c) {
+    uint32_t data = 0;
+    data = data | (uint8_t)i2cSDA;
+    data = data | ((uint8_t)i2cSCL << 8);
+    rtcMemStore.setGenData(GEN_I2C_BUS, data);
+  }
 }
 
 uint8_t I2CHelper::slowEndTransmission(uint8_t sendStop) {

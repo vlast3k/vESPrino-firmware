@@ -22,6 +22,10 @@ CO2Sensor::CO2Sensor() :
 
 
 void CO2Sensor::setup(MenuHandler *handler) {
+  if (!rtcMemStore.hasSensor(RTC_SENSOR_CUBICCO2)) {
+    hasSensor = false;
+    return;
+  }
   pinMode(D8, OUTPUT);    //enable power via D8
   digitalWrite(D8, HIGH);
   delay(1000);
@@ -31,6 +35,7 @@ void CO2Sensor::setup(MenuHandler *handler) {
   int8_t i2cBus[] = {I2CHelper::i2cSDA, I2CHelper::i2cSCL, atoi(servoPort.c_str()), -2};
   if (!cubicCo2.init(DEBUG, i2cBus)) {
     hasSensor = false;
+    rtcMemStore.setSensorState(RTC_SENSOR_CUBICCO2, false);
     return;
   }
 //  cubicCo2.init();// return;

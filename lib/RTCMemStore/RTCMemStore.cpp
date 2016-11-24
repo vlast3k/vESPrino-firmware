@@ -1,4 +1,4 @@
-#include "utils/RTCMemStore.hpp"
+#include "RTCMemStore.hpp"
 #include "Streaming.h"
 bool RTCMemStore::test = false;
 RTCData *RTCMemStore::rtcData = NULL;
@@ -141,4 +141,28 @@ void RTCMemStore::updateData() {
 
 bool RTCMemStore::getDataExisted() {
   return  RTCMemStore::dataExisted;
+}
+
+void RTCMemStore::setSensorState(int sensorIdx, bool state) {
+  uint32_t sensors = getGenData(GEN_SENSOR_STATE);
+//  Serial << "setState_Before:"  << sensorIdx << " sensors: " << _BIN(sensors) <<endl;
+  setBit(sensors, sensorIdx, state);
+//  Serial << "setState_After: "  << sensorIdx << " sensors: " << _BIN(sensors) <<endl;
+  setGenData(GEN_SENSOR_STATE, sensors);
+}
+
+bool RTCMemStore::hasSensor(int sensorIdx) {
+  uint32_t sensors = getGenData(GEN_SENSOR_STATE);
+//  Serial << "hasSensor: "  << sensorIdx << " sensors: " << _BIN(sensors) <<endl;//
+//  Serial << GPIOClass::isBitSet(sensors, sensorIdx);
+  return isBitSet(sensors, sensorIdx);
+}
+
+void RTCMemStore::setBit(uint32_t &val, int bit, int state) {
+  if (state) val |= 1U << bit;
+  else val &= ~(1U << bit);
+}
+
+bool RTCMemStore::isBitSet(uint32_t val, int bit) {
+  return ((val >> bit) &1);
 }

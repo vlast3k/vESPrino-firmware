@@ -31,6 +31,7 @@ void SI7021Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool SI7021Sensor::initSensor() {
+  if (!rtcMemStore.hasSensor(RTC_SENSOR_SI7021)) return false;
   if (I2CHelper::i2cSDA ==  -1) return false;
   closeSensor();
   si7021 = new SI7021();
@@ -47,6 +48,7 @@ bool SI7021Sensor::initSensor() {
   if (!init) {
     delete si7021;
     si7021 = NULL;
+    rtcMemStore.setSensorState(RTC_SENSOR_SI7021, false);
     return false;
   }
   SERIAL_PORT << F("Found SI7021 - Temperature/Humidity Sensor") << endl;

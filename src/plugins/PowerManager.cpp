@@ -4,6 +4,7 @@
 #include "common.hpp"
 #include <Timer.h>
 
+uint8_t PowerManagerClass::IterationDurationS = 30;
 void PowerManagerClass::cmdDeepSleep(const char *line) {
   PowerManager.cmdDeepSleepInst(line);
 }
@@ -21,8 +22,10 @@ void PowerManagerClass::cmdDeepSleepInst(const char *line) {
 void PowerManagerClass::setup(MenuHandler *handler) {
   WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
   //WiFi.setSleepMode(WIFI_NONE_SLEEP);
-
-  timeoutIntervalS = 30;
+  IterationDurationS = PropertyList.readLongProperty(PROP_ITERATION_DURATION);
+  if (!IterationDurationS) IterationDurationS = 30;
+  timeoutIntervalS = PropertyList.readLongProperty(PROP_TIMEOUT_INTERVAL);
+  if (!timeoutIntervalS) timeoutIntervalS = 30;
   timer = TimerManager.registerTimer(new Timer(1000L * timeoutIntervalS, PowerManagerClass::onTimeout));
   handler->registerCommand(new MenuEntry(F("nop"), CMD_BEGIN, &PowerManagerClass::onNop, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   handler->registerCommand(new MenuEntry(F("deepsleep"), CMD_BEGIN, PowerManagerClass::cmdDeepSleep, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
@@ -71,6 +74,7 @@ void PowerManagerClass::loopPowerManager() {
     //if (PropertyList.hasProperty(PROP_SND_INT)) sec = PropertyList.readLongProperty(PROP_SND_INT);
   //rtcMemStore.setIterations(rtcMemStore.getIterations() + 1);
 
+    Serial << F("Completed in: ") << millis() << "ms\n";
     Serial << F("Going into power-safe mode for ") << sec << F(" seconds") << endl;
     rtcMemStore.setDeepSleep(true);
     //Serial << "is deep sleep1: " <<rtcMemStore.wasInDeepSleep();

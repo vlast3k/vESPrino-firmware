@@ -13,14 +13,14 @@ public:
     return "GPIO";
   }
   void loop();
+  static void setBit(uint32_t &val, int bit, int state);
+  static bool isBitSet(uint32_t val, int bit);
 private:
   uint32_t ports = 0;
   uint32_t modes = 0;
   uint32_t oldState = 0;
   uint32_t doubleCheck = 0;
   void initPortsFromString(const char *s);
-  void setBit(uint32_t &val, int bit, int state);
-  bool isBitSet(uint32_t val, int bit);
   uint32_t getGPIOState();
   static void cmdGPIOSet(const char *line);
 };

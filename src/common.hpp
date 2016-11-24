@@ -40,7 +40,7 @@ extern "C" {
 
 #include "destinations/MQTTDest.hpp"
 #include "destinations/RFDest.hpp"
-#include "utils/RTCMemStore.hpp"
+#include <RTCMemStore.hpp>
 #include <ESP8266WiFiMulti.h>
 #include "plugins/NeopixelVE.hpp"
 #include <I2CHelper.hpp>

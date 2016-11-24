@@ -37,6 +37,7 @@ void BMP085Sensor::getData(LinkedList<Pair *> *data) {
 }
 
 bool BMP085Sensor::initSensor() {
+  if (!rtcMemStore.hasSensor(RTC_SENSOR_BMP180)) return false;
   if (I2CHelper::i2cSDA ==  -1) return false;
   closeSensor();
   bme = new Adafruit_BMP085();
@@ -53,6 +54,8 @@ bool BMP085Sensor::initSensor() {
     if (DEBUG) Serial << F("BMP085 - init failed!") << endl;
     delete bme;
     bme = NULL;
+    rtcMemStore.setSensorState(RTC_SENSOR_BMP180, false);
+
     return false;
   }
   SERIAL_PORT << F("Found BMP085 - Temperature/Pressure Sensor") << endl;

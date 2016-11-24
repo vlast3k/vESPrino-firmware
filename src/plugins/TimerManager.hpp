@@ -6,7 +6,7 @@
 #include <Timer.h>
 #include <ESP8266HTTPClient.h>
 #include <plugins/PropertyList.hpp>
-#include <utils/RTCMemStore.hpp>
+#include <RTCMemStore.hpp>
 
 #define TMR_START 1
 #define TMR_STOPPED 0

@@ -4,7 +4,24 @@
 
 #define GEN_MSCOUNTER 0
 #define GEN_LASTTIME 1
+#define GEN_SENSOR_STATE 2
+#define GEN_I2C_BUS 3
+
+#define RTC_SENSOR_APDS9960 0
+#define RTC_SENSOR_BH1750   1
+#define RTC_SENSOR_BME280   2
+#define RTC_SENSOR_BMP180   3
+#define RTC_SENSOR_CDM7160  4
+#define RTC_SENSOR_CUBICCO2 5
+#define RTC_SENSOR_PM2005   6
+#define RTC_SENSOR_SI7021   7
+#define RTC_SENSOR_TSL2561  8
+
 struct RTCData {
+  RTCData() {
+    genData[GEN_SENSOR_STATE] = 0xFFFF;
+    genData[GEN_I2C_BUS] = 0;
+  }
   uint32_t crc32;
   uint32_t interations = 0;
   uint32_t millisStartIteration;
@@ -36,6 +53,8 @@ public:
   bool wasInDeepSleep();
   void setDeepSleep(bool state);
   void clear();
+  void setSensorState(int sensorIdx, bool state);
+  bool hasSensor(int sensorIdx);
 
   void setLastDweet(const char *s);
   void getLastDweet(char *buf);
@@ -49,6 +68,8 @@ private:
   static uint32_t calculateCRC32(const uint8_t *data, size_t length);
   static bool readData();
   static void updateData();
+  static void setBit(uint32_t &val, int bit, int state);
+  static bool isBitSet(uint32_t val, int bit);
 
 };
 
