@@ -21,7 +21,7 @@ public:
   const char* getName() {
     return "PowerManager";
   }
-  const static uint8_t IterationDurationS = 30;
+  const static uint8_t IterationDurationS = 120;
   void static cmdDeepSleep(const char *line) ;
   void cmdDeepSleepInst(const char *line) ;
   bool isWokeFromDeepSleep();

@@ -16,8 +16,8 @@ void dump(uint8_t *r, int len) {
 }
 
 void PM2005Sensor::setup(MenuHandler *handler) {
-  handler->registerCommand(new MenuEntry(F("pm2005quiet"), CMD_BEGIN, &PM2005Sensor::onCmdQuiet, F("pm2005quiet 22:00,03:00,180 (zulu start, zulu end, tz offset in minutes)")));
-  handler->registerCommand(new MenuEntry(F("pm2005int"), CMD_BEGIN, &PM2005Sensor::onCmdInterval, F("pm2005int 20,3600 (measure time in seconds - active, quiet (<30sec = dynamic mode)")));
+  handler->registerCommand(new MenuEntry(F("pm2005quiet"), CMD_BEGIN, &PM2005Sensor::onCmdQuiet, F("pm2005quiet 22:00,03:00,180 (start, end, tz offset in minutes)")));
+  handler->registerCommand(new MenuEntry(F("pm2005int"), CMD_BEGIN, &PM2005Sensor::onCmdInterval, F("pm2005int 20,3600 (measure time in seconds - active, quiet (<300sec = dynamic mode)")));
   if (I2CHelper::i2cSDA ==  -1) return ;
   if (I2CHelper::checkI2CDevice(0x28)) {
     Serial << F("Found PM2005 - Dust / Particle Sensor\n");

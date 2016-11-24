@@ -11,8 +11,12 @@ void CommonCommands::cmdHeap(const char *s) {
 }
 
 void CommonCommands::cmdDebug(const char *s) {
-  DEBUG = !DEBUG;
-  PropertyList.putProperty(PROP_DEBUG, DEBUG ? "1" : "0");
+  if (strcmp(s, "debug") == 0) {
+    DEBUG = !DEBUG;
+    PropertyList.putProperty(PROP_DEBUG, DEBUG ? "1" : "0");
+  } else {
+    DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
+  }
   Serial << F("Debug is now: ") << (DEBUG ? F("ENABLED") : F("DISABLED")) << endl;
 }
 
@@ -90,7 +94,7 @@ void cmdSerTest(const char *p) {
 void CommonCommands::registerCommands(MenuHandler *handler) {
   //MenuEntry *new MenuEntry(F("heap"), CMD_EXACT, &CommonCommands::cmdHeap, F("Free heap"));
   handler->registerCommand(new MenuEntry(F("factory"), CMD_EXACT, factoryReset, F("Return to defaults")));
-  handler->registerCommand(new MenuEntry(F("debug"), CMD_EXACT, &CommonCommands::cmdDebug, F("Turn on debug")));
+  handler->registerCommand(new MenuEntry(F("debug"), CMD_BEGIN, &CommonCommands::cmdDebug, F("Toggle debug")));
   handler->registerCommand(new MenuEntry(F("scani2c"), CMD_EXACT, I2CHelper::cmdScanI2C, F("Scan I2C Bus")));
   handler->registerCommand(new MenuEntry(F("dumpi2c"), CMD_EXACT, I2CHelper::dumpI2CBus, F("Scan I2C Bus")));
   handler->registerCommand(new MenuEntry(F("dumpCfg"), CMD_EXACT, &CommonCommands::dumpCfg, F("Dump EEPROM Contents")));

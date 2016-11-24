@@ -15,6 +15,9 @@ WebServerClass::WebServerClass() {
 
 void WebServerClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("webserver_start"), CMD_BEGIN, WebServerClass::cmdStartWebServer, F("webserver_start")));
+  if (PropertyList.readBoolProperty(PROP_WEBSERVER_STARTONBOOT)) {
+    menuHandler.scheduleCommand("webserver_start");
+  }
 }
 
 void WebServerClass::cmdStartWebServer(const char *ignore) {
@@ -32,21 +35,20 @@ void WebServerClass::cmdStartWebServerInst() {
   server->on("/", WebServerClass::onCommand);
   server->begin();
 
-  Serial.print("\n\nOpen http://");
+  Serial.print(F("\n\nSend commands to http://"));
   Serial.print(WiFi.localIP());
-  Serial.println("/ in your browser to see it working");
+  Serial.println(F("/cmd=..."));
 
   String hostname = PropertyList.readProperty(PROP_ESP_HOSTNAME);
   if (hostname.length() == 0) hostname = "vthing";
-  Serial << "Web Server accessible on :" << endl;
-  Serial << "   http://" << WiFi.localIP() << endl;
+  Serial << F("Web Server accessible on :") << endl;
+  Serial << F("   http://") << WiFi.localIP() << endl;
   if (MDNS.begin(hostname.c_str())) {
-    Serial << "   http://" << hostname << ".local/" << endl;
+    Serial << F("   http://") << hostname << F(".local/") << endl;
     MDNS.addService("http", "tcp", 80);
   }
   NBNS.begin(hostname.c_str());
-  Serial << "   http://" << hostname << "/" << endl;
-
+  Serial << F("   http://") << hostname << F("/") << endl;
 }
 
 void WebServerClass::onCommand() {

@@ -4,6 +4,9 @@
 #include "plugins/PropertyList.hpp"
 #include <ESP8266WiFiMulti.h>
 #include "WiFiManager.h"
+#ifdef VESP_PING_SSL
+#include <WiFiClientSecure.h>
+#endif
 
 ESP8266WiFiMulti  *wifiMulti = NULL;
 
@@ -161,13 +164,25 @@ void setWifi(const char* p) {
 
 void sendPingPort(const char *p) {
   char host[30],  port[20];
+  bool secure = false;
+  if (strstr(p, "pings")) secure = true;
   p = extractStringFromQuotes(p, host, 30);
   p = extractStringFromQuotes(p, port, 20);
   int iport = atoi(port);
-  WiFiClient ccc;
-  SERIAL_PORT << F("Test connection to to:") << host << F(":") << port << endl;
-  int res = ccc.connect(host, iport);
+  int res;
+  SERIAL_PORT << F("Test connection to to:") << host << F(":") << port << ", secure:" << secure << endl;
+
+  if (secure) {
+    #ifdef VESP_PING_SSL
+      WiFiClientSecure ccc;
+      res = ccc.connect(host, iport);
+    #endif
+  } else {
+    WiFiClient ccc;
+    res = ccc.connect(host, iport);
+  }
   SERIAL_PORT << F("Res: ") << res << endl;
+
 
 }
 
@@ -277,7 +292,7 @@ void setStaticWifi(const char* cmd) {
   x = strchr(cmd, ',');
   *x = 0;
   PropertyList.putProperty(PROP_WIFI_DNS2, cmd);
-  applyStaticWifiConfig();
+  //applyStaticWifiConfig();
 }
 
 void cmdIPConfig(const char *ignore) {

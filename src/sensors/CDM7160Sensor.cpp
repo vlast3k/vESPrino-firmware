@@ -11,6 +11,7 @@ CDM7160Sensor::CDM7160Sensor() {
 void CDM7160Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("cdmloop"), CMD_BEGIN, &CDM7160Sensor::onCmdLoop, F("cdmtest b - b for DEBUG - test CDM7160 sensor")));
   handler->registerCommand(new MenuEntry(F("cdmtest"), CMD_BEGIN, &CDM7160Sensor::onCmdTest, F("cdmtest b - b for DEBUG - test CDM7160 sensor")));
+  handler->registerCommand(new MenuEntry(F("cdmswitch"), CMD_BEGIN, &CDM7160Sensor::onCdmSwitch, F("cdmtest b - b for DEBUG - test CDM7160 sensor")));
   handler->registerCommand(new MenuEntry(F("cdmreg"), CMD_BEGIN, &CDM7160Sensor::onChangeReg, F("cdmreg \"regid\" \"value\"")));
   handler->registerCommand(new MenuEntry(F("cdmperf"), CMD_BEGIN, &CDM7160Sensor::onPerf, F("cdmreg \"regid\" \"value\"")));
   if (I2CHelper::i2cSDA ==  -1) return;
@@ -123,6 +124,32 @@ void CDM7160Sensor::onCmdLoop(const char *ignore) {
     //Serial << i << "\t: " << readCO2Raw(true) << endl;
   }
 }
+
+void CDM7160Sensor::onCdmSwitch(const char *ignore) {
+  Wire.setClock(10000);
+  for (int k=0; k<50; k++) {
+    int last = 0;
+    writeByte(CDM_CTL_REG, 0x06);
+    for (int i=0; i < 30; i++) {
+      int co2 = readCO2Raw();
+      if (co2 == 1) {
+        i--;
+        continue;
+      }
+      char x[50];
+      sprintf(x, String(F("%2d: %d (%d)\n")).c_str(), i, co2, co2-last);
+      Serial.printf(x);
+      Serial.flush();
+      //    menuHandler.loop();
+      last = co2;
+      delay(2000);
+    }
+    writeByte(CDM_CTL_REG, 0x00);
+    delay(120000);
+  }
+}
+
+
 void CDM7160Sensor::onCmdTest(const char *ignore) {
   Wire.setClock(10000);
   uint8_t rst = readI2CByte(0);
