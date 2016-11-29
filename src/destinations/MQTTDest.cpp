@@ -71,6 +71,7 @@ void MQTTDest::cmdMqttSetup(const char *p) {
   SERIAL_PORT << F("MQTT Configuration Stored") << endl;
   SERIAL_PORT << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << endl;
   SERIAL_PORT << F("DONE") << endl;
+  Serial.flush();
 #ifdef VTHING_H801_LED
   h801_mqtt_connect();
 #endif
@@ -81,7 +82,8 @@ void MQTTDest::cmdMqttMsgAdd(const char *line) {
   char sidx[10];//, url[200];
   line = extractStringFromQuotes(line, sidx, sizeof(sidx));
   Serial << "Mqtt line:" << line << endl;
-  delay(100);
+  Serial.flush();
+  //delay(100);
   //line = extractStringFromQuotes(line, url, sizeof(url));
   if (sidx[0] == 0 || line[0] == 0) {
     Serial << F("Command not recognized");
@@ -106,6 +108,7 @@ void MQTTDest::cmdCallMqttInst(const char *line) {
   String topic = c+1;
   String msg = x+1;
   Serial << F("Will send mqtt to:") << topic <<":" << msg << endl;
+  Serial.flush();
   if (waitForWifi() != WL_CONNECTED) return;
 
   if (!mqttStart()) {
@@ -120,6 +123,7 @@ void MQTTDest::cmdCallMqttInst(const char *line) {
 
 void MQTTDest::process(LinkedList<Pair *> &data) {
   Serial << F("MQTTDest::process") << endl;
+  Serial.flush();
 //  heap("");
   String s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), 0);
   if (!s.length()) return;
@@ -140,6 +144,7 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
       s = s.substring(s.indexOf(':') + 1);
     }
     Serial << F("Mqtt Dest: sending: to topic:") << mqttTopic << ", msg: " << s << endl;
+    Serial.flush();
     if(!client->publish(mqttTopic.c_str(), s.c_str())) {
       mqttEnd(false);
       return;
@@ -170,9 +175,7 @@ bool MQTTDest::mqttStart() {
    Serial.flush();
    SERIAL_PORT << mqttUser;
    Serial.flush();
-   SERIAL_PORT << "," << mqttPass << ",";
-   Serial.flush();
-   SERIAL_PORT << ",";
+   SERIAL_PORT << "," << mqttPass << endl;
    Serial.flush();
   uint32_t st = millis();
   wclient = new WiFiClient();

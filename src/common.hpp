@@ -45,7 +45,7 @@ extern "C" {
 #include "plugins/NeopixelVE.hpp"
 #include <I2CHelper.hpp>
 
-#define BUILD_NUM "20161107"
+#define BUILD_NUM "20161129"
 
 #define SERIAL_PORT Serial
 #define EE_WIFI_SSID F("wifi.ssid")

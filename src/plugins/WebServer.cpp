@@ -31,13 +31,13 @@ void WebServerClass::cmdStartWebServerInst() {
   if (server != NULL) delete server;
   if (waitForWifi() != WL_CONNECTED) return;
   server = new ESP8266WebServer(80);
-
+  menuHandler.scheduleCommand("nop 0");
   server->on("/", WebServerClass::onCommand);
   server->begin();
 
   Serial.print(F("\n\nSend commands to http://"));
   Serial.print(WiFi.localIP());
-  Serial.println(F("/cmd=..."));
+  Serial.println(F("/?cmd=..."));
 
   String hostname = PropertyList.readProperty(PROP_ESP_HOSTNAME);
   if (hostname.length() == 0) hostname = "vthing";

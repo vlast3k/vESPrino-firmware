@@ -100,11 +100,15 @@ void PropertyListClass::factoryReset() {
 }
 
 void PropertyListClass::putProperty(const char *key, const char *value) {
+  // uint32_t st = millis();
   if (!assertInit()) return;
   if (!key[0]) return;
   File in = SPIFFS.open(configFileName, "r");
   File out= SPIFFS.open(tempFileName, "w");
-  //Serial << "Put Property: " << key << " =" << value << "." << endl;
+
+  // Serial << "Put Property start: " << (millis() - st) << endl;
+  // Serial.flush();
+  // st = millis();
 
   String _key = String(key) + "=";
   while (in.available()) {
@@ -115,7 +119,13 @@ void PropertyListClass::putProperty(const char *key, const char *value) {
   }
   if (value[0]) out << key << "=" << value << endl;
 
+  // Serial << "Put Property set: " << (millis() - st) << endl;
+  // Serial.flush();
+  // st = millis();
+
   finalizeChangeFile(in, out);
+  // Serial << "Put Property write: " << (millis() - st) << endl;
+  // Serial.flush();
 }
 
 char *PropertyListClass::readProperty(const char *key) {
