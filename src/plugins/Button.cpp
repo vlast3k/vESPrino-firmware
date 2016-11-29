@@ -37,6 +37,7 @@ void ButtonClass::loop() {
   if (digitalRead(D3) == 0) { //Button pressed
     switch (bttnMode) {
       case BTTN_IDLE: {
+        menuHandler.handleCommand("nop 60");
         menuHandler.setSchedulingEnabled(false);
         bttnClicked = millis();
         menuHandler.handleCommand("ledbrg 100");

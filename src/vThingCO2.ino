@@ -23,6 +23,7 @@
 //#include <wiring_private.h>
 using namespace std;
 
+
 //  Timer *tmrStopLED;
 
 
@@ -195,7 +196,7 @@ void setup() {
 //  deepSleepWake = isDeepSleepWake();
   rtcMemStore.init();
   PowerManager.setup(&menuHandler);
-  I2CHelper::beginI2C();
+  I2CHelper::beginI2C(PropertyList.readLongProperty(PROP_I2C_DISABLED_PORTS));
   pinMode(D8, INPUT);
 
 

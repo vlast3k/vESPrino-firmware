@@ -15,6 +15,8 @@ public:
   void loop();
   static void setBit(uint32_t &val, int bit, int state);
   static bool isBitSet(uint32_t val, int bit);
+  static uint8_t convertToGPIO(char *portStr);
+  static uint8_t gpioD(int dPort);
 private:
   uint32_t ports = 0;
   uint32_t modes = 0;

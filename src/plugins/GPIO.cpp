@@ -66,6 +66,29 @@ uint32_t GPIOClass::getGPIOState() {
   return state;
 }
 
+uint8_t GPIOClass::convertToGPIO(char *s) {
+  if (*s == 'D' || *s == 'd') {
+    return gpioD(atoi(s+1));
+  } else {
+    return atoi(s);
+  }
+}
+
+uint8_t GPIOClass::gpioD(int d) {
+  uint8_t mapping[15];
+
+  mapping[0] = 16;
+  mapping[1]   = 5;
+  mapping[2]   = 4;
+  mapping[3]   = 0;
+  mapping[4]   = 2;
+  mapping[5]   = 14;
+  mapping[6]   = 12;
+  mapping[7]   = 13;
+  mapping[8]   = 15;
+  return mapping[d];
+}
+
 void GPIOClass::loop() {
   uint32_t currentState = getGPIOState();
   if (currentState == oldState) return;

@@ -10,6 +10,7 @@
 #include <Streaming.h>
 #include <EEPROM.h>
 #include <Arduino.h>
+#include <I2CHelper.hpp>
 
 
 
@@ -31,7 +32,7 @@ class CubicGasSensors
   // user-accessible "public" interface
   public:
     CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, uint8_t _rx=100, uint8_t _tx=100 ) ;
-    bool init(bool DEBUG, int8_t *skipGPIOs = NULL);
+    bool init(bool DEBUG, uint32_t disabledPorts);
     int getCO2(boolean dbg=false);
     void printDebugInfo();
     int rawReadCM1106_CO2(bool dbg=false);
@@ -40,7 +41,7 @@ class CubicGasSensors
         return startedCO2Monitoring;
     }
   private:
-    bool isInSkippedList(int8_t *list, uint8_t gpio);
+    //bool isInSkippedList(int8_t *list, uint8_t gpio);
     RunningAverage raCM1106;//(2);
     uint32_t lastNDIRRead = -100000L;
     uint8_t rx, tx;

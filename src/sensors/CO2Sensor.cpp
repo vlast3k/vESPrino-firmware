@@ -5,6 +5,7 @@
 #include "CubicGasSensors.h"
 #include "common.hpp"
 #include "plugins/PropertyList.hpp"
+#include "plugins/GPIO.hpp"
 #include "EEPROM.h"
 #include "CO2Sensor.hpp"
 #include <LinkedList.h>
@@ -32,8 +33,11 @@ void CO2Sensor::setup(MenuHandler *handler) {
   //this is needed as if the Serial Port querries the port of the servo, then servo no longer wifiScanNetworks
   //maybe due to the timers...
   String servoPort = PropertyList.readProperty(PROP_SERVO_PORT);
-  int8_t i2cBus[] = {I2CHelper::i2cSDA, I2CHelper::i2cSCL, atoi(servoPort.c_str()), -2};
-  if (!cubicCo2.init(DEBUG, i2cBus)) {
+  uint32_t disabledSerialPorts = PropertyList.readLongProperty(PROP_I2C_DISABLED_PORTS);
+  GPIOClass::setBit(disabledSerialPorts, I2CHelper::i2cSDA, 1);
+  GPIOClass::setBit(disabledSerialPorts, I2CHelper::i2cSCL, 1);
+  if (servoPort.length()) GPIOClass::setBit(disabledSerialPorts, atoi(servoPort.c_str()), 1);
+  if (!cubicCo2.init(DEBUG, disabledSerialPorts)) {
     hasSensor = false;
     rtcMemStore.setSensorState(RTC_SENSOR_CUBICCO2, false);
     return;

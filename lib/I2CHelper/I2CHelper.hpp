@@ -11,11 +11,13 @@ public:
   static bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debug);
   static int i2cWireStatus();
   static int i2cSlowWireStatus();
-  static bool findI2C(int &sda, int &scl, bool debug);
+  static bool findI2C(int &sda, int &scl, long disabledPorts, bool debug);
   static void i2cHigh();
   static void cmdScanI2C(const char *ignore);
-  static void beginI2C();
+  static void beginI2C(long disabledPorts);
   static uint8_t slowEndTransmission(uint8_t sendStop = true);
+  static bool isBitSet(uint32_t val, int bit);
+
 
 
   static int i2cSDA;
