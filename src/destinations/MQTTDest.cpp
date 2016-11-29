@@ -10,6 +10,10 @@
 #include <PubSubClient.h>
 #include <ESP8266WiFi.h>
 
+extern MQTTDest mqttDest;
+#define PROP_MQTT_SUBS_TOPIC F("mqtt.subs.topic")
+#define PROP_MQTT_LISTEN F("mqtt.listen")
+
 MQTTDest::MQTTDest() {
   registerDestination(this);
 }
@@ -17,7 +21,24 @@ MQTTDest::MQTTDest() {
 void MQTTDest::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("mqtt_setup"), CMD_BEGIN, &MQTTDest::cmdMqttSetup, F("mqtt_setup \"idx\"value")));
   handler->registerCommand(new MenuEntry(F("mqtt_msg_add"), CMD_BEGIN, &MQTTDest::cmdMqttMsgAdd, F("mqtt_msg_add \"idx\"value")));
+  handler->registerCommand(new MenuEntry(F("call_mqtt"), CMD_BEGIN, &MQTTDest::cmdCallMqtt, F("call_mqtt topic message")));
   handler->registerCommand(new MenuEntry(F("mqtt_msg_clean"), CMD_EXACT, &MQTTDest::cmdCleanCustomUrl, F("mqtt_msg_clean - clean all mqtt messages")));
+  setupMqttListen();
+}
+
+void MQTTDest::setupMqttListen() {
+  if (!PropertyList.hasProperty(PROP_MQTT_LISTEN)) return;
+  String s = PropertyList.readProperty(PROP_MQTT_SUBS_TOPIC);
+  if (!s.length()) return;
+  if (waitForWifi() != WL_CONNECTED) return;
+  if (!mqttStart()) {
+    mqttEnd(false);
+    return;
+  }
+  s += "/cmd";
+  client->subscribe(s.c_str());
+  Serial << F("Accepting commands via MQTT on topic: ") << s;
+  isListening = true;
 }
 
 void MQTTDest::cmdMqttSetup(const char *p) {
@@ -74,6 +95,29 @@ void MQTTDest::cmdCleanCustomUrl(const char *line) {
   PropertyList.removeArrayProperty(F("mqtt_msg_arr"));
 }
 
+void MQTTDest::cmdCallMqtt(const char *line) {
+  mqttDest.cmdCallMqttInst(line);
+}
+
+void MQTTDest::cmdCallMqttInst(const char *line) {
+  char *c = strchr(line, ' ');
+  char *x = strchr(c+1, ' ');
+  *x = 0;
+  String topic = c+1;
+  String msg = x+1;
+  Serial << F("Will send mqtt to:") << topic <<":" << msg << endl;
+  if (waitForWifi() != WL_CONNECTED) return;
+
+  if (!mqttStart()) {
+    mqttEnd(false);
+    return;
+  }
+  bool res = client->publish(topic.c_str(), msg.c_str());
+  mqttEnd(res);
+}
+
+
+
 void MQTTDest::process(LinkedList<Pair *> &data) {
   Serial << F("MQTTDest::process") << endl;
 //  heap("");
@@ -106,6 +150,7 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
 }
 
 bool MQTTDest::mqttStart() {
+  if (client) return true;
   if (WiFi.status() != WL_CONNECTED) {
     if (DEBUG) Serial << F("MQTT Dest: Cannot send while wifi offline\n");
     return false;
@@ -132,7 +177,7 @@ bool MQTTDest::mqttStart() {
   uint32_t st = millis();
   wclient = new WiFiClient();
 //  PubSubClient client(wclient, mqttServer, mqttPort);
-  client = new PubSubClient(mqttServer.c_str(), mqttPort, *wclient);
+  client = new PubSubClient(mqttServer.c_str(), mqttPort, MQTTDest::onReceive, *wclient);
   bool res;
   if (mqttUser.length() > 0) res = client->connect(mqttClient.c_str(), mqttUser.c_str(), mqttPass.c_str());
   else res = client->connect(mqttClient.c_str());
@@ -142,6 +187,7 @@ bool MQTTDest::mqttStart() {
 
 void MQTTDest::mqttEnd(bool res) {
   if (DEBUG) SERIAL_PORT.println(res ? F("CLOSED") : F("Failed!"));
+  if (isListening) return;
   if (client) {
     client->disconnect();
     delete client;
@@ -171,3 +217,17 @@ void MQTTDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
 //   SERIAL_PORT << F("Connected. Will publish: ") << url << endl;
 //   return client.publish(mqttTopic.c_str(), url.c_str());
 // }
+
+void MQTTDest::onReceive(char* topic1, byte* payload1, unsigned int length) {
+  char bPayload[360];
+  strncpy(bPayload, (char*)payload1, _min(length, sizeof(bPayload)-1));
+  bPayload[length] = 0;
+  String payload = String((char*)bPayload), topic = String(topic1);
+  SERIAL_PORT << topic << " => " << payload << endl;
+  if (topic.indexOf("/cmd")) menuHandler.scheduleCommand(payload.c_str());
+  // else if (topic.indexOf("/Color") > -1) processTriplet(payload);
+  // else if (topic.indexOf("/W1")   > -1) analogWriteColor(w1PIN, payload.toInt());
+  // else if (topic.indexOf("/W2")   > -1) analogWriteColor(w2PIN, payload.toInt());
+  // else if (topic.indexOf("/Save") > -1) onH801LEDStoreData();
+  //publishMQTTStatus();
+}

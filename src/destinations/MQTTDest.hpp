@@ -19,6 +19,9 @@ public:
   static void cmdMqttSetup(const char *line);
   static void cmdMqttMsgAdd(const char *line);
   static void cmdCleanCustomUrl(const char *line);
+  static void cmdCallMqtt(const char *line);
+  static void onReceive(char* topic1, byte* payload1, unsigned int length);
+  void cmdCallMqttInst(const char *line);
   void process(LinkedList<Pair*> &data);
   void replaceValuesInURL(LinkedList<Pair *> &data, String &s);
   bool mqttStart();
@@ -31,6 +34,8 @@ const char* getName() {
 private:
   PubSubClient *client;
   WiFiClient *wclient;
+  bool isListening = false;
+  void setupMqttListen();
   //static const __FlashStringHelper* PROP_CUSTOM_URL_ARR;// = F("custom_url_arr");
 };
 
