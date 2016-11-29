@@ -45,6 +45,11 @@ void conditionalSend(bool forceSend) {
 
   Serial << F("\n--- DestHanlder: sendValue --- ") << forceSend<< endl;
   LinkedList<Pair *> values = LinkedList<Pair* >();
+  values.add(new Pair("IP", String(WiFi.localIP().toString())));
+  String chipId = String(ESP.getChipId(), HEX);
+  chipId.toUpperCase();
+  values.add(new Pair("CHIPID", chipId));
+  values.add(new Pair("RUNTIME", String((millis() + rtcMemStore.getGenData(GEN_MSCOUNTER)) / 1000)));
   for (int i=0; i < sensors.size(); i++)  sensors.get(i)->getData(&values);
 
   //bool someThresholdExceeded = checkThresholds(values);
