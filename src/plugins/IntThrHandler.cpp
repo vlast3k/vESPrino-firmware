@@ -33,6 +33,13 @@ uint32_t intRawRead  = 15000L;
 // bool checkThresholds(LinkedList<Pair *> &values) {
 //   return false;
 // }
+void addCommonValues(LinkedList<Pair *> *data) {
+  data->add(new Pair("IP", String(WiFi.localIP().toString())));
+  String chipId = String(ESP.getChipId(), HEX);
+  chipId.toUpperCase();
+  data->add(new Pair("CHIPID", chipId));
+  data->add(new Pair("RUNTIME", String((millis() + rtcMemStore.getGenData(GEN_MSCOUNTER)) / 1000)));
+}
 
 void conditionalSend(bool forceSend) {
   int rtcIt = rtcMemStore.getIterations();
@@ -42,14 +49,9 @@ void conditionalSend(bool forceSend) {
   rtcIt ++;
   if (rtcIt >= PropertyList.readLongProperty(PROP_SND_INT) / PowerManagerClass::IterationDurationS) rtcIt = 0;
   rtcMemStore.setIterations(rtcIt);
-
   Serial << F("\n--- DestHanlder: sendValue --- ") << forceSend<< endl;
   LinkedList<Pair *> values = LinkedList<Pair* >();
-  values.add(new Pair("IP", String(WiFi.localIP().toString())));
-  String chipId = String(ESP.getChipId(), HEX);
-  chipId.toUpperCase();
-  values.add(new Pair("CHIPID", chipId));
-  values.add(new Pair("RUNTIME", String((millis() + rtcMemStore.getGenData(GEN_MSCOUNTER)) / 1000)));
+  addCommonValues(&values);
   for (int i=0; i < sensors.size(); i++)  sensors.get(i)->getData(&values);
 
   //bool someThresholdExceeded = checkThresholds(values);
