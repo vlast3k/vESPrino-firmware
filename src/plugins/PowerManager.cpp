@@ -24,9 +24,9 @@ void PowerManagerClass::setup(MenuHandler *handler) {
   //WiFi.setSleepMode(WIFI_NONE_SLEEP);
   IterationDurationS = PropertyList.readLongProperty(PROP_ITERATION_DURATION);
   if (!IterationDurationS) IterationDurationS = 30;
-  timeoutIntervalS = PropertyList.readLongProperty(PROP_TIMEOUT_INTERVAL);
-  if (!timeoutIntervalS) timeoutIntervalS = 30;
-  timer = TimerManager.registerTimer(new Timer(1000L * timeoutIntervalS, PowerManagerClass::onTimeout));
+  if (!PropertyList.hasProperty(PROP_TIMEOUT_INTERVAL)) timeoutIntervalS = 120;
+  else timeoutIntervalS = PropertyList.readLongProperty(PROP_TIMEOUT_INTERVAL);
+  timer = TimerManager.registerTimer(new Timer(1000L * timeoutIntervalS, PowerManagerClass::onTimeout), timeoutIntervalS ? TMR_START: TMR_STOPPED);
   handler->registerCommand(new MenuEntry(F("nop"), CMD_BEGIN, &PowerManagerClass::onNop, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   handler->registerCommand(new MenuEntry(F("deepsleep"), CMD_BEGIN, PowerManagerClass::cmdDeepSleep, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   isLowPower = rtcMemStore.wasInDeepSleep();
@@ -82,7 +82,7 @@ void PowerManagerClass::loopPowerManager() {
     //delay(100);
     //ESP.deepSleep(20L*1000*1000);
 
-    rtcMemStore.setGenData(GEN_MSCOUNTER, 100 + millis() + rtcMemStore.getGenData(GEN_MSCOUNTER));
+    rtcMemStore.setGenData(GEN_MSCOUNTER, 100 + millis() + sec*1000 + rtcMemStore.getGenData(GEN_MSCOUNTER));
     ESP.deepSleep(sec*1000*1000);
     delay(2000);
   } else {

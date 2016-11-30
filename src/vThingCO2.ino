@@ -241,7 +241,7 @@ void setup() {
   AT_FW_Plugin::registerCommands(&menuHandler);
   CustomURL_Plugin::registerCommands(&menuHandler);
   URLShortcuts::registerCommands(&menuHandler);
-  MQTT_RegisterCommands(&menuHandler);
+  //MQTT_RegisterCommands(&menuHandler);
 #ifdef VTHING_CO2
   //CO2_registerCommands(&menuHandler);
 #endif

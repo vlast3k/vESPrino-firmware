@@ -32,23 +32,28 @@ void CommonCommands::dumpCfg(const char *s) {
     SERIAL_PORT << endl;
   }
 }
-
-void CommonCommands::factoryReset(const char *ignore) {
-  SERIAL_PORT << F("Doing Factory Reset, and restarting...") << endl;
-  //SERIAL_PORT << "was in deep sleep: "<< rtcMemStore.wasInDeepSleep()<< endl;
-  for (int i=0; i < 100; i++) EEPROM.write(i, 0xFF);
-  EEPROM.commit();
-  PropertyList.factoryReset();
-  //SERIAL_PORT << "was in deep sleep: "<< rtcMemStore.wasInDeepSleep()<< endl;
-  Serial.flush();
-  delay(100);
-  ESP.restart();
-}
-
 void espRestart(const char* ignore) {
   rtcMemStore.clear();
   ESP.restart();
 }
+
+void CommonCommands::factoryReset(const char *ignore) {
+  SERIAL_PORT << F("Doing Factory Reset, and restarting...") << endl;
+  //SERIAL_PORT << "was in deep sleep: "<< rtcMemStore.wasInDeepSleep()<< endl;
+  // for (int i=0; i < 100; i++) EEPROM.write(i, 0xFF);
+  // EEPROM.commit();
+  bool fullReset = (strcmp(ignore, "factoryr") == 0);
+  String tempAdj;
+  if (!fullReset) tempAdj = PropertyList.readProperty(PROP_TEMP_ADJ);
+  PropertyList.factoryReset();
+  if (!fullReset) PropertyList.putProperty(PROP_TEMP_ADJ, tempAdj.c_str());
+  //SERIAL_PORT << "was in deep sleep: "<< rtcMemStore.wasInDeepSleep()<< endl;
+  Serial.flush();
+  delay(100);
+  espRestart(NULL);
+}
+
+
 
 void stopActiveExecution(const char *ignore) {
   SERIAL_PORT << F("STOP Active execution\n");
@@ -93,7 +98,7 @@ void cmdSerTest(const char *p) {
 
 void CommonCommands::registerCommands(MenuHandler *handler) {
   //MenuEntry *new MenuEntry(F("heap"), CMD_EXACT, &CommonCommands::cmdHeap, F("Free heap"));
-  handler->registerCommand(new MenuEntry(F("factory"), CMD_EXACT, factoryReset, F("Return to defaults")));
+  handler->registerCommand(new MenuEntry(F("factory"), CMD_BEGIN, factoryReset, F("Return to defaults")));
   handler->registerCommand(new MenuEntry(F("debug"), CMD_BEGIN, &CommonCommands::cmdDebug, F("Toggle debug")));
   handler->registerCommand(new MenuEntry(F("scani2c"), CMD_EXACT, I2CHelper::cmdScanI2C, F("Scan I2C Bus")));
   handler->registerCommand(new MenuEntry(F("dumpi2c"), CMD_EXACT, I2CHelper::dumpI2CBus, F("Scan I2C Bus")));
@@ -104,8 +109,6 @@ void CommonCommands::registerCommands(MenuHandler *handler) {
   // handler->registerCommand(new MenuEntry(F("jjj"), CMD_EXACT, testJSON, F("")));
   handler->registerCommand(new MenuEntry(F("sss"), CMD_EXACT, stopActiveExecution, F("")));
   //handler->registerCommand(new MenuEntry(F("tms"), CMD_EXACT, cmdTestMemStore, F("")));
-  handler->registerCommand(new MenuEntry(F("sertest"), CMD_BEGIN, cmdSerTest, F("")));
+  //handler->registerCommand(new MenuEntry(F("sertest"), CMD_BEGIN, cmdSerTest, F("")));
   handler->registerCommand(new MenuEntry(F("oled"), CMD_BEGIN, oledHandleCommand, F("")));
-
-
 }

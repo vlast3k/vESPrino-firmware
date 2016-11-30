@@ -22,12 +22,16 @@ void BME280Sensor::onCmdInit(const char *ignore) {
 
 void BME280Sensor::getData(LinkedList<Pair *> *data) {
   //Serial << "BME280 get Data" << endl;
-   delay(10);
+  // delay(10);
   //if (millis() < 10000) return; //give time for the BM
 
    if (!initSensor()) return;
-
-   data->add(new Pair("TEMP", String(bme->readTemperature())));
+   double temp = bme->readTemperature();
+   String adj = PropertyList.readProperty(PROP_TEMP_ADJ);
+   double adjTemp = temp + atof(adj.c_str());
+   adjTemp -= 0.5F; //BME280 tends to be 0.5C higher
+   data->add(new Pair("TEMP", String(adjTemp)));
+   data->add(new Pair("TEMPR", String(temp)));
    data->add(new Pair("HUM", String(bme->readHumidity())));
    data->add(new Pair("PRES", String(bme->readPressure() / 100.0F)));
    data->add(new Pair("ALT", String(bme->readAltitude(SEALEVELPRESSURE_HPA))));

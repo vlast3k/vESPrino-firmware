@@ -50,6 +50,7 @@ void conditionalSend(bool forceSend) {
   if (rtcIt >= PropertyList.readLongProperty(PROP_SND_INT) / PowerManagerClass::IterationDurationS) rtcIt = 0;
   rtcMemStore.setIterations(rtcIt);
   Serial << F("\n--- DestHanlder: sendValue --- ") << forceSend<< endl;
+  Serial.flush();
   LinkedList<Pair *> values = LinkedList<Pair* >();
   addCommonValues(&values);
   for (int i=0; i < sensors.size(); i++)  sensors.get(i)->getData(&values);
@@ -100,6 +101,7 @@ void setSendInterval (const char *line) {
   //intSendValue = (uint32_t)interval * 1000;
   //tmrSendValueTimer->setInterval(intSendValue);
   Serial << F("Send Interval (s): ") << iterations* PowerManagerClass::IterationDurationS << endl;
+  Serial.flush();
 }
 
 // void updateThreshold(const char *id, float value) {

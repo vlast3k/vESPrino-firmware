@@ -12,9 +12,7 @@ public:
   static void cmdDebug(const char* line);
   static void dumpCfg(const char* line);
   static void factoryReset(const char *ignore);
-
 private:
-
 
 };
 

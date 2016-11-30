@@ -67,7 +67,6 @@ void MQTTDest::cmdMqttSetup(const char *p) {
   PropertyList.putProperty(EE_MQTT_PASS, mqttPass);
 //  PropertyList.putProperty(EE_MQTT_TOPIC, mqttTopic);
 
-  EEPROM.commit();
   SERIAL_PORT << F("MQTT Configuration Stored") << endl;
   SERIAL_PORT << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << endl;
   SERIAL_PORT << F("DONE") << endl;

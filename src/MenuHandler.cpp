@@ -38,7 +38,7 @@ bool MenuHandler::processUserInput() {
     //Serial.setTimeout(5000);
     scheduleCommand(line);
     scheduleCommand("nop");
-    SERIAL_PORT << endl << F("OK") << endl;
+    //SERIAL_PORT << endl << F("OK") << endl;
     return true;
   }
   SERIAL_PORT << endl << F("OK2") << endl;
@@ -105,15 +105,16 @@ void MenuHandler::processCommands() {
 }
 
 void MenuHandler::handleCommand(const char *line) {
-  if (DEBUG) {
-    Serial << F("Executing: ");
+  // if (DEBUG) {
+  //   Serial << F("Executing: ");
+  if (strcmp("nop", line)) {
     const char *x = line;
     for (int i=0; *x; x++, i++) {
       Serial << *x;
       if ((i%50) == 0) Serial.flush();
     }
     Serial << endl;
-    Serial.flush();
+  //   Serial.flush();
   }
   //dumpArray(line);
   String s1;
@@ -129,5 +130,6 @@ void MenuHandler::handleCommand(const char *line) {
           return;
     }
   }
-  Serial << F("not found: ") << line << endl;
+  if (line[0] && line[0] != 10 && line[0] != 13)
+    Serial << F("Command not recognized") << endl;
 }

@@ -65,6 +65,7 @@ extern "C" {
 #define EE_RESET_CO2_1B 1
 
 
+
 #define PROP_SND_INT      F("send.interval")
 //#define PROP_SND_ITER     F("send.iterations")
 #define PROP_SND_THR      F("cubic.co2.threshold")
@@ -72,6 +73,7 @@ extern "C" {
 #define PROP_DEBUG        F("debug")
 #define PROP_SERVO_PORT F("servo.port")
 #define PROP_I2C_DISABLED_PORTS F("i2c.disabled.ports")
+#define PROP_TEMP_ADJ F("temp.adjustment")
 // #define EE_WIFI_SSID_30B 0
 // #define EE_WIFI_P1_30B 30
 // #define EE_WIFI_P2_30B 60
