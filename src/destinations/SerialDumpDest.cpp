@@ -33,5 +33,6 @@ void SerialDumpDest::process(LinkedList<Pair *> &data) {
   for (int i=0; i < data.size(); i++) {
     Pair *p = data.get(i);
     Serial << p->key << "\t: " << p->value << endl;
+    Serial.flush();
   }
 }

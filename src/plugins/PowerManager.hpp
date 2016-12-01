@@ -6,8 +6,7 @@
 #include "MenuHandler.hpp"
 #include <Timer.h>
 
-#define PROP_ITERATION_DURATION F("pwr.iterdur")
-#define PROP_TIMEOUT_INTERVAL F("pwr.timeoutint")
+
 class PowerManagerClass  {
 public:
   PowerManagerClass() {

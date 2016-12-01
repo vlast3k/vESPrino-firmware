@@ -51,7 +51,7 @@ void CustomHTTPDest::menuAddCustomUrlJ(const char *line) {
 void CustomHTTPDest::cmdCallUrl(const char *line) {
   line = strchr(line, ' ');
   if (!line) return;
-  String s = line;
+  String s = line+1;
   LinkedList<Pair *> values = LinkedList<Pair* >();
   customHTTPDest.invokeURL(s, values);
 }
@@ -104,7 +104,7 @@ void CustomHTTPDest::invokeURL(String &s, LinkedList<Pair *> &data) {
 
 void CustomHTTPDest::invokeURL(String &url, String &method, String &contentType, String &pay) {
   if (waitForWifi() != WL_CONNECTED) return;
-  Serial << F("Calling HTTP: ") << url << endl;
+  Serial << F("Calling HTTP: [") << url << "]" << endl;
   if (pay.length()) Serial << F("CustomHTTPDest::payload = ") << pay << endl;
   Serial.flush();
   HTTPClient http;

@@ -57,8 +57,13 @@ bool I2CHelper::hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str
   nDevices = 0;
   bool busOk = true;
   int numErr = 0;
+  uint32_t wdtPrev = millis();
   for(address = 1; busOk && address < 0xff; address++ )  {
-    delay(0);
+    if (millis() - wdtPrev > 6) {
+      delay(1);
+      wdtPrev = millis();
+    }
+
     //Serial << ".";
     // The i2c_scanner uses the return value of
     // the Write.endTransmisstion to see if
@@ -76,8 +81,8 @@ bool I2CHelper::hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str
         nDevices++;
         break;
       } else if (error==4) {
-        delay(1);
-        if (numErr++ == 10) {
+        //delay(1);
+        if (numErr++ == 7) {
           nDevices = 0;
           busOk = false;
           break;
@@ -109,11 +114,7 @@ int I2CHelper::i2cWireStatus() {
 
 }
 
-int I2CHelper::i2cSlowWireStatus() {
-  for (int i=0; i < 5 && Wire.status() != I2C_OK; i++) delay(5);
-  delay(10);
-  return Wire.status();
-}
+
 
 bool I2CHelper::findI2C(int &sda, int &scl, long disabledPorts, bool debug) {
 //  int gpios[] = {D1, D5, D2, D5, D6};
@@ -202,6 +203,12 @@ uint8_t I2CHelper::slowEndTransmission(uint8_t sendStop) {
   #else
     return Wire.endTransmission(sendStop);
   #endif
+}
+
+int I2CHelper::i2cSlowWireStatus() {
+  for (int i=0; i < 5 && Wire.status() != I2C_OK; i++) delay(5);
+  delay(10);
+  return Wire.status();
 }
 
 bool I2CHelper::isBitSet(uint32_t val, int bit) {

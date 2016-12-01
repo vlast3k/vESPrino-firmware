@@ -4,6 +4,9 @@
 #include "common.hpp"
 #include <Timer.h>
 
+#define PROP_ITERATION_DURATION F("pwr.iterdur")
+#define PROP_TIMEOUT_INTERVAL F("pwr.timeoutint")
+
 uint8_t PowerManagerClass::IterationDurationS = 30;
 void PowerManagerClass::cmdDeepSleep(const char *line) {
   PowerManager.cmdDeepSleepInst(line);
@@ -24,9 +27,16 @@ void PowerManagerClass::setup(MenuHandler *handler) {
   //WiFi.setSleepMode(WIFI_NONE_SLEEP);
   IterationDurationS = PropertyList.readLongProperty(PROP_ITERATION_DURATION);
   if (!IterationDurationS) IterationDurationS = 30;
-  if (!PropertyList.hasProperty(PROP_TIMEOUT_INTERVAL)) timeoutIntervalS = 120;
-  else timeoutIntervalS = PropertyList.readLongProperty(PROP_TIMEOUT_INTERVAL);
-  timer = TimerManager.registerTimer(new Timer(1000L * timeoutIntervalS, PowerManagerClass::onTimeout), timeoutIntervalS ? TMR_START: TMR_STOPPED);
+  if (IterationDurationS < 15) {
+    Serial << F("Timeout disabled since IterationDuration is: ") << IterationDurationS << endl;
+    timeoutIntervalS = 0;
+  } else if (!PropertyList.hasProperty(PROP_TIMEOUT_INTERVAL)) {
+    timeoutIntervalS = 120;
+  } else {
+    timeoutIntervalS = PropertyList.readLongProperty(PROP_TIMEOUT_INTERVAL);
+  }
+  timer = TimerManager.registerTimer(new Timer(1000L * timeoutIntervalS,
+    PowerManagerClass::onTimeout), timeoutIntervalS ? TMR_START: TMR_STOPPED);
   handler->registerCommand(new MenuEntry(F("nop"), CMD_BEGIN, &PowerManagerClass::onNop, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   handler->registerCommand(new MenuEntry(F("deepsleep"), CMD_BEGIN, PowerManagerClass::cmdDeepSleep, F("nop - no command, send to prevent going into power-safe operation during UI interaction")));
   isLowPower = rtcMemStore.wasInDeepSleep();

@@ -18,5 +18,6 @@ public:
 private:
   bool started = false;
   uint8_t port;
+  uint32_t lastSent = 0;
 };
 #endif

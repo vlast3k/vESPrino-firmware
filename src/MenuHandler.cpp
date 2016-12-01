@@ -9,6 +9,7 @@ MenuHandler::MenuHandler() {
   commands = new LinkedList<MenuEntry*>();
   registerCommand(new MenuEntry(F("help"), CMD_EXACT, MenuHandler::cmdHelp, F("This help page")));
   registerCommand(new MenuEntry(F("##"), CMD_BEGIN, MenuHandler::cmdListN, F("##cmd1##cmd2##..##cmdN##")));
+  registerCommand(new MenuEntry(F("***"), CMD_BEGIN, MenuHandler::cmdListN, F("***cmd1***cmd2***..***cmdN***")));
 
 }
 
@@ -68,12 +69,18 @@ void MenuHandler::scheduleCommandProperty(const char *prop) {
 }
 
 void MenuHandler::cmdListN(const char *list) {
-  list = list + 2;
+  char delimDash[] = "##";
+  char delimStar[] = "***";
+  char *delim;
+  if (strstr(list, delimDash) == list) delim = delimDash;
+  else delim = delimStar;
+  Serial << "delim = " << delim << " " << strlen(delim);
+  list = list + strlen(delim);
   char *x;
-  while ((x = strstr(list, "##")) != NULL) {
+  while ((x = strstr(list, delim)) != NULL) {
     *x = 0;
     menuHandler.scheduleCommand(list);
-    list = x+2;
+    list = x+strlen(delim);
   }
   //if (DEBUG)  Serial << F("schedule command liast  from prop DONE") << endl;
 }

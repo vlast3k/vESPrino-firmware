@@ -6,6 +6,7 @@
 
 Timer * DweetIOClass::timer = NULL;
 #define PROP_DWEET_CMDKEY F("dweet.cmdkey")
+#define PROP_DWEET_AUTOSTART F("dweet.autostart")
 
 DweetIOClass::DweetIOClass() {
   registerPlugin(this);
@@ -13,14 +14,27 @@ DweetIOClass::DweetIOClass() {
 
 void DweetIOClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("dweet_start"), CMD_BEGIN, DweetIOClass::cmdDweetStart, F("dweet_start interval_Sec")));
+  String s = PropertyList.readProperty(PROP_DWEET_AUTOSTART);
+  if (s.length()) {
+    s = String("dweet_start ") + s;
+    menuHandler.scheduleCommand(s.c_str());
+    //cmdDweetStart(s.c_str());
+  }
 }
 
 void DweetIOClass::cmdDweetStart(const char *cmd) {
-  uint32_t intervalSec = atoi(strchr(cmd, ' ') + 1);
+  int intervalSec = 5;
+  if (strchr(cmd, ' ')) intervalSec = atoi(strchr(cmd, ' ') + 1);
+  if (intervalSec < 5) intervalSec = 5;
+  Serial << F("Reading dweets from: ") << PropertyList.readProperty(PROP_DWEET_CMDKEY) << F(" each ") << intervalSec << F("sec") << endl;
+  Serial.flush();
+  Serial << F("Send commands via: http://dweet.io/dweet/for/") << PropertyList.readProperty(PROP_DWEET_CMDKEY) << F("?cmd=...") << endl;
+  Serial.flush();
   if (DweetIOClass::timer == NULL) DweetIOClass::timer = TimerManager.registerTimer(new Timer(intervalSec*1000, onGetDweets));
   if (intervalSec == 0) DweetIOClass::timer->Stop();
   else DweetIOClass::timer->setInterval(intervalSec*1000);
-  onGetDweets();
+  menuHandler.scheduleCommand("nop 0");
+  //onGetDweets();
 }
 
 void DweetIOClass::onGetDweets() {
@@ -30,6 +44,7 @@ void DweetIOClass::onGetDweets() {
 }
 
 bool DweetIOClass::getDweetCommand(char *cmd) {
+    if (waitForWifi() != WL_CONNECTED) return false;
     char lastDweet[30];
     rtcMemStore.getLastDweet(lastDweet);
     uint32_t mstart = millis();
