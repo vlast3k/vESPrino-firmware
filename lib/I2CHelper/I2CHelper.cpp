@@ -124,7 +124,10 @@ bool I2CHelper::findI2C(int &sda, int &scl, long disabledPorts, bool debug) {
   for (int i=0; i < size; i++) {
     for (int k=0; k < size; k++) {
       if (i == k) continue;
-      if (isBitSet(disabledPorts, i) || isBitSet(disabledPorts, k)) continue;
+      // Serial << "PortDisabled: " << gpios[i] <<  " "<<isBitSet(disabledPorts, gpios[i]) << " " << disabledPorts << endl;
+      // Serial << "PortDisabled: " << gpios[k] <<  " "<<isBitSet(disabledPorts, gpios[k]) << " " << disabledPorts << endl;
+      if (isBitSet(disabledPorts, gpios[i]) || isBitSet(disabledPorts, gpios[k])) continue;
+      // Serial << "scanning" << endl;
       //if (debug) Serial << "Scanning " << gpios_str[sda], << " : " << gpios_str[sca] << endl;
       if (hasI2CDevices(gpios[i], gpios[k], gpios_str[i], gpios_str[k], debug)) {
         sda = gpios[i];
@@ -165,7 +168,7 @@ void I2CHelper::beginI2C(long disabledPorts) {
     i2cSDA = (int8_t) rtcI2c & 0xFF;
     i2cSCL = (int8_t) ((rtcI2c >> 8) & 0xFF);
     Serial << F("I2C Bus on SDA:SCA (") << i2cSDA << F(":") << i2cSCL << F(")");
-  } else if (!findI2C(i2cSDA, i2cSCL, disabledPorts, false)) {
+  } else if (!findI2C(i2cSDA, i2cSCL, disabledPorts, true)) {
      Serial << F("No I2C Devices found\n");
      i2cSDA = i2cSCL = -1;
   }

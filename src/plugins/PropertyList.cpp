@@ -97,6 +97,11 @@ void PropertyListClass::factoryReset() {
   } else {
     Serial << F("SPIFFS configuration removed\n");
   }
+  File f = SPIFFS.open(configFileName, "w");
+  if (!f) {
+    Serial << "Could not open file test" << endl;
+  }
+  f.close();
 }
 
 void PropertyListClass::putProperty(const char *key, const char *value) {
