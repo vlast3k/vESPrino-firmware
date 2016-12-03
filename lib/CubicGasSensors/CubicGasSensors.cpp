@@ -128,8 +128,8 @@ void CubicGasSensors::setStatus(CubicStatus newStatus) {
     }
 }
 
-#define CO2_CAL_END 300L*1000
-#define CO2_CAL_ACT 240L*1000
+#define CO2_CAL_END 420L*1000
+#define CO2_CAL_ACT 360L*1000
 
 bool CubicGasSensors::checkForReset() {
   if (EEPROM.read(eepromReset) != 1) return false;
