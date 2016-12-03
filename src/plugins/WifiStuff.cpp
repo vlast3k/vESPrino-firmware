@@ -244,7 +244,7 @@ void wifiConnectMulti() {
   applyStaticWifiConfig();
   wifiMulti = new ESP8266WiFiMulti();
   wifiMulti->addAP("vladiHome", "0888414447");
-  wifiMulti->addAP("Andreev", "4506285842");
+  //wifiMulti->addAP("Andreev", "4506285842");
   String ssid = PropertyList.readProperty(EE_WIFI_SSID);
   String pass = PropertyList.readProperty(EE_WIFI_P1);
   if (ssid.length() && ssid.length() < 40 && pass.length() < 100) {

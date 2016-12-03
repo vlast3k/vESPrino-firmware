@@ -22,6 +22,7 @@ struct RTCData {
     genData[GEN_MSCOUNTER] = 0;
     genData[GEN_SENSOR_STATE] = 0xFFFF;
     genData[GEN_I2C_BUS] = 0;
+    lastDweetCreated[0] = 0;
   }
   uint32_t crc32;
   uint32_t interations = 0;

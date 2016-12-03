@@ -88,18 +88,21 @@ void setupPlugins(MenuHandler *handler) {
 //    Serial << F("Setup plugin: ") << plugins.get(i)->getName() << endl;
     Serial << plugins.get(i)->getName() << endl;
     plugins.get(i)->setup(handler);
+    menuHandler.loop();
   }
   Serial << F("\n--- Setup SENSORS ---\n");
   for (int i=0; i < sensors.size(); i++) {
 //    Serial << F("Setup sensor: ") << sensors.get(i)->getName() << endl;
     Serial << sensors.get(i)->getName() << endl;
     sensors.get(i)->setup(handler);
+    menuHandler.loop();
   }
   Serial << F("\n--- Setup DESTINATIONS ---\n");
   for (int i=0; i < destinations.size(); i++) {
     Serial << destinations.get(i)->getName() << endl;
     //Serial << F("Setup Destination: ") << destinations.get(i)->getName() << endl;
     destinations.get(i)->setup(handler);
+    menuHandler.loop();
   }
 //  Serial << F("\n--- Setup DONE ---\n");
 

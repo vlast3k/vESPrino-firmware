@@ -46,6 +46,7 @@ class MenuHandler {
     LinkedList<MenuEntry*> *commands;
     LinkedList<String*> pendingCommands = LinkedList<String*>();
     bool schedulingEnabled = true;
+    bool currentlyExecutingCommand = false;
 
 };
 

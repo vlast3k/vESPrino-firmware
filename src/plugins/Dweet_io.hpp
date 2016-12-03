@@ -14,9 +14,15 @@ public:
   }
   //void loop();
   static void onGetDweets();
-  static bool getDweetCommand(char *cmd);
+  bool getDweetCommand(char *cmd);
   static void cmdDweetStart(const char *cmd);
-  static Timer *timer;
+  void cmdDweetStartInst(const char *cmd);
+  static void cmdDweetProcess(const char *cmd);
+  void cmdDweetProcessInst(const char *cmd);
+
+  Timer *timer;
+  bool isAcceptStoredDweets;
+  String dwKey;
 };
 
 extern DweetIOClass DweetIO;

@@ -97,10 +97,13 @@ void MenuHandler::loop() {
 
 void MenuHandler::processCommands() {
   if (!schedulingEnabled) return;
+  if (currentlyExecutingCommand) return;
   bool hadCommands = false;
   while (pendingCommands.size() > 0) {
     String *s = pendingCommands.shift();
+    currentlyExecutingCommand = true;
     handleCommand(s->c_str());
+    currentlyExecutingCommand = false;
     delete s;
     delay(1);
     hadCommands = true;
