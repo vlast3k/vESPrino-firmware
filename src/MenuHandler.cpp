@@ -86,8 +86,13 @@ void MenuHandler::cmdListN(const char *list) {
 }
 
 void MenuHandler::scheduleCommand(const char *cmd) {
-  String *s =new String(cmd);
-  pendingCommands.add(s);
+  if (cmd[0] && cmd[0] == '!') {
+    handleCommand(cmd + 1);
+  } else {
+    String *s =new String(cmd);
+    if (DEBUG) Serial << F("Scheduling command: " ) << *s << endl;
+    pendingCommands.add(s);
+  }
 }
 
 void MenuHandler::loop() {

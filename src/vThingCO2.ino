@@ -59,13 +59,15 @@ void printVersion(const char* ignore) {
   #elif defined(VTHING_VESPRINO)
     SERIAL_PORT << F("vESPrino ");
   #endif
-  SERIAL_PORT << VERSION << F(" build") << BUILD_NUM << endl;
+  SERIAL_PORT << VERSION;
   Serial.flush();
-  delay(100);
+  Serial << F(" build") << BUILD_NUM << endl;
+  Serial.flush();
+  //delay(100);
   SERIAL_PORT << F("IP address: ") << WiFi.localIP() << endl;
   SERIAL_PORT << F("Chip ID: ")    << _HEX(ESP.getChipId()) << endl;
   Serial.flush();
-  delay(100);
+  //delay(100);
 
 }
 
