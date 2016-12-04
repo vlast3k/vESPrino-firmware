@@ -10,7 +10,20 @@ MenuHandler::MenuHandler() {
   registerCommand(new MenuEntry(F("help"), CMD_EXACT, MenuHandler::cmdHelp, F("This help page")));
   registerCommand(new MenuEntry(F("##"), CMD_BEGIN, MenuHandler::cmdListN, F("##cmd1##cmd2##..##cmdN##")));
   registerCommand(new MenuEntry(F("***"), CMD_BEGIN, MenuHandler::cmdListN, F("***cmd1***cmd2***..***cmdN***")));
+  registerCommand(new MenuEntry(F("crc"), CMD_BEGIN, MenuHandler::cmdCRC, F("crc6Fcmd - XOR of all bytes of msg has to be == to 6F in this case")));
 
+}
+
+void MenuHandler::cmdCRC(const char *line) {
+  char c_crc[3] = {line[3], line[4], 0};
+  uint8_t expCrc = strtoul(c_crc, NULL, 16);
+
+//  Serial << "Expected CRC is: " << _HEX(expCrc) << endl;
+  uint8_t crc = 0;
+  for (int i=5; line[i]; i++) crc ^= line[i];
+//  Serial << "Computed LineCRC is: " << _HEX(crc) << endl;
+  if (crc == expCrc) menuHandler.scheduleCommand(line+5);
+  else Serial << F("ERROR: Bad CRC. Got 0x") << _HEX(crc) << F(", expected: 0x") << _HEX(expCrc) << endl;
 }
 
 void MenuHandler::cmdHelp(const char *ignore) {
@@ -49,7 +62,7 @@ bool MenuHandler::processUserInput() {
 
 byte MenuHandler::readLine(int timeout) {
   unsigned long deadline = millis() + timeout;
-  byte i = 0;
+  int i = 0;
   while (millis() < deadline) {
     if (Serial.available()) {
       line[i++] = (char) Serial.read();
@@ -146,5 +159,5 @@ void MenuHandler::handleCommand(const char *line) {
     }
   }
   if (line[0] && line[0] != 10 && line[0] != 13)
-    Serial << F("Command not recognized") << endl;
+    Serial << F("ERROR: Command not recognized") << endl;
 }

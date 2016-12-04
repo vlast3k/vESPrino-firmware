@@ -45,7 +45,7 @@ extern "C" {
 #include "plugins/NeopixelVE.hpp"
 #include <I2CHelper.hpp>
 
-#define BUILD_NUM "20161201"
+#define BUILD_NUM "20161204"
 
 #define SERIAL_PORT Serial
 #define EE_WIFI_SSID F("wifi.ssid")
@@ -245,7 +245,7 @@ extern ESP8266WiFiMulti  *wifiMulti;
 extern RFDest rfDest;
 //extern NeopixelVE neopixel;
 
-void MigrateSettingsIfNeeded();
+//void MigrateSettingsIfNeeded();
 void onStopLED();
 void loop_IntThrHandler();
 void setup_IntThrHandler(MenuHandler *handler);

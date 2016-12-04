@@ -25,50 +25,50 @@
 #define XX_SND_INT   F("xxSndInt")
 #define XX_SND_THR   F("xxSndThr")
 
-bool checkForFF(const char* c, int len) {
-  for (int i=0; i < len; i++) {
-    if (!c[i]) return false;
-    if (c[i] == 0xFF) return true;
-  }
-  return false;
-}
+// bool checkForFF(const char* c, int len) {
+//   for (int i=0; i < len; i++) {
+//     if (!c[i]) return false;
+//     if (c[i] == 0xFF) return true;
+//   }
+//   return false;
+// }
 
-void _migrateEESetting(int eeAddr, const __FlashStringHelper *key) {
-  char buf[200];
-  EEPROM.get(eeAddr, buf);
-  if (buf[0] != 0 && buf[0] != 255 && !checkForFF(buf, sizeof(buf)))  PropertyList.putProperty(key, buf);
-}
+// void _migrateEESetting(int eeAddr, const __FlashStringHelper *key) {
+//   char buf[200];
+//   EEPROM.get(eeAddr, buf);
+//   if (buf[0] != 0 && buf[0] != 255 && !checkForFF(buf, sizeof(buf)))  PropertyList.putProperty(key, buf);
+// }
+//
+// void _migrateJsonSetting(const __FlashStringHelper *keyJson, const __FlashStringHelper *keyProp) {
+//   char buf[200];
+//   getJSONConfig(String(keyJson).c_str(), buf);
+//   if (buf[0]) PropertyList.putProperty(keyProp, buf);
+// }
 
-void _migrateJsonSetting(const __FlashStringHelper *keyJson, const __FlashStringHelper *keyProp) {
-  char buf[200];
-  getJSONConfig(String(keyJson).c_str(), buf);
-  if (buf[0]) PropertyList.putProperty(keyProp, buf);
-}
-
-void MigrateSettingsIfNeeded() {
-  if (PropertyList.readBoolProperty(F("isMigrated"))) return;
-  Serial << F("Migrating Settings") << endl;
-  EEPROM.end();
-  EEPROM.begin(3000);
-  _migrateEESetting(EE_WIFI_SSID_30B, EE_WIFI_SSID);
-  _migrateEESetting(EE_WIFI_P1_30B, EE_WIFI_P1);
-  _migrateEESetting(EE_WIFI_P2_30B, EE_WIFI_P2);
-  _migrateEESetting(EE_IOT_HOST_60B, EE_IOT_HOST);
-  _migrateEESetting(EE_IOT_PATH_140B, EE_IOT_PATH);
-  _migrateEESetting(EE_IOT_TOKN_40B, EE_IOT_TOKN);
-  _migrateEESetting(EE_GENIOT_PATH_140B, EE_GENIOT_PATH);
-  _migrateEESetting(EE_MQTT_SERVER_30B, EE_MQTT_SERVER);
-  _migrateEESetting(EE_MQTT_PORT_4B, EE_MQTT_PORT);
-  _migrateEESetting(EE_MQTT_CLIENT_20B, EE_MQTT_CLIENT);
-  _migrateEESetting(EE_MQTT_USER_45B, EE_MQTT_USER);
-  _migrateEESetting(EE_MQTT_PASS_15B, EE_MQTT_PASS);
-  _migrateEESetting(EE_MQTT_TOPIC_40B, EE_MQTT_TOPIC);
-  _migrateEESetting(EE_MQTT_VALUE_70B, EE_MQTT_VALUE);
-
-  _migrateJsonSetting(XX_SND_INT, PROP_SND_INT);
-  _migrateJsonSetting(XX_SND_THR, PROP_SND_THR);
-  _migrateJsonSetting(H801_API_KEY, PROP_H801_API_KEY);
-
-  EEPROM.end();
-  PropertyList.putProperty(F("isMigrated"), "1");
-}
+// void MigrateSettingsIfNeeded() {
+//   if (PropertyList.readBoolProperty(F("isMigrated"))) return;
+//   Serial << F("Migrating Settings") << endl;
+//   EEPROM.end();
+//   EEPROM.begin(3000);
+//   _migrateEESetting(EE_WIFI_SSID_30B, EE_WIFI_SSID);
+//   _migrateEESetting(EE_WIFI_P1_30B, EE_WIFI_P1);
+//   _migrateEESetting(EE_WIFI_P2_30B, EE_WIFI_P2);
+//   _migrateEESetting(EE_IOT_HOST_60B, EE_IOT_HOST);
+//   _migrateEESetting(EE_IOT_PATH_140B, EE_IOT_PATH);
+//   _migrateEESetting(EE_IOT_TOKN_40B, EE_IOT_TOKN);
+//   _migrateEESetting(EE_GENIOT_PATH_140B, EE_GENIOT_PATH);
+//   _migrateEESetting(EE_MQTT_SERVER_30B, EE_MQTT_SERVER);
+//   _migrateEESetting(EE_MQTT_PORT_4B, EE_MQTT_PORT);
+//   _migrateEESetting(EE_MQTT_CLIENT_20B, EE_MQTT_CLIENT);
+//   _migrateEESetting(EE_MQTT_USER_45B, EE_MQTT_USER);
+//   _migrateEESetting(EE_MQTT_PASS_15B, EE_MQTT_PASS);
+//   _migrateEESetting(EE_MQTT_TOPIC_40B, EE_MQTT_TOPIC);
+//   _migrateEESetting(EE_MQTT_VALUE_70B, EE_MQTT_VALUE);
+//
+//   _migrateJsonSetting(XX_SND_INT, PROP_SND_INT);
+//   _migrateJsonSetting(XX_SND_THR, PROP_SND_THR);
+//   _migrateJsonSetting(H801_API_KEY, PROP_H801_API_KEY);
+//
+//   EEPROM.end();
+//   PropertyList.putProperty(F("isMigrated"), "1");
+// }

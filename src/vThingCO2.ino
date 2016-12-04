@@ -162,6 +162,7 @@ void fireEvent(const char *name) {
 
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 void setup() {
+  wifiConnectMulti();
   pinMode(D8, OUTPUT);    //enable power via D8
   digitalWrite(D8, HIGH);
   // //delay(1000);
@@ -219,10 +220,7 @@ void setup() {
     neopixel.cmdLedHandleColorInst(F("ledcolor black"));
   }
 
-
-  wifiConnectMulti();
-
-  MigrateSettingsIfNeeded();
+  //MigrateSettingsIfNeeded();
 
   EEPROM.begin(100);
 

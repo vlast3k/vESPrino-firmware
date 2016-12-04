@@ -38,6 +38,7 @@ class MenuHandler {
     bool processUserInput();
     static void cmdHelp(const char *ignore);
     static void cmdListN(const char *list);
+    static void cmdCRC(const char *list);
     void processCommands();
 
     byte readLine(int);

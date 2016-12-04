@@ -13,7 +13,8 @@
 
 extern CO2Sensor co2Sensor;
 
-
+#define CUBIC_PRESENT "present"
+#define CUBIC_MISSING "missing"
 
 CO2Sensor::CO2Sensor() :
     co2Threshold("CO2", 1),
@@ -29,6 +30,12 @@ void CO2Sensor::setup(MenuHandler *handler) {
     hasSensor = false;
     return;
   }
+  String state = PropertyList.readProperty(PROP_NO_CUBIC_CO2);
+  if (state == CUBIC_MISSING) {
+    hasSensor = false;
+    rtcMemStore.setSensorState(RTC_SENSOR_CUBICCO2, false);
+    return;
+  }
   // pinMode(D8, OUTPUT);    //enable power via D8
   // digitalWrite(D8, HIGH);
   // delay(1000);
@@ -39,11 +46,15 @@ void CO2Sensor::setup(MenuHandler *handler) {
   GPIOClass::setBit(disabledSerialPorts, I2CHelper::i2cSDA, 1);
   GPIOClass::setBit(disabledSerialPorts, I2CHelper::i2cSCL, 1);
   if (servoPort.length()) GPIOClass::setBit(disabledSerialPorts, atoi(servoPort.c_str()), 1);
-  if (PropertyList.readBoolProperty(PROP_NO_CUBIC_CO2) || !cubicCo2.init(DEBUG, disabledSerialPorts)) {
+  if (!cubicCo2.init(DEBUG, disabledSerialPorts)) {
     hasSensor = false;
     rtcMemStore.setSensorState(RTC_SENSOR_CUBICCO2, false);
-    PropertyList.putProperty(PROP_NO_CUBIC_CO2, "true");
+    if (state != CUBIC_PRESENT) PropertyList.putProperty(PROP_NO_CUBIC_CO2, CUBIC_MISSING);
     return;
+  }
+
+  if (state != CUBIC_PRESENT) {
+    PropertyList.putProperty(PROP_NO_CUBIC_CO2, CUBIC_PRESENT);
   }
 //  cubicCo2.init();// return;
   hasSensor = true;
