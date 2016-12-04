@@ -13,6 +13,8 @@
 
 extern CO2Sensor co2Sensor;
 
+
+
 CO2Sensor::CO2Sensor() :
     co2Threshold("CO2", 1),
     cubicCo2(&CO2Sensor::onCo2Status_static, EE_RESET_CO2_1B),
@@ -27,9 +29,9 @@ void CO2Sensor::setup(MenuHandler *handler) {
     hasSensor = false;
     return;
   }
-  pinMode(D8, OUTPUT);    //enable power via D8
-  digitalWrite(D8, HIGH);
-  delay(1000);
+  // pinMode(D8, OUTPUT);    //enable power via D8
+  // digitalWrite(D8, HIGH);
+  // delay(1000);
   //this is needed as if the Serial Port querries the port of the servo, then servo no longer wifiScanNetworks
   //maybe due to the timers...
   String servoPort = PropertyList.readProperty(PROP_SERVO_PORT);
@@ -37,9 +39,10 @@ void CO2Sensor::setup(MenuHandler *handler) {
   GPIOClass::setBit(disabledSerialPorts, I2CHelper::i2cSDA, 1);
   GPIOClass::setBit(disabledSerialPorts, I2CHelper::i2cSCL, 1);
   if (servoPort.length()) GPIOClass::setBit(disabledSerialPorts, atoi(servoPort.c_str()), 1);
-  if (!cubicCo2.init(DEBUG, disabledSerialPorts)) {
+  if (PropertyList.readBoolProperty(PROP_NO_CUBIC_CO2) || !cubicCo2.init(DEBUG, disabledSerialPorts)) {
     hasSensor = false;
     rtcMemStore.setSensorState(RTC_SENSOR_CUBICCO2, false);
+    PropertyList.putProperty(PROP_NO_CUBIC_CO2, "true");
     return;
   }
 //  cubicCo2.init();// return;
@@ -54,7 +57,9 @@ void CO2Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("rco"), CMD_EXACT, CO2Sensor::resetCO2_static, F("")));
 
   SERIAL_PORT << F("CO2 now: ") << cubicCo2.rawReadCM1106_CO2() << endl;
-  menuHandler.scheduleCommand("nop 0");
+  if (!PropertyList.readBoolProperty(PROP_CUBIC_CO2_POWERSAFE)) {
+    menuHandler.scheduleCommand("nop 0");
+  }
 }
 
 const char* CO2Sensor::getSensorId() {

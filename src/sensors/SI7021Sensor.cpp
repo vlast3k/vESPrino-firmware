@@ -27,7 +27,6 @@ void SI7021Sensor::getData(LinkedList<Pair *> *data) {
    double temp = si7021->readTemp();
    String adj = PropertyList.readProperty(PROP_TEMP_ADJ);
    double adjTemp = temp + atof(adj.c_str());
-   adjTemp -= 0.5F; //BME280 tends to be 0.5C higher
    data->add(new Pair("TEMP", String(adjTemp)));
    data->add(new Pair("TEMPR", String(temp)));
    data->add(new Pair("HUM", String(si7021->readHumidity())));

@@ -2,6 +2,7 @@
 #include "MenuHandler.hpp"
 #include <Arduino.h>
 #include <Streaming.h>
+#include "sensors/CO2Sensor.hpp"
 //#include <EEPROM.h>
 #include "common.hpp"
 
@@ -43,11 +44,16 @@ void CommonCommands::factoryReset(const char *ignore) {
   // for (int i=0; i < 100; i++) EEPROM.write(i, 0xFF);
   // EEPROM.commit();
   bool fullReset = (strcmp(ignore, "factoryr") == 0);
-  String tempAdj;
-  if (!fullReset) tempAdj = PropertyList.readProperty(PROP_TEMP_ADJ);
+  String tempAdj, co2Ps;
+  if (!fullReset) {
+    tempAdj = PropertyList.readProperty(PROP_TEMP_ADJ);
+    co2Ps = PropertyList.readProperty(PROP_CUBIC_CO2_POWERSAFE);
+  }
   PropertyList.factoryReset();
-  if (!fullReset) PropertyList.putProperty(PROP_TEMP_ADJ, tempAdj.c_str());
-  //SERIAL_PORT << "was in deep sleep: "<< rtcMemStore.wasInDeepSleep()<< endl;
+  if (!fullReset) {
+    PropertyList.putProperty(PROP_TEMP_ADJ, tempAdj.c_str());
+    PropertyList.putProperty(PROP_CUBIC_CO2_POWERSAFE, co2Ps.c_str());
+  }
   Serial.flush();
   delay(100);
   espRestart(NULL);

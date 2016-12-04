@@ -23,8 +23,8 @@ CubicGasSensors::CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, uint8
 //
 // }
 bool CubicGasSensors::init(bool DEBUG, uint32_t disabledPorts) {
-    for (int j=0; j<2; j++) {
-        for (int i=0; i < 2; i++) {
+    for (int j=0; j<3; j++) {
+        for (int i=0; i < 4; i++) {
             rx = ports[i][0];
             tx = ports[i][1];
             if (I2CHelper::isBitSet(disabledPorts, rx) || I2CHelper::isBitSet(disabledPorts, tx)) continue;
@@ -41,7 +41,7 @@ bool CubicGasSensors::init(bool DEBUG, uint32_t disabledPorts) {
             }
         }
         if (DEBUG) SERIAL_PORT << F("+");
-        delay(200);
+        delay(1000);
     }
     if (DEBUG) SERIAL_PORT << F("ERROR: Could not locate Cubic CO2 Sensor") << endl;
     return false;

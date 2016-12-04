@@ -7,6 +7,9 @@
 #include "CubicGasSensors.h"
 #include "common.hpp"
 
+#define PROP_NO_CUBIC_CO2 F("cubic.co2.missing")
+#define PROP_CUBIC_CO2_POWERSAFE F("cubic.co2.powersafe")
+
 class CO2Sensor : public Sensor {
 public:
   CO2Sensor();
