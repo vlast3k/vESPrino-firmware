@@ -18,7 +18,7 @@ bool SI7021::begin()
 	//Wire.begin();											// Begin I2C
     //Serial.println("a1");
     //delay(100);
-    
+
 	return reset();												// Reset sensor
 }
 
