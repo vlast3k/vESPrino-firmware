@@ -49,6 +49,7 @@ void PM2005Sensor::checkMode() {
     }
   }
   if (DEBUG) Serial << F("PM2005: Interval: ") << interval << F(", mode: ") << mode << endl;
+  Serial.flush();
   if (interval < 300 && mode != 5) setDynamicMode();
   else if (interval >= 300 && mode != interval) setTimingMeasuringMode(interval);
   //intReadData(pm25, pm10, status, mode);
@@ -134,11 +135,13 @@ void PM2005Sensor::sendCommand(uint8_t *toSend) {
     delay(100);
   }
   if (DEBUG) Serial << F("PM2005 setMode res = ") << res << endl;
+  Serial.flush();
 }
 
 bool PM2005Sensor::intReadData(int &pm25, int &pm10, int &status, int &mode) {
   if (!intBegin()) {
     if (DEBUG) Serial << F("\nFailed to connect to PM2005\n");
+    Serial.flush();
     return false;
   }
   int r;
@@ -147,6 +150,7 @@ bool PM2005Sensor::intReadData(int &pm25, int &pm10, int &status, int &mode) {
   r = Wire.requestFrom((uint8_t)0x28, (size_t)22, false);
   if (r != 22) {
     if (DEBUG) Serial << F("Expected 22 bytes, but got ") << r << endl;
+    Serial.flush();
     return false;
   }
   for (int i=0; i < 22; i++) {
@@ -165,9 +169,13 @@ bool PM2005Sensor::intReadData(int &pm25, int &pm10, int &status, int &mode) {
   mode = (data[9] << 8) + data[10];
   if (DEBUG) {
     Serial << F("Sensor Status: ") << status << endl;
+    Serial.flush();
     Serial << F("PM 2.5 : ") << pm25 << endl;
+    Serial.flush();
     Serial << F("PM  10 : ") << pm10 << endl;
+    Serial.flush();
     Serial << F("Measuring Mode : ") << mode << endl;
+    Serial.flush();
   }
   return true;
 }

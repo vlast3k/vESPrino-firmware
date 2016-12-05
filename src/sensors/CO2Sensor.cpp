@@ -114,23 +114,18 @@ void CO2Sensor::onCo2Status_static(CubicStatus status) {
 }
 
 void CO2Sensor::onCo2Status(CubicStatus status) {
-  //SERIAL_PORT << "status = " << status << endl;
   if (status == CB_CALIBRATE) {
-   // SERIAL_PORT << "status11111 = " << status << endl;
+    menuHandler.scheduleCommand("nop 0");
     menuHandler.scheduleCommand("ledcolor blue");
-
-//    strip->SetPixelColor(0, RgbColor(0, 0,30));
     tmrStopLED->Stop();
   } else if (status == CB_WARMUP) {
     menuHandler.scheduleCommand("ledcolor yellow");
-
-//    strip->SetPixelColor(0, RgbColor(30, 30, 0));
   } else if (status == CB_STARTED) {
-    menuHandler.scheduleCommand("ledcolor green");
-//    strip->SetPixelColor(0, RgbColor(0, 30, 0));
-    tmrStopLED->Start();
+    if (!PropertyList.readBoolProperty(PROP_CUBIC_CO2_POWERSAFE)) {
+      menuHandler.scheduleCommand("ledcolor green");
+      tmrStopLED->Start();
+    }
   }
-  //strip->Show();
 }
 
 void CO2Sensor::resetCO2_static(const char *ignore) {
@@ -138,7 +133,8 @@ void CO2Sensor::resetCO2_static(const char *ignore) {
 }
 
 void CO2Sensor::resetCO2() {
-  SERIAL_PORT << F("Calibration Mode Enabled.\nPlease put the device for 5 minutes at fresh air.\nYou can now put it outside. It will complete calibration once it worked 5 minutes after restart") << endl;
+  SERIAL_PORT << F("Calibration Mode Enabled.\nPlease put the device for 8 minutes at fresh air.\nYou can now put it outside. It will complete calibration once it worked 5 minutes after restart") << endl;
+  Serial.flush();
   EEPROM.begin(10);
   EEPROM.put(EE_RESET_CO2_1B, (byte)1);
   EEPROM.commit();

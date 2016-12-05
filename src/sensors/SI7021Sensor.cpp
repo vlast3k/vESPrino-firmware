@@ -56,6 +56,7 @@ bool SI7021Sensor::initSensor() {
     return false;
   }
   SERIAL_PORT << F("Found SI7021 - Temperature/Humidity Sensor") << endl;
+  Serial.flush();
   si7021->setHumidityRes(8); // Humidity = 12-bit / Temperature = 14-bit
   return true;
 }

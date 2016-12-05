@@ -62,6 +62,7 @@ bool BME280Sensor::initSensor() {
     return false;
   }
   SERIAL_PORT << F("Found BME280 - Temperature/Humidity/Pressure Sensor") << endl;
+  Serial.flush();
   return true;
 }
 

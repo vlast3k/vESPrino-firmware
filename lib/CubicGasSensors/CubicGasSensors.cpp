@@ -29,6 +29,7 @@ bool CubicGasSensors::init(bool DEBUG, uint32_t disabledPorts) {
             tx = ports[i][1];
             if (I2CHelper::isBitSet(disabledPorts, rx) || I2CHelper::isBitSet(disabledPorts, tx)) continue;
             if (DEBUG) SERIAL_PORT << "Trying : " << rx <<","<< tx << endl ;
+            Serial.flush();
             if (sensorType = getSWVersion(DEBUG)) {
                 if (sensorType == CM1106) {
                     SERIAL_PORT << F("CM1106 Single Beam NDIR sensor\n");
@@ -37,6 +38,7 @@ bool CubicGasSensors::init(bool DEBUG, uint32_t disabledPorts) {
                 } else {
                     SERIAL_PORT << F("Sensor Type not recognized\n");
                 }
+                Serial.flush();
                 return true;
             }
         }
@@ -44,12 +46,14 @@ bool CubicGasSensors::init(bool DEBUG, uint32_t disabledPorts) {
         delay(1000);
     }
     if (DEBUG) SERIAL_PORT << F("ERROR: Could not locate Cubic CO2 Sensor") << endl;
+    Serial.flush();
     return false;
 }
 
 int CubicGasSensors::getSWVersion(bool dbg) {
   DEBUG = dbg;
   if (dbg) SERIAL_PORT << F("Getting CO2 Sensor Software Version\n");
+  Serial.flush();
   uint8_t cmdReadCO2[] = {4, 0x11, 0x01, 0x1E, 0xD0};
   uint8_t resp[30];
   boolean res = sendCmd(cmdReadCO2, resp);
@@ -59,6 +63,7 @@ int CubicGasSensors::getSWVersion(bool dbg) {
   version[12] = 0;
   SERIAL_PORT << F("CO2 Sensor SW Ver: ") << version << endl;
   if (dbg) SERIAL_PORT << F("done") <<endl;
+  Serial.flush();
   return version[0];
 
 }
@@ -104,6 +109,7 @@ byte CubicGasSensors::getCS(byte* buf) {
 
 void CubicGasSensors::co2Set400ppm() {
     SERIAL_PORT << F("Setting current CO2 level as 400 ppm\n");
+    Serial.flush();
   //  if (sensorType == CM1106) {
       uint8_t cmdReadCO2[] = {6, 0x11, 0x03, 0x03, 1, 0x90, 0x58};
       uint8_t resp[30];
@@ -145,6 +151,7 @@ bool CubicGasSensors::checkForReset() {
     sentResetCmd = true;
   }
   SERIAL_PORT << F("Calibrating:") << millis()/1000 << F("s, ") << rawReadCM1106_CO2(DEBUG) << F("ppm\n");
+  Serial.flush();
   return true;
 }
 
@@ -155,6 +162,7 @@ int CubicGasSensors::rawReadCM1106_CO2(bool dbg) {
   int res = sendCmd(cmdReadCO2, resp);
   if (!res) {
       SERIAL_PORT << F("Error in communication with CO2 Sensor\n");
+      Serial.flush();
       return 0;
   }
   uint16_t value = ((uint16_t)256)*resp[3] + resp[4];

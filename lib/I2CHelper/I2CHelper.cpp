@@ -6,8 +6,8 @@
 
 
 
-int I2CHelper::i2cSDA = -1;
-int I2CHelper::i2cSCL = -1;
+int8_t I2CHelper::i2cSDA = -1;
+int8_t I2CHelper::i2cSCL = -1;
 extern RTCMemStore rtcMemStore;
 
 bool I2CHelper::checkI2CDevice(int addr) {
@@ -116,7 +116,7 @@ int I2CHelper::i2cWireStatus() {
 
 
 
-bool I2CHelper::findI2C(int &sda, int &scl, long disabledPorts, bool debug) {
+bool I2CHelper::findI2C(int8_t &sda, int8_t &scl, long disabledPorts, bool debug) {
 //  int gpios[] = {D1, D5, D2, D5, D6};
   int gpios[] = {D1, D5, D7, D6};
   String gpios_str[] = {F("D1"), F("D5"), F("D7"), F("D6")};
@@ -157,7 +157,7 @@ void I2CHelper::cmdScanI2C(const char *ignore) {
 //   delay(1000);
   // pinMode(D8, INPUT);
   //brzo_i2c_setup(D5, D1, 50000);
-  int a, b;
+  int8_t a, b;
   findI2C(a, b, 0, true);
 }
 
@@ -168,15 +168,17 @@ void I2CHelper::beginI2C(long disabledPorts) {
   if (rtcI2c) {
     i2cSDA = (int8_t) rtcI2c & 0xFF;
     i2cSCL = (int8_t) ((rtcI2c >> 8) & 0xFF);
-    Serial << F("I2C Bus on SDA:SCA (") << i2cSDA << F(":") << i2cSCL << F(")");
-  } else if (!findI2C(i2cSDA, i2cSCL, disabledPorts, true)) {
-     Serial << F("No I2C Devices found\n");
+  } else if (!findI2C(i2cSDA, i2cSCL, disabledPorts, false)) {
      i2cSDA = i2cSCL = -1;
   }
 
   if (i2cSDA > -1) {
-     Wire.begin(i2cSDA, i2cSCL);
+    Serial << F("I2C Bus on SDA:SCA (") << i2cSDA << F(":") << i2cSCL << F(")");
+    Wire.begin(i2cSDA, i2cSCL);
+  } else {
+    Serial << F("No I2C Devices found\n");
   }
+
   if (!rtcI2c) {
     uint32_t data = 0;
     data = data | (uint8_t)i2cSDA;

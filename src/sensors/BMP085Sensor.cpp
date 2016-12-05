@@ -65,6 +65,7 @@ bool BMP085Sensor::initSensor() {
     return false;
   }
   SERIAL_PORT << F("Found BMP085 - Temperature/Pressure Sensor") << endl;
+  Serial.flush();
   return true;
 }
 

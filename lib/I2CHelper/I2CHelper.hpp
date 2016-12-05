@@ -11,7 +11,7 @@ public:
   static bool hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str, bool debug);
   static int i2cWireStatus();
   static int i2cSlowWireStatus();
-  static bool findI2C(int &sda, int &scl, long disabledPorts, bool debug);
+  static bool findI2C(int8_t &sda, int8_t &scl, long disabledPorts, bool debug);
   static void i2cHigh();
   static void cmdScanI2C(const char *ignore);
   static void beginI2C(long disabledPorts);
@@ -20,8 +20,8 @@ public:
 
 
 
-  static int i2cSDA;
-  static int i2cSCL;
+  static int8_t i2cSDA;
+  static int8_t i2cSCL;
 };
 
 #endif
