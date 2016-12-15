@@ -34,7 +34,7 @@ private:
 time_t WidgetRTC::requestTimeSync()
 {
     // Request RTC widget update from the server
-    Blynk.syncVirtual(instance()->mPin);
+    Blynk->syncVirtual(instance()->mPin);
     // Tell the Time library that we'll set it later
     return 0;
 }

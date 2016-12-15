@@ -269,7 +269,7 @@ void BlynkTransportRedBearDuoBLE::deviceConnectedCallback(BLEStatus_t status, ui
   switch (status) {
   case BLE_STATUS_OK:
     BLYNK_LOG1("Device connected");
-    Blynk.startSession();
+    Blynk->startSession();
     break;
   default:
     break;
@@ -278,7 +278,7 @@ void BlynkTransportRedBearDuoBLE::deviceConnectedCallback(BLEStatus_t status, ui
 
 void BlynkTransportRedBearDuoBLE::deviceDisconnectedCallback(uint16_t handle){
     BLYNK_LOG1("Device disconnected");
-    Blynk.disconnect();
+    Blynk->disconnect();
 }
 
 #include <BlynkWidgets.h>

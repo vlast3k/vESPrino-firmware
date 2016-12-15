@@ -31,6 +31,7 @@
 #include "plugins/GPIO.hpp"
 #include "plugins/ServoV.hpp"
 #include "plugins/Annemometer.hpp"
+#include "destinations/BlynkDest.hpp"
 
 
 //boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
@@ -76,3 +77,4 @@ GPIOClass gpioHandler;
 APDS9960Sensor _APDS9960Sensor;
 ServoV _ServoV;
 AnnemometerClass annemometer;
+BlynkDest blynkDest;

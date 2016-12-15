@@ -36,7 +36,7 @@ void WidgetSD::onWrite(BlynkReq BLYNK_UNUSED &request, const BlynkParam& param)
                 } else {
                     result.add(entry.size());
                 }
-                Blynk.virtualWrite(request.pin, result);
+                Blynk->virtualWrite(request.pin, result);
                 entry.close();
             }
             dir.close();
@@ -55,7 +55,7 @@ void WidgetSD::onWrite(BlynkReq BLYNK_UNUSED &request, const BlynkParam& param)
                     } else if (len < maxlen) {
                         mem[1] = 'l'; // Last chunk
                     }
-                    Blynk.virtualWriteBinary(request.pin, mem, len + 3);
+                    Blynk->virtualWriteBinary(request.pin, mem, len + 3);
                 } while (len == maxlen);
             } else {
 

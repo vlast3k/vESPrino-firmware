@@ -124,13 +124,13 @@ BlynkSimpleSimbleeBLE Blynk(_blynkTransport);
 void SimbleeBLE_onConnect()
 {
   BLYNK_LOG1("Device connected");
-  Blynk.startSession();
+  Blynk->startSession();
 }
 
 void SimbleeBLE_onDisconnect()
 {
   BLYNK_LOG1("Device disconnected");
-  Blynk.disconnect();
+  Blynk->disconnect();
 }
 
 void SimbleeBLE_onReceive(char* data, int len)

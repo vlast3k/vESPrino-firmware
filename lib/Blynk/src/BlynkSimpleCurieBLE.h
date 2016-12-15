@@ -141,7 +141,7 @@ public:
         conn.begin(per);
     }
 
-    // Please use Blynk.begin(BLEPeripheral, "auth")
+    // Please use Blynk->begin(BLEPeripheral, "auth")
     BLYNK_DEPRECATED
     void begin(const char* auth, BLEPeripheral& per)
     {
@@ -158,12 +158,12 @@ BlynkCurieBLE Blynk(_blynkTransport);
 
 inline
 void BlynkTransportCurieBLE::txCharSubscribed(BLECentral& central, BLECharacteristic& ch) {
-    Blynk.startSession();
+    Blynk->startSession();
 }
 
 inline
 void BlynkTransportCurieBLE::blePeripheralDisconnectHandler(BLECentral& central) {
-    Blynk.disconnect();
+    Blynk->disconnect();
 }
 
 #include <BlynkWidgets.h>

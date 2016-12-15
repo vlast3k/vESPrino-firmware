@@ -185,25 +185,25 @@
 #define BLYNK_VAR_INT(name, pin) \
     int name;  \
     BLYNK_WRITE(pin) { name = param.asInt(); } \
-    BLYNK_READ(pin)  { Blynk.virtualWrite(pin, name); }
+    BLYNK_READ(pin)  { Blynk->virtualWrite(pin, name); }
 
 #define BLYNK_VAR_LONG(name, pin) \
     long name;  \
     BLYNK_WRITE(pin) { name = param.asLong(); } \
-    BLYNK_READ(pin)  { Blynk.virtualWrite(pin, name); }
+    BLYNK_READ(pin)  { Blynk->virtualWrite(pin, name); }
 
 #ifndef BLYNK_NO_FLOAT
 #define BLYNK_VAR_DOUBLE(name, pin) \
     double name;  \
     BLYNK_WRITE(pin) { name = param.asDouble(); } \
-    BLYNK_READ(pin)  { Blynk.virtualWrite(pin, name); }
+    BLYNK_READ(pin)  { Blynk->virtualWrite(pin, name); }
 #endif
 
 #ifdef ARDUINO
 #define BLYNK_VAR_STRING(name, pin) \
     String name;  \
     BLYNK_WRITE(pin) { name = param.asStr(); } \
-    BLYNK_READ(pin)  { Blynk.virtualWrite(pin, name); }
+    BLYNK_READ(pin)  { Blynk->virtualWrite(pin, name); }
 #endif
 
 // Default read/write handlers (you can redefine them in your code)

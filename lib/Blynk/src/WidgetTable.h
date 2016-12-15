@@ -41,16 +41,16 @@ public:
     void onSelectChange(ItemSelectChange cbk) { mOnSelectChange = cbk; }
 
     void clear() {
-        Blynk.virtualWrite(mPin, "clr");
+        Blynk->virtualWrite(mPin, "clr");
     }
 
     template <typename T1, typename T2>
     void addRow(int index, const T1& name, const T2& value) {
-        Blynk.virtualWrite(mPin, "add", index, name, value);
+        Blynk->virtualWrite(mPin, "add", index, name, value);
     }
 
     void pickRow(int index) {
-        Blynk.virtualWrite(mPin, "pick", index);
+        Blynk->virtualWrite(mPin, "pick", index);
     }
 
 private:

@@ -19,7 +19,7 @@ public:
     WidgetLCD(uint8_t vPin) : BlynkWidgetBase(vPin) {}
 
     void clear() {
-        Blynk.virtualWrite(mPin, "clr");
+        Blynk->virtualWrite(mPin, "clr");
     }
 
     template<typename T>
@@ -30,7 +30,7 @@ public:
         cmd.add(x);
         cmd.add(y);
         cmd.add(str);
-        Blynk.virtualWrite(mPin, cmd);
+        Blynk->virtualWrite(mPin, cmd);
     }
 
 };

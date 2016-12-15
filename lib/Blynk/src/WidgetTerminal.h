@@ -47,7 +47,7 @@ public:
 
     void flush() {
         if (mOutQty) {
-            Blynk.virtualWriteBinary(mPin, mOutBuf, mOutQty);
+            Blynk->virtualWriteBinary(mPin, mOutBuf, mOutQty);
             mOutQty = 0;
         }
     }

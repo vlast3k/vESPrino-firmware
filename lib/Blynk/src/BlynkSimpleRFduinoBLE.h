@@ -124,13 +124,13 @@ BlynkSimpleRFduinoBLE Blynk(_blynkTransport);
 void RFduinoBLE_onConnect()
 {
   BLYNK_LOG1("Device connected");
-  Blynk.startSession();
+  Blynk->startSession();
 }
 
 void RFduinoBLE_onDisconnect()
 {
   BLYNK_LOG1("Device disconnected");
-  Blynk.disconnect();
+  Blynk->disconnect();
 }
 
 void RFduinoBLE_onReceive(char* data, int len)

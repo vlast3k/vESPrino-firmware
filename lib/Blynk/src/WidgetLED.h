@@ -27,7 +27,7 @@ public:
 
     void setValue(uint8_t value) {
         mValue = value;
-        Blynk.virtualWrite(mPin, value);
+        Blynk->virtualWrite(mPin, value);
     }
 
     void on() {

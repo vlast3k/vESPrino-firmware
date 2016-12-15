@@ -113,3 +113,21 @@ void dumpArray(const char *s) {
   while (*s) Serial << _HEX(*(s++)) << ",";
   Serial << endl;
 }
+
+char* getListItem(const char* str, char *buf, int idx, char sep) {
+  for (int i=0; i < idx && (str = strchr(str, sep)) != NULL; i++, str++);
+  if (str == NULL) return NULL;
+  char *e = strchr(str, sep);
+  int len = (e == NULL)? strlen(str) : e-str;
+  strncpy(buf, str, len);
+  buf[len] = 0;
+  return buf;
+}
+
+int getListItemCount(const char* str) {
+  char buf[200];
+  char *p;
+  int i=0;
+  for (; (p = getListItem(str, buf, i)) != NULL; i++);
+  return i;
+}

@@ -1,12 +1,9 @@
-#define BLYNK_DEBUG // Optional, this enables lots of prints
-#define BLYNK_PRINT Serial
 #include "Timer.h"
 #include "plugins/PropertyList.hpp"
 #include "common.hpp"
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
 #include "plugins/PowerManager.hpp"
-#include <BlynkSimpleEsp8266.h>
 
 //Timer *tmrSendValueTimer;
 Timer *tmrRawRead;
@@ -45,7 +42,7 @@ void addCommonValues(LinkedList<Pair *> *data) {
 }
 
 void conditionalSend(bool forceSend) {
-  Blynk.virtualWrite(V0, millis() / 1000);
+
   int rtcIt = rtcMemStore.getIterations();
   //Serial << "rtcit = " << rtcIt << endl;
   //Serial.flush();
@@ -139,7 +136,7 @@ void setSendInterval (const char *line) {
 
 
 
-char auth[] = "77e6e715b5714bd797ff86489d863b76"; // Put your token here
+
 void setup_IntThrHandler(MenuHandler *handler) {
   if (PropertyList.hasProperty(PROP_SND_INT)) intSendValue = PropertyList.readLongProperty(PROP_SND_INT)*1000;
   else PropertyList.putProperty(PROP_SND_INT, String(intSendValue/1000).c_str());
@@ -158,7 +155,7 @@ void setup_IntThrHandler(MenuHandler *handler) {
 
   //tmrSendValueTimer->Start();
   tmrRawRead->Start();
-   Blynk.config(auth);
+
 }
 
 void loop_IntThrHandler() {
@@ -168,6 +165,6 @@ void loop_IntThrHandler() {
   // } else {
     //tmrSendValueTimer->Update();
     tmrRawRead->Update();
-    Blynk.run();
+
   //}
 }

@@ -175,14 +175,14 @@ BlynkRedBearLab_BLE_Nano Blynk(_blynkTransport);
 void BlynkTransportRedBearLab_BLE_Nano::connectCallback(const Gap::ConnectionCallbackParams_t *params)
 {
   BLYNK_LOG1("Device connected");
-  Blynk.startSession();
+  Blynk->startSession();
 }
 
 void BlynkTransportRedBearLab_BLE_Nano::disconnectCallback(const Gap::DisconnectionCallbackParams_t *params)
 {
   BLYNK_LOG1("Device disconnected");
   //__disable_irq();
-  Blynk.disconnect();
+  Blynk->disconnect();
   //__enable_irq();
   ble.startAdvertising();
 }

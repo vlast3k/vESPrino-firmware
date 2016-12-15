@@ -80,7 +80,7 @@ void BlynkFatal() BLYNK_NORETURN;
 #define BLYNK_FATAL(msg)     { BLYNK_LOG1(msg); BlynkFatal(); }
 #define BLYNK_LOG_RAM()      { BLYNK_LOG2(BLYNK_F("Free RAM: "), BlynkFreeRam()); }
 #define BLYNK_LOG_FN()       BLYNK_LOG3(BLYNK_F(__FUNCTION__), '@', __LINE__);
-#define BLYNK_LOG_TROUBLE(t) BLYNK_LOG2(BLYNK_F("Trouble detected: http://docs.blynk.cc/#troubleshooting-"), t)
+#define BLYNK_LOG_TROUBLE(t) BLYNK_LOG2(BLYNK_F("Trouble detected: http://docs.Blynk->cc/#troubleshooting-"), t)
 
 #ifndef BLYNK_PRINT
 #undef BLYNK_DEBUG

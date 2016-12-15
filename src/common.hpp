@@ -214,6 +214,9 @@ void initCO2Handler();
 void loopCO2Handler();
 void dumpArray(const char *s);
 
+char* getListItem(const char* str, char *buf, int idx, char sep=',');
+int getListItemCount(const char* str);
+
 //#endif
 extern boolean hasSSD1306, hasSI7021, hasPN532, hasBMP180, hasBH1750, hasAPDS9960, hasPIR;
 extern bool shouldSend;
