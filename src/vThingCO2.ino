@@ -91,6 +91,8 @@ void setupPlugins(MenuHandler *handler) {
     Serial << plugins.get(i)->getName() << endl;
     plugins.get(i)->setup(handler);
     menuHandler.loop();
+    delay(1);
+
   }
   Serial << F("\n--- Setup SENSORS ---\n");
   for (int i=0; i < sensors.size(); i++) {
@@ -98,6 +100,8 @@ void setupPlugins(MenuHandler *handler) {
     Serial << sensors.get(i)->getName() << endl;
     sensors.get(i)->setup(handler);
     menuHandler.loop();
+    delay(1);
+
   }
   Serial << F("\n--- Setup DESTINATIONS ---\n");
   for (int i=0; i < destinations.size(); i++) {
@@ -105,6 +109,8 @@ void setupPlugins(MenuHandler *handler) {
     //Serial << F("Setup Destination: ") << destinations.get(i)->getName() << endl;
     destinations.get(i)->setup(handler);
     menuHandler.loop();
+    delay(1);
+
   }
 //  Serial << F("\n--- Setup DONE ---\n");
 
@@ -115,16 +121,19 @@ void loopPlugins() {
   for (int i=0; i < plugins.size(); i++) {
   //  Serial << F("Loop plugin: ") << plugins.get(i)->getName() << endl;
     plugins.get(i)->loop();
+    delay(1);
   }
   //S/erial << F("\n--- Loop SENSORS ---\n");
   for (int i=0; i < sensors.size(); i++) {
   //  Serial << F("Loop sensor: ") << sensors.get(i)->getName() << endl;
     sensors.get(i)->loop();
+    delay(1);
   }
   //S/erial << F("\n--- Loop DESTINATIONS ---\n");
   for (int i=0; i < destinations.size(); i++) {
     //Serial << F("Loop Destination: ") << destinations.get(i)->getName() << endl;
     destinations.get(i)->loop();
+    delay(1);
   }
   //Serial << F("\n--- Loop all DONE ---\n");
 }
@@ -162,6 +171,8 @@ void fireEvent(const char *name) {
 
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 void setup() {
+  SERIAL_PORT.begin(9600);
+  PropertyList.begin(&menuHandler);
   wifiConnectMulti();
   pinMode(D8, OUTPUT);    //enable power via D8
   digitalWrite(D8, HIGH);
@@ -169,8 +180,6 @@ void setup() {
   //neopixel.cmdLedHandleColorInst(F("ledcolor green"));
   // pinMode(D8, OUTPUT);
   // digitalWrite(D8, HIGH);
-  SERIAL_PORT.begin(9600);
-  PropertyList.begin(&menuHandler);
   //Wire.begin(D6, D5);
   //Serial.flush();
   //delay(100);

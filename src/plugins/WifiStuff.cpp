@@ -53,12 +53,6 @@ wl_status_t waitForWifi(uint16_t timeoutMs) {
     menuHandler.loop();
     if ((i%10) == 0)  {
       SERIAL_PORT << '.';
-      // if (a) {
-      //   neopixel.cmdLedSetBrgInst(F("ledbrg 90"));
-      // } else {
-      //   neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
-      // }
-      // a = !a;
     }
   }
   Serial << endl;
@@ -224,7 +218,7 @@ void cmdDelay(const char *line) {
 }
 
 void applyStaticWifiConfig() {
-  //if (PropertyList.hasProperty(PROP_WIFI_STATIC_IP)) {
+  if (PropertyList.hasProperty(PROP_WIFI_STATIC_IP)) {
     IPAddress ip, gw, su, d1, d2;
     ip.fromString(PropertyList.readProperty(PROP_WIFI_STATIC_IP));
     gw.fromString(PropertyList.readProperty(PROP_WIFI_GATEWAY));
@@ -232,7 +226,7 @@ void applyStaticWifiConfig() {
     d1.fromString(PropertyList.readProperty(PROP_WIFI_DNS1));
     d2.fromString(PropertyList.readProperty(PROP_WIFI_DNS2));
     WiFi.config(ip, gw, su, d1, d2);
-  //}
+  }
 }
 
 void wifiConnectMulti() {
@@ -252,6 +246,7 @@ void wifiConnectMulti() {
     char x[120], y[120];
     strcpy(x, ssid.c_str());
     strcpy(y, pass.c_str());
+    //Serial << "wifibegin :: " << x << y << endl;
     WiFi.begin(x, y);
   }
 }

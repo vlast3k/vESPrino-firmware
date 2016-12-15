@@ -1,4 +1,4 @@
-#define BLYNK_DEBUG // Optional, this enables lots of prints
+//#define BLYNK_DEBUG // Optional, this enables lots of prints
 #define BLYNK_PRINT Serial
 #include <BlynkSimpleEsp8266.h>
 
@@ -25,9 +25,9 @@ BlynkDest::BlynkDest() {
 void BlynkDest::setup(MenuHandler *handler) {
   //handler->registerCommand(new MenuEntry(F("serial_dump_toggle"), CMD_EXACT, &BlynkDest::toggle, F("serial_dump_toggle toggle serial dump output")));
   enabled = PropertyList.readBoolProperty(PROP_BLYNK_ENABLED);
-  if (enabled) {
-    menuHandler.scheduleCommand("nop 0");
-  }
+  // if (enabled) {
+  //   menuHandler.scheduleCommand("nop 0");
+  // }
 }
 
 void BlynkDest::loop() {
@@ -55,6 +55,7 @@ Pair* BlynkDest::getPair(LinkedList<Pair *> &data, String &key) {
 
 void BlynkDest::process(LinkedList<Pair *> &data) {
   if (!enabled) return;
+  loop();
   String cfg = PropertyList.readProperty(PROP_BLYNK_CFG);
   if (DEBUG)  Serial << F("[BLYNK] cfg: ") << cfg << endl;
   const char *str = cfg.c_str();
@@ -67,6 +68,11 @@ void BlynkDest::process(LinkedList<Pair *> &data) {
     return;
   }
 
+  for (int i=0; i< 50 && !Blynk->connected(); i++) {
+    delay(10);
+    Blynk->run();
+  }
+  
   for (int i=0; i < count; i+=2) {
     String vPort = getListItem(str, buf, i);
     String key   = getListItem(str, buf, i+1);
