@@ -56,6 +56,7 @@ Pair* BlynkDest::getPair(LinkedList<Pair *> &data, String &key) {
 void BlynkDest::process(LinkedList<Pair *> &data) {
   if (!enabled) return;
   String cfg = PropertyList.readProperty(PROP_BLYNK_CFG);
+  if (DEBUG)  Serial << F("[BLYNK] cfg: ") << cfg << endl;
   const char *str = cfg.c_str();
   char buf[10];
   int i = 0;
@@ -70,7 +71,8 @@ void BlynkDest::process(LinkedList<Pair *> &data) {
     String vPort = getListItem(str, buf, i);
     String key   = getListItem(str, buf, i+1);
     Pair *p = getPair(data, key);
+    if (!p) continue;
     if (DEBUG)  Serial << F("[BLYNK] ") << vPort << F("=") << key << F(" : ") << p->value << endl;
-    Blynk->virtualWrite(atoi(vPort.c_str()) + 1, atof(p->value.c_str()));
+    Blynk->virtualWrite(atoi(vPort.c_str()+1), atof(p->value.c_str()));
   }
 }
