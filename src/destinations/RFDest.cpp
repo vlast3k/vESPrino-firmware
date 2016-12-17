@@ -88,13 +88,13 @@ void RFDest::process(LinkedList<Pair *> &data) {
     rfBegin(getGPIO(), 0, 1);
     delay(1);
     RFXmeter(addr, 0, value);
-    if (p->key == "HUM") {
-      RFXsensor(addr, 't', 'h', value/100);
-    } else if (p->key == "PRES") {
-      RFXsensor(addr, 't', 'p', value/100);
-    } else if (p->key == "TEMP") {
-      RFXsensor(addr, 't', 't', value/100);        
-    }
+    // if (p->key == "HUM") {
+    //   RFXsensor(addr, 't', 'h', value/100);
+    // } else if (p->key == "PRES") {
+    //   RFXsensor(addr, 't', 'p', value/100);
+    // } else if (p->key == "TEMP") {
+    //   RFXsensor(addr, 't', 't', value/100);
+    // }
     delay(700);
   }
 }

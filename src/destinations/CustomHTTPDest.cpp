@@ -99,6 +99,7 @@ void CustomHTTPDest::invokeURL(String &s, LinkedList<Pair *> &data) {
   }
   replaceValuesInURL(data, url);
   replaceValuesInURL(data, pay);
+  if (hasPlaceholders(url) || hasPlaceholders(pay)) return;
   invokeURL(url, method, contentType, pay);
 }
 
