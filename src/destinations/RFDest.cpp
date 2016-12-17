@@ -88,6 +88,13 @@ void RFDest::process(LinkedList<Pair *> &data) {
     rfBegin(getGPIO(), 0, 1);
     delay(1);
     RFXmeter(addr, 0, value);
+    if (p->key == "HUM") {
+      RFXsensor(addr, 't', 'h', value/100);
+    } else if (p->key == "PRES") {
+      RFXsensor(addr, 't', 'p', value/100);
+    } else if (p->key == "TEMP") {
+      RFXsensor(addr, 't', 't', value/100);        
+    }
     delay(700);
   }
 }
@@ -170,6 +177,45 @@ void RFDest::RFXmeter(uint8_t rfxm_address, uint8_t rfxm_packet_type, long rfxm_
 	uint8_t parity = ~(((x10buff[0] & 0XF0) >> 4) + (x10buff[0] & 0XF) + ((x10buff[1] & 0XF0) >> 4) + (x10buff[1] & 0XF) + ((x10buff[2] & 0XF0) >> 4) + (x10buff[2] & 0XF) + ((x10buff[3] & 0XF0) >> 4) + (x10buff[3] & 0XF) + ((x10buff[4] & 0XF0) >> 4) + (x10buff[4] & 0XF) + ((x10buff[5] & 0XF0) >> 4));
 	x10buff[5] = (x10buff[5] & 0xf0) + (parity & 0XF);
 	SendCommand(x10buff, sizeof(x10buff)); // Send byte to be broadcasted
+}
+
+void RFDest::RFXsensor(uint8_t rfxs_address,uint8_t rfxs_type, char rfxs_packet_type, uint8_t rfxs_value){
+	uint8_t x10buff[3]; // Set message buffer 4 bytes
+	x10buff[0] = (rfxs_address << 2);
+	switch (rfxs_type) {
+		case 't': break; 	// Temperature (default)
+		case 'a': 			// A/D
+			x10buff[0] = x10buff[0] + B01;
+		break;
+		case 'm':			// message
+			x10buff[0] = x10buff[0] + B11;
+		break;
+		case 'v':			// voltage
+			x10buff[0] = x10buff[0] + B10;
+		break;
+		}
+	x10buff[1] = (~x10buff[0] & 0xF0) + (x10buff[0] & 0xF); // Calculate byte1 (byte 1 complement MSB nibble of byte0)
+	x10buff[2] = rfxs_value;
+		switch(rfxs_packet_type) {
+			case 't': //temperature sensor (MSB = 0.5 degrees bit off)
+				x10buff[3] = 0x00;
+			break;
+			case 'T': //temperature sensor (MSB = 0.5 degrees bit on)
+				x10buff[3] = 0x80;
+			break;
+			case 'h': //RFU (humidity sensor)
+				x10buff[3] = 0x20;
+			break;
+			case 'p': //RFU (pressure sensor)
+				x10buff[3] = 0x40;
+			break;
+			default:
+				x10buff[3] = 0x00;
+			}
+	x10buff[3] << 4;
+	uint8_t parity = ~(((x10buff[0] & 0XF0) >> 4) + (x10buff[0] & 0XF) + ((x10buff[1] & 0XF0) >> 4) + (x10buff[1] & 0XF) + ((x10buff[2] & 0XF0) >> 4) + (x10buff[2] & 0XF) + ((x10buff[3] & 0XF0) >> 4));
+	x10buff[3] = (x10buff[3] & 0xf0) + (parity & 0XF);
+	SendCommand(x10buff, sizeof(x10buff));
 }
 
 void RFDest::SendCommand(uint8_t *data, uint8_t size){

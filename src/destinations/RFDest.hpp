@@ -39,6 +39,7 @@ private:
 
   void rfBegin(uint8_t tx_pin, uint8_t led_pin, uint8_t rf_repeats);
   void RFXmeter(uint8_t rfxm_address, uint8_t rfxm_packet_type, long rfxm_value);
+  void RFXsensor(uint8_t rfxs_address,uint8_t rfxs_type, char rfxs_packet_type, uint8_t rfxs_value);
   void SendX10RfByte(uint8_t data);
   void SendX10RfBit(unsigned int databit);
   void SendCommand(uint8_t *date, uint8_t size);
