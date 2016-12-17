@@ -2,4 +2,5 @@
 .clang_complete
 .gcc-flags.json
 .piolibdeps
-platformio.inir
+platformio.ini
+*.ino.cpp
