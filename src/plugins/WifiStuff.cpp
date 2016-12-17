@@ -10,7 +10,7 @@
 
 ESP8266WiFiMulti  *wifiMulti = NULL;
 
-#define PROP_WIFI_STATIC_IP F("wifi.static_ip")
+#define PROP_WIFI_STATIC_IP F("wifi.staticip")
 #define PROP_WIFI_GATEWAY F("wifi.gateway")
 #define PROP_WIFI_SUBNET F("wifi.subnet")
 #define PROP_WIFI_DNS1 F("wifi.dns1")
@@ -260,11 +260,7 @@ void wifiOff() {
   //WiFi.forceSleepBegin();
 }
 
-#define PROP_WIFI_STATIC_IP F("wifi.static_ip")
-#define PROP_WIFI_GATEWAY F("wifi.gateway")
-#define PROP_WIFI_SUBNET F("wifi.subnet")
-#define PROP_WIFI_DNS1 F("wifi.dns1")
-#define PROP_WIFI_DNS2 F("wifi.dns2")
+
 void setStaticWifi(const char* cmd) {
   cmd = strchr(cmd, ' ') + 1;
   char *x = strchr(cmd, ',');
