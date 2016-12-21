@@ -32,6 +32,7 @@
 #include "plugins/ServoV.hpp"
 #include "plugins/Annemometer.hpp"
 #include "destinations/BlynkDest.hpp"
+#include "sensors/DS18B20Sensor.hpp"
 
 
 //boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
@@ -59,12 +60,13 @@ NeopixelVE neopixel;
 CustomHTTPDest customHTTPDest;
 SerialDumpDest serialDumpDest;
 TestSensor testSensor;
-CO2Sensor co2Sensor;
 SI7021Sensor si7021Sensor;
 BME280Sensor bme280Sensor;
 BMP085Sensor bmp085Sensor;
 PM2005Sensor pm2005Sensor;
 CDM7160Sensor cdm7160Sensor;
+DS18B20Sensor _DS18B20Sensor;
+CO2Sensor co2Sensor;
 
 MQTTDest mqttDest;
 RFDest rfDest;

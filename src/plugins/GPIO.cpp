@@ -66,7 +66,7 @@ uint32_t GPIOClass::getGPIOState() {
   return state;
 }
 
-uint8_t GPIOClass::convertToGPIO(char *s) {
+uint8_t GPIOClass::convertToGPIO(const char *s) {
   if (*s == 'D' || *s == 'd') {
     return gpioD(atoi(s+1));
   } else {
@@ -87,6 +87,19 @@ uint8_t GPIOClass::gpioD(int d) {
   mapping[7]   = 13;
   mapping[8]   = 15;
   return mapping[d];
+}
+
+bool GPIOClass::reservePort(const char *sport) { //in the format D1
+  int port = GPIOClass::convertToGPIO(sport);
+  uint32_t disabledPorts = PropertyList.readLongProperty(PROP_I2C_DISABLED_PORTS);
+  if (!GPIOClass::isBitSet(disabledPorts, port)) {
+    GPIOClass::setBit(disabledPorts, port, 1);
+    String dp = String(disabledPorts);
+    PropertyList.putProperty(PROP_I2C_DISABLED_PORTS, dp.c_str());
+    return true;
+  } else {
+    return false;
+  }
 }
 
 void GPIOClass::loop() {

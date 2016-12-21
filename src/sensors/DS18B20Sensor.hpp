@@ -17,8 +17,14 @@ public:
 
 
 private:
-  bool enabled = false;
+  OneWire *oneWireP;
+  DallasTemperature *sensorsP;
+
+  uint8_t port;
   void printAddress(DeviceAddress deviceAddress);
   float getRawTemperature(int mode);
+  bool hasSensorOnPort(const char *port);
+  float getRawTemperature();
+  void initPort(char *result);
 };
 #endif
