@@ -139,6 +139,7 @@ void replaceDecimalSeparator(String &src) {
   if (!decimalSeparator) {
     decimalSeparator = PropertyList.readProperty(PROP_DECIMAL_SEPARATOR)[0];
     if (!decimalSeparator) decimalSeparator = '.';
+    Serial << "Decimal Separator is: " << decimalSeparator << endl;
   }
   src.replace('.', decimalSeparator);
 }

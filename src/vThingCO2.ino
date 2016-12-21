@@ -211,7 +211,7 @@ void setup() {
 //  deepSleepWake = isDeepSleepWake();
   rtcMemStore.init();
   PowerManager.setup(&menuHandler);
-  //I2CHelper::beginI2C(PropertyList.readLongProperty(PROP_I2C_DISABLED_PORTS));
+  I2CHelper::beginI2C(PropertyList.readLongProperty(PROP_I2C_DISABLED_PORTS));
   pinMode(D8, INPUT);
 
 
