@@ -114,6 +114,12 @@ void DS18B20Sensor::getData(LinkedList<Pair *> *data) {
   String adj = PropertyList.readProperty(PROP_TEMP_ADJ);
   float temp = getRawTemperature();
   double adjTemp = temp + atof(adj.c_str());
-  data->add(new Pair("TEMP", String(adjTemp)));
-  data->add(new Pair("TEMPR", String(temp)));
+  String t1 = String(adjTemp);
+  String t1r = String(temp);
+  replaceDecimalSeparator(t1);
+  replaceDecimalSeparator(t1r);
+  data->add(new Pair("TEMP", t1));
+  data->add(new Pair("TEMPR", t1r));
+  // data->add(new Pair("TEMP", String(adjTemp)));
+  // data->add(new Pair("TEMPR", String(temp)));
 }

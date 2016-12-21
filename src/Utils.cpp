@@ -2,6 +2,8 @@
 #include <algorithm>    // std::min
 #include "common.hpp"
 
+#define PROP_DECIMAL_SEPARATOR F("decimal.separator")
+
 char *extractStringFromQuotes(const char* src, char *dest, int destSize) {
   if (!*src) {
     *dest = 0;
@@ -130,4 +132,13 @@ int getListItemCount(const char* str) {
   int i=0;
   for (; (p = getListItem(str, buf, i)) != NULL; i++);
   return i;
+}
+
+char decimalSeparator = 0;
+void replaceDecimalSeparator(String &src) {
+  if (!decimalSeparator) {
+    decimalSeparator = PropertyList.readProperty(PROP_DECIMAL_SEPARATOR)[0];
+    if (!decimalSeparator) decimalSeparator = '.';
+  }
+  src.replace('.', decimalSeparator);
 }

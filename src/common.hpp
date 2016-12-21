@@ -45,7 +45,7 @@ extern "C" {
 #include "plugins/NeopixelVE.hpp"
 #include <I2CHelper.hpp>
 
-#define BUILD_NUM "20161218"
+#define BUILD_NUM "20161221"
 
 #define SERIAL_PORT Serial
 #define EE_WIFI_SSID F("wifi.ssid")
@@ -216,6 +216,7 @@ void dumpArray(const char *s);
 
 char* getListItem(const char* str, char *buf, int idx, char sep=',');
 int getListItemCount(const char* str);
+void replaceDecimalSeparator(String &src);
 
 //#endif
 extern boolean hasSSD1306, hasSI7021, hasPN532, hasBMP180, hasBH1750, hasAPDS9960, hasPIR;

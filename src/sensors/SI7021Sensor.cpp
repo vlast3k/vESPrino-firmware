@@ -27,9 +27,13 @@ void SI7021Sensor::getData(LinkedList<Pair *> *data) {
    double temp = si7021->readTemp();
    String adj = PropertyList.readProperty(PROP_TEMP_ADJ);
    double adjTemp = temp + atof(adj.c_str());
-   data->add(new Pair("TEMP", String(adjTemp)));
-   data->add(new Pair("TEMPR", String(temp)));
-   data->add(new Pair("HUM", String(si7021->readHumidity())));
+   String t1 = String(adjTemp);
+   String t1r = String(temp);
+   replaceDecimalSeparator(t1);
+   replaceDecimalSeparator(t1r);
+   data->add(new Pair("TEMP", t1));
+   data->add(new Pair("TEMPR", t1r));
+   data->add(new Pair("HUM", String((int)si7021->readHumidity())));
    closeSensor();
     // Serial << "end si7021" << endl;
 }
