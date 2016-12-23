@@ -15,10 +15,18 @@ PropertyListClass::PropertyListClass() {
 void PropertyListClass::setupPropList(MenuHandler *handler) {
 //  Serial <<"PropList, register commands\n";
   handler->registerCommand(new MenuEntry(F("prop_list"), CMD_EXACT, &PropertyListClass::prop_list_cfg, F("prop_list")));
+  handler->registerCommand(new MenuEntry(F("format_spiffs"), CMD_EXACT, &PropertyListClass::format_spiffs, F("format_spiffs")));
   handler->registerCommand(new MenuEntry(F("prop_set"), CMD_BEGIN, &PropertyListClass::prop_set, F("prop_set \"key\" \"value\"")));
   handler->registerCommand(new MenuEntry(F("prop_jset"), CMD_BEGIN, &PropertyListClass::prop_jset, F("prop_jset \"key\"value")));
 }
 
+void PropertyListClass::format_spiffs(const char *line) {
+  SPIFFS.format();
+  SPIFFS.begin();
+  PropertyList.begin(&menuHandler);
+  Serial << F("FS formated");
+
+}
 void PropertyListClass::prop_set(const char *line) {
   char key[50], value[200];
   line = extractStringFromQuotes(line, key, sizeof(key));

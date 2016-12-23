@@ -41,6 +41,7 @@ private:
   static void prop_list_cfg(const char *line);
   static void prop_set(const char *line);
   static void prop_jset(const char *line);
+  static void format_spiffs(const char *line);
   void trim(char *str);
   bool initialized = false;
   bool assertInit();
