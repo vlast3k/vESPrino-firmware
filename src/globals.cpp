@@ -57,6 +57,7 @@ TimerManagerClass TimerManager;
 RTCMemStore rtcMemStore;
 NeopixelVE neopixel;
 
+CO2Sensor co2Sensor;
 CustomHTTPDest customHTTPDest;
 SerialDumpDest serialDumpDest;
 TestSensor testSensor;
@@ -66,7 +67,6 @@ BMP085Sensor bmp085Sensor;
 PM2005Sensor pm2005Sensor;
 CDM7160Sensor cdm7160Sensor;
 DS18B20Sensor _DS18B20Sensor;
-CO2Sensor co2Sensor;
 
 MQTTDest mqttDest;
 RFDest rfDest;
