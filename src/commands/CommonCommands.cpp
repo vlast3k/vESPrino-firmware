@@ -8,7 +8,7 @@
 
 
 void CommonCommands::cmdHeap(const char *s) {
-    Serial << F("Heap: ") << ESP.getFreeHeap() << endl;
+    LOGGER << F("Heap: ") << ESP.getFreeHeap() << endl;
 }
 
 void CommonCommands::cmdDebug(const char *s) {
@@ -18,19 +18,19 @@ void CommonCommands::cmdDebug(const char *s) {
   } else {
     DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
   }
-  Serial << F("Debug is now: ") << (DEBUG ? F("ENABLED") : F("DISABLED")) << endl;
+  LOGGER << F("Debug is now: ") << (DEBUG ? F("ENABLED") : F("DISABLED")) << endl;
 }
 
 void CommonCommands::dumpCfg(const char *s) {
   for (int i=0; i < 30; i++) {
-    SERIAL_PORT << i << F(" : ");
+    LOGGER << i << F(" : ");
     for (int j=0; j < 100; j++) {
       byte b = EEPROM.read(i*100 + j);
       if (b == 0) b = '?';
-      SERIAL_PORT << (char)b;
+      LOGGER << (char)b;
     }
     delay(10);
-    SERIAL_PORT << endl;
+    LOGGER << endl;
   }
 }
 void espRestart(const char* ignore) {
@@ -39,8 +39,8 @@ void espRestart(const char* ignore) {
 }
 
 void CommonCommands::factoryReset(const char *ignore) {
-  SERIAL_PORT << F("Doing Factory Reset, and restarting...") << endl;
-  //SERIAL_PORT << "was in deep sleep: "<< rtcMemStore.wasInDeepSleep()<< endl;
+  LOGGER << F("Doing Factory Reset, and restarting...") << endl;
+  //LOGGER << "was in deep sleep: "<< rtcMemStore.wasInDeepSleep()<< endl;
   // for (int i=0; i < 100; i++) EEPROM.write(i, 0xFF);
   // EEPROM.commit();
   bool fullReset = (strcmp(ignore, "factoryr") == 0);
@@ -54,7 +54,7 @@ void CommonCommands::factoryReset(const char *ignore) {
     PropertyList.putProperty(PROP_TEMP_ADJ, tempAdj.c_str());
     PropertyList.putProperty(PROP_CUBIC_CO2_POWERSAFE, co2Ps.c_str());
   }
-  Serial.flush();
+  LOGGER.flush();
   delay(100);
   espRestart(NULL);
 }
@@ -62,21 +62,21 @@ void CommonCommands::factoryReset(const char *ignore) {
 
 
 void stopActiveExecution(const char *ignore) {
-  SERIAL_PORT << F("STOP Active execution\n");
+  LOGGER << F("STOP Active execution\n");
   SKIP_LOOP = true;
 }
 
 void cmdTestMemStore(const char *ignore) {
-  SERIAL_PORT << "Test Mem Store\n";
-  Serial << "avg now 1: "<<     rtcMemStore.getAverage() << endl;
+  LOGGER << "Test Mem Store\n";
+  LOGGER << "avg now 1: "<<     rtcMemStore.getAverage() << endl;
   rtcMemStore.addAverageValue(1000);
-  Serial << "avg now 2:"<<     rtcMemStore.getAverage() << endl;
+  LOGGER << "avg now 2:"<<     rtcMemStore.getAverage() << endl;
   rtcMemStore.addAverageValue(2000);
-  Serial << "avg now 3:"<<     rtcMemStore.getAverage() << endl;
+  LOGGER << "avg now 3:"<<     rtcMemStore.getAverage() << endl;
   rtcMemStore.addAverageValue(2000);
-  Serial << "avg now 4:"<<     rtcMemStore.getAverage() << endl;
+  LOGGER << "avg now 4:"<<     rtcMemStore.getAverage() << endl;
   rtcMemStore.addAverageValue(2000);
-  Serial << "avg now 5:"<<     rtcMemStore.getAverage() << endl;
+  LOGGER << "avg now 5:"<<     rtcMemStore.getAverage() << endl;
   SKIP_LOOP = true;
 }
 void cmdSerTest(const char *p) {
@@ -88,17 +88,17 @@ void cmdSerTest(const char *p) {
   for (int i=0; i < strLen; i++) s+=".";
   //s += "\n";
   for (int i=0; i<30; i++) {
-    Serial << s <<endl;
+    LOGGER << s <<endl;
     delay(1);
   }
-  Serial.flush();
-  //Serial << endl << "EEENDDD" << endl;
+  LOGGER.flush();
+  //LOGGER << endl << "EEENDDD" << endl;
   //delay(5000);
   // int iport = atoi(port);
   // WiFiClient ccc;
-  // SERIAL_PORT << "Test connection to to:" << host << ":" << port << endl;
+  // LOGGER << "Test connection to to:" << host << ":" << port << endl;
   // int res = ccc.connect(host, iport);
-  // SERIAL_PORT << "Res: " << res << endl;
+  // LOGGER << "Res: " << res << endl;
 
 }
 

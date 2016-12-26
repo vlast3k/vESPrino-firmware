@@ -39,11 +39,11 @@ bool TSL2561Sensor::initSensor() {
     delay(100);
   }
   if (!init) {
-    if (DEBUG) Serial << F("TSL2561 - init failed!") << endl;
+    if (DEBUG) LOGGER << F("TSL2561 - init failed!") << endl;
     rtcMemStore.setSensorState(RTC_SENSOR_TSL2561, false);
     return false;
   }
-  SERIAL_PORT << F("Found TSL2561 - LUX Sensor") << endl;
+  LOGGER << F("Found TSL2561 - LUX Sensor") << endl;
   return true;
 }
 

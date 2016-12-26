@@ -25,12 +25,12 @@ void CustomHTTPDest::menuCleanCustomUrl(const char *line) {
 }
 
 void CustomHTTPDest::menuAddCustomUrl(const char *line) {
-  //Serial << "menuAddCustomUrl" << endl;
+  //LOGGER << "menuAddCustomUrl" << endl;
   char sidx[10], url[200];
   line = extractStringFromQuotes(line, sidx, sizeof(sidx));
   line = extractStringFromQuotes(line, url, sizeof(url));
   if (sidx[0] == 0 || url[0] == 0) {
-    Serial << F("Command not recognized");
+    LOGGER << F("Command not recognized");
     return;
   }
   int idx = atoi(sidx);
@@ -41,7 +41,7 @@ void CustomHTTPDest::menuAddCustomUrlJ(const char *line) {
   char sidx[10];
   line = extractStringFromQuotes(line, sidx, sizeof(sidx));
   if (sidx[0] == 0) {
-    Serial << F("Command not recognized");
+    LOGGER << F("Command not recognized");
     return;
   }
   int idx = atoi(sidx);
@@ -60,7 +60,7 @@ bool CustomHTTPDest::parseJSONUrl(String &s, String &url, String &method, String
   StaticJsonBuffer<400> jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(s.c_str());
   if (!root.success()) {
-    SERIAL_PORT << F("Parsing failed! : ") << s.c_str() << endl;
+    LOGGER << F("Parsing failed! : ") << s.c_str() << endl;
     return false;
   }
   if (root.containsKey("url"))    url    = root["url"].asString();
@@ -71,7 +71,7 @@ bool CustomHTTPDest::parseJSONUrl(String &s, String &url, String &method, String
 }
 
 void CustomHTTPDest::process(LinkedList<Pair *> &data) {
-  Serial << F("CustomHTTPDest::process") << endl;
+  LOGGER << F("CustomHTTPDest::process") << endl;
   int i=0;
   do {
     String s = PropertyList.getArrayProperty(F("custom_url_arr"), i++);
@@ -105,9 +105,9 @@ void CustomHTTPDest::invokeURL(String &s, LinkedList<Pair *> &data) {
 
 void CustomHTTPDest::invokeURL(String &url, String &method, String &contentType, String &pay) {
   if (waitForWifi() != WL_CONNECTED) return;
-  Serial << F("Calling HTTP: [") << url << "]" << endl;
-  if (pay.length()) Serial << F("CustomHTTPDest::payload = ") << pay << endl;
-  Serial.flush();
+  LOGGER << F("Calling HTTP: [") << url << "]" << endl;
+  if (pay.length()) LOGGER << F("CustomHTTPDest::payload = ") << pay << endl;
+  LOGGER.flush();
   HTTPClient http;
   http.begin(url);
   if (contentType.length()) http.addHeader(F("Content-Type"), contentType);

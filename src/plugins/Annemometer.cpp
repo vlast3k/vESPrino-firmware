@@ -43,7 +43,7 @@ void AnnemometerClass::loop() {
   if (!started) return;
   if (millis() - lastSent < 15000) return;
 
-  //Serial << "StartMasure!" << endl;
+  //LOGGER << "StartMasure!" << endl;
   int state = 0;
   uint32_t loopStart = millis();
   int hasWind = 0;
@@ -55,7 +55,7 @@ void AnnemometerClass::loop() {
       state = !state;
       if (state == 1) {
         int spd = millis() - lastHigh;
-        //Serial << spd << endl;
+        //LOGGER << spd << endl;
         lastHigh = millis();
         if (spd > 5 && spd < threshold) hasWind ++;
         else { hasWind = 0;}

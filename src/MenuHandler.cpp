@@ -18,46 +18,46 @@ void MenuHandler::cmdCRC(const char *line) {
   char c_crc[3] = {line[3], line[4], 0};
   uint8_t expCrc = strtoul(c_crc, NULL, 16);
 
-//  Serial << "Expected CRC is: " << _HEX(expCrc) << endl;
+//  LOGGER << "Expected CRC is: " << _HEX(expCrc) << endl;
   uint8_t crc = 0;
   for (int i=5; line[i]; i++) crc ^= line[i];
-//  Serial << "Computed LineCRC is: " << _HEX(crc) << endl;
+//  LOGGER << "Computed LineCRC is: " << _HEX(crc) << endl;
   if (crc == expCrc) menuHandler.scheduleCommand(line+5);
-  else Serial << F("ERROR: Bad CRC. Got 0x") << _HEX(crc) << F(", expected: 0x") << _HEX(expCrc) << endl;
+  else LOGGER << F("ERROR: Bad CRC. Got 0x") << _HEX(crc) << F(", expected: 0x") << _HEX(expCrc) << endl;
 }
 
 void MenuHandler::cmdHelp(const char *ignore) {
   for (int i=0; i < menuHandler.commands->size(); i++) {
-    Serial << menuHandler.commands->get(i)->cmd << F(" - ") << menuHandler.commands->get(i)->description << endl;
-    Serial.flush();
+    LOGGER << menuHandler.commands->get(i)->cmd << F(" - ") << menuHandler.commands->get(i)->description << endl;
+    LOGGER.flush();
     if ((i % 15) == 0) delay(110);
   }
 }
 
 void MenuHandler::registerCommand(MenuEntry *command) {
-  //Serial << "registerCommand:" << command->cmd << endl;
+  //LOGGER << "registerCommand:" << command->cmd << endl;
   commands->add(command);
 }
 
 bool MenuHandler::processUserInput() {
-//  Serial.setTimeout(5000);
-  //if (!Serial.available()) {
+//  LOGGER.setTimeout(5000);
+  //if (!LOGGER.available()) {
   if (!Serial.available()) {
     return false;
   }
 
-  //Serial.setTimeout(30000);
+  //LOGGER.setTimeout(30000);
   if (readLine(2000) >= 0) {
-    //Serial.flush();
-    //Serial.setTimeout(5000);
+    //LOGGER.flush();
+    //LOGGER.setTimeout(5000);
     scheduleCommand(line);
     scheduleCommand("nop");
-    //SERIAL_PORT << endl << F("OK") << endl;
+    //LOGGER << endl << F("OK") << endl;
     return true;
   }
-  SERIAL_PORT << endl << F("OK2") << endl;
+  LOGGER << endl << F("OK2") << endl;
   return false;
-  //Serial.setTimeout(5000);
+  //LOGGER.setTimeout(5000);
 }
 
 byte MenuHandler::readLine(int timeout) {
@@ -76,7 +76,7 @@ byte MenuHandler::readLine(int timeout) {
 }
 
 void MenuHandler::scheduleCommandProperty(const char *prop) {
-  if (DEBUG)  Serial << F("schedule commands from prop: ") << prop << endl;
+  if (DEBUG)  LOGGER << F("schedule commands from prop: ") << prop << endl;
   char *list = PropertyList.readProperty(prop);
   if (*list) scheduleCommand(list);
 }
@@ -87,7 +87,7 @@ void MenuHandler::cmdListN(const char *list) {
   char *delim;
   if (strstr(list, delimDash) == list) delim = delimDash;
   else delim = delimStar;
-  Serial << "delim = " << delim << " " << strlen(delim);
+  LOGGER << "delim = " << delim << " " << strlen(delim);
   list = list + strlen(delim);
   char *x;
   while ((x = strstr(list, delim)) != NULL) {
@@ -95,7 +95,7 @@ void MenuHandler::cmdListN(const char *list) {
     menuHandler.scheduleCommand(list);
     list = x+strlen(delim);
   }
-  //if (DEBUG)  Serial << F("schedule command liast  from prop DONE") << endl;
+  //if (DEBUG)  LOGGER << F("schedule command liast  from prop DONE") << endl;
 }
 
 void MenuHandler::scheduleCommand(const char *cmd) {
@@ -103,7 +103,7 @@ void MenuHandler::scheduleCommand(const char *cmd) {
     handleCommand(cmd + 1);
   } else {
     String *s =new String(cmd);
-    if (DEBUG) Serial << F("Scheduling command: " ) << *s << endl;
+    if (DEBUG) LOGGER << F("Scheduling command: " ) << *s << endl;
     pendingCommands.add(s);
   }
 }
@@ -128,21 +128,21 @@ void MenuHandler::processCommands() {
   }
    if (hadCommands)  {
   //   handleCommand("nop");
-     Serial << F("ready >");
+     LOGGER << F("ready >");
    }
 }
 
 void MenuHandler::handleCommand(const char *line) {
   // if (DEBUG) {
-  //   Serial << F("Executing: ");
+  //   LOGGER << F("Executing: ");
   if (strcmp("nop", line)) {
     const char *x = line;
     for (int i=0; *x; x++, i++) {
-      Serial << *x;
-      if ((i%50) == 0) Serial.flush();
+      LOGGER << *x;
+      if ((i%50) == 0) LOGGER.flush();
     }
-    Serial << endl;
-  //   Serial.flush();
+    LOGGER << endl;
+  //   LOGGER.flush();
   }
   //dumpArray(line);
   String s1;
@@ -150,8 +150,8 @@ void MenuHandler::handleCommand(const char *line) {
     MenuEntry *m = commands->get(i);
     s1 = String(m->cmd);
     const char *cmd = s1.c_str();
-    // Serial <<    cmd << endl;
-    // Serial << m->cmd << endl;
+    // LOGGER <<    cmd << endl;
+    // LOGGER << m->cmd << endl;
     if ( (m->cmdExactMatch && !strcmp(line, cmd)) ||
         (!m->cmdExactMatch &&  strstr(line, cmd) == line) ) {
           m->handler(line);
@@ -159,5 +159,5 @@ void MenuHandler::handleCommand(const char *line) {
     }
   }
   if (line[0] && line[0] != 10 && line[0] != 13)
-    Serial << F("ERROR: Command not recognized") << endl;
+    LOGGER << F("ERROR: Command not recognized") << endl;
 }

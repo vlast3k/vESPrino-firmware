@@ -21,7 +21,7 @@ extern NeopixelVE neopixel; // there was a reason to put it here and not in comm
 
 void handleWifi() {
   if (wifiMulti && millis() > 8000) wifiMulti->run();
-  //SERIAL_PORT << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
+  //LOGGER << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
   if (ip == WiFi.localIP()) return;
   else if (WiFi.status() == WL_CONNECTED) {
     ip = WiFi.localIP();
@@ -29,7 +29,7 @@ void handleWifi() {
     vSAP_Auth(EE_WIFI_P1_30B, EE_WIFI_P1_30B);
 #endif
     //neopixel.cmdLedHandleColorInst(F("ledcolor blue"));
-    SERIAL_PORT << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
+    LOGGER << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
     fireEvent("wifiConnected");
 
     // handleCommandVESPrino("vecmd led_mblue");
@@ -41,7 +41,7 @@ void handleWifi() {
 wl_status_t waitForWifi(uint16_t timeoutMs) {
   if (WiFi.status() == WL_CONNECTED)  return WL_CONNECTED;
   fireEvent("wifiSearching");
-  Serial << F("Waiting for WiFi ");
+  LOGGER << F("Waiting for WiFi ");
   //bool putLF = false;
   int delayFix = 100;
   //const static uint32_t timeoutMs =1000L;
@@ -52,10 +52,10 @@ wl_status_t waitForWifi(uint16_t timeoutMs) {
     handleWifi();
     menuHandler.loop();
     if ((i%10) == 0)  {
-      SERIAL_PORT << '.';
+      LOGGER << '.';
     }
   }
-  Serial << endl;
+  LOGGER << endl;
   return WiFi.status();
 }
 
@@ -65,9 +65,9 @@ void activeWait() {
   //  handleWifi();
     menuHandler.loop();
     //menuHandler.processUserInput();
-    if ((i%10) == 0) SERIAL_PORT << '.';
+    if ((i%10) == 0) LOGGER << '.';
   }
-  SERIAL_PORT << endl;
+  LOGGER << endl;
 }
 
 
@@ -77,7 +77,7 @@ int wifiConnectToStoredSSID() {
   String ssid, pass;
   ssid = PropertyList.readProperty(EE_WIFI_SSID);
   pass = PropertyList.readProperty(EE_WIFI_P1);
-  SERIAL_PORT << F("Connecting to: \"") << ssid << F("\", \"") << pass << F("\"") << endl;
+  LOGGER << F("Connecting to: \"") << ssid << F("\", \"") << pass << F("\"") << endl;
   WiFi.disconnect();
   delay(500);
   WiFi.mode(WIFI_STA);
@@ -87,7 +87,7 @@ int wifiConnectToStoredSSID() {
   // //  strcpy(x, "vladiHome");
   //   strcpy(y, "0888414447");
   // }
-  // SERIAL_PORT << F("Connecting to: \"") << x << F("\", \"") << y << F("\"") << endl;
+  // LOGGER << F("Connecting to: \"") << x << F("\", \"") << y << F("\"") << endl;
   WiFi.begin(ssid.c_str(), pass.c_str());
   //WiFi.begin("MarinaResidence", "sdsa");
 }
@@ -95,10 +95,10 @@ void connectToWifi(const char *s1, const char *s2, const char *s3) {
   PropertyList.putProperty(EE_WIFI_SSID, s1);
   PropertyList.putProperty(EE_WIFI_P1, s2);
   PropertyList.putProperty(EE_WIFI_P2, s3);
-  SERIAL_PORT << F("Connecting to: \"") << s1 << F("\", \"") << s2 << F("\"") << endl;
+  LOGGER << F("Connecting to: \"") << s1 << F("\", \"") << s2 << F("\"") << endl;
   wifiConnectMulti();
   //wifiConnectToStoredSSID();
-  //SERIAL_PORT << "Connecting to " << s1 << endl;
+  //LOGGER << "Connecting to " << s1 << endl;
 //  for (int i=0; i<10 && WiFi.status() != WL_CONNECTED; i--) {
 //    handleWifi();
 //    delay(1000);
@@ -113,33 +113,33 @@ void connectToWifi(const char *s1, const char *s2, const char *s3) {
 
 
 void wifiScanNetworks(const char *ignore) {
-  SERIAL_PORT.println(F("scan start"));
+  LOGGER.println(F("scan start"));
   WiFi.disconnect();
   delay(500);
 
   // WiFi.scanNetworks will return the number of networks found
   int n = WiFi.scanNetworks();
-  SERIAL_PORT.println(F("scan done"));
+  LOGGER.println(F("scan done"));
   if (n == 0)
-    SERIAL_PORT.println(F("no networks found"));
+    LOGGER.println(F("no networks found"));
   else
   {
-    SERIAL_PORT.print(n) ;
-    SERIAL_PORT.println(F(" networks found"));
+    LOGGER.print(n) ;
+    LOGGER.println(F(" networks found"));
     for (int i = 0; i < n; ++i)
     {
       // Print SSID and RSSI for each network found
-      SERIAL_PORT.print(i + 1);
-      SERIAL_PORT.print(F(": "));
-      SERIAL_PORT.print(WiFi.SSID(i));
-      SERIAL_PORT.print(F(" ("));
-      SERIAL_PORT.print(WiFi.RSSI(i));
-      SERIAL_PORT.print(F(")"));
-      SERIAL_PORT.println((WiFi.encryptionType(i) == ENC_TYPE_NONE)?F(" "):F("*"));
+      LOGGER.print(i + 1);
+      LOGGER.print(F(": "));
+      LOGGER.print(WiFi.SSID(i));
+      LOGGER.print(F(" ("));
+      LOGGER.print(WiFi.RSSI(i));
+      LOGGER.print(F(")"));
+      LOGGER.println((WiFi.encryptionType(i) == ENC_TYPE_NONE)?F(" "):F("*"));
       delay(10);
     }
   }
-  SERIAL_PORT.println("");
+  LOGGER.println("");
 
   WiFi.mode(WIFI_STA);
   wifiConnectToStoredSSID();
@@ -164,7 +164,7 @@ void sendPingPort(const char *p) {
   p = extractStringFromQuotes(p, port, 20);
   int iport = atoi(port);
   int res;
-  SERIAL_PORT << F("Test connection to to:") << host << F(":") << port << ", secure:" << secure << endl;
+  LOGGER << F("Test connection to to:") << host << F(":") << port << ", secure:" << secure << endl;
 
   if (secure) {
     #ifdef VESP_PING_SSL
@@ -175,14 +175,14 @@ void sendPingPort(const char *p) {
     WiFiClient ccc;
     res = ccc.connect(host, iport);
   }
-  SERIAL_PORT << F("Res: ") << res << endl;
+  LOGGER << F("Res: ") << res << endl;
 
 
 }
 
 // void sndIOT(const char *line) {
 //   if (WiFi.status() != WL_CONNECTED) {
-//     SERIAL_PORT << F("Cannot send data. No Wifi connection.") << endl;
+//     LOGGER << F("Cannot send data. No Wifi connection.") << endl;
 //     return;
 //   }
 // //  String path;
@@ -203,7 +203,7 @@ void sendPingPort(const char *p) {
 
 void cmdSleeptype(const char *line) {
   int type = atoi(strchr(line, ' ') + 1);
-  Serial << F("set sleep type to:") << type<< endl;
+  LOGGER << F("set sleep type to:") << type<< endl;
   switch (type) {
     case 0: WiFi.setSleepMode(WIFI_NONE_SLEEP);
     case 1: WiFi.setSleepMode(WIFI_MODEM_SLEEP);
@@ -213,7 +213,7 @@ void cmdSleeptype(const char *line) {
 
 void cmdDelay(const char *line) {
   int d = atoi(strchr(line, ' ') + 1);
-  Serial << F("delay for:") << d<< endl;
+  LOGGER << F("delay for:") << d<< endl;
   delay(d);
 }
 
@@ -246,7 +246,7 @@ void wifiConnectMulti() {
     char x[120], y[120];
     strcpy(x, ssid.c_str());
     strcpy(y, pass.c_str());
-    //Serial << "wifibegin :: " << x << y << endl;
+    //LOGGER << "wifibegin :: " << x << y << endl;
     WiFi.begin(x, y);
   }
 }
@@ -287,11 +287,11 @@ void setStaticWifi(const char* cmd) {
 }
 
 void cmdIPConfig(const char *ignore) {
-  Serial << F("IP: ") << WiFi.localIP() << endl;
-  Serial << F("GW: ") << WiFi.gatewayIP() << endl;
-  Serial << F("SU: ") << WiFi.subnetMask() << endl;
-  Serial << F("D1: ") << WiFi.dnsIP(0) << endl;
-  Serial << F("D2: ") << WiFi.dnsIP(1) << endl;
+  LOGGER << F("IP: ") << WiFi.localIP() << endl;
+  LOGGER << F("GW: ") << WiFi.gatewayIP() << endl;
+  LOGGER << F("SU: ") << WiFi.subnetMask() << endl;
+  LOGGER << F("D1: ") << WiFi.dnsIP(0) << endl;
+  LOGGER << F("D2: ") << WiFi.dnsIP(1) << endl;
 }
 
 void WIFI_registerCommands(MenuHandler *handler) {
@@ -359,5 +359,5 @@ void startAutoWifiConfig() {
   menuHandler.handleCommand(F("prop_list"));
   neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
   neopixel.cmdLedHandleColorInst(F("ledcolor lila"));
-  //Serial << "wifiaaaaaaaaa: " << WiFi.SSID() << " : " << WiFi.psk() << endl;
+  //LOGGER << "wifiaaaaaaaaa: " << WiFi.SSID() << " : " << WiFi.psk() << endl;
 }

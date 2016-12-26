@@ -36,17 +36,17 @@ bool APDS9960Sensor::initSensor() {
   }
 
   if (!init) {
-    if (DEBUG) Serial << F("APDS9960 - init failed!") << endl;
+    if (DEBUG) LOGGER << F("APDS9960 - init failed!") << endl;
     digitalWrite(D8, d8prev);
     rtcMemStore.setSensorState(RTC_SENSOR_APDS9960, false);
     return false;
   }
-  SERIAL_PORT << F("Found APDS9960 - Gesture Sensor") << endl;
+  LOGGER << F("Found APDS9960 - Gesture Sensor") << endl;
 
   if ( sensor->enableGestureSensor(true) ) {
-    Serial.println(F("Gesture sensor is now running"));
+    LOGGER.println(F("Gesture sensor is now running"));
   } else {
-    Serial.println(F("Something went wrong during gesture sensor init!"));
+    LOGGER.println(F("Something went wrong during gesture sensor init!"));
   }
   menuHandler.scheduleCommand("nop 0");
   return true;
@@ -71,7 +71,7 @@ void APDS9960Sensor::handleGesture() {
     }
 //    menuHandler.scheduleCommand("vecmd led_green");
 //    menuHandler.scheduleCommand("vecmd ledmode_2_2");
-    SERIAL_PORT << F("Gesture: ") << gesture << endl;
+    LOGGER << F("Gesture: ") << gesture << endl;
     String cmd = PropertyList.readProperty(PROP_ONGESTURE);
     if (cmd.length()) {
       cmd.replace("%GESTURE%", gesture);

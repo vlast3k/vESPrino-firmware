@@ -37,7 +37,7 @@ void MQTTDest::setupMqttListen() {
   }
   s += "/cmd";
   client->subscribe(s.c_str());
-  Serial << F("Accepting commands via MQTT on topic: ") << s;
+  LOGGER << F("Accepting commands via MQTT on topic: ") << s;
   isListening = true;
 }
 
@@ -49,7 +49,7 @@ void MQTTDest::cmdMqttSetup(const char *p) {
   p = extractStringFromQuotes(p, mqttUser,   sizeof(mqttUser));
   p = extractStringFromQuotes(p, mqttPass,   sizeof(mqttPass));
 //  p = extractStringFromQuotes(p, mqttTopic,  sizeof(mqttTopic));
-  //Serial << "Gere" << endl;
+  //LOGGER << "Gere" << endl;
   delay(100);
   if (mqttClient[0] == 0) strcpy(mqttTopic, "vThing");
   if (mqttTopic[0] == 0) {
@@ -67,25 +67,25 @@ void MQTTDest::cmdMqttSetup(const char *p) {
   PropertyList.putProperty(EE_MQTT_PASS, mqttPass);
 //  PropertyList.putProperty(EE_MQTT_TOPIC, mqttTopic);
 
-  SERIAL_PORT << F("MQTT Configuration Stored") << endl;
-  SERIAL_PORT << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << endl;
-  SERIAL_PORT << F("DONE") << endl;
-  Serial.flush();
+  LOGGER << F("MQTT Configuration Stored") << endl;
+  LOGGER << mqttServer << "," << mqttPortS << "," << mqttClient << "," << mqttUser << "," << mqttPass << endl;
+  LOGGER << F("DONE") << endl;
+  LOGGER.flush();
 #ifdef VTHING_H801_LED
   h801_mqtt_connect();
 #endif
 }
 
 void MQTTDest::cmdMqttMsgAdd(const char *line) {
-  //Serial << "menuAddCustomUrl" << endl;
+  //LOGGER << "menuAddCustomUrl" << endl;
   char sidx[10];//, url[200];
   line = extractStringFromQuotes(line, sidx, sizeof(sidx));
-  Serial << "Mqtt line:" << line << endl;
-  Serial.flush();
+  LOGGER << "Mqtt line:" << line << endl;
+  LOGGER.flush();
   //delay(100);
   //line = extractStringFromQuotes(line, url, sizeof(url));
   if (sidx[0] == 0 || line[0] == 0) {
-    Serial << F("Command not recognized");
+    LOGGER << F("Command not recognized");
     return;
   }
   int idx = atoi(sidx);
@@ -106,8 +106,8 @@ void MQTTDest::cmdCallMqttInst(const char *line) {
   *x = 0;
   String topic = c+1;
   String msg = x+1;
-  Serial << F("Will send mqtt to:") << topic <<":" << msg << endl;
-  Serial.flush();
+  LOGGER << F("Will send mqtt to:") << topic <<":" << msg << endl;
+  LOGGER.flush();
   if (waitForWifi() != WL_CONNECTED) return;
 
   if (!mqttStart()) {
@@ -121,8 +121,8 @@ void MQTTDest::cmdCallMqttInst(const char *line) {
 
 
 void MQTTDest::process(LinkedList<Pair *> &data) {
-  Serial << F("MQTTDest::process") << endl;
-  Serial.flush();
+  LOGGER << F("MQTTDest::process") << endl;
+  LOGGER.flush();
 //  heap("");
   String s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), 0);
   if (!s.length()) return;
@@ -138,13 +138,13 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
     s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), i);
     if (!s.length()) break;
     replaceValuesInURL(data, s);
-    if (hasPlaceholders(s)) return;    
+    if (hasPlaceholders(s)) return;
     if (s.indexOf(':') > -1) {
       mqttTopic = s.substring(0,s.indexOf(':'));
       s = s.substring(s.indexOf(':') + 1);
     }
-    Serial << F("Mqtt Dest: sending: to topic:") << mqttTopic << ", msg: " << s << endl;
-    Serial.flush();
+    LOGGER << F("Mqtt Dest: sending: to topic:") << mqttTopic << ", msg: " << s << endl;
+    LOGGER.flush();
     if(!client->publish(mqttTopic.c_str(), s.c_str())) {
       mqttEnd(false);
       return;
@@ -157,7 +157,7 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
 bool MQTTDest::mqttStart() {
   if (client) return true;
   if (WiFi.status() != WL_CONNECTED) {
-    if (DEBUG) Serial << F("MQTT Dest: Cannot send while wifi offline\n");
+    if (DEBUG) LOGGER << F("MQTT Dest: Cannot send while wifi offline\n");
     return false;
   }
   String mqttServer, mqttClient, mqttUser, mqttPass;
@@ -169,14 +169,14 @@ bool MQTTDest::mqttStart() {
   mqttPass   = PropertyList.readProperty(EE_MQTT_PASS);
   if (!mqttServer.length()) return false;
   if (!mqttClient.length()) mqttClient = "vESPrino";
-   SERIAL_PORT << "Sending via MQTT: ";
-   Serial.flush();
-   SERIAL_PORT << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
-   Serial.flush();
-   SERIAL_PORT << mqttUser;
-   Serial.flush();
-   SERIAL_PORT << "," << mqttPass << endl;
-   Serial.flush();
+   LOGGER << "Sending via MQTT: ";
+   LOGGER.flush();
+   LOGGER << mqttServer << "," << mqttPort << "," << mqttClient << "," ;
+   LOGGER.flush();
+   LOGGER << mqttUser;
+   LOGGER.flush();
+   LOGGER << "," << mqttPass << endl;
+   LOGGER.flush();
   uint32_t st = millis();
   wclient = new WiFiClient();
 //  PubSubClient client(wclient, mqttServer, mqttPort);
@@ -184,12 +184,12 @@ bool MQTTDest::mqttStart() {
   bool res;
   if (mqttUser.length() > 0) res = client->connect(mqttClient.c_str(), mqttUser.c_str(), mqttPass.c_str());
   else res = client->connect(mqttClient.c_str());
-  if (!res) SERIAL_PORT.println(F("Could not connect to MQTT server"));
+  if (!res) LOGGER.println(F("Could not connect to MQTT server"));
   return res;
 }
 
 void MQTTDest::mqttEnd(bool res) {
-  if (DEBUG) SERIAL_PORT.println(res ? F("CLOSED") : F("Failed!"));
+  if (DEBUG) LOGGER.println(res ? F("CLOSED") : F("Failed!"));
   if (isListening) return;
   if (client) {
     client->disconnect();
@@ -204,20 +204,20 @@ void MQTTDest::mqttEnd(bool res) {
 }
 
 void MQTTDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
-  // Serial << "MQTTDest::replaceUrl = " << s << endl;
+  // LOGGER << "MQTTDest::replaceUrl = " << s << endl;
   // for (int i=0; i < data.size(); i++) {
-  //   Serial << data.get(i)->key << " = " << data.get(i)->value << "."<<endl;
+  //   LOGGER << data.get(i)->key << " = " << data.get(i)->value << "."<<endl;
   // }
   for (int i=0; i < data.size(); i++) {
     Pair *p = data.get(i);
     String skey = String("%") + p->key + String("%");
     s.replace(skey, String(p->value));
-    //Serial << "after replace: key << " << skey << "." << p->value<< "." << String(p->value) << " " << s << endl;
+    //LOGGER << "after replace: key << " << skey << "." << p->value<< "." << String(p->value) << " " << s << endl;
   }
 }
 
 // bool MQTTDest::invokeURL(String &url) {
-//   SERIAL_PORT << F("Connected. Will publish: ") << url << endl;
+//   LOGGER << F("Connected. Will publish: ") << url << endl;
 //   return client.publish(mqttTopic.c_str(), url.c_str());
 // }
 
@@ -226,7 +226,7 @@ void MQTTDest::onReceive(char* topic1, byte* payload1, unsigned int length) {
   strncpy(bPayload, (char*)payload1, _min(length, sizeof(bPayload)-1));
   bPayload[length] = 0;
   String payload = String((char*)bPayload), topic = String(topic1);
-  SERIAL_PORT << topic << " => " << payload << endl;
+  LOGGER << topic << " => " << payload << endl;
   if (topic.indexOf("/cmd")) menuHandler.scheduleCommand(payload.c_str());
   // else if (topic.indexOf("/Color") > -1) processTriplet(payload);
   // else if (topic.indexOf("/W1")   > -1) analogWriteColor(w1PIN, payload.toInt());

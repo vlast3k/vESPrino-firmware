@@ -35,20 +35,20 @@ void WebServerClass::cmdStartWebServerInst() {
   server->on("/", WebServerClass::onCommand);
   server->begin();
 
-  Serial.print(F("\n\nSend commands to http://"));
-  Serial.print(WiFi.localIP());
-  Serial.println(F("/?cmd=..."));
+  LOGGER.print(F("\n\nSend commands to http://"));
+  LOGGER.print(WiFi.localIP());
+  LOGGER.println(F("/?cmd=..."));
 
   String hostname = PropertyList.readProperty(PROP_ESP_HOSTNAME);
   if (hostname.length() == 0) hostname = "vthing";
-  Serial << F("Web Server accessible on :") << endl;
-  Serial << F("   http://") << WiFi.localIP() << endl;
+  LOGGER << F("Web Server accessible on :") << endl;
+  LOGGER << F("   http://") << WiFi.localIP() << endl;
   if (MDNS.begin(hostname.c_str())) {
-    Serial << F("   http://") << hostname << F(".local/") << endl;
+    LOGGER << F("   http://") << hostname << F(".local/") << endl;
     MDNS.addService("http", "tcp", 80);
   }
   NBNS.begin(hostname.c_str());
-  Serial << F("   http://") << hostname << F("/") << endl;
+  LOGGER << F("   http://") << hostname << F("/") << endl;
 }
 
 void WebServerClass::onCommand() {

@@ -8,6 +8,7 @@
 #define CubicGasSensors_h
 #include <RunningAverage.h>
 #include <Streaming.h>
+#include <Stream.h>
 #include <EEPROM.h>
 #include <Arduino.h>
 #include <I2CHelper.hpp>
@@ -15,7 +16,7 @@
 
 
 //#ifndef SERIAL_PORT
-#define SERIAL_PORT Serial
+//#define SERIAL_PORT Serial
 //#endif
 
 #define NDIR_READ_TIMEOUT 10000L
@@ -31,7 +32,7 @@ class CubicGasSensors
 {
   // user-accessible "public" interface
   public:
-    CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, uint8_t _rx=100, uint8_t _tx=100 ) ;
+    CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, Stream *_LOGGER, uint8_t _rx=100, uint8_t _tx=100 ) ;
     bool init(bool DEBUG, uint32_t disabledPorts);
     int getCO2(boolean dbg=false);
     void printDebugInfo();
@@ -42,6 +43,7 @@ class CubicGasSensors
     }
   private:
     //bool isInSkippedList(int8_t *list, uint8_t gpio);
+    Stream *LOGGER;
     RunningAverage raCM1106;//(2);
     uint32_t lastNDIRRead = -100000L;
     uint8_t rx, tx;

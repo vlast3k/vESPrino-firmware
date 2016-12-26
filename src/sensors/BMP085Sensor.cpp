@@ -22,7 +22,7 @@ void BMP085Sensor::onCmdInit(const char *ignore) {
 }
 
 void BMP085Sensor::getData(LinkedList<Pair *> *data) {
-  //Serial << "BME280 get Data" << endl;
+  //LOGGER << "BME280 get Data" << endl;
   // delay(10);
   //if (millis() < 10000) return; //give time for the BM
 
@@ -39,7 +39,7 @@ void BMP085Sensor::getData(LinkedList<Pair *> *data) {
    //data->add(new Pair("ALT", String(bme->readAltitude(SEALEVELPRESSURE_HPA))));
 
    closeSensor();
-    // Serial << "end BME280" << endl;
+    // LOGGER << "end BME280" << endl;
 }
 
 bool BMP085Sensor::initSensor() {
@@ -57,15 +57,15 @@ bool BMP085Sensor::initSensor() {
 
   }
   if (!init) {
-    if (DEBUG) Serial << F("BMP085 - init failed!") << endl;
+    if (DEBUG) LOGGER << F("BMP085 - init failed!") << endl;
     delete bme;
     bme = NULL;
     rtcMemStore.setSensorState(RTC_SENSOR_BMP180, false);
 
     return false;
   }
-  SERIAL_PORT << F("Found BMP085 - Temperature/Pressure Sensor") << endl;
-  Serial.flush();
+  LOGGER << F("Found BMP085 - Temperature/Pressure Sensor") << endl;
+  LOGGER.flush();
   return true;
 }
 

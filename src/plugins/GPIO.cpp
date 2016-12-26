@@ -59,7 +59,7 @@ uint32_t GPIOClass::getGPIOState() {
   uint32_t state = 0;
   for(int i=0; i < 16; i++) {
     if (isBitSet(ports, i)) {
-      //Serial << "Port: " << i <<  digitalRead(i) << endl;
+      //LOGGER << "Port: " << i <<  digitalRead(i) << endl;
       setBit(state, i, digitalRead(i));
     }
   }

@@ -24,11 +24,11 @@ void BH1750Sensor::onCmdTestInst() {
   if (!initSensor()) return;
   tsl->SetSensitivity(1.00F);
   for (int i=0; i < 100; i++) {
-    Serial << "AutoLux: "<< tsl->getLuxAutoScale() << endl;
+    LOGGER << "AutoLux: "<< tsl->getLuxAutoScale() << endl;
     measureMT(31);
     measureMT(69);
     measureMT(254);
-    Serial << endl;
+    LOGGER << endl;
     menuHandler.loop();
     delay(1000);
   }
@@ -54,11 +54,11 @@ bool BH1750Sensor::initSensor() {
     delay(100);
   }
   if (!init) {
-    if (DEBUG) Serial << F("BH1750 - init failed!") << endl;
+    if (DEBUG) LOGGER << F("BH1750 - init failed!") << endl;
     rtcMemStore.setSensorState(RTC_SENSOR_BH1750, false);
     return false;
   }
-  SERIAL_PORT << F("Found BH1750 - LUX Sensor") << endl;
+  LOGGER << F("Found BH1750 - LUX Sensor") << endl;
   return true;
 }
 
@@ -71,24 +71,24 @@ void BH1750Sensor::closeSensor() {
 void BH1750Sensor::measure() {
   tsl->SetMode(Continuous_H);
   delay(600);
-  Serial << "\tH: " << tsl->GetLux();
-  Serial.flush();
+  LOGGER << "\tH: " << tsl->GetLux();
+  LOGGER.flush();
 
   tsl->SetMode(Continuous_H2);
   delay(600);
-  Serial << ",\tH2: " << tsl->GetLux();
-  Serial.flush();
+  LOGGER << ",\tH2: " << tsl->GetLux();
+  LOGGER.flush();
 
   tsl->SetMode(Continuous_L);
   delay(60);
-  Serial << ",\tL: " << tsl->GetLux();
-  Serial.flush();
+  LOGGER << ",\tL: " << tsl->GetLux();
+  LOGGER.flush();
 
 }
 
 void BH1750Sensor::measureMT(uint8_t mt) {
   tsl->SetMTReg(mt);
-  Serial.printf("MT=%3d : ", mt);
+  LOGGER.printf("MT=%3d : ", mt);
   measure();
-  Serial << endl;
+  LOGGER << endl;
 }

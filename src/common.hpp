@@ -48,7 +48,7 @@ extern "C" {
 
 #define BUILD_NUM "20161226"
 
-#define SERIAL_PORT Serial
+//#define SERIAL_PORT LOGGER
 #define EE_WIFI_SSID F("wifi.ssid")
 #define EE_WIFI_P1   F("wifi.p1")
 #define EE_WIFI_P2   F("wifi.p2")
@@ -248,6 +248,7 @@ extern bool deepSleepWake;
 extern RTCMemStore rtcMemStore;
 extern ESP8266WiFiMulti  *wifiMulti;
 extern RFDest rfDest;
+extern LoggingPrinter LOGGER;
 //extern NeopixelVE neopixel;
 
 //void MigrateSettingsIfNeeded();

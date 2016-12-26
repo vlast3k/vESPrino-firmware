@@ -21,7 +21,7 @@ void SI7021Sensor::onCmdInit(const char *ignore) {
 }
 
 void SI7021Sensor::getData(LinkedList<Pair *> *data) {
-  //Serial << "SI721 get Data" << endl;
+  //LOGGER << "SI721 get Data" << endl;
   //delay(100);
    if (!initSensor()) return;
    double temp = si7021->readTemp();
@@ -35,7 +35,7 @@ void SI7021Sensor::getData(LinkedList<Pair *> *data) {
    data->add(new Pair("TEMPR", t1r));
    data->add(new Pair("HUM", String((int)si7021->readHumidity())));
    closeSensor();
-    // Serial << "end si7021" << endl;
+    // LOGGER << "end si7021" << endl;
 }
 
 bool SI7021Sensor::initSensor() {
@@ -45,7 +45,7 @@ bool SI7021Sensor::initSensor() {
   si7021 = new SI7021();
   //si7021->reset();
   //si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
-  //Serial << "SI7021 init :" <<  si7021->getDeviceID() << endl;
+  //LOGGER << "SI7021 init :" <<  si7021->getDeviceID() << endl;
   bool init = false;
   for (int i=0; i < 5; i++) {
       init = si7021->begin();
@@ -59,8 +59,8 @@ bool SI7021Sensor::initSensor() {
     rtcMemStore.setSensorState(RTC_SENSOR_SI7021, false);
     return false;
   }
-  SERIAL_PORT << F("Found SI7021 - Temperature/Humidity Sensor") << endl;
-  Serial.flush();
+  LOGGER << F("Found SI7021 - Temperature/Humidity Sensor") << endl;
+  LOGGER.flush();
   si7021->setHumidityRes(12); // Humidity = 12-bit / Temperature = 14-bit
   return true;
 }

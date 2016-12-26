@@ -21,7 +21,7 @@ void RFDest::setup(MenuHandler *handler) {
   checkIfDefaultsAreSet();
   enabled = PropertyList.readBoolProperty(F("rf.enabled"));
   if (enabled) {
-    Serial << F("enabled\n");
+    LOGGER << F("enabled\n");
     sendPing(1000);
     // rfBegin(D6, 0, 1);
     // delay(1000);
@@ -51,7 +51,7 @@ void RFDest::cmdSetAddr(const char *line) {
   String s = F("rf.");
   s += key;
   PropertyList.putProperty(s.c_str(), addr);
-  Serial << F("Set RF Address: ") << key << F("=") << addr << endl;;
+  LOGGER << F("Set RF Address: ") << key << F("=") << addr << endl;;
 }
 
 void RFDest::cmdTest(const char *line) {
@@ -73,7 +73,7 @@ int RFDest::getGPIO() {
   else return D6;
 }
 void RFDest::process(LinkedList<Pair *> &data) {
-  Serial << F("RFDest::process") << endl;
+  LOGGER << F("RFDest::process") << endl;
   if (!enabled) return;
   for (int i=0; i < data.size(); i++) {
     Pair *p = data.get(i);
@@ -84,7 +84,7 @@ void RFDest::process(LinkedList<Pair *> &data) {
     int addr = atoi(saddr.c_str());
     if (addr < 0) continue;
     long value = atof(p->value.c_str()) * 100;
-    if (DEBUG) Serial.printf(String(F("RF X10 Meter: addr=%d, value=%d\n")).c_str(), addr, value);
+    if (DEBUG) LOGGER.printf(String(F("RF X10 Meter: addr=%d, value=%d\n")).c_str(), addr, value);
     rfBegin(getGPIO(), 0, 1);
     delay(1);
     RFXmeter(addr, 0, value);
@@ -234,10 +234,10 @@ void RFDest::SendCommand(uint8_t *data, uint8_t size){
 
 void RFDest::SendX10RfByte(uint8_t data){
 	int i = 0;
-	//Serial.println("\n");
+	//LOGGER.println("\n");
 	for (int i=7; i >= 0 ; i--){ // send bits from byte
 		SendX10RfBit((bitRead(data,i)==1));
-		//Serial.print(bitRead(data,i));
+		//LOGGER.print(bitRead(data,i));
 	}
 }
 

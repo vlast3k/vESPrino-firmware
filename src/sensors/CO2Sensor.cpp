@@ -18,8 +18,9 @@ extern CO2Sensor co2Sensor;
 
 CO2Sensor::CO2Sensor() :
     co2Threshold("CO2", 1),
-    cubicCo2(&CO2Sensor::onCo2Status_static, EE_RESET_CO2_1B),
+    cubicCo2(&CO2Sensor::onCo2Status_static, EE_RESET_CO2_1B, &LOGGER),
     startedCO2Monitoring(false)
+
 {
   registerSensor(this);
 }
@@ -39,7 +40,7 @@ void CO2Sensor::setup(MenuHandler *handler) {
   // pinMode(D8, OUTPUT);    //enable power via D8
   // digitalWrite(D8, HIGH);
   // delay(1000);
-  //this is needed as if the Serial Port querries the port of the servo, then servo no longer wifiScanNetworks
+  //this is needed as if the LOGGER Port querries the port of the servo, then servo no longer wifiScanNetworks
   //maybe due to the timers...
   String servoPort = PropertyList.readProperty(PROP_SERVO_PORT);
   uint32_t disabledSerialPorts = PropertyList.readLongProperty(PROP_I2C_DISABLED_PORTS);
@@ -67,7 +68,7 @@ void CO2Sensor::setup(MenuHandler *handler) {
 
   handler->registerCommand(new MenuEntry(F("rco"), CMD_EXACT, CO2Sensor::resetCO2_static, F("")));
 
-  SERIAL_PORT << F("CO2 now: ") << cubicCo2.rawReadCM1106_CO2() << endl;
+  LOGGER << F("CO2 now: ") << cubicCo2.rawReadCM1106_CO2() << endl;
   if (!PropertyList.readBoolProperty(PROP_CUBIC_CO2_POWERSAFE)) {
     menuHandler.scheduleCommand("nop 0");
   }
@@ -81,7 +82,7 @@ const char* CO2Sensor::getSensorId() {
 float CO2Sensor::getValue() {
   int res = cubicCo2.getCO2(DEBUG);
   startedCO2Monitoring = cubicCo2.hasStarted();
-  //Serial << " CO2 Sensor > startedCO2Mon = " << startedCO2Monitoring << " co2=" << res << endl;
+  //LOGGER << " CO2 Sensor > startedCO2Mon = " << startedCO2Monitoring << " co2=" << res << endl;
   if (startedCO2Monitoring) {
     return res;
   } else {
@@ -133,8 +134,8 @@ void CO2Sensor::resetCO2_static(const char *ignore) {
 }
 
 void CO2Sensor::resetCO2() {
-  SERIAL_PORT << F("Calibration Mode Enabled.\nPlease put the device for 8 minutes at fresh air.\nYou can now put it outside. It will complete calibration once it worked 5 minutes after restart") << endl;
-  Serial.flush();
+  LOGGER << F("Calibration Mode Enabled.\nPlease put the device for 8 minutes at fresh air.\nYou can now put it outside. It will complete calibration once it worked 5 minutes after restart") << endl;
+  LOGGER.flush();
   EEPROM.begin(10);
   EEPROM.put(EE_RESET_CO2_1B, (byte)1);
   EEPROM.commit();

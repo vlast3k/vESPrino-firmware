@@ -34,7 +34,7 @@ void ServoV::cmdSetServoPosInst(const char *cmd) {
   if (cmd != NULL) {
     int pos = atoi(cmd+1);
     s.write(pos);
-    Serial << F("Move Servo to: ") << pos << endl;
+    LOGGER << F("Move Servo to: ") << pos << endl;
     delay(500);
   }
 }
@@ -53,7 +53,7 @@ void ServoV::initServo() {
     // if (servo == NULL) servo = new Servo();
     //servo->detach();
     s.detach();
-    Serial << F("Attach Servo to: ") << port << endl;
+    LOGGER << F("Attach Servo to: ") << port << endl;
     #ifndef ESPSTAGE
     s.attach(port);
     #endif

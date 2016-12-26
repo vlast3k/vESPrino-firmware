@@ -1,6 +1,7 @@
 #ifndef I2CHelperH
 #define I2CHelperH
 #include <Wire.h>
+#include <Stream.h>
 
 class I2CHelper {
 public:
@@ -14,11 +15,11 @@ public:
   static bool findI2C(int8_t &sda, int8_t &scl, long disabledPorts, bool debug);
   static void i2cHigh();
   static void cmdScanI2C(const char *ignore);
-  static void beginI2C(long disabledPorts);
+  static void beginI2C(long disabledPorts, Stream *LOGGER);
   static uint8_t slowEndTransmission(uint8_t sendStop = true);
   static bool isBitSet(uint32_t val, int bit);
 
-
+  static Stream *LOGGER;
 
   static int8_t i2cSDA;
   static int8_t i2cSCL;

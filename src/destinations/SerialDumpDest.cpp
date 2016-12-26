@@ -24,15 +24,15 @@ void SerialDumpDest::toggle(const char *line) {
 
 void SerialDumpDest::toggleInst() {
   enabled != enabled;
-  Serial << F("Serial Dump Destination:") << (enabled ? F("ENABLED") : F("DISABLED")) << endl;
+  LOGGER << F("LOGGER Dump Destination:") << (enabled ? F("ENABLED") : F("DISABLED")) << endl;
 }
 
 void SerialDumpDest::process(LinkedList<Pair *> &data) {
   if (!enabled) return;
-  Serial << F("SerialDumpDest::process") << endl;
+  LOGGER << F("SerialDumpDest::process") << endl;
   for (int i=0; i < data.size(); i++) {
     Pair *p = data.get(i);
-    Serial << p->key << "\t: " << p->value << endl;
-    Serial.flush();
+    LOGGER << p->key << "\t: " << p->value << endl;
+    LOGGER.flush();
   }
 }

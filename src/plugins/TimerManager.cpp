@@ -7,8 +7,9 @@
 #include <ESP8266WiFi.h>
 #include <plugins/PropertyList.hpp>
 #include <Streaming.h>
+#include "plugins/LoggingPrinter.hpp"
 
-
+extern LoggingPrinter LOGGER;
 extern bool DEBUG;
 wl_status_t waitForWifi(uint16_t timeoutMs);
 
@@ -38,9 +39,9 @@ extern RTCMemStore rtcMemStore;
   TimeInPeriod TimerManagerClass::isTimeInPeriod(const char *startc, const char* endc) {
     int32_t  now   = getGMTime();
     if (now < 0) return TP_UNDEFINED;
-    //if (DEBUG) Serial << F("now(): ") << msToStr(now) << endl;
+    //if (DEBUG) LOGGER << F("now(): ") << msToStr(now) << endl;
     now += PropertyList.readLongProperty(PROP_TZOFFSET) * 60 * 1000;
-    //if (DEBUG) Serial << F("now(tz adjusted): ") << msToStr(now) << endl;
+    //if (DEBUG) LOGGER << F("now(tz adjusted): ") << msToStr(now) << endl;
     if (now < 0) now += ONE_DAY_MS;
     uint32_t start = timeToMs(startc);
     uint32_t end   = timeToMs(endc);
@@ -55,7 +56,7 @@ extern RTCMemStore rtcMemStore;
   }
 
   void getTimeFromGoogle(String &time) {
-    if (DEBUG) Serial << F("Check time from google") << endl;
+    if (DEBUG) LOGGER << F("Check time from google") << endl;
     if (waitForWifi(7000) != WL_CONNECTED) return;
     HTTPClient http;
     const char *headers[1] = {"Date"};
@@ -73,19 +74,19 @@ extern RTCMemStore rtcMemStore;
     getTimeFromGoogle(googleTime);
     const char *d1 = googleTime.c_str();
     if (strlen(d1) < 20) return -1;
-    //if (DEBUG) Serial << F("Time From Google: ") << d1 << endl;
+    //if (DEBUG) LOGGER << F("Time From Google: ") << d1 << endl;
     int32_t tg = timeToMs(d1 + strlen(d1) - 12);
     rtcMemStore.setGenData(GEN_LASTTIME, tg); //in case the format of the time changes 01 vs 1
-    //Serial << "  time google: " << msToStr(tg) << endl;
+    //LOGGER << "  time google: " << msToStr(tg) << endl;
     return tg;
   }
 
   int32_t TimerManagerClass::getGMTime() {
-    //Serial << "GetGMTTime..." << endl;
+    //LOGGER << "GetGMTTime..." << endl;
     uint32_t lastTime  = rtcMemStore.getGenData(GEN_LASTTIME);
     uint32_t msCounter = rtcMemStore.getGenData(GEN_MSCOUNTER) + millis();;
-    //Serial << "  lastTime: " << msToStr(lastTime) << endl;
-    //Serial << "  msCounter: " << msToStr(msCounter) << endl;
+    //LOGGER << "  lastTime: " << msToStr(lastTime) << endl;
+    //LOGGER << "  msCounter: " << msToStr(msCounter) << endl;
     if (lastTime == 0 || msCounter > 24L*60*60*1000) {
       int32_t x = updateLastTime();
       if (x>0) lastTime = x;

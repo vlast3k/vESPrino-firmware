@@ -21,7 +21,7 @@ void BME280Sensor::onCmdInit(const char *ignore) {
 }
 
 void BME280Sensor::getData(LinkedList<Pair *> *data) {
-  //Serial << "BME280 get Data" << endl;
+  //LOGGER << "BME280 get Data" << endl;
   // delay(10);
   //if (millis() < 10000) return; //give time for the BM
 
@@ -37,7 +37,7 @@ void BME280Sensor::getData(LinkedList<Pair *> *data) {
    data->add(new Pair("ALT", String(bme->readAltitude(SEALEVELPRESSURE_HPA))));
 
    closeSensor();
-    // Serial << "end BME280" << endl;
+    // LOGGER << "end BME280" << endl;
 }
 
 bool BME280Sensor::initSensor() {
@@ -55,14 +55,14 @@ bool BME280Sensor::initSensor() {
 
   }
   if (!init) {
-    if (DEBUG) Serial << F("BME280 - init failed!") << endl;
+    if (DEBUG) LOGGER << F("BME280 - init failed!") << endl;
     delete bme;
     bme = NULL;
     rtcMemStore.setSensorState(RTC_SENSOR_BME280, false);
     return false;
   }
-  SERIAL_PORT << F("Found BME280 - Temperature/Humidity/Pressure Sensor") << endl;
-  Serial.flush();
+  LOGGER << F("Found BME280 - Temperature/Humidity/Pressure Sensor") << endl;
+  LOGGER.flush();
   return true;
 }
 

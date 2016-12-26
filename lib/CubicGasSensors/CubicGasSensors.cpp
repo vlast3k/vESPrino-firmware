@@ -7,6 +7,7 @@
 // include this library's description file
 #include "CubicGasSensors.h"
 #include <Streaming.h>
+#include <Stream.h>
 #ifdef ESP8266
   #include <SoftwareSerialESP.h>
 #else
@@ -14,7 +15,8 @@
 #endif
 
 
-CubicGasSensors::CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, uint8_t _rx, uint8_t _tx): rx(_rx), tx(_tx), eepromReset(_eepromReset), raCM1106(2), statusCb(_cb) {}
+CubicGasSensors::CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, Stream *_LOGGER, uint8_t _rx, uint8_t _tx)
+  : rx(_rx), tx(_tx), eepromReset(_eepromReset), raCM1106(2), statusCb(_cb), LOGGER(_LOGGER) {}
 // bool CubicGasSensors::isInSkippedList(int8_t *list, uint8_t gpio) {
 //   for (int i=0; i < 10 && *list > -2; list++) {
 //     if (*list == gpio) return true;
@@ -28,32 +30,32 @@ bool CubicGasSensors::init(bool DEBUG, uint32_t disabledPorts) {
             rx = ports[i][0];
             tx = ports[i][1];
             if (I2CHelper::isBitSet(disabledPorts, rx) || I2CHelper::isBitSet(disabledPorts, tx)) continue;
-            if (DEBUG) SERIAL_PORT << "Trying : " << rx <<","<< tx << endl ;
-            Serial.flush();
+            if (DEBUG) (*LOGGER) << "Trying : " << rx <<","<< tx << endl ;
+            (*LOGGER).flush();
             if (sensorType = getSWVersion(DEBUG)) {
                 if (sensorType == CM1106) {
-                    SERIAL_PORT << F("CM1106 Single Beam NDIR sensor\n");
+                    (*LOGGER) << F("CM1106 Single Beam NDIR sensor\n");
                 } else if (sensorType == CM1102) {
-                    SERIAL_PORT << F("CM1102 Dual Beam NDIR sensor\n");
+                    (*LOGGER) << F("CM1102 Dual Beam NDIR sensor\n");
                 } else {
-                    SERIAL_PORT << F("Sensor Type not recognized\n");
+                    (*LOGGER) << F("Sensor Type not recognized\n");
                 }
-                Serial.flush();
+                (*LOGGER).flush();
                 return true;
             }
         }
-        if (DEBUG) SERIAL_PORT << F("+");
+        if (DEBUG) (*LOGGER) << F("+");
         delay(1000);
     }
-    if (DEBUG) SERIAL_PORT << F("ERROR: Could not locate Cubic CO2 Sensor") << endl;
-    Serial.flush();
+    if (DEBUG) (*LOGGER) << F("ERROR: Could not locate Cubic CO2 Sensor") << endl;
+    (*LOGGER).flush();
     return false;
 }
 
 int CubicGasSensors::getSWVersion(bool dbg) {
   DEBUG = dbg;
-  if (dbg) SERIAL_PORT << F("Getting CO2 Sensor Software Version\n");
-  Serial.flush();
+  if (dbg) (*LOGGER) << F("Getting CO2 Sensor Software Version\n");
+  (*LOGGER).flush();
   uint8_t cmdReadCO2[] = {4, 0x11, 0x01, 0x1E, 0xD0};
   uint8_t resp[30];
   boolean res = sendCmd(cmdReadCO2, resp);
@@ -61,9 +63,9 @@ int CubicGasSensors::getSWVersion(bool dbg) {
   char version[13];
   for (int i=0; i < 12; i++) version[i] = (char) resp[i+3];
   version[12] = 0;
-  SERIAL_PORT << F("CO2 Sensor SW Ver: ") << version << endl;
-  if (dbg) SERIAL_PORT << F("done") <<endl;
-  Serial.flush();
+  (*LOGGER) << F("CO2 Sensor SW Ver: ") << version << endl;
+  if (dbg) (*LOGGER) << F("done") <<endl;
+  (*LOGGER).flush();
   return version[0];
 
 }
@@ -89,12 +91,12 @@ boolean CubicGasSensors::sendCmd(uint8_t *cmd, uint8_t *resp) {
 
 boolean CubicGasSensors::validateCS(byte* resp) {
   if (resp[0] != 0x16) {
-    //SERIAL_PORT << F("bad resp") << endl;
+    //(*LOGGER) << F("bad resp") << endl;
     return false;
   }
   if (resp[resp[1]+2] != getCS(resp)) {
     dump(resp);
-    SERIAL_PORT << F("bad cs:") << _HEX(getCS(resp)) << F(", ") << _HEX(resp[resp[1]+2]) << endl;
+    (*LOGGER) << F("bad cs:") << _HEX(getCS(resp)) << F(", ") << _HEX(resp[resp[1]+2]) << endl;
     return false;
   }
   return true;
@@ -108,19 +110,19 @@ byte CubicGasSensors::getCS(byte* buf) {
 }
 
 void CubicGasSensors::co2Set400ppm() {
-    SERIAL_PORT << F("Setting current CO2 level as 400 ppm\n");
-    Serial.flush();
+    (*LOGGER) << F("Setting current CO2 level as 400 ppm\n");
+    (*LOGGER).flush();
   //  if (sensorType == CM1106) {
       uint8_t cmdReadCO2[] = {6, 0x11, 0x03, 0x03, 1, 0x90, 0x58};
       uint8_t resp[30];
-      SERIAL_PORT << sendCmd(cmdReadCO2, resp);
+      (*LOGGER) << sendCmd(cmdReadCO2, resp);
     // } else {
     //     pinMode(13, OUTPUT); //d7
     //     digitalWrite(13, LOW);
     //     delay(4000); //wait for 4 seconds
     //     pinMode(13, INPUT); //release
     // }
-  SERIAL_PORT << F("done") <<endl;
+  (*LOGGER) << F("done") <<endl;
 
 }
 
@@ -150,8 +152,8 @@ bool CubicGasSensors::checkForReset() {
     co2Set400ppm();
     sentResetCmd = true;
   }
-  SERIAL_PORT << F("Calibrating:") << millis()/1000 << F("s, ") << rawReadCM1106_CO2(DEBUG) << F("ppm\n");
-  Serial.flush();
+  (*LOGGER) << F("Calibrating:") << millis()/1000 << F("s, ") << rawReadCM1106_CO2(DEBUG) << F("ppm\n");
+  (*LOGGER).flush();
   return true;
 }
 
@@ -161,26 +163,26 @@ int CubicGasSensors::rawReadCM1106_CO2(bool dbg) {
   uint8_t resp[30];
   int res = sendCmd(cmdReadCO2, resp);
   if (!res) {
-      SERIAL_PORT << F("Error in communication with CO2 Sensor\n");
-      Serial.flush();
+      (*LOGGER) << F("Error in communication with CO2 Sensor\n");
+      (*LOGGER).flush();
       return 0;
   }
   uint16_t value = ((uint16_t)256)*resp[3] + resp[4];
-  if (DEBUG) SERIAL_PORT << "sss:" << value << endl;
+  if (DEBUG) (*LOGGER) << "sss:" << value << endl;
   return value;
 }
 
 
 int CubicGasSensors::getCO2(boolean dbg) {
   DEBUG = dbg;
-  //Serial << "11111\n";
+  //(*LOGGER) << "11111\n";
   if (checkForReset()) return -1;
-  //Serial << "22222\n";
+  //(*LOGGER) << "22222\n";
   //if (timePassed(lastNDIRRead, NDIR_READ_TIMEOUT) == false) return (int)raCM1106.getAverage();
-  //Serial << "3333\n";
+  //(*LOGGER) << "3333\n";
   //checkForReset();
   //lastNDIRRead = millis();
-  //SERIAL_PORT <<"reading\n";
+  //(*LOGGER) <<"reading\n";
   uint16_t value = rawReadCM1106_CO2(DEBUG);
   if (value == 0) return -1;
   else if ((millis() < 130L*1000) && (value == 550)) {
@@ -193,15 +195,15 @@ int CubicGasSensors::getCO2(boolean dbg) {
     raCM1106.addValue(value);
     return (int)raCM1106.getAverage();
   }
-  //SERIAL_PORT << "co2: " << (int)raCM1106.getAverage() << endl;
+  //(*LOGGER) << "co2: " << (int)raCM1106.getAverage() << endl;
 
 }
 
 void CubicGasSensors::dump(uint8_t *r) {
-  for (int i=0; i<24; i++) SERIAL_PORT << _HEX(*(r++)) << ",";
-  SERIAL_PORT.println();
+  for (int i=0; i<24; i++) (*LOGGER) << _HEX(*(r++)) << ",";
+  (*LOGGER).println();
 }
 
 void CubicGasSensors::printDebugInfo() {
-  SERIAL_PORT << F("CM1106 raw: ") << rawReadCM1106_CO2() << endl;
+  (*LOGGER) << F("CM1106 raw: ") << rawReadCM1106_CO2() << endl;
 }

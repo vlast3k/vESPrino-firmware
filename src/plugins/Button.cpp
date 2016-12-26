@@ -15,7 +15,7 @@ ButtonClass::ButtonClass() {
 //uint32_t lastBttn=0;
 uint32_t bttnClicked=0;
 // void onButton() {
-//   //Serial << digitalRead(BTTN_PIN) << endl;
+//   //LOGGER << digitalRead(BTTN_PIN) << endl;
 //   if (digitalRead(BTTN_PIN) == 0) {
 //     shouldSend = true;
 //   }
@@ -48,9 +48,9 @@ void ButtonClass::loop() {
         uint32_t pressedTime = millis() - bttnClicked;
         int func = pressedTime / BTTN_FUNC_INTERVAL;
         int intensityDist = abs(BTTN_FUNC_INTERVAL/2 - (pressedTime % BTTN_FUNC_INTERVAL));
-      //  Serial << "presstime: " << pressedTime << ", intensityDist: " << intensityDist << endl;
+      //  LOGGER << "presstime: " << pressedTime << ", intensityDist: " << intensityDist << endl;
         double intensityPerc = (double)intensityDist / (BTTN_FUNC_INTERVAL/2);
-        //Serial << "presstime: " << pressedTime << ", intensityDist: " << intensityDist << " perc: " << intensityPerc << endl;
+        //LOGGER << "presstime: " << pressedTime << ", intensityDist: " << intensityDist << " perc: " << intensityPerc << endl;
         int ledBrgValue = ledBright +  intensityPerc* (ledDark - ledBright);
         if (lastFunc != func) {
           setLedColorButton(func);
@@ -62,7 +62,7 @@ void ButtonClass::loop() {
       }
       case BTTN_CONFIRM: {
         bttnClicked = millis();
-        Serial << "Executed: " << lastFunc << endl;
+        LOGGER << "Executed: " << lastFunc << endl;
         String event = String("onBttnFunc_") + lastFunc;
         fireEvent(event.c_str());
         bttnMode = BTTN_EXECUTED;
@@ -102,13 +102,13 @@ void ButtonClass::loop() {
 //   shouldSend = false;
 //   //digitalWrite(2, LOW);
 //   char tmp[200];
-//   SERIAL_PORT << F("Button Clicked!") << endl;
+//   LOGGER << F("Button Clicked!") << endl;
 //   if(WiFi.status() != WL_CONNECTED) {
-//     SERIAL_PORT << F("Will not send: No WiFi") << endl;
+//     LOGGER << F("Will not send: No WiFi") << endl;
 //     return;
 //   }
 //   char p2[40], p3[40];
-//  // SERIAL_PORT <<"getjscfg" <<getJSONConfig("vespBttn", p1, p2, p3)[0] << "!" << endl;
+//  // LOGGER <<"getjscfg" <<getJSONConfig("vespBttn", p1, p2, p3)[0] << "!" << endl;
 //   if (PropertyList.hasProperty("vespBttn")) {
 //     if (!strcmp(tmp, "dw")) {
 //       sprintf(tmp, "http://dweet.io/dweet/for/%s?%s", p2, p3);
@@ -116,7 +116,7 @@ void ButtonClass::loop() {
 //       sprintf(tmp, "http://maker.ifttt.com/trigger/%s/with/key/%s", p2, p3);
 //     }
 //
-//     SERIAL_PORT << "Sending to URL: " << tmp << endl;
+//     LOGGER << "Sending to URL: " << tmp << endl;
 //     HTTPClient http;
 //     http.begin(tmp);
 //     //addHCPIOTHeaders(&http, token);

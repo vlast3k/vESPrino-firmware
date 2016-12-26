@@ -44,14 +44,14 @@ void addCommonValues(LinkedList<Pair *> *data) {
 void conditionalSend(bool forceSend) {
 
   int rtcIt = rtcMemStore.getIterations();
-  //Serial << "rtcit = " << rtcIt << endl;
-  //Serial.flush();
+  //LOGGER << "rtcit = " << rtcIt << endl;
+  //LOGGER.flush();
   if (rtcIt == 0) forceSend = true;
   rtcIt ++;
   if (rtcIt >= PropertyList.readLongProperty(PROP_SND_INT) / PowerManagerClass::IterationDurationS) rtcIt = 0;
   rtcMemStore.setIterations(rtcIt);
-  Serial << F("\n--- DestHanlder: sendValue --- ") << forceSend<< endl;
-  Serial.flush();
+  LOGGER << F("\n--- DestHanlder: sendValue --- ") << forceSend<< endl;
+  LOGGER.flush();
   LinkedList<Pair *> values = LinkedList<Pair* >();
   addCommonValues(&values);
   for (int i=0; i < sensors.size(); i++)  sensors.get(i)->getData(&values);
@@ -70,7 +70,7 @@ void conditionalSend(bool forceSend) {
   if (DEBUG) heap("");
   tmrRawRead->setInterval(PowerManagerClass::IterationDurationS * 1000);
   tmrRawRead->Start();
-
+  LOGGER.flushLog();
 }
 
 // void on_SendValue() {
@@ -101,8 +101,8 @@ void setSendInterval (const char *line) {
   //PropertyList.putProperty(PROP_SND_ITER, String(iterations).c_str());
   //intSendValue = (uint32_t)interval * 1000;
   //tmrSendValueTimer->setInterval(intSendValue);
-  Serial << F("Send Interval (s): ") << iterations* PowerManagerClass::IterationDurationS << endl;
-  Serial.flush();
+  LOGGER << F("Send Interval (s): ") << iterations* PowerManagerClass::IterationDurationS << endl;
+  LOGGER.flush();
 }
 
 // void updateThreshold(const char *id, float value) {
@@ -119,7 +119,7 @@ void setSendInterval (const char *line) {
 //   PropertyList.putProperty(PROP_SND_THR, String(thr).c_str());
 // //  putJSONConfig(XX_SND_THR, String(thr).c_str());
 //   updateThreshold("CO2", thr);
-//   Serial << F("CO2 Threshold (ppm): ") << thr << endl;
+//   LOGGER << F("CO2 Threshold (ppm): ") << thr << endl;
 // }
 //
 // void setSendThresholdJson(const char *line) {

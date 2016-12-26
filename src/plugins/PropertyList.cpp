@@ -6,14 +6,14 @@
 
 
 PropertyListClass::PropertyListClass() {
-  //Serial <<"Create Property List";
+  //LOGGER <<"Create Property List";
   //registerPlugin(this);
   configFileName = F("/vs_cfg.txt");
   tempFileName = F("/vs_cfg.tmp");
 }
 
 void PropertyListClass::setupPropList(MenuHandler *handler) {
-//  Serial <<"PropList, register commands\n";
+//  LOGGER <<"PropList, register commands\n";
   handler->registerCommand(new MenuEntry(F("prop_list"), CMD_EXACT, &PropertyListClass::prop_list_cfg, F("prop_list")));
   handler->registerCommand(new MenuEntry(F("format_spiffs"), CMD_EXACT, &PropertyListClass::format_spiffs, F("format_spiffs")));
   handler->registerCommand(new MenuEntry(F("prop_set"), CMD_BEGIN, &PropertyListClass::prop_set, F("prop_set \"key\" \"value\"")));
@@ -24,7 +24,7 @@ void PropertyListClass::format_spiffs(const char *line) {
   SPIFFS.format();
   SPIFFS.begin();
   PropertyList.begin(&menuHandler);
-  Serial << F("FS formated");
+  LOGGER << F("FS formated");
 
 }
 void PropertyListClass::prop_set(const char *line) {
@@ -41,7 +41,7 @@ void PropertyListClass::prop_jset(const char *line) {
 }
 
 bool PropertyListClass::assertInit() {
-  if (!initialized) Serial << F("Property List not yet initialized\n");
+  if (!initialized) LOGGER << F("Property List not yet initialized\n");
   return initialized;
 }
 
@@ -101,13 +101,13 @@ void trim(char *str) {
 
 void PropertyListClass::factoryReset() {
   if (!SPIFFS.remove(configFileName)) {
-    Serial << F("Could not delete: ") << configFileName<< endl;
+    LOGGER << F("Could not delete: ") << configFileName<< endl;
   } else {
-    Serial << F("SPIFFS configuration removed\n");
+    LOGGER << F("SPIFFS configuration removed\n");
   }
   File f = SPIFFS.open(configFileName, "w");
   if (!f) {
-    Serial << "Could not open file test" << endl;
+    LOGGER << "Could not open file test" << endl;
   }
   f.close();
 }
@@ -119,26 +119,26 @@ void PropertyListClass::putProperty(const char *key, const char *value) {
   File in = SPIFFS.open(configFileName, "r");
   File out= SPIFFS.open(tempFileName, "w");
 
-  // Serial << "Put Property start: " << (millis() - st) << endl;
-  // Serial.flush();
+  // LOGGER << "Put Property start: " << (millis() - st) << endl;
+  // LOGGER.flush();
   // st = millis();
 
   String _key = String(key) + "=";
   while (in.available()) {
     String line = in.readStringUntil('\n');
     line.trim();
-    //Serial << "line=" << line << endl;
+    //LOGGER << "line=" << line << endl;
     if (!line.startsWith(_key)) out.println(line);
   }
   if (value[0]) out << key << "=" << value << endl;
 
-  // Serial << "Put Property set: " << (millis() - st) << endl;
-  // Serial.flush();
+  // LOGGER << "Put Property set: " << (millis() - st) << endl;
+  // LOGGER.flush();
   // st = millis();
 
   finalizeChangeFile(in, out);
-  // Serial << "Put Property write: " << (millis() - st) << endl;
-  // Serial.flush();
+  // LOGGER << "Put Property write: " << (millis() - st) << endl;
+  // LOGGER.flush();
 }
 
 char *PropertyListClass::readProperty(const char *key) {
@@ -183,26 +183,26 @@ void PropertyListClass::finalizeChangeFile(File &in, File &out) {
   out.close();
 
   if (!SPIFFS.remove(configFileName)) {
-    Serial << F("Could not delete: ") << configFileName<< endl;
+    LOGGER << F("Could not delete: ") << configFileName<< endl;
   }
   if (!SPIFFS.rename(tempFileName, configFileName)) {
-    Serial << F("Could not rename ") << tempFileName << F(" to ") << configFileName << endl;
+    LOGGER << F("Could not rename ") << tempFileName << F(" to ") << configFileName << endl;
   }
 }
 
 void PropertyListClass::begin(MenuHandler *handler) {
   setupPropList(handler);
   bool res =  SPIFFS.begin();
-  //Serial <<"SPFFS begin = " << res << endl;
+  //LOGGER <<"SPFFS begin = " << res << endl;
   if (!res) {
     SPIFFS.format();
     SPIFFS.begin();
   }
   if (!SPIFFS.exists(configFileName)) {
-    //Serial << "Created " << configFileName << endl;
+    //LOGGER << "Created " << configFileName << endl;
     File f = SPIFFS.open(configFileName, "w");
     if (!f) {
-      Serial << "Could not open file test" << endl;
+      LOGGER << "Could not open file test" << endl;
     }
     f.close();
   }
@@ -210,27 +210,27 @@ void PropertyListClass::begin(MenuHandler *handler) {
   //f << "vvv";
   f.close();
   if (!SPIFFS.remove("/tst.ttt")) {
-    Serial << " Could not delete /tst.ttt" << endl;
+    LOGGER << " Could not delete /tst.ttt" << endl;
   } else {
-    //Serial << " successfully deleted" << endl;
+    //LOGGER << " successfully deleted" << endl;
   }
   initialized = true;
 }
 
 void PropertyListClass::prop_list_cfg(const char *line) {
   File in = SPIFFS.open(PropertyList.configFileName, "r");
-  Serial << F("---vESPrinoCFG_start---\n");
-  Serial.flush();
+  LOGGER << F("---vESPrinoCFG_start---\n");
+  LOGGER.flush();
   delay(1);
   while (in.available())  {
     String s = in.readStringUntil('\n');
     s.trim();
-    Serial << s << endl;
-    Serial.flush();
+    LOGGER << s << endl;
+    LOGGER.flush();
     delay(1);
   }
-  Serial << F("---vESPrinoCFG_end---\n");
-  Serial.flush();
+  LOGGER << F("---vESPrinoCFG_end---\n");
+  LOGGER.flush();
   delay(1);
   in.close();
 }

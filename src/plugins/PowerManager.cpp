@@ -13,7 +13,7 @@ void PowerManagerClass::cmdDeepSleep(const char *line) {
 }
 void PowerManagerClass::cmdDeepSleepInst(const char *line) {
   int type = atoi(strchr(line, ' ') + 1);
-//  Serial << "set deepsleep mode:" << type<< endl;
+//  LOGGER << "set deepsleep mode:" << type<< endl;
   rtcMemStore.setDeepSleep(true);
   switch (type) {
     case 0: ESP.deepSleep(1, WAKE_RF_DISABLED); break;
@@ -28,7 +28,7 @@ void PowerManagerClass::setup(MenuHandler *handler) {
   IterationDurationS = PropertyList.readLongProperty(PROP_ITERATION_DURATION);
   if (!IterationDurationS) IterationDurationS = 30;
   if (IterationDurationS < 15) {
-    Serial << F("Timeout disabled since IterationDuration is: ") << IterationDurationS << endl;
+    LOGGER << F("Timeout disabled since IterationDuration is: ") << IterationDurationS << endl;
     timeoutIntervalS = 0;
   } else if (!PropertyList.hasProperty(PROP_TIMEOUT_INTERVAL)) {
     timeoutIntervalS = 120;
@@ -42,7 +42,7 @@ void PowerManagerClass::setup(MenuHandler *handler) {
   isLowPower = rtcMemStore.wasInDeepSleep();
   wokeFromDeepSleep = isLowPower;
   if (isLowPower) {
-    Serial << F("Device will go to Deep Sleep mode, once data is sent. Press [Enter] to abort\n");
+    LOGGER << F("Device will go to Deep Sleep mode, once data is sent. Press [Enter] to abort\n");
   }
   //isLowPower = rtcMemStore.getTest();
 }
@@ -54,7 +54,7 @@ void PowerManagerClass::onTimeout() {
 void PowerManagerClass::onTimeoutInst() {
   timer->Stop();
   isLowPower = true;
-  Serial << F("Switched to power-safe mode. Press key during start or restart device to exit.") << endl;
+  LOGGER << F("Switched to power-safe mode. Press key during start or restart device to exit.") << endl;
 }
 
 void PowerManagerClass::onNop(const char *line) {
@@ -64,11 +64,11 @@ void PowerManagerClass::onNop(const char *line) {
 void PowerManagerClass::onNopInst(const char *line) {
   int t = timeoutIntervalS;
   if (strchr(line, ' '))  t = atoi(strchr(line, ' ') + 1);
-  if (DEBUG) Serial << F("PowerManager timeout: ") << t << endl;
+  if (DEBUG) LOGGER << F("PowerManager timeout: ") << t << endl;
   timeoutIntervalS = t;
   if (t == 0) {
     timer->Stop();
-    if (DEBUG) Serial << F("PowerManager disabled")<< endl;
+    if (DEBUG) LOGGER << F("PowerManager disabled")<< endl;
   } else {
     timer->setInterval(1000L*t);
     timer->Start();
@@ -77,21 +77,21 @@ void PowerManagerClass::onNopInst(const char *line) {
 }
 
 void PowerManagerClass::loopPowerManager() {
-  //Serial << "Power Manager: " << millis() << endl;
-  //Serial.flush();
+  //LOGGER << "Power Manager: " << millis() << endl;
+  //LOGGER.flush();
   if (isLowPower) {
     uint32_t sec = IterationDurationS;
     //if (PropertyList.hasProperty(PROP_SND_INT)) sec = PropertyList.readLongProperty(PROP_SND_INT);
   //rtcMemStore.setIterations(rtcMemStore.getIterations() + 1);
 
-    Serial << F("Completed in: ") << millis() << "ms\n";
-    Serial << F("Going into power-safe mode for ") << sec << F(" seconds") << endl;
+    LOGGER << F("Completed in: ") << millis() << "ms\n";
+    LOGGER << F("Going into power-safe mode for ") << sec << F(" seconds") << endl;
     rtcMemStore.setDeepSleep(true);
-    //Serial << "is deep sleep1: " <<rtcMemStore.wasInDeepSleep();
-    Serial.flush();
+    //LOGGER << "is deep sleep1: " <<rtcMemStore.wasInDeepSleep();
+    LOGGER.flush();
     //delay(100);
     //ESP.deepSleep(20L*1000*1000);
-
+    LOGGER.flushLog();
     rtcMemStore.setGenData(GEN_MSCOUNTER, 100 + millis() + sec*1000 + rtcMemStore.getGenData(GEN_MSCOUNTER));
     ESP.deepSleep(sec*1000*1000);
     delay(2000);

@@ -13,20 +13,20 @@ void initPN532() {
   delay(1200);
   uint32_t versiondata = nfc.getFirmwareVersion();
   if (! versiondata) {
-    Serial.print("Didn't find PN53x board");
+    LOGGER.print("Didn't find PN53x board");
     delay(100);
     while (1); // halt
   }
   // Got ok data, print it out!
-  Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX);
-  Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC);
-  Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
+  LOGGER.print("Found chip PN5"); LOGGER.println((versiondata>>24) & 0xFF, HEX);
+  LOGGER.print("Firmware ver. "); LOGGER.print((versiondata>>16) & 0xFF, DEC);
+  LOGGER.print('.'); LOGGER.println((versiondata>>8) & 0xFF, DEC);
 
   // configure board to read RFID tags
   //nfc.setPassiveActivationRetries(0x19);
   nfc.SAMConfig();
 
-  Serial.println("Waiting for an ISO14443A Card ...");
+  LOGGER.println("Waiting for an ISO14443A Card ...");
 
 }
 
@@ -45,13 +45,13 @@ void    checkForNFCCart() {
   if (success) {
     // Display some basic information about the card
     if ((millis() - prevMillis < 1000) && ! memcmp(uid, prevUid, uidLength)) return;
-    Serial.println("Found an ISO14443A card");
-    Serial.print("  UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
-    Serial.print("  UID Value: ");
+    LOGGER.println("Found an ISO14443A card");
+    LOGGER.print("  UID Length: ");LOGGER.print(uidLength, DEC);LOGGER.println(" bytes");
+    LOGGER.print("  UID Value: ");
     nfc.PrintHex(uid, uidLength);
     memcpy(prevUid, uid, uidLength);
     prevMillis = millis();
-    Serial.println("");
+    LOGGER.println("");
 
     char tmp[200], tmp2[200];
     char p2[40], p3[100];
@@ -69,7 +69,7 @@ void    checkForNFCCart() {
         sprintf(tmp2, tmp, suid);
         strcpy(tmp, tmp2);
       }
-      SERIAL_PORT << "Sending to URL: " << tmp << endl;
+      LOGGER << "Sending to URL: " << tmp << endl;
       HTTPClient http;
       http.begin(tmp);
       //addHCPIOTHeaders(&http, token);

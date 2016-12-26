@@ -25,36 +25,36 @@ void AT_FW_Plugin::mockATCommand(const char *line) {
     if (strstr(line, "AT+CWJAP_DEF")) setWifi(line);
     if (strstr(line, "AT+CIPSTART")) atCIPSTART(line);
 
-    if (strstr(line, "AT+CIPSEND"))  SERIAL_PORT << ">" << endl;
-    else                             SERIAL_PORT << "OK" << endl;
+    if (strstr(line, "AT+CIPSEND"))  LOGGER << ">" << endl;
+    else                             LOGGER << "OK" << endl;
   }
 }
 
 int AT_FW_Plugin::processResponseCodeATFW(HTTPClient *http, int rc) {
-  if (rc > 0) SERIAL_PORT << F("Response Code: ") << rc << endl;
-  else SERIAL_PORT << F("Error Code: ") << rc << " = " << http->errorToString(rc).c_str() << endl;
+  if (rc > 0) LOGGER << F("Response Code: ") << rc << endl;
+  else LOGGER << F("Error Code: ") << rc << " = " << http->errorToString(rc).c_str() << endl;
   if (rc > 0) {
     if (DEBUG) {
-      SERIAL_PORT << F("Payload: [");
+      LOGGER << F("Payload: [");
       String s = http->getString();
       const char *p = s.c_str();
       int i=0;
       while (i < s.length()) {
-        Serial << p[i++];
+        LOGGER << p[i++];
         if ((i%50) == 0) {
-          Serial.flush();
+          LOGGER.flush();
           delay(100);
           yield();
         }
       }
-      Serial <<  "]" << endl;
+      LOGGER <<  "]" << endl;
     }
-    SERIAL_PORT << F("CLOSED") << endl; // for compatibility with AT FW
+    LOGGER << F("CLOSED") << endl; // for compatibility with AT FW
   } else {
-    SERIAL_PORT << F("Failed") << endl;
+    LOGGER << F("Failed") << endl;
   }
 
-  Serial.flush();
+  LOGGER.flush();
   //delay(100);
   return rc;
 }

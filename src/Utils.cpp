@@ -28,7 +28,7 @@ void storeToEE(int address, const char *str, int maxLength) {
 }
 
 void heap(const char * str) {
-  SERIAL_PORT << "Heap " << str << ": " << ESP.getFreeHeap() << endl;
+  LOGGER << "Heap " << str << ": " << ESP.getFreeHeap() << endl;
 }
 
 char *getJSONConfig(const char *item, char *dest, char *p2, char *p3) {
@@ -36,7 +36,7 @@ char *getJSONConfig(const char *item, char *dest, char *p2, char *p3) {
   char data[1000];
   dest[0] = 0;
   EEPROM.get(EE_JSON_CFG_1000B, data);
-  //SERIAL_PORT << "JSON cfg: " << data << endl;
+  //LOGGER << "JSON cfg: " << data << endl;
   if (data[0] == -1 || data[0] == 0 || data[0] == 255) strcpy(data, "{}");
   JsonObject& root = jsonBuffer.parseObject(data);
   if (!root.success() || !root.containsKey(item)) return dest;
@@ -47,7 +47,7 @@ char *getJSONConfig(const char *item, char *dest, char *p2, char *p3) {
     if (root[item][1].asString()) strcpy(p2  , root[item][1].asString());
     if (root[item][2].asString()) strcpy(p3  , root[item][2].asString());
   }
-  //SERIAL_PORT << "dest: " << dest << endl;
+  //LOGGER << "dest: " << dest << endl;
   return dest;
 }
 void putJSONConfig(const char *key, int value, boolean commit) {
@@ -89,13 +89,13 @@ void putJSONConfig(const char *key, const char *value, boolean valueIsArray, boo
 //
 //   EEPROM.write(EE_JSON_CFG_1000B, -1);
 //   EEPROM.commit();
-//   SERIAL_PORT << "Testing JSON" << endl;
-//   SERIAL_PORT << getJSONConfig("vladi", tmp) << endl;
+//   LOGGER << "Testing JSON" << endl;
+//   LOGGER << getJSONConfig("vladi", tmp) << endl;
 //   putJSONConfig("vladi", "sadsda");
-//   SERIAL_PORT << "1 " << getJSONConfig("vladi", tmp) << endl;
+//   LOGGER << "1 " << getJSONConfig("vladi", tmp) << endl;
 //   putJSONConfig("vladi", "sadsa");
-//   SERIAL_PORT << "2 " << getJSONConfig("vladi", tmp) << endl;
-//   SERIAL_PORT << endl;
+//   LOGGER << "2 " << getJSONConfig("vladi", tmp) << endl;
+//   LOGGER << endl;
 //   EEPROM.write(EE_JSON_CFG_1000B, -1);
 //   EEPROM.commit();
 // }
@@ -106,14 +106,14 @@ void putJSONConfig(const char *key, const char *value, boolean valueIsArray, boo
   EEPROM.get(EE_JSON_CFG_1000B, data);
   if (data[0] == -1 || data[0] == 0) strcpy(data, "{}");
   JsonObject& root = jsonBuffer.parseObject(data);
-  root.printTo(SERIAL_PORT);
+  root.printTo(LOGGER);
  }
 
 
 
 void dumpArray(const char *s) {
-  while (*s) Serial << _HEX(*(s++)) << ",";
-  Serial << endl;
+  while (*s) LOGGER << _HEX(*(s++)) << ",";
+  LOGGER << endl;
 }
 
 char* getListItem(const char* str, char *buf, int idx, char sep) {
@@ -139,7 +139,7 @@ void replaceDecimalSeparator(String &src) {
   if (!decimalSeparator) {
     decimalSeparator = PropertyList.readProperty(PROP_DECIMAL_SEPARATOR)[0];
     if (!decimalSeparator) decimalSeparator = '.';
-    Serial << "Decimal Separator is: " << decimalSeparator << endl;
+    LOGGER << "Decimal Separator is: " << decimalSeparator << endl;
   }
   src.replace('.', decimalSeparator);
 }

@@ -42,10 +42,10 @@ void DweetIOClass::cmdDweetStartInst(const char *cmd) {
   if (intervalSec < 5) intervalSec = 5;
   dwKey = PropertyList.readProperty(PROP_DWEET_CMDKEY);
   if (dwKey.length() == 0) dwKey = String(F("vThing_")) + String(ESP.getChipId(), HEX);
-  Serial << F("Reading dweets from: ") << dwKey << F(" each ") << intervalSec << F("sec") << endl;
-  Serial.flush();
-  Serial << F("Send commands via: http://dweet.io/dweet/for/") << dwKey << F("?cmd=...") << endl;
-  Serial.flush();
+  LOGGER << F("Reading dweets from: ") << dwKey << F(" each ") << intervalSec << F("sec") << endl;
+  LOGGER.flush();
+  LOGGER << F("Send commands via: http://dweet.io/dweet/for/") << dwKey << F("?cmd=...") << endl;
+  LOGGER.flush();
   if (timer == NULL) timer = TimerManager.registerTimer(new Timer(intervalSec*1000, onGetDweets));
   if (intervalSec == 0) timer->Stop();
   else timer->setInterval(intervalSec*1000);
@@ -71,7 +71,7 @@ bool DweetIOClass::getDweetCommand(char *cmd) {
     http.begin(url);
     int httpCode = http.GET();
     if(httpCode <= 0) {
-      SERIAL_PORT << F("Failed to getDweet from: ") << url << F(", due to: ") << http.errorToString(httpCode) << endl;
+      LOGGER << F("Failed to getDweet from: ") << url << F(", due to: ") << http.errorToString(httpCode) << endl;
       return false;
     }
 
@@ -81,10 +81,10 @@ bool DweetIOClass::getDweetCommand(char *cmd) {
     StaticJsonBuffer<400> jsonBuffer;
     JsonObject& root = jsonBuffer.parseObject(pay2);
     if (!root.success()) {
-      SERIAL_PORT << F("Parsing failed! : ") << payload.c_str() << endl;
+      LOGGER << F("Parsing failed! : ") << payload.c_str() << endl;
       return false;
     }
-    if (DEBUG) Serial << F("Got Dweets for: ") << millis() - mstart << F(" ms\n");
+    if (DEBUG) LOGGER << F("Got Dweets for: ") << millis() - mstart << F(" ms\n");
     if (!root.containsKey("this") || strcmp(root["this"].asString(), "succeeded")) return false;
     if (strcmp(lastDweet, root["with"][0]["created"].asString()) == 0) return false;
     if (!*lastDweet && !isAcceptStoredDweets) {
@@ -93,7 +93,7 @@ bool DweetIOClass::getDweetCommand(char *cmd) {
     } else {
       rtcMemStore.setLastDweet(root["with"][0]["created"].asString());
       strcpy(cmd, root["with"][0]["content"]["cmd"].asString());
-      if (DEBUG) SERIAL_PORT << F("New Dweet: ") << cmd << endl;
+      if (DEBUG) LOGGER << F("New Dweet: ") << cmd << endl;
       return true;
     }
 }

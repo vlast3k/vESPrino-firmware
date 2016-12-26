@@ -10,13 +10,13 @@ void CustomURL_Plugin::registerCommands(MenuHandler *handler) {
 void CustomURL_Plugin::cfgGENIOT(const char *p) {
   char genurl[140] = "";
   if (!p[6]) {
-    SERIAL_PORT << F("Cleared Generic URL") << endl;
+    LOGGER << F("Cleared Generic URL") << endl;
   } else {
     strncpy(genurl, p+7, sizeof(genurl)-1);
-    SERIAL_PORT << F("Stored Generic URL: ") << genurl << endl;
+    LOGGER << F("Stored Generic URL: ") << genurl << endl;
   }
   PropertyList.putProperty(EE_GENIOT_PATH, genurl); // path
-  SERIAL_PORT << F("DONE") << endl;
+  LOGGER << F("DONE") << endl;
 }
 
 void CustomURL_Plugin::sndGENIOT(const char *line) {
@@ -28,11 +28,11 @@ void CustomURL_Plugin::sndGENIOT(const char *line) {
   } else {
     sprintf(str2, str, &line[7]);
   }
-  SERIAL_PORT << F("Sending to URL: \"") << str2 << "\"" << endl;
+  LOGGER << F("Sending to URL: \"") << str2 << "\"" << endl;
 
   HTTPClient http;
   http.begin(str2);
   //addHCPIOTHeaders(&http, token);
   int rc = AT_FW_Plugin::processResponseCodeATFW(&http, http.GET());
-  //SERIAL_PORT << "Result: " << http.errorToString(rc).c_str();
+  //LOGGER << "Result: " << http.errorToString(rc).c_str();
 }

@@ -21,13 +21,13 @@ void TestSensor::toggle(const char *ignore) {
 
 void TestSensor::toggleInst() {
   enabled = !enabled;
-  Serial << F("Test Sensor:") << (enabled ? F("ENABLED") : F("DISABLED")) << endl;
+  LOGGER << F("Test Sensor:") << (enabled ? F("ENABLED") : F("DISABLED")) << endl;
   PropertyList.putProperty(F("test.sensor"), enabled?F("1"): F(""));
 }
 
 void TestSensor::getData(LinkedList<Pair *> *data) {
  if (!enabled) return;
-  Serial << F("TestSensor::getData") << endl;
+  LOGGER << F("TestSensor::getData") << endl;
   data->add(new Pair("t_TEMP", String(F("23.4"))));
   data->add(new Pair("t_HUM", String(F("65"))));
   data->add(new Pair("t_PRES", String(F("1013"))));

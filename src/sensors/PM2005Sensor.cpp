@@ -11,8 +11,8 @@ PM2005Sensor::PM2005Sensor() {
 }
 
 void dump(uint8_t *r, int len) {
-  for (int i=0; i<len; i++) SERIAL_PORT << _HEX(*(r++)) << ",";
-  SERIAL_PORT.println();
+  for (int i=0; i<len; i++) LOGGER << _HEX(*(r++)) << ",";
+  LOGGER.println();
 }
 
 void PM2005Sensor::setup(MenuHandler *handler) {
@@ -23,7 +23,7 @@ void PM2005Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("pm2005quiet"), CMD_BEGIN, &PM2005Sensor::onCmdQuiet, F("pm2005quiet 22:00,03:00,180 (start, end, tz offset in minutes)")));
   handler->registerCommand(new MenuEntry(F("pm2005int"), CMD_BEGIN, &PM2005Sensor::onCmdInterval, F("pm2005int 20,3600 (measure time in seconds - active, quiet (<300sec = dynamic mode)")));
   if (I2CHelper::i2cSDA > -1 && I2CHelper::checkI2CDevice(0x28)) {
-    Serial << F("Found PM2005 - Dust / Particle Sensor\n");
+    LOGGER << F("Found PM2005 - Dust / Particle Sensor\n");
     hasSensor = true;
     checkMode();
   } else{
@@ -42,14 +42,14 @@ void PM2005Sensor::checkMode() {
   if (qs.length() > 0) {
     if (TimerManagerClass::isTimeInPeriod(qs.c_str(), qe.c_str()) != TP_OUT) {
       interval = PropertyList.readLongProperty(PROP_PM2005_INT_QUIET);
-      if (DEBUG) Serial << F("PM2005: Quiet Time\n");
+      if (DEBUG) LOGGER << F("PM2005: Quiet Time\n");
     } else {
       interval = PropertyList.readLongProperty(PROP_PM2005_INT_ACT);
-      if (DEBUG) Serial << F("PM2005: Active Time\n");
+      if (DEBUG) LOGGER << F("PM2005: Active Time\n");
     }
   }
-  if (DEBUG) Serial << F("PM2005: Interval: ") << interval << F(", mode: ") << mode << endl;
-  Serial.flush();
+  if (DEBUG) LOGGER << F("PM2005: Interval: ") << interval << F(", mode: ") << mode << endl;
+  LOGGER.flush();
   if (interval < 300 && mode != 5) setDynamicMode();
   else if (interval >= 300 && mode != interval) setTimingMeasuringMode(interval);
   //intReadData(pm25, pm10, status, mode);
@@ -101,7 +101,7 @@ bool PM2005Sensor::intBegin() {
       return true;
     }
     delay(20);
-    //Serial << "PM2005 init res: " << res << endl;
+    //LOGGER << "PM2005 init res: " << res << endl;
     I2CHelper::i2cHigh();
     delay(100);
   }
@@ -109,14 +109,14 @@ bool PM2005Sensor::intBegin() {
 }
 
 void PM2005Sensor::setDynamicMode() {
-  if (DEBUG) Serial << F("PM2005: set Dynamic Mode\n");
+  if (DEBUG) LOGGER << F("PM2005: set Dynamic Mode\n");
   uint8_t toSend[8] = {0x50, 0x16, 7, 5, 0, 0, 0, 0};
   sendCommand(toSend);
 }
 
 void PM2005Sensor::setTimingMeasuringMode(uint16_t intervalSec) {
   if (intervalSec > 60000) intervalSec = 60000;
-  if (DEBUG) Serial << F("PM2005: set Timing Mode: ") << endl;
+  if (DEBUG) LOGGER << F("PM2005: set Timing Mode: ") << endl;
   uint8_t toSend[8] = {0x50, 0x16, 7, 4, (uint8_t)((intervalSec >> 8)&0xFF), (uint8_t)(intervalSec & 0xFF), 0, 0};
   sendCommand(toSend);
 }
@@ -134,14 +134,14 @@ void PM2005Sensor::sendCommand(uint8_t *toSend) {
     if (res == 0) break;
     delay(100);
   }
-  if (DEBUG) Serial << F("PM2005 setMode res = ") << res << endl;
-  Serial.flush();
+  if (DEBUG) LOGGER << F("PM2005 setMode res = ") << res << endl;
+  LOGGER.flush();
 }
 
 bool PM2005Sensor::intReadData(int &pm25, int &pm10, int &status, int &mode) {
   if (!intBegin()) {
-    if (DEBUG) Serial << F("\nFailed to connect to PM2005\n");
-    Serial.flush();
+    if (DEBUG) LOGGER << F("\nFailed to connect to PM2005\n");
+    LOGGER.flush();
     return false;
   }
   int r;
@@ -149,18 +149,18 @@ bool PM2005Sensor::intReadData(int &pm25, int &pm10, int &status, int &mode) {
   byte cs = 0;
   r = Wire.requestFrom((uint8_t)0x28, (size_t)22, false);
   if (r != 22) {
-    if (DEBUG) Serial << F("Expected 22 bytes, but got ") << r << endl;
-    Serial.flush();
+    if (DEBUG) LOGGER << F("Expected 22 bytes, but got ") << r << endl;
+    LOGGER.flush();
     return false;
   }
   for (int i=0; i < 22; i++) {
     data[i] = Wire.read();
-    if (DEBUG) Serial << _HEX(data[i]) << F(",");
+    if (DEBUG) LOGGER << _HEX(data[i]) << F(",");
     if (i < 21) cs ^= data[i];
   }
-  if (DEBUG) Serial << endl;
+  if (DEBUG) LOGGER << endl;
   if (cs != data[21]) {
-    if (DEBUG) Serial << F("Wrong Checksum: ") << cs << F(", expected: ") << data[21] << endl;
+    if (DEBUG) LOGGER << F("Wrong Checksum: ") << cs << F(", expected: ") << data[21] << endl;
     return false;
   }
   status = data[2];
@@ -168,14 +168,14 @@ bool PM2005Sensor::intReadData(int &pm25, int &pm10, int &status, int &mode) {
   pm10 = (data[7] << 8) + data[8];
   mode = (data[9] << 8) + data[10];
   if (DEBUG) {
-    Serial << F("Sensor Status: ") << status << endl;
-    Serial.flush();
-    Serial << F("PM 2.5 : ") << pm25 << endl;
-    Serial.flush();
-    Serial << F("PM  10 : ") << pm10 << endl;
-    Serial.flush();
-    Serial << F("Measuring Mode : ") << mode << endl;
-    Serial.flush();
+    LOGGER << F("Sensor Status: ") << status << endl;
+    LOGGER.flush();
+    LOGGER << F("PM 2.5 : ") << pm25 << endl;
+    LOGGER.flush();
+    LOGGER << F("PM  10 : ") << pm10 << endl;
+    LOGGER.flush();
+    LOGGER << F("Measuring Mode : ") << mode << endl;
+    LOGGER.flush();
   }
   return true;
 }

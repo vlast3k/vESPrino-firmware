@@ -39,12 +39,12 @@ float currentPinValue[16];
 
 // onbaord green LED D1
 #define LEDPIN    5
-// onbaord red LED D2 // uses SERIAL_PORT TX
+// onbaord red LED D2 // uses LOGGER TX
 #define LED2PIN   1
 
 // note
-// TX GPIO2 @SERIAL1 (SERIAL_PORT ONE)
-// RX GPIO3 @SERIAL_PORT
+// TX GPIO2 @SERIAL1 (LOGGER ONE)
+// RX GPIO3 @LOGGER
 
 
 #define LEDoff digitalWrite(LEDPIN,HIGH)
@@ -76,7 +76,7 @@ void h801_processConfig(const char *p) {
 }
 
 void onH801LEDStoreData() {
-  SERIAL_PORT << "H801 Storing LED configuration\n";
+  LOGGER << "H801 Storing LED configuration\n";
   putJSONConfig("R", currentPinValue[redPIN], false, false);
   putJSONConfig("G", currentPinValue[greenPIN], false, false);
   putJSONConfig("B", currentPinValue[bluePIN], false, false);
@@ -95,7 +95,7 @@ void analogWriteColor(int pin, float value, boolean startStoreTimer = false) {
   value = map(value,0,100,0,1023);
   value = constrain(value,0,1023);
   //value = gamma_table[value];
-  if (DEBUG) SERIAL_PORT << "PWM PIN: " << pin << " = " << value << endl;
+  if (DEBUG) LOGGER << "PWM PIN: " << pin << " = " << value << endl;
   analogWrite(pin, value);
   //if (startStoreTimer) tmrStoreData->Start();
 }
@@ -105,13 +105,13 @@ void h801Fade(int r, int g, int b) {
   int stepsPerSec = 20;
   int steps = timeMS * stepsPerSec / 1000;
   int msPerStep = 1000 / stepsPerSec;
-  if (DEBUG) SERIAL_PORT << "steps : " << steps << endl;
+  if (DEBUG) LOGGER << "steps : " << steps << endl;
   float rStep = ((float)(currentPinValue[redPIN]   - r)) / steps;
   float gStep = ((float)(currentPinValue[greenPIN] - g)) / steps;
   float bStep = ((float)(currentPinValue[bluePIN]  - b)) / steps;
 
   for (int i=0; i < steps -1; i++) {
-    if (DEBUG) SERIAL_PORT << "rstep: " << rStep << ", " << currentPinValue[redPIN]     - rStep << endl;
+    if (DEBUG) LOGGER << "rstep: " << rStep << ", " << currentPinValue[redPIN]     - rStep << endl;
     analogWriteColor(redPIN, currentPinValue[redPIN]     - rStep, false);
     analogWriteColor(greenPIN, currentPinValue[greenPIN] - gStep, false);
     analogWriteColor(bluePIN, currentPinValue[bluePIN]   - bStep, false);
@@ -136,7 +136,7 @@ void processTriplet(String payload) {
 }
 
 void stopH801() {
-  SERIAL_PORT << "on stop" << endl;
+  LOGGER << "on stop" << endl;
   heap("");
   delete h801_webServer;
   delete h801_mqttClient;
@@ -186,7 +186,7 @@ void h801_webServer_start() {
   h801_webServer->on("/", onh801_HttpRequest);
   h801_webServer->begin();
 
-  SERIAL_PORT << F("\n\nOpen http://") << WiFi.localIP() << F("/ in your browser to see status and\nhttp://") <<
+  LOGGER << F("\n\nOpen http://") << WiFi.localIP() << F("/ in your browser to see status and\nhttp://") <<
                                      WiFi.localIP() << F("/?color=12;15;100&w1=12&w2=56 to set R,G,B,W1 and W2 - range [0,100])\nadd 'save=true' param, to store data\n");
 }
 
@@ -197,7 +197,7 @@ void h801_callback(char* topic1, byte* payload1, unsigned int length) {
   strncpy(bPayload, (char*)payload1, _min(length, sizeof(bPayload)-1));
   bPayload[length] = 0;
   String payload = String((char*)bPayload), topic = String(topic1);
-  SERIAL_PORT << topic << " => " << payload << endl;
+  LOGGER << topic << " => " << payload << endl;
   if      (topic.indexOf("/Color") > -1 && !isDigit(payload1[0])) publishMQTTStatus();
   else if (topic.indexOf("/Color") > -1) processTriplet(payload);
   else if (topic.indexOf("/W1")   > -1) analogWriteColor(w1PIN, payload.toInt());
@@ -213,7 +213,7 @@ void h801_mqtt_connect() {
   char mqttServer[30], mqttClient[20], mqttTopic[40];
   long mqttPort;
   wclient = new WiFiClient();
-    //SERIAL_PORT << "ADADASdsadasdD" << endl;
+    //LOGGER << "ADADASdsadasdD" << endl;
   EEPROM.get(EE_MQTT_SERVER_30B, mqttServer);
   if (mqttServer[0] == 0 || mqttServer[0] == 255) return;
   EEPROM.get(EE_MQTT_PORT_4B,    mqttPort);
@@ -221,7 +221,7 @@ void h801_mqtt_connect() {
   EEPROM.get(EE_MQTT_TOPIC_40B,  mqttTopic);
 
   delay(100);
-  SERIAL_PORT << "mqtt connecting to: " << mqttServer << " " << mqttPort << " " << mqttClient << endl;
+  LOGGER << "mqtt connecting to: " << mqttServer << " " << mqttPort << " " << mqttClient << endl;
   delay(100);
   h801_mqttClient = new PubSubClient(mqttServer, mqttPort, h801_callback, *wclient);
 //  h801_mqttClient->set_callback(h801_callback);
@@ -230,32 +230,32 @@ void h801_mqtt_connect() {
     h801_mqttClient->subscribe((String(mqttTopic) + "/W1").c_str());
     h801_mqttClient->subscribe((String(mqttTopic) + "/W2").c_str());
     h801_mqttClient->subscribe((String(mqttTopic) + "/Save").c_str());
-    SERIAL_PORT.println("MQTT connected");
-    SERIAL_PORT << F("Subscribed Topics: \n") <<
+    LOGGER.println("MQTT connected");
+    LOGGER << F("Subscribed Topics: \n") <<
                 mqttTopic << F("/Color  Send Payload: R;G;B  from 0-100 (incl), e.g. 15;20;100\n") <<
                 mqttTopic << F("/W1     Send Payload: W1  0-100\n") <<
                 mqttTopic << F("/W2     Send Payload: W1  0-100\n") <<
                 mqttTopic << F("/Save   to store settings to flash (LEDs will flash once)\n") <<
                 F("Status update will be published on: ") << mqttTopic << "/Status\n";
   }  else {
-    SERIAL_PORT << " mqtt failed" << endl;
+    LOGGER << " mqtt failed" << endl;
   }
 }
 
 void testH801(const char *ignore) {
   boolean res = h801_mqttClient->publish("/openHAB/RGB_2/Color", "12;33;44");
-  SERIAL_PORT << String(res) << endl;
+  LOGGER << String(res) << endl;
 }
 
 void onH801hb() {
   if (h801led) LED2off;
   else LED2on;
   h801led = !h801led;
-  //SERIAL_PORT << tmr1->getInterval() << endl;
+  //LOGGER << tmr1->getInterval() << endl;
   if (WiFi.status() != WL_CONNECTED) {
     tmr1->setInterval(100);
     LEDon;
-    //SERIAL_PORT << "nowifi" << endl;
+    //LOGGER << "nowifi" << endl;
   } else if(!h801_mqttClient->connected()) {
     if (h801ConnectRetries > 30) {
       h801_mqtt_connect();
@@ -283,9 +283,9 @@ void loadLEDDataH801() {
   analogWriteColor(w1PIN,    String(getJSONConfig("W1", tmp)).toInt(), false);
   analogWriteColor(w2PIN,    String(getJSONConfig("W2", tmp)).toInt(), false);
   x = millis() - x;
-  SERIAL_PORT << F("LED Config Loaded in: ") << x << F(" ms\n");
+  LOGGER << F("LED Config Loaded in: ") << x << F(" ms\n");
 
-  SERIAL_PORT << F("Loaded LED Config:") << h801LEDConfigAsJSON();
+  LOGGER << F("Loaded LED Config:") << h801LEDConfigAsJSON();
 }
 
 void h801_setup() {

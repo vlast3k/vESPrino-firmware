@@ -22,7 +22,7 @@ void doHttpUpdate(int mode, const char *url) {
     #endif
   }
 
-  SERIAL_PORT << F("Will update from: ") << url << endl;
+  LOGGER << F("Will update from: ") << url << endl;
 
   menuHandler.handleCommand("ledcolor red");
   menuHandler.handleCommand("ledbrg 80");
@@ -31,16 +31,16 @@ void doHttpUpdate(int mode, const char *url) {
 
   switch(ret) {
     case HTTP_UPDATE_FAILED:
-      SERIAL_PORT.println(ESPhttpUpdate.getLastErrorString());
-      SERIAL_PORT.println(F("HTTP_UPDATE_FAILED"));
+      LOGGER.println(ESPhttpUpdate.getLastErrorString());
+      LOGGER.println(F("HTTP_UPDATE_FAILED"));
       break;
 
     case HTTP_UPDATE_NO_UPDATES:
-      SERIAL_PORT.println(F("HTTP_UPDATE_NO_UPDATES"));
+      LOGGER.println(F("HTTP_UPDATE_NO_UPDATES"));
       break;
 
     case HTTP_UPDATE_OK:
-      SERIAL_PORT.println(F("HTTP_UPDATE_OK"));
+      LOGGER.println(F("HTTP_UPDATE_OK"));
       break;
   }
 }
@@ -67,14 +67,14 @@ void OTA_registerCommands(MenuHandler *handler) {
 String getHTTPFile(String url) {
     HTTPClient http;
     String payload;
-  //  Serial << "Retriving HTTP: " << url << endl;
+  //  LOGGER << "Retriving HTTP: " << url << endl;
     http.begin(url); //HTTP
     int httpCode = http.GET();
     if(httpCode > 0) {
-        if (DEBUG) Serial << F("[HTTP] GET... code:") << httpCode << endl;
+        if (DEBUG) LOGGER << F("[HTTP] GET... code:") << httpCode << endl;
         if(httpCode == HTTP_CODE_OK) payload = http.getString();
     } else {
-        if (DEBUG) Serial << F("[HTTP] GET... failed, error:") << http.errorToString(httpCode).c_str() << endl;
+        if (DEBUG) LOGGER << F("[HTTP] GET... failed, error:") << http.errorToString(httpCode).c_str() << endl;
     }
 
     http.end();
@@ -82,7 +82,7 @@ String getHTTPFile(String url) {
 }
 
 void autoUpdateIfForced(const char *ignore) {
-  //Serial << F("Waiting for Wifi connection\n");
+  //LOGGER << F("Waiting for Wifi connection\n");
   if (waitForWifi(10000) != WL_CONNECTED) return;
   String urlGen = String(F("http://anker-bg.com/vlast3k/vesprino/"));
   String chipid =  String(ESP.getChipId(), 16);
@@ -93,13 +93,13 @@ void autoUpdateIfForced(const char *ignore) {
   uint32_t fc = atol(forcedUpdateChip.c_str());
   uint32_t fg = atol(forcedUpdateGen.c_str());
   uint32_t bn = atol(BUILD_NUM);
-  Serial.printf("fg: %d, fc: %d, bn:%d\n", fg, fc, bn);
+  LOGGER.printf("fg: %d, fc: %d, bn:%d\n", fg, fc, bn);
   if (bn >= fc && bn >= fg) return;
   String forcedUpdate = (fc >= fg) ? forcedUpdateChip : forcedUpdateGen;
   String urlUpdate    = (fc >= fg) ? urlChip : urlGen;
   if (DEBUG) {
-    Serial << F("OTA: current Build: ") << atol(BUILD_NUM) << endl;
-    Serial << F("OTA: forced  Build: ") << atol(forcedUpdate.c_str()) << endl;
+    LOGGER << F("OTA: current Build: ") << atol(BUILD_NUM) << endl;
+    LOGGER << F("OTA: forced  Build: ") << atol(forcedUpdate.c_str()) << endl;
   }
   //if (atol(BUILD_NUM) >= atol(forcedUpdateGen.c_str())) return;
   String url = urlUpdate + F("firmware") + forcedUpdate + F(".bin");

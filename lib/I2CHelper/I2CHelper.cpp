@@ -1,5 +1,6 @@
 #include <I2CHelper.hpp>
 #include <Arduino.h>
+#include <Stream.h>
 #include <Streaming.h>
 #include <Wire.h>
 #include <RTCMemStore.hpp>
@@ -8,6 +9,7 @@
 
 int8_t I2CHelper::i2cSDA = -1;
 int8_t I2CHelper::i2cSCL = -1;
+Stream *I2CHelper::LOGGER = NULL;
 extern RTCMemStore rtcMemStore;
 
 bool I2CHelper::checkI2CDevice(int addr) {
@@ -24,13 +26,13 @@ bool I2CHelper::checkI2CDevice(int sda, int sca, int addr) {
   Wire.begin(sda, sca);
   Wire.beginTransmission(addr);
   int res = Wire.endTransmission();
-  Serial << F("i2c addr:") << addr << F(", i2c res: ") << _HEX(res) << endl;
+  *LOGGER << F("i2c addr:") << addr << F(", i2c res: ") << _HEX(res) << endl;
   return !res;
 }
 
 void I2CHelper::i2cPrintAddr(byte address) {
-  if (address<16) Serial.print(F("0"));
-  Serial << _HEX(address) << endl;
+  if (address<16) LOGGER->print(F("0"));
+  *LOGGER << _HEX(address) << endl;
 }
 void I2CHelper::dumpI2CBus(const char *line) {
   //Wire.begin(D5, D7);
@@ -39,7 +41,7 @@ void I2CHelper::dumpI2CBus(const char *line) {
   for(address = 1; address < 0xff; address++ )  {
     Wire.beginTransmission(address);
     error = Wire.endTransmission();
-    Serial << "Address 0x" << _HEX(address) << " = " << error << endl;
+    *LOGGER << "Address 0x" << _HEX(address) << " = " << error << endl;
     if ((address%10)==0) delay(1);
   }
 }
@@ -49,7 +51,7 @@ bool I2CHelper::hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str
   //Wire.setClock(20000);
   byte error, address;
   int nDevices;
-  if (debug) Serial.printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
+  if (debug) LOGGER->printf(String(F("Scanning SDA:SCA = %s:%s\n")).c_str(), sda_str.c_str(), sca_str.c_str());//.println("Scanning...");
   //
   // pinMode(sda, HIGH);
   // pinMode(sca, HIGH);
@@ -64,7 +66,7 @@ bool I2CHelper::hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str
       wdtPrev = millis();
     }
 
-    //Serial << ".";
+    //*LOGGER << ".";
     // The i2c_scanner uses the return value of
     // the Write.endTransmisstion to see if
     // a device did acknowledge to the address.
@@ -75,7 +77,7 @@ bool I2CHelper::hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str
 
       if (error == 0) {
         if (debug) {
-          Serial.print(F("I2C device found at address 0x"));
+          LOGGER->print(F("I2C device found at address 0x"));
           i2cPrintAddr(address);
         }
         nDevices++;
@@ -88,21 +90,21 @@ bool I2CHelper::hasI2CDevices(int sda, int sca, String &sda_str, String &sca_str
           break;
         }
         if (debug) {
-          Serial.print(F("SDA Line High 0x"));
+          LOGGER->print(F("SDA Line High 0x"));
           i2cPrintAddr(address);
         }
       }
       // else {
       //   if (debug) {
-      //     Serial.print(F("I2C Error on 0x"));
+      //     *LOGGER.print(F("I2C Error on 0x"));
       //     i2cPrintAddr(address);
       //   }
       // }
     }
   }
   if (debug) {
-    if (nDevices == 0)  Serial.println(F("No I2C devices found\n"));
-    else                Serial.println(F("done\n"));
+    if (nDevices == 0)  LOGGER->println(F("No I2C devices found\n"));
+    else                LOGGER->println(F("done\n"));
   }
   return nDevices > 0;
 }
@@ -125,15 +127,15 @@ bool I2CHelper::findI2C(int8_t &sda, int8_t &scl, long disabledPorts, bool debug
   for (int i=0; i < size; i++) {
     for (int k=0; k < size; k++) {
       if (i == k) continue;
-      // Serial << "PortDisabled: " << gpios[i] <<  " "<<isBitSet(disabledPorts, gpios[i]) << " " << disabledPorts << endl;
-      // Serial << "PortDisabled: " << gpios[k] <<  " "<<isBitSet(disabledPorts, gpios[k]) << " " << disabledPorts << endl;
+      // *LOGGER << "PortDisabled: " << gpios[i] <<  " "<<isBitSet(disabledPorts, gpios[i]) << " " << disabledPorts << endl;
+      // *LOGGER << "PortDisabled: " << gpios[k] <<  " "<<isBitSet(disabledPorts, gpios[k]) << " " << disabledPorts << endl;
       if (isBitSet(disabledPorts, gpios[i]) || isBitSet(disabledPorts, gpios[k])) continue;
-      // Serial << "scanning" << endl;
-      //if (debug) Serial << "Scanning " << gpios_str[sda], << " : " << gpios_str[sca] << endl;
+      // *LOGGER << "scanning" << endl;
+      //if (debug) *LOGGER << "Scanning " << gpios_str[sda], << " : " << gpios_str[sca] << endl;
       if (hasI2CDevices(gpios[i], gpios[k], gpios_str[i], gpios_str[k], debug)) {
         sda = gpios[i];
         scl = gpios[k];
-        Serial.printf(String(F("Found i2c bus on SDA:SCL = %s:%s (%d:%d)\n")).c_str(), gpios_str[i].c_str(), gpios_str[k].c_str(), sda, scl);
+        LOGGER->printf(String(F("Found i2c bus on SDA:SCL = %s:%s (%d:%d)\n")).c_str(), gpios_str[i].c_str(), gpios_str[k].c_str(), sda, scl);
         return true;
       }
       delay(1);
@@ -161,7 +163,8 @@ void I2CHelper::cmdScanI2C(const char *ignore) {
   findI2C(a, b, 0, true);
 }
 
-void I2CHelper::beginI2C(long disabledPorts) {
+void I2CHelper::beginI2C(long disabledPorts, Stream *_LOGGER) {
+  LOGGER = _LOGGER;
 //  brzo_i2c_setup(D5, D1, 50000);
   //Wire.begin(D5, D1);
   uint32_t rtcI2c = rtcMemStore.getGenData(GEN_I2C_BUS);
@@ -173,10 +176,10 @@ void I2CHelper::beginI2C(long disabledPorts) {
   }
 
   if (i2cSDA > -1) {
-    Serial << F("I2C Bus on SDA:SCA (") << i2cSDA << F(":") << i2cSCL << F(")");
+    *LOGGER << F("I2C Bus on SDA:SCA (") << i2cSDA << F(":") << i2cSCL << F(")");
     Wire.begin(i2cSDA, i2cSCL);
   } else {
-    Serial << F("No I2C Devices found\n");
+    *LOGGER << F("No I2C Devices found\n");
   }
 
   if (!rtcI2c) {

@@ -36,7 +36,7 @@ using namespace std;
   #include <NeoPixelBus.h>
   #include <vSAP_Auth.h>
 
-  #define SERIAL_PORT Serial
+  //#define SERIAL_PORT LOGGER
 
 
 
@@ -47,26 +47,26 @@ int pgpio0, pgpio2;
 
 String VERSION = "v1.16";
 void printVersion(const char* ignore) {
-  SERIAL_PORT << endl;
+  LOGGER << endl;
   #ifdef VTHING_CO2
-    SERIAL_PORT << F("vThing - CO2 Monitor ");
+    LOGGER << F("vThing - CO2 Monitor ");
   #elif defined(VTHING_STARTER)
-    SERIAL_PORT << F("vThing - Starter Edition ");
+    LOGGER << F("vThing - Starter Edition ");
   #elif defined(VTHING_H801_LED)
-    SERIAL_PORT << F("vThing - H801 FW ");
+    LOGGER << F("vThing - H801 FW ");
   #elif defined(VAIR)
-    SERIAL_PORT << F("vAir - WiFi Module ");
+    LOGGER << F("vAir - WiFi Module ");
   #elif defined(VTHING_VESPRINO)
-    SERIAL_PORT << F("vESPrino ");
+    LOGGER << F("vESPrino ");
   #endif
-  SERIAL_PORT << VERSION;
-  Serial.flush();
-  Serial << F(" build") << BUILD_NUM << endl;
-  Serial.flush();
+  LOGGER << VERSION;
+  LOGGER.flush();
+  LOGGER << F(" build") << BUILD_NUM << endl;
+  LOGGER.flush();
   //delay(100);
-  SERIAL_PORT << F("IP address: ") << WiFi.localIP() << endl;
-  SERIAL_PORT << F("Chip ID: ")    << _HEX(ESP.getChipId()) << endl;
-  Serial.flush();
+  LOGGER << F("IP address: ") << WiFi.localIP() << endl;
+  LOGGER << F("Chip ID: ")    << _HEX(ESP.getChipId()) << endl;
+  LOGGER.flush();
   //delay(100);
 
 }
@@ -85,63 +85,63 @@ void registerDestination(Destination *destination) {
 
 void setupPlugins(MenuHandler *handler) {
   //menuHandler.handleCommand(F("scani2c"));
-  Serial << F("\n--- Setup PLUGINS ---\n");
+  LOGGER << F("\n--- Setup PLUGINS ---\n");
   for (int i=0; i < plugins.size(); i++) {
-//    Serial << F("Setup plugin: ") << plugins.get(i)->getName() << endl;
-    Serial << plugins.get(i)->getName() << endl;
+//    LOGGER << F("Setup plugin: ") << plugins.get(i)->getName() << endl;
+    LOGGER << plugins.get(i)->getName() << endl;
     plugins.get(i)->setup(handler);
     menuHandler.loop();
     delay(1);
 
   }
-  Serial << F("\n--- Setup SENSORS ---\n");
+  LOGGER << F("\n--- Setup SENSORS ---\n");
   for (int i=0; i < sensors.size(); i++) {
-//    Serial << F("Setup sensor: ") << sensors.get(i)->getName() << endl;
-    Serial << sensors.get(i)->getName() << endl;
+//    LOGGER << F("Setup sensor: ") << sensors.get(i)->getName() << endl;
+    LOGGER << sensors.get(i)->getName() << endl;
     sensors.get(i)->setup(handler);
     menuHandler.loop();
     delay(1);
 
   }
-  Serial << F("\n--- Setup DESTINATIONS ---\n");
+  LOGGER << F("\n--- Setup DESTINATIONS ---\n");
   for (int i=0; i < destinations.size(); i++) {
-    Serial << destinations.get(i)->getName() << endl;
-    //Serial << F("Setup Destination: ") << destinations.get(i)->getName() << endl;
+    LOGGER << destinations.get(i)->getName() << endl;
+    //LOGGER << F("Setup Destination: ") << destinations.get(i)->getName() << endl;
     destinations.get(i)->setup(handler);
     menuHandler.loop();
     delay(1);
 
   }
-//  Serial << F("\n--- Setup DONE ---\n");
+//  LOGGER << F("\n--- Setup DONE ---\n");
 
 }
 
 void loopPlugins() {
-  //Serial << F("\n--- Loop PLUGINS ---\n");
+  //LOGGER << F("\n--- Loop PLUGINS ---\n");
   for (int i=0; i < plugins.size(); i++) {
-  //  Serial << F("Loop plugin: ") << plugins.get(i)->getName() << endl;
+  //  LOGGER << F("Loop plugin: ") << plugins.get(i)->getName() << endl;
     plugins.get(i)->loop();
     delay(1);
   }
   //S/erial << F("\n--- Loop SENSORS ---\n");
   for (int i=0; i < sensors.size(); i++) {
-  //  Serial << F("Loop sensor: ") << sensors.get(i)->getName() << endl;
+  //  LOGGER << F("Loop sensor: ") << sensors.get(i)->getName() << endl;
     sensors.get(i)->loop();
     delay(1);
   }
   //S/erial << F("\n--- Loop DESTINATIONS ---\n");
   for (int i=0; i < destinations.size(); i++) {
-    //Serial << F("Loop Destination: ") << destinations.get(i)->getName() << endl;
+    //LOGGER << F("Loop Destination: ") << destinations.get(i)->getName() << endl;
     destinations.get(i)->loop();
     delay(1);
   }
-  //Serial << F("\n--- Loop all DONE ---\n");
+  //LOGGER << F("\n--- Loop all DONE ---\n");
 }
 
 // bool isDeepSleepWake() {
 //   uint32_t dd;
 //   ESP.rtcUserMemoryRead(0, &dd, sizeof(dd));
-// //  Serial << "rtcUserMem: " << _HEX(dd) << endl;
+// //  LOGGER << "rtcUserMem: " << _HEX(dd) << endl;
 //   if (dd == 33) {
 //     return true;
 //   } else {
@@ -152,7 +152,7 @@ void loopPlugins() {
 // }
 
 // void onButton1() {
-//   Serial << digitalRead(D3) << endl;
+//   LOGGER << digitalRead(D3) << endl;
 //   //if (digitalRead(D3) == 0) {
 //     shouldSend = true;
 //   //}
@@ -171,8 +171,9 @@ void fireEvent(const char *name) {
 
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 void setup() {
-  SERIAL_PORT.begin(9600);
+  Serial.begin(9600);
   PropertyList.begin(&menuHandler);
+  LOGGER.init();
   wifiConnectMulti();
   pinMode(D8, OUTPUT);    //enable power via D8
   digitalWrite(D8, HIGH);
@@ -181,15 +182,15 @@ void setup() {
   // pinMode(D8, OUTPUT);
   // digitalWrite(D8, HIGH);
   //Wire.begin(D6, D5);
-  //Serial.flush();
+  //LOGGER.flush();
   //delay(100);
 
   heap("Heap at start");
-  Serial.flush();
+  LOGGER.flush();
   //Wire.begin(D1, D6);
   //WiFi.begin();
   // #if defined(VTHING_CO2) || defined(VTHING_VESPRINO)
-  //   SERIAL_PORT << "AAAA";
+  //   LOGGER << "AAAA";
   //   // strip = new NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> (1, D4);
   //   // strip->Begin();
   //   // strip->SetPixelColor(0, RgbColor(5, 0,3));
@@ -205,18 +206,18 @@ void setup() {
   OTA_registerCommands(&menuHandler);
   WIFI_registerCommands(&menuHandler);
 
-  SERIAL_PORT << F("ready >") << endl;
-  SERIAL_PORT << F("Waiting for auto-connect") << endl;
+  LOGGER << F("ready >") << endl;
+  LOGGER << F("Waiting for auto-connect") << endl;
 
 //  deepSleepWake = isDeepSleepWake();
   rtcMemStore.init();
   PowerManager.setup(&menuHandler);
-  I2CHelper::beginI2C(PropertyList.readLongProperty(PROP_I2C_DISABLED_PORTS));
+  I2CHelper::beginI2C(PropertyList.readLongProperty(PROP_I2C_DISABLED_PORTS), &LOGGER);
   pinMode(D8, INPUT);
 
 
   DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
-  if (DEBUG) Serial << F("DEBUG is: ") << DEBUG;
+  if (DEBUG) LOGGER << F("DEBUG is: ") << DEBUG;
 
 
   if (PowerManager.isWokeFromDeepSleep() == false) {
@@ -282,15 +283,15 @@ void setup() {
 //int aa = 0;
 uint32_t wfStart = 0;
 void loop() {
-  //if ((aa++ % 500) == 0) Serial << "." << endl;
+  //if ((aa++ % 500) == 0) LOGGER << "." << endl;
 //   if (shouldSend == false && digitalRead(D3) == 0) {
-//     Serial << millis() - wfStart << endl;
+//     LOGGER << millis() - wfStart << endl;
 //     if (wfStart == 0) {
 //       wfStart =millis();
 //       neopixel.cmdLedSetBrgInst(F("ledbrg 90"));
 //       neopixel.cmdLedHandleColorInst(F("ledcolor cyan"));
 //     } else if (millis() - wfStart > 4000) {
-//       //Serial << "SSSSSSSSSSSS" << endl;
+//       //LOGGER << "SSSSSSSSSSSS" << endl;
 //       startAutoWifiConfig();
 //       shouldSend = true;
 //     }
