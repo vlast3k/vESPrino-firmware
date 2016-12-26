@@ -44,8 +44,9 @@ extern "C" {
 #include <ESP8266WiFiMulti.h>
 #include "plugins/NeopixelVE.hpp"
 #include <I2CHelper.hpp>
+#include "plugins/LoggingPrinter.hpp"
 
-#define BUILD_NUM "20161222"
+#define BUILD_NUM "20161226"
 
 #define SERIAL_PORT Serial
 #define EE_WIFI_SSID F("wifi.ssid")

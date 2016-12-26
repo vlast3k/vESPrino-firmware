@@ -33,6 +33,7 @@
 #include "plugins/Annemometer.hpp"
 #include "destinations/BlynkDest.hpp"
 #include "sensors/DS18B20Sensor.hpp"
+#include "plugins/LoggingPrinter.hpp"
 
 
 //boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
@@ -56,6 +57,7 @@ PowerManagerClass PowerManager;
 TimerManagerClass TimerManager;
 RTCMemStore rtcMemStore;
 NeopixelVE neopixel;
+LoggingPrinter LOGGER;
 
 CO2Sensor co2Sensor;
 CustomHTTPDest customHTTPDest;
