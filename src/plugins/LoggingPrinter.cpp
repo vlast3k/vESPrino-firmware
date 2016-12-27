@@ -5,6 +5,7 @@
 #include "plugins/PropertyList.hpp"
 #include <ESP8266HTTPClient.h>
 #include "plugins/WebSocketServer.hpp"
+#include <Hash.h>
 
 extern WebSocketServerClass myWSS;
 void LoggingPrinter::init() {
@@ -13,48 +14,51 @@ void LoggingPrinter::init() {
 }
 
 void LoggingPrinter::sendData() {
-  if (logURL.length() == 0) return;
-//      Serial << "Sending log...:" << String(data, length) << ":";
-  Serial << "Sending log...";// << String((char*)data);
-  Serial.flush();
-  HTTPClient http;
-  //http.setTimeout(1000);
-  http.begin(logURL);
-  //http.GET();
-  http.POST(data, length);
-  Serial << "sent" << endl;
+  if (!length) return;
+  if (logURL.length() > 0) {
+    Serial << "Sending log...";// << String((char*)data);
+    HTTPClient http;
+    http.begin(logURL);
+    http.POST(data, length);
+    Serial << "sent" << endl;
+  }
+  if (logToWss) {
+    //Serial << "Sending wss:" << _HEX(*data) << endl;
+    myWSS.sendData(data, length);
+  }
 }
 
 void LoggingPrinter::flushLog() {
   sendData();
   length = 0;
+  data[0] = 0;
 }
 
 void LoggingPrinter::myWrite(const uint8_t *buffer, size_t size) {
-    if (logURL.length() == 0) return;
+    if (logURL.length() == 0 && !logToWss) return;
     while(size--)  myWrite(*buffer++);
 }
 
 void LoggingPrinter::myWrite(uint8_t chr) {
-  if (logURL.length() == 0) return;
+  if (logURL.length() == 0 && !logToWss) return;
   data[length++] = chr;
   data[length] = 0;
+  if (logToWss && data[length-1] == '\n') flushLog();
   if (length == MAXSIZE - 1) flushLog();
 }
 
 size_t LoggingPrinter::write(const uint8_t *buffer, size_t size) {
-  //Serial.write('[');
+//  Serial.write('{');
   Serial.write(buffer, size);
-  if (logToWss) myWSS.sendData(data, size);
-  //Serial.write(']');
+  //if (logToWss) myWSS.sendData(data, size);
+  //Serial.write('}');
   myWrite(buffer, size);
 };
 
 size_t LoggingPrinter::write(uint8_t data) {
-  //Serial.write('[');
+  //Serial.write('{');
   Serial.write(data);
-  if (logToWss) myWSS.sendData(data);
-
-  //Serial.write(']');
+  //if (logToWss) myWSS.sendData(data);
+  //Serial.write('}');
   myWrite(data);
 };
