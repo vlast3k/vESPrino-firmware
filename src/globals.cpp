@@ -27,6 +27,7 @@
 #include "plugins/NeopixelVE.hpp"
 #include "plugins/Dweet_io.hpp"
 #include "plugins/WebServer.hpp"
+#include "plugins/WebSocketServer.hpp"
 #include "plugins/Button.hpp"
 #include "plugins/GPIO.hpp"
 #include "plugins/ServoV.hpp"
@@ -74,6 +75,7 @@ MQTTDest mqttDest;
 RFDest rfDest;
 DweetIOClass DweetIO;
 WebServerClass WebServer;
+WebSocketServerClass myWSS;
 ButtonClass Button;
 TSL2561Sensor tsl2561Sensor;
 BH1750Sensor bh1750Sensor;

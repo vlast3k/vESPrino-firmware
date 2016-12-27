@@ -15,7 +15,7 @@ public:
     uint8_t data[MAXSIZE];
     String logURL;
     int length = 0;
-
+    bool logToWss = false;
     void init();
     void sendData();
     void flushLog();
@@ -28,5 +28,6 @@ public:
     int read() override { return 0;};
     int peek() override { return 0;};
     void flush() override {Serial.flush();};
+    void setLogToWSS(bool state) {logToWss = state;};
 };
 #endif

@@ -18,7 +18,7 @@ public:
   const char* getSensorId();
   float getValue();
   void getData(LinkedList<Pair*> *data);
-  char* getName() {
+  const char* getName() {
     return "CO2";
   }
 
