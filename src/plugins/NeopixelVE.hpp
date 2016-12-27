@@ -33,6 +33,7 @@ public:
   void cmdLedHandleColorInst(const __FlashStringHelper* s) {cmdLedHandleColorInst(String(s).c_str());};
   void cmdLedSetBrgInst(const __FlashStringHelper* s) {cmdLedSetBrgInst(String(s).c_str());};
   void cmdLedHandleModeInst(const __FlashStringHelper* s){cmdLedHandleModeInst(String(s).c_str());};
+  void handleSequence(const char *seq);
 private:
   static void cmdLedHandleColor(const char* line);
   static void cmdLedSetBrg(const char* line);

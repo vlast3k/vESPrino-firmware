@@ -21,13 +21,43 @@ void NeopixelVE::setup(MenuHandler *handler) {
  void NeopixelVE::cmdLedSetBrg(const char* line) {neopixel.cmdLedSetBrgInst(line);}
  void NeopixelVE::cmdLedHandleMode(const char* line) {neopixel.cmdLedHandleModeInst(line);}
 
-void NeopixelVE::cmdLedHandleColorInst(const char *line) {
-  static char color[10] = "";
+ void NeopixelVE::handleSequence(const char *seq) {
+   seq = seq + 3;
+   while (*seq) {
+     RgbColor c;
+     int b = atoi(seq);
+     if (b > 0) ledBrg = (float)b/100;
+     for (char ch = *seq; ch >= '0' && ch <= '9'; ch = *(++seq));
+     switch (*seq) {
+       case 'r': c = Cred; break;
+       case 'b': c = Cblue; break;
+       case 'g': c = Cgreen; break;
+       case 'y': c = Cyellow; break;
+       case 'c': c = Ccyan; break;
+       case 'w': c = Cwhite; break;
+       case 'l': c = Clila; break;
+       case 'p': c = Cpink; break;
+       case 'n':
+       default:  c = Cblack; break;
+     }
+     c = RgbColor::LinearBlend(c, Cblack, ledBrg);
+     setLedColor(c);
+     delay(333);
+     seq ++;
+   }
+ }
+
+ void NeopixelVE::cmdLedHandleColorInst(const char *line) {
+  static char color[100] = "";
   if (line) line = strstr(line, " ");
-  if (line) strcpy(color, line + 1);
+  if (line) strncpy(color, line + 1, sizeof(color));
   //LOGGER << "color: " << color;
   //color.trim();
   if (strlen(color) == 0) return;
+  if (strstr(color, "seq") == color) {
+    neopixel.handleSequence(color);
+    return;
+  }
   RgbColor c;
        if (!strcmp(color, "red"))    c = Cred;
   else if (!strcmp(color, "blue"))   c = Cblue;
