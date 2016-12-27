@@ -43,7 +43,7 @@ void LoggingPrinter::myWrite(uint8_t chr) {
   if (logURL.length() == 0 && !logToWss) return;
   data[length++] = chr;
   data[length] = 0;
-  if (logToWss && data[length-1] == '\n') flushLog();
+  //if (logToWss && data[length-1] == '\n') flushLog();
   if (length == MAXSIZE - 1) flushLog();
 }
 

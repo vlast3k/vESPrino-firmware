@@ -129,6 +129,7 @@ void MenuHandler::processCommands() {
    if (hadCommands)  {
   //   handleCommand("nop");
      LOGGER << F("ready >\n");
+     LOGGER.flushLog();
    }
 }
 
