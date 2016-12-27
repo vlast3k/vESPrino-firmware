@@ -15,7 +15,7 @@ public:
   void setup(MenuHandler *handler);
   void loop() {};
 
-  void process(LinkedList<Pair*> &data);
+  bool process(LinkedList<Pair*> &data);
   static void toggle(const char *line);
   void toggleInst();
 

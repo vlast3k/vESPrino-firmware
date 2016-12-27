@@ -27,12 +27,13 @@ void SerialDumpDest::toggleInst() {
   LOGGER << F("LOGGER Dump Destination:") << (enabled ? F("ENABLED") : F("DISABLED")) << endl;
 }
 
-void SerialDumpDest::process(LinkedList<Pair *> &data) {
-  if (!enabled) return;
+bool SerialDumpDest::process(LinkedList<Pair *> &data) {
+  if (!enabled) return false;
   LOGGER << F("SerialDumpDest::process") << endl;
   for (int i=0; i < data.size(); i++) {
     Pair *p = data.get(i);
     LOGGER << p->key << "\t: " << p->value << endl;
     LOGGER.flush();
   }
+  return true;
 }

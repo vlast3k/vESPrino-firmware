@@ -17,6 +17,7 @@ void LoggingPrinter::sendData() {
   Serial << "Sending log...";// << String((char*)data);
   Serial.flush();
   HTTPClient http;
+  //http.setTimeout(1000);
   http.begin(logURL);
   //http.GET();
   http.POST(data, length);

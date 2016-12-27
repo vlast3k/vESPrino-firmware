@@ -53,8 +53,8 @@ Pair* BlynkDest::getPair(LinkedList<Pair *> &data, String &key) {
   return NULL;
 }
 
-void BlynkDest::process(LinkedList<Pair *> &data) {
-  if (!enabled) return;
+bool BlynkDest::process(LinkedList<Pair *> &data) {
+  if (!enabled) return true;
   loop();
   String cfg = PropertyList.readProperty(PROP_BLYNK_CFG);
   if (DEBUG)  LOGGER << F("[BLYNK] cfg: ") << cfg << endl;
@@ -65,7 +65,7 @@ void BlynkDest::process(LinkedList<Pair *> &data) {
 
   if ((count % 2) != 0) {
     LOGGER << F("Bad Blynk configuration : ") << str << endl;
-    return;
+    return false;
   }
 
   for (int i=0; i< 50 && !Blynk->connected(); i++) {
@@ -81,4 +81,5 @@ void BlynkDest::process(LinkedList<Pair *> &data) {
     if (DEBUG)  LOGGER << F("[BLYNK] ") << vPort << F("=") << key << F(" : ") << p->value << endl;
     Blynk->virtualWrite(atoi(vPort.c_str()+1), atof(p->value.c_str()));
   }
+  return true;
 }

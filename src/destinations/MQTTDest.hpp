@@ -22,7 +22,7 @@ public:
   static void cmdCallMqtt(const char *line);
   static void onReceive(char* topic1, byte* payload1, unsigned int length);
   void cmdCallMqttInst(const char *line);
-  void process(LinkedList<Pair*> &data);
+  bool process(LinkedList<Pair*> &data);
   void replaceValuesInURL(LinkedList<Pair *> &data, String &s);
   bool mqttStart();
   void mqttEnd(bool res);

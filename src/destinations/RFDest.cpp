@@ -72,9 +72,9 @@ int RFDest::getGPIO() {
   if (co2Sensor.hasSensor) return D1;
   else return D6;
 }
-void RFDest::process(LinkedList<Pair *> &data) {
+bool RFDest::process(LinkedList<Pair *> &data) {
   LOGGER << F("RFDest::process") << endl;
-  if (!enabled) return;
+  if (!enabled) return true;
   for (int i=0; i < data.size(); i++) {
     Pair *p = data.get(i);
     String s = F("rf.");
@@ -97,6 +97,7 @@ void RFDest::process(LinkedList<Pair *> &data) {
     // }
     delay(700);
   }
+  return true;
 }
 
 void RFDest::rfBegin(uint8_t tx_pin, uint8_t led_pin, uint8_t rf_repeats) {

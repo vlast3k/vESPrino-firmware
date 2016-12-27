@@ -70,14 +70,21 @@ bool CustomHTTPDest::parseJSONUrl(String &s, String &url, String &method, String
   return true;
 }
 
-void CustomHTTPDest::process(LinkedList<Pair *> &data) {
+bool CustomHTTPDest::isOKResponse(int resp) {
+  LOGGER << F("Response Code: ") << resp << endl;
+  return resp >=200 && resp < 300;
+}
+
+bool CustomHTTPDest::process(LinkedList<Pair *> &data) {
   LOGGER << F("CustomHTTPDest::process") << endl;
   int i=0;
+  bool status = true;
   do {
     String s = PropertyList.getArrayProperty(F("custom_url_arr"), i++);
-    if (!s.length()) return;
-    invokeURL(s, data);
+    if (!s.length()) return i == 1 || status;
+    status = status && isOKResponse(invokeURL(s, data));
   } while(true);
+  return status;
 }
 
 void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
@@ -88,28 +95,28 @@ void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
   }
 }
 
-void CustomHTTPDest::invokeURL(String &s, LinkedList<Pair *> &data) {
-  if (!s.length()) return;
+int CustomHTTPDest::invokeURL(String &s, LinkedList<Pair *> &data) {
+  if (!s.length()) return -11;
   String url, method = "GET", contentType = "", pay = "";
   if (s.charAt(0) == '#') s = s.substring(1);
   if (s.charAt(0) == '{') {
-    if (!parseJSONUrl(s, url, method, contentType, pay)) return;
+    if (!parseJSONUrl(s, url, method, contentType, pay)) return -12;
   } else {
     url = s;
   }
   replaceValuesInURL(data, url);
   replaceValuesInURL(data, pay);
-  if (hasPlaceholders(url) || hasPlaceholders(pay)) return;
-  invokeURL(url, method, contentType, pay);
+  if (hasPlaceholders(url) || hasPlaceholders(pay)) return -13;
+  return invokeURL(url, method, contentType, pay);
 }
 
-void CustomHTTPDest::invokeURL(String &url, String &method, String &contentType, String &pay) {
-  if (waitForWifi() != WL_CONNECTED) return;
+int CustomHTTPDest::invokeURL(String &url, String &method, String &contentType, String &pay) {
+  if (waitForWifi() != WL_CONNECTED) return -10;
   LOGGER << F("Calling HTTP: [") << url << "]" << endl;
   if (pay.length()) LOGGER << F("CustomHTTPDest::payload = ") << pay << endl;
   LOGGER.flush();
   HTTPClient http;
   http.begin(url);
   if (contentType.length()) http.addHeader(F("Content-Type"), contentType);
-  AT_FW_Plugin::processResponseCodeATFW(&http, http.sendRequest(method.c_str(), pay));
+  return AT_FW_Plugin::processResponseCodeATFW(&http, http.sendRequest(method.c_str(), pay));
 }

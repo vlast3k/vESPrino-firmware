@@ -22,7 +22,7 @@ public:
   void setup(MenuHandler *handler);
   void loop() {};
 
-  void process(LinkedList<Pair*> &data);
+  bool process(LinkedList<Pair*> &data);
   void sendPing(int num);
   const char* getName() {
     return "RFX10";

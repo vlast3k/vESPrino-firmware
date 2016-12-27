@@ -120,17 +120,17 @@ void MQTTDest::cmdCallMqttInst(const char *line) {
 
 
 
-void MQTTDest::process(LinkedList<Pair *> &data) {
+bool MQTTDest::process(LinkedList<Pair *> &data) {
   LOGGER << F("MQTTDest::process") << endl;
   LOGGER.flush();
 //  heap("");
   String s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), 0);
-  if (!s.length()) return;
-  if (waitForWifi() != WL_CONNECTED) return;
+  if (!s.length()) return true;
+  if (waitForWifi() != WL_CONNECTED) return false;
 
   if (!mqttStart()) {
     mqttEnd(false);
-    return;
+    return false;
   }
   //int i=0;
   String mqttTopic = "vair";//  = PropertyList.readProperty(EE_MQTT_TOPIC);
@@ -138,7 +138,7 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
     s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), i);
     if (!s.length()) break;
     replaceValuesInURL(data, s);
-    if (hasPlaceholders(s)) return;
+    if (hasPlaceholders(s)) return false;
     if (s.indexOf(':') > -1) {
       mqttTopic = s.substring(0,s.indexOf(':'));
       s = s.substring(s.indexOf(':') + 1);
@@ -147,10 +147,11 @@ void MQTTDest::process(LinkedList<Pair *> &data) {
     LOGGER.flush();
     if(!client->publish(mqttTopic.c_str(), s.c_str())) {
       mqttEnd(false);
-      return;
+      return false;
     }
   }
   mqttEnd(true);
+  return true;
   //heap("");
 }
 
