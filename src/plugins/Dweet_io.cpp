@@ -39,7 +39,7 @@ void DweetIOClass::cmdDweetProcessInst(const char *cmd) {
 void DweetIOClass::cmdDweetStartInst(const char *cmd) {
   int intervalSec = 5;
   if (strchr(cmd, ' ')) intervalSec = atoi(strchr(cmd, ' ') + 1);
-  if (intervalSec < 5) intervalSec = 5;
+  if (intervalSec > 0 && intervalSec < 5) intervalSec = 5;
   dwKey = PropertyList.readProperty(PROP_DWEET_CMDKEY);
   if (dwKey.length() == 0) dwKey = String(F("vThing_")) + String(ESP.getChipId(), HEX);
   LOGGER << F("Reading dweets from: ") << dwKey << F(" each ") << intervalSec << F("sec") << endl;
@@ -49,7 +49,7 @@ void DweetIOClass::cmdDweetStartInst(const char *cmd) {
   if (timer == NULL) timer = TimerManager.registerTimer(new Timer(intervalSec*1000, onGetDweets));
   if (intervalSec == 0) timer->Stop();
   else timer->setInterval(intervalSec*1000);
-  menuHandler.scheduleCommand("nop 0");
+  //menuHandler.scheduleCommand("nop 0");
   //onGetDweets();
 }
 

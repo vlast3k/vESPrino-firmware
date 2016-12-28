@@ -29,7 +29,7 @@ public:
 private:
   Timer *timer;
   bool wokeFromDeepSleep;
-  uint8_t timeoutIntervalS;
+  uint16_t timeoutIntervalS;
 
 
 };

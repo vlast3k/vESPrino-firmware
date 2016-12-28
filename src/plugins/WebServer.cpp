@@ -15,7 +15,7 @@ WebServerClass::WebServerClass() {
 
 void WebServerClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("webserver_start"), CMD_BEGIN, WebServerClass::cmdStartWebServer, F("webserver_start")));
-  if (PropertyList.readBoolProperty(PROP_WEBSERVER_STARTONBOOT)) {
+  if (!PowerManager.isWokeFromDeepSleep() && PropertyList.readBoolProperty(PROP_WEBSERVER_STARTONBOOT)) {
     menuHandler.scheduleCommand("webserver_start");
   }
 }
@@ -31,7 +31,7 @@ void WebServerClass::cmdStartWebServerInst() {
   if (server != NULL) delete server;
   if (waitForWifi() != WL_CONNECTED) return;
   server = new ESP8266WebServer(80);
-  menuHandler.scheduleCommand("nop 0");
+  //menuHandler.scheduleCommand("nop 0");
   server->on("/", WebServerClass::onCommand);
   server->begin();
 

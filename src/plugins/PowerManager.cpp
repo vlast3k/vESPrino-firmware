@@ -31,7 +31,7 @@ void PowerManagerClass::setup(MenuHandler *handler) {
     LOGGER << F("Timeout disabled since IterationDuration is: ") << IterationDurationS << endl;
     timeoutIntervalS = 0;
   } else if (!PropertyList.hasProperty(PROP_TIMEOUT_INTERVAL)) {
-    timeoutIntervalS = 120;
+    timeoutIntervalS = 300;
   } else {
     timeoutIntervalS = PropertyList.readLongProperty(PROP_TIMEOUT_INTERVAL);
   }

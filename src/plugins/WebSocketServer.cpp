@@ -14,7 +14,7 @@ WebSocketServerClass::WebSocketServerClass() {
 
 void WebSocketServerClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("wss_start"), CMD_BEGIN, WebSocketServerClass::cmdStartWebSocketServer, F("wss_start")));
-  if (PropertyList.readBoolProperty(PROP_WSSERVER_STARTONBOOT)) {
+  if (!PowerManager.isWokeFromDeepSleep() && PropertyList.readBoolProperty(PROP_WSSERVER_STARTONBOOT)) {
     menuHandler.scheduleCommand("wss_start");
   }
 }
@@ -30,7 +30,7 @@ void WebSocketServerClass::cmdStartWebSocketServerInst() {
   if (server != NULL) delete server;
   if (waitForWifi() != WL_CONNECTED) return;
   server = new WebSocketsServer(81);
-  menuHandler.scheduleCommand("nop 0");
+  //menuHandler.scheduleCommand("nop 0");
   //server->on("/", WebSocketServerClass::onCommand);
   server->begin();
   server->onEvent(WebSocketServerClass::onWebSocketEvent);
@@ -66,6 +66,7 @@ void WebSocketServerClass::onWebSocketEventInst(uint8_t num, WStype_t type, uint
       switch(type) {
           case WStype_DISCONNECTED:
               LOGGER.printf("[%u] Disconnected!\n", num);
+              menuHandler.scheduleCommand("nop 300");
               break;
           case WStype_CONNECTED:
               {
@@ -78,7 +79,7 @@ void WebSocketServerClass::onWebSocketEventInst(uint8_t num, WStype_t type, uint
               }
               break;
           case WStype_TEXT:
-              LOGGER.printf("[%u] get Text: %s\n", num, payload);
+              //LOGGER.printf("[%u] get Text: %s\n", num, payload);
               menuHandler.scheduleCommand((char *)payload);
 
               // send message to client
