@@ -41,6 +41,11 @@ void MQTTDest::setupMqttListen() {
   client->subscribe(s.c_str());
   LOGGER << F("Accepting commands via MQTT on topic: ") << s << endl;
   isListening = true;
+  for (int i=0; i < 10; i++) {
+    LOGGER << F("Checking for Retained messages: ") << i << endl;
+    loop();
+    delay(200);
+  }
 }
 
 void MQTTDest::cmdMqttSetup(const char *p) {
@@ -105,10 +110,11 @@ void MQTTDest::cmdCallMqtt(const char *line) {
 void MQTTDest::cmdCallMqttInst(const char *line) {
   char *c = strchr(line, ' ');
   char *x = strchr(c+1, ' ');
+  bool retain = strstr(line, "call_mqttr") == line;
   *x = 0;
   String topic = c+1;
   String msg = x+1;
-  LOGGER << F("Will send mqtt to:") << topic <<":" << msg << endl;
+  LOGGER << F("Will send mqtt to:") << topic <<":[" << msg << "]" << endl;
   LOGGER.flush();
   if (waitForWifi() != WL_CONNECTED) return;
 
@@ -116,7 +122,7 @@ void MQTTDest::cmdCallMqttInst(const char *line) {
     mqttEnd(false);
     return;
   }
-  bool res = client->publish(topic.c_str(), msg.c_str());
+  bool res = client->publish(topic.c_str(), msg.c_str(), retain);
   mqttEnd(res);
 }
 
@@ -189,7 +195,7 @@ bool MQTTDest::reconnect() {
 }
 
 bool MQTTDest::mqttStart() {
-  if (WiFi.status() != WL_CONNECTED) {
+  if (waitForWifi() != WL_CONNECTED) {
     if (DEBUG) LOGGER << F("MQTT Dest: Cannot send while wifi offline\n");
     return false;
   }
@@ -243,12 +249,17 @@ void MQTTDest::onReceive(char* topic1, byte* payload1, unsigned int length) {
   strncpy(bPayload, (char*)payload1, _min(length, sizeof(bPayload)-1));
   bPayload[length] = 0;
   String payload = String((char*)bPayload), topic = String(topic1);
-  LOGGER << topic << " => " << payload << endl;
-  if (topic.indexOf("/cmd")) menuHandler.scheduleCommand(payload.c_str());
+  LOGGER << F("MQTT Inbound") << topic << " => " << payload.length() << "[" << payload << "]" << endl;
+  if (topic.indexOf("/cmd") && payload.length() > 0) {
+    String cmd = String(F("call_mqttr ")) + topic + " ";
+    menuHandler.scheduleCommand(payload.c_str());
+    menuHandler.scheduleCommand(cmd.c_str());
+  }
 }
 
 
 void MQTTDest::loop() {
+  //Serial << ".";
   if (client != NULL) {
     if (client->connected()) client->loop();
     else {

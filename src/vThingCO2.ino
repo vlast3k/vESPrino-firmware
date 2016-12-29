@@ -267,45 +267,13 @@ void setup() {
 
   setup_IntThrHandler(&menuHandler);
 
-  //rfDest.sendPing(1000);
-
-//  menuHandler.scheduleCommand(F("sendNow"));
-
   heap("At setup end");
   fireEvent("setupEnd");
-  //neopixel.cmdLedHandleColorInst(F("ledcolor red"));
-  //setLedColor(RgbColor(5, 0,3));
-  //WiFi.begin("MarinaResidence","eeeeee");
-  //menuHandler.scheduleCommand("nop 0");
-  //menuHandler.scheduleCommand("oled Started");
-
 }
+
 //int aa = 0;
 uint32_t wfStart = 0;
 void loop() {
-  //if ((aa++ % 500) == 0) LOGGER << "." << endl;
-//   if (shouldSend == false && digitalRead(D3) == 0) {
-//     LOGGER << millis() - wfStart << endl;
-//     if (wfStart == 0) {
-//       wfStart =millis();
-//       neopixel.cmdLedSetBrgInst(F("ledbrg 90"));
-//       neopixel.cmdLedHandleColorInst(F("ledcolor cyan"));
-//     } else if (millis() - wfStart > 4000) {
-//       //LOGGER << "SSSSSSSSSSSS" << endl;
-//       startAutoWifiConfig();
-//       shouldSend = true;
-//     }
-//     delay(100);
-//     return;
-//   } else if (wfStart > 0) {
-//     wfStart = 0;
-//     neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
-//     neopixel.cmdLedHandleColorInst(F("ledcolor black"));
-// //    menuHandler.scheduleCommand("cdmloop");
-//   }
-
-
-
   handleWifi();
   menuHandler.loop();
   if (SKIP_LOOP) {delay(100); return;}
