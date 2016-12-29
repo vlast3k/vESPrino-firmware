@@ -46,7 +46,7 @@ extern "C" {
 #include <I2CHelper.hpp>
 #include "plugins/LoggingPrinter.hpp"
 
-#define BUILD_NUM "20161226"
+#define BUILD_NUM "20161228"
 
 //#define SERIAL_PORT LOGGER
 #define EE_WIFI_SSID F("wifi.ssid")

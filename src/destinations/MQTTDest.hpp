@@ -15,7 +15,7 @@ class MQTTDest : public Destination {
 public:
   MQTTDest();
   void setup(MenuHandler *handler);
-  void loop() {};
+  void loop();
   static void cmdMqttSetup(const char *line);
   static void cmdMqttMsgAdd(const char *line);
   static void cmdCleanCustomUrl(const char *line);
@@ -25,6 +25,7 @@ public:
   bool process(LinkedList<Pair*> &data);
   void replaceValuesInURL(LinkedList<Pair *> &data, String &s);
   bool mqttStart();
+  bool reconnect();
   void mqttEnd(bool res);
 //  void invokeURL(String &url);
 const char* getName() {
