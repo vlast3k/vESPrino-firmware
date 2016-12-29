@@ -38,7 +38,9 @@ void handleWifi() {
   ip = WiFi.localIP();
 }
 
+bool wifiAlreadyWaited = false;
 wl_status_t waitForWifi(uint16_t timeoutMs) {
+  if (wifiAlreadyWaited == true) return WiFi.status();
   if (WiFi.status() == WL_CONNECTED)  return WL_CONNECTED;
   fireEvent("wifiSearching");
   LOGGER << F("Waiting for WiFi ");
@@ -56,6 +58,7 @@ wl_status_t waitForWifi(uint16_t timeoutMs) {
     }
   }
   LOGGER << endl;
+  wifiAlreadyWaited = true;
   return WiFi.status();
 }
 
