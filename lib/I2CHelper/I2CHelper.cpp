@@ -176,8 +176,15 @@ void I2CHelper::beginI2C(long disabledPorts, Stream *_LOGGER) {
   }
 
   if (i2cSDA > -1) {
-    *LOGGER << F("I2C Bus on SDA:SCA (") << i2cSDA << F(":") << i2cSCL << F(")");
-    Wire.begin(i2cSDA, i2cSCL);
+    String s1 = String(i2cSDA);
+    String s2 = String(i2cSCL);
+    if (hasI2CDevices(i2cSDA, i2cSCL, s1, s2, false)) {
+      *LOGGER << F("I2C Bus on SDA:SCA (") << i2cSDA << F(":") << i2cSCL << F(")");
+      Wire.begin(i2cSDA, i2cSCL);
+    } else {
+      *LOGGER << "I2C Bus is not responding. Restarting!"<< endl;
+      ESP.restart();
+    }
   } else {
     *LOGGER << F("No I2C Devices found\n");
   }

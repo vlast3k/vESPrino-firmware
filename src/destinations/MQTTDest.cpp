@@ -153,7 +153,10 @@ bool MQTTDest::process(LinkedList<Pair *> &data) {
     s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), i);
     if (!s.length()) break;
     replaceValuesInURL(data, s);
-    if (hasPlaceholders(s)) return false;
+    if (hasPlaceholders(s)) {
+      mqttEnd(false);
+      return false;
+    }
     if (s.indexOf(':') > -1) {
       mqttTopic = s.substring(0,s.indexOf(':'));
       s = s.substring(s.indexOf(':') + 1);

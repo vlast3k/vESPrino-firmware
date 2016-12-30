@@ -15,14 +15,15 @@ void LoggingPrinter::init() {
 
 void LoggingPrinter::sendData() {
   if (!length) return;
-  if (logURL.length() > 0) {
-    Serial << "Sending log...";// << String((char*)data);
+  if (logURL.length() > 0 && waitForWifi() == WL_CONNECTED) {
+    //Serial << "Sending log...";// << String((char*)data);
     HTTPClient http;
     http.begin(logURL);
     http.POST(data, length);
-    Serial << "sent" << endl;
+    //Serial << "sent" << endl;
+
   }
-  if (logToWss) {
+  if (logToWss && waitForWifi() == WL_CONNECTED) {
     //Serial << "Sending wss:" << _HEX(*data) << endl;
     myWSS.sendData(data, length);
   }

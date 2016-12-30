@@ -116,5 +116,5 @@ void CommonCommands::registerCommands(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("sss"), CMD_EXACT, stopActiveExecution, F("")));
   //handler->registerCommand(new MenuEntry(F("tms"), CMD_EXACT, cmdTestMemStore, F("")));
   //handler->registerCommand(new MenuEntry(F("sertest"), CMD_BEGIN, cmdSerTest, F("")));
-  handler->registerCommand(new MenuEntry(F("oled"), CMD_BEGIN, oledHandleCommand, F("")));
+  handler->registerCommand(new MenuEntry(F("oled"), CMD_BEGIN, oledHandleCommand, F("oled message")));
 }

@@ -221,8 +221,7 @@ void setup() {
 
 
   if (PowerManager.isWokeFromDeepSleep() == false) {
-    activeWait();
-    menuHandler.scheduleCommand(F("fupd"));
+    //activeWait();
     neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
     neopixel.cmdLedHandleColorInst(F("ledcolor lila"));
   } else {
