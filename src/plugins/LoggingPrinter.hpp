@@ -8,7 +8,7 @@
 
 
 #define PROP_LOG_DEST F("log.dest.url")
-#define MAXSIZE 1500
+#define MAXSIZE 1000
 
 class LoggingPrinter : public Stream, public Plugin {
 public:

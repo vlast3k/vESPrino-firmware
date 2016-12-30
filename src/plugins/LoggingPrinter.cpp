@@ -10,20 +10,26 @@
 extern WebSocketServerClass myWSS;
 void LoggingPrinter::init() {
   logURL = PropertyList.readProperty(PROP_LOG_DEST);
-  if (logURL.length() > 0) Serial << "Will log to: " << logURL << endl;
+  if (logURL.length() > 0) {
+    Serial << F("Will log to: ") << logURL << endl;
+    //waitForWifi();
+  }
 }
 
 void LoggingPrinter::sendData() {
   if (!length) return;
   if (logURL.length() > 0 && waitForWifi() == WL_CONNECTED) {
-    //Serial << "Sending log...";// << String((char*)data);
+    Serial << F("Sending log...") << length << F(":") << logURL << endl;// << String((char*)data);
     HTTPClient http;
-    http.begin(logURL);
-    http.POST(data, length);
-    //Serial << "sent" << endl;
+    //heap("");
+    if (!http.begin(logURL)) {
+      Serial << F("FAILED TO BEGIN SEND LOG") << endl;
+    };
+    int res = http.POST(data, length);
+    Serial << F("sent: ") << res << endl;
 
   }
-  if (logToWss && waitForWifi() == WL_CONNECTED) {
+  if (logToWss) {
     //Serial << "Sending wss:" << _HEX(*data) << endl;
     myWSS.sendData(data, length);
   }
@@ -42,10 +48,11 @@ void LoggingPrinter::myWrite(const uint8_t *buffer, size_t size) {
 
 void LoggingPrinter::myWrite(uint8_t chr) {
   if (logURL.length() == 0 && !logToWss) return;
+  if (length == MAXSIZE -1) return; // the case when flushLog connects to Wifi, and it dumps
   data[length++] = chr;
   data[length] = 0;
   //if (logToWss && data[length-1] == '\n') flushLog();
-  if (length == MAXSIZE - 1) flushLog();
+  if (length == MAXSIZE - 50) flushLog(); // flush a bit earlier ot allow for Wifi connection to be logged
 }
 
 size_t LoggingPrinter::write(const uint8_t *buffer, size_t size) {
