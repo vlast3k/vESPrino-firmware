@@ -1,5 +1,6 @@
 #ifndef BlynkDest_h
 #define BlynkDest_h
+#define BLYNK_NO_FANCY_LOGO
 
 #include "interfaces/Destination.hpp"
 #include "interfaces/Plugin.hpp"

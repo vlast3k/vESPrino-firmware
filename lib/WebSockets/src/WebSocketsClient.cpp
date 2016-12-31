@@ -424,37 +424,34 @@ void WebSocketsClient::sendHeader(WSclient_t * client) {
     String handshake;
     if(!client->isSocketIO || (client->isSocketIO && client->cSessionId.length() > 0)) {
         if(client->isSocketIO) {
-            transport = "&transport=websocket&sid=" + client->cSessionId;
+            transport = String(F("&transport=websocket&sid=")) + client->cSessionId;
         }
-        handshake = "GET " + client->cUrl + transport + " HTTP/1.1\r\n"
-                    "Connection: Upgrade\r\n"
-                    "Upgrade: websocket\r\n"
-                    "Sec-WebSocket-Version: 13\r\n"
-                    "Sec-WebSocket-Key: " + client->cKey + "\r\n";
+        handshake = String(F("GET ")) + client->cUrl + transport + F(" HTTP/1.1\r\nConnection: Upgrade\r\nUpgrade: websocket\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Key: ")
+        + client->cKey + "\r\n";
 
         if(client->cProtocol.length() > 0) {
-           handshake += "Sec-WebSocket-Protocol: " + client->cProtocol + "\r\n";
+           handshake += String(F("Sec-WebSocket-Protocol: ")) + client->cProtocol + F("\r\n");
         }
 
         if(client->cExtensions.length() > 0) {
-            handshake += "Sec-WebSocket-Extensions: " + client->cExtensions + "\r\n";
+            handshake += String(F("Sec-WebSocket-Extensions: ")) + client->cExtensions + F("\r\n");
         }
 
     } else {
-        handshake = "GET " + client->cUrl + "&transport=polling HTTP/1.1\r\n"
-                    "Connection: keep-alive\r\n";
+        handshake = String(F("GET ")) + client->cUrl + F("&transport=polling HTTP/1.1\r\n"
+                    "Connection: keep-alive\r\n");
     }
 
-    handshake +=    "Host: " + _host + ":" + _port + "\r\n"
+    handshake +=    String("Host: ") + _host + ":" + _port + F("\r\n"
                     "Origin: file://\r\n"
-                    "User-Agent: arduino-WebSocket-Client\r\n";
+                    "User-Agent: arduino-WebSocket-Client\r\n");
 
     if(client->base64Authorization.length() > 0) {
-        handshake += "Authorization: Basic " + client->base64Authorization + "\r\n";
+        handshake += String(F("Authorization: Basic ")) + client->base64Authorization + "\r\n";
     }
 
     if(client->plainAuthorization.length() > 0) {
-        handshake += "Authorization: " + client->plainAuthorization + "\r\n";
+        handshake += String(F("Authorization: ")) + client->plainAuthorization + "\r\n";
     }
 
     handshake += "\r\n";

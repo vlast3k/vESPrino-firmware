@@ -17,6 +17,8 @@ void LoggingPrinter::init() {
 }
 
 void LoggingPrinter::sendData() {
+  String x = "QWERTYUIOP";
+  Serial << x;
   if (!length) return;
   if (logURL.length() > 0 && waitForWifi() == WL_CONNECTED) {
     Serial << F("Sending log...") << length << F(":") << logURL << endl;// << String((char*)data);
@@ -29,7 +31,7 @@ void LoggingPrinter::sendData() {
     Serial << F("sent: ") << res << endl;
 
   }
-  if (logToWss) {
+  if (logToWss && waitForWifi() == WL_CONNECTED) {
     //Serial << "Sending wss:" << _HEX(*data) << endl;
     myWSS.sendData(data, length);
   }

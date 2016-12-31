@@ -131,37 +131,39 @@ protected:
          * Note: can be override
          * @param client WSclient_t *  ptr to the client struct
          */
-        virtual void handleNonWebsocketConnection(WSclient_t * client) {
-            DEBUG_WEBSOCKETS("[WS-Server][%d][handleHeader] no Websocket connection close.\n", client->num);
-            client->tcp->write("HTTP/1.1 400 Bad Request\r\n"
-                    "Server: arduino-WebSocket-Server\r\n"
-                    "Content-Type: text/plain\r\n"
-                    "Content-Length: 32\r\n"
-                    "Connection: close\r\n"
-                    "Sec-WebSocket-Version: 13\r\n"
-                    "\r\n"
-                    "This is a Websocket server only!");
-            clientDisconnect(client);
-        }
+        virtual void handleNonWebsocketConnection(WSclient_t * client);
+        //  {
+        //     DEBUG_WEBSOCKETS("[WS-Server][%d][handleHeader] no Websocket connection close.\n", client->num);
+        //     client->tcp->write(String(F("HTTP/1.1 400 Bad Request\r\n"
+        //             "Server: arduino-WebSocket-Server\r\n"
+        //             "Content-Type: text/plain\r\n"
+        //             "Content-Length: 32\r\n"
+        //             "Connection: close\r\n"
+        //             "Sec-WebSocket-Version: 13\r\n"
+        //             "\r\n"
+        //             "This is a Websocket server only!")).c_str());
+        //     clientDisconnect(client);
+        // }
 
         /**
          * called if a non Authorization connection is coming in.
          * Note: can be override
          * @param client WSclient_t *  ptr to the client struct
          */
-        virtual void handleAuthorizationFailed(WSclient_t *client) {
-
-            client->tcp->write("HTTP/1.1 401 Unauthorized\r\n"
-                    "Server: arduino-WebSocket-Server\r\n"
-                    "Content-Type: text/plain\r\n"
-                    "Content-Length: 45\r\n"
-                    "Connection: close\r\n"
-                    "Sec-WebSocket-Version: 13\r\n"
-                    "WWW-Authenticate: Basic realm=\"WebSocket Server\""
-                    "\r\n"
-                    "This Websocket server requires Authorization!");
-            clientDisconnect(client);
-        }
+        virtual void handleAuthorizationFailed(WSclient_t *client);
+        //  {
+        //
+        //     client->tcp->write(String(F("HTTP/1.1 401 Unauthorized\r\n"
+        //             "Server: arduino-WebSocket-Server\r\n"
+        //             "Content-Type: text/plain\r\n"
+        //             "Content-Length: 45\r\n"
+        //             "Connection: close\r\n"
+        //             "Sec-WebSocket-Version: 13\r\n"
+        //             "WWW-Authenticate: Basic realm=\"WebSocket Server\""
+        //             "\r\n"
+        //             "This Websocket server requires Authorization!")).c_str());
+        //     clientDisconnect(client);
+        // }
 
         /**
          * called for sending a Event to the app

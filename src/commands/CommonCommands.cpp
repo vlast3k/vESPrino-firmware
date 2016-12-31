@@ -66,19 +66,19 @@ void stopActiveExecution(const char *ignore) {
   SKIP_LOOP = true;
 }
 
-void cmdTestMemStore(const char *ignore) {
-  LOGGER << "Test Mem Store\n";
-  LOGGER << "avg now 1: "<<     rtcMemStore.getAverage() << endl;
-  rtcMemStore.addAverageValue(1000);
-  LOGGER << "avg now 2:"<<     rtcMemStore.getAverage() << endl;
-  rtcMemStore.addAverageValue(2000);
-  LOGGER << "avg now 3:"<<     rtcMemStore.getAverage() << endl;
-  rtcMemStore.addAverageValue(2000);
-  LOGGER << "avg now 4:"<<     rtcMemStore.getAverage() << endl;
-  rtcMemStore.addAverageValue(2000);
-  LOGGER << "avg now 5:"<<     rtcMemStore.getAverage() << endl;
-  SKIP_LOOP = true;
-}
+// void cmdTestMemStore(const char *ignore) {
+//   LOGGER << "Test Mem Store\n";
+//   LOGGER << "avg now 1: "<<     rtcMemStore.getAverage() << endl;
+//   rtcMemStore.addAverageValue(1000);
+//   LOGGER << "avg now 2:"<<     rtcMemStore.getAverage() << endl;
+//   rtcMemStore.addAverageValue(2000);
+//   LOGGER << "avg now 3:"<<     rtcMemStore.getAverage() << endl;
+//   rtcMemStore.addAverageValue(2000);
+//   LOGGER << "avg now 4:"<<     rtcMemStore.getAverage() << endl;
+//   rtcMemStore.addAverageValue(2000);
+//   LOGGER << "avg now 5:"<<     rtcMemStore.getAverage() << endl;
+//   SKIP_LOOP = true;
+// }
 void cmdSerTest(const char *p) {
   char p1[20],  p2[20];
   p = extractStringFromQuotes(p, p1, 20);

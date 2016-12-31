@@ -107,7 +107,7 @@ void PropertyListClass::factoryReset() {
   }
   File f = SPIFFS.open(configFileName, "w");
   if (!f) {
-    LOGGER << "Could not open file test" << endl;
+    LOGGER << F("Could not open file test") << endl;
   }
   f.close();
 }
@@ -202,7 +202,7 @@ void PropertyListClass::begin(MenuHandler *handler) {
     //LOGGER << "Created " << configFileName << endl;
     File f = SPIFFS.open(configFileName, "w");
     if (!f) {
-      LOGGER << "Could not open file test" << endl;
+      LOGGER << F("Could not open file test") << endl;
     }
     f.close();
   }
@@ -210,7 +210,7 @@ void PropertyListClass::begin(MenuHandler *handler) {
   //f << "vvv";
   f.close();
   if (!SPIFFS.remove("/tst.ttt")) {
-    LOGGER << " Could not delete /tst.ttt" << endl;
+    LOGGER << F(" Could not delete /tst.ttt") << endl;
   } else {
     //LOGGER << " successfully deleted" << endl;
   }

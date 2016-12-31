@@ -60,7 +60,7 @@ void BlynkApi<Proto>::sendInfo()
 #ifdef BLYNK_INFO_CONNECTION
         BLYNK_PARAM_KV("con"    , BLYNK_INFO_CONNECTION)
 #endif
-        BLYNK_PARAM_KV("build"  , __DATE__ " " __TIME__)
+        BLYNK_PARAM_KV("build"  , " ")
     ;
     const size_t profile_len = sizeof(profile)-1;
 

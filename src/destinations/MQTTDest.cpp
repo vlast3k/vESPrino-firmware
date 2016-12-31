@@ -87,7 +87,7 @@ void MQTTDest::cmdMqttMsgAdd(const char *line) {
   //LOGGER << "menuAddCustomUrl" << endl;
   char sidx[10];//, url[200];
   line = extractStringFromQuotes(line, sidx, sizeof(sidx));
-  LOGGER << "Mqtt line:" << line << endl;
+  LOGGER << F("Mqtt line:") << line << endl;
   LOGGER.flush();
   //delay(100);
   //line = extractStringFromQuotes(line, url, sizeof(url));
@@ -148,7 +148,7 @@ bool MQTTDest::process(LinkedList<Pair *> &data) {
     return false;
   }
   //int i=0;
-  String mqttTopic = "vair";//  = PropertyList.readProperty(EE_MQTT_TOPIC);
+  String mqttTopic = F("vair");//  = PropertyList.readProperty(EE_MQTT_TOPIC);
   for (int i=0; ; i++) {
     s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), i);
     if (!s.length()) break;
@@ -161,7 +161,7 @@ bool MQTTDest::process(LinkedList<Pair *> &data) {
       mqttTopic = s.substring(0,s.indexOf(':'));
       s = s.substring(s.indexOf(':') + 1);
     }
-    LOGGER << F("Mqtt Dest: sending: to topic:") << mqttTopic << ", msg: " << s << endl;
+    LOGGER << F("Mqtt Dest: sending: to topic:") << mqttTopic << F(", msg: ") << s << endl;
     LOGGER.flush();
     if(!client->publish(mqttTopic.c_str(), s.c_str())) {
       mqttEnd(false);
@@ -180,7 +180,7 @@ bool MQTTDest::reconnect() {
     mqttClient = PropertyList.readProperty(EE_MQTT_CLIENT);
     mqttUser   = PropertyList.readProperty(EE_MQTT_USER);
     mqttPass   = PropertyList.readProperty(EE_MQTT_PASS);
-    if (!mqttClient.length()) mqttClient = "vESPrino";
+    if (!mqttClient.length()) mqttClient = F("vESPrino");
 
     LOGGER << F("Connecting to server :") << mqttClient << "," << mqttUser << "," << mqttPass << endl;
     LOGGER.flush();

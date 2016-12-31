@@ -182,7 +182,7 @@ void I2CHelper::beginI2C(long disabledPorts, Stream *_LOGGER) {
       *LOGGER << F("I2C Bus on SDA:SCA (") << i2cSDA << F(":") << i2cSCL << F(")");
       Wire.begin(i2cSDA, i2cSCL);
     } else {
-      *LOGGER << "I2C Bus is not responding. Restarting!"<< endl;
+      *LOGGER << F("I2C Bus is not responding. Restarting!")<< endl;
       ESP.restart();
     }
   } else {

@@ -65,7 +65,7 @@ void WebSocketServerClass::onWebSocketEventInst(uint8_t num, WStype_t type, uint
 
       switch(type) {
           case WStype_DISCONNECTED:
-              LOGGER.printf("[%u] Disconnected!\n", num);
+              LOGGER.printf(String(F("[%u] Disconnected!\n")).c_str(), num);
               menuHandler.scheduleCommand("nop 300");
               break;
           case WStype_CONNECTED:
@@ -73,7 +73,7 @@ void WebSocketServerClass::onWebSocketEventInst(uint8_t num, WStype_t type, uint
                   IPAddress ip = server->remoteIP(num);
                   LOGGER.setLogToWSS(true);
                   server->sendTXT(num, "Connected");
-                  LOGGER.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+                  LOGGER.printf(String(F("[%u] Connected from %d.%d.%d.%d url: %s\n")).c_str(), num, ip[0], ip[1], ip[2], ip[3], payload);
 
   				// send message to client
               }
@@ -89,8 +89,8 @@ void WebSocketServerClass::onWebSocketEventInst(uint8_t num, WStype_t type, uint
               // webSocket.broadcastTXT("message here");
               break;
           case WStype_BIN:
-              LOGGER.printf("[%u] get binary lenght: %u\n", num, length);
-              hexdump(payload, length);
+              LOGGER.printf(String(F("[%u] get binary lenght: %u\n")).c_str(), num, length);
+              //hexdump(payload, length);
 
               // send message to client
               // webSocket.sendBIN(num, payload, lenght);
@@ -101,6 +101,38 @@ void WebSocketServerClass::onWebSocketEventInst(uint8_t num, WStype_t type, uint
 
 void WebSocketServerClass::onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
   myWSS.onWebSocketEventInst(num, type, payload, length);
+}
+
+void WebSocketsServer::handleNonWebsocketConnection(WSclient_t * client) {
+    DEBUG_WEBSOCKETS("[WS-Server][%d][handleHeader] no Websocket connection close.\n", client->num);
+    client->tcp->write(String(F("HTTP/1.1 400 Bad Request\r\n"
+            "Server: arduino-WebSocket-Server\r\n"
+            "Content-Type: text/plain\r\n"
+            "Content-Length: 32\r\n"
+            "Connection: close\r\n"
+            "Sec-WebSocket-Version: 13\r\n"
+            "\r\n"
+            "This is a Websocket server only!")).c_str());
+    clientDisconnect(client);
+}
+
+/**
+ * called if a non Authorization connection is coming in.
+ * Note: can be override
+ * @param client WSclient_t *  ptr to the client struct
+ */
+void WebSocketsServer::handleAuthorizationFailed(WSclient_t *client) {
+
+    client->tcp->write(String(F("HTTP/1.1 401 Unauthorized\r\n"
+            "Server: arduino-WebSocket-Server\r\n"
+            "Content-Type: text/plain\r\n"
+            "Content-Length: 45\r\n"
+            "Connection: close\r\n"
+            "Sec-WebSocket-Version: 13\r\n"
+            "WWW-Authenticate: Basic realm=\"WebSocket Server\""
+            "\r\n"
+            "This Websocket server requires Authorization!")).c_str());
+    clientDisconnect(client);
 }
 
 // void WebSocketServerClass::onCommand() {

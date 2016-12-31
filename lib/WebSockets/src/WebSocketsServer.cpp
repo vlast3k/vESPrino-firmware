@@ -761,7 +761,7 @@ void WebSocketsServer::handleHeader(WSclient_t * client, String * headerLine) {
 
         if(_base64Authorization.length() > 0) {
             if(client->base64Authorization.length() > 0) {
-                String auth = "Basic ";
+                String auth = F("Basic ");
                 auth += _base64Authorization;
                 if(auth != client->base64Authorization) {
                     DEBUG_WEBSOCKETS("[WS-Server][%d][handleHeader] HTTP Authorization failed!\n", client->num);
@@ -784,23 +784,23 @@ void WebSocketsServer::handleHeader(WSclient_t * client, String * headerLine) {
 
             client->status = WSC_CONNECTED;
 
-            client->tcp->write("HTTP/1.1 101 Switching Protocols\r\n"
+            client->tcp->write(String(F("HTTP/1.1 101 Switching Protocols\r\n"
                     "Server: arduino-WebSocketsServer\r\n"
                     "Upgrade: websocket\r\n"
                     "Connection: Upgrade\r\n"
                     "Sec-WebSocket-Version: 13\r\n"
-                    "Sec-WebSocket-Accept: ");
+                    "Sec-WebSocket-Accept: ")).c_str());
             client->tcp->write(sKey.c_str(), sKey.length());
 
             if(_origin.length() > 0) {
-                String origin = "\r\nAccess-Control-Allow-Origin: ";
+                String origin = F("\r\nAccess-Control-Allow-Origin: ");
                 origin += _origin;
                 origin += "\r\n";
                 client->tcp->write(origin.c_str(), origin.length());
             }
 
             if(client->cProtocol.length() > 0) {
-                String protocol = "\r\nSec-WebSocket-Protocol: ";
+                String protocol = F("\r\nSec-WebSocket-Protocol: ");
                 protocol += _protocol;
                 protocol += "\r\n";
                 client->tcp->write(protocol.c_str(), protocol.length());
@@ -823,6 +823,3 @@ void WebSocketsServer::handleHeader(WSclient_t * client, String * headerLine) {
         }
     }
 }
-
-
-
