@@ -41,7 +41,10 @@ void PropertyListClass::prop_jset(const char *line) {
 }
 
 bool PropertyListClass::assertInit() {
-  if (!initialized) LOGGER << F("Property List not yet initialized\n");
+  if (!initialized) {
+    beginInt();
+    initialized = true;
+  }
   return initialized;
 }
 
@@ -100,6 +103,7 @@ void trim(char *str) {
 }
 
 void PropertyListClass::factoryReset() {
+  beginInt();
   if (!SPIFFS.remove(configFileName)) {
     LOGGER << F("Could not delete: ") << configFileName<< endl;
   } else {
@@ -110,12 +114,16 @@ void PropertyListClass::factoryReset() {
     LOGGER << F("Could not open file test") << endl;
   }
   f.close();
+  endInt();
 }
 
 void PropertyListClass::putProperty(const char *key, const char *value) {
   // uint32_t st = millis();
+  if (!key[0]) {
+    endInt();
+  }
   if (!assertInit()) return;
-  if (!key[0]) return;
+
   File in = SPIFFS.open(configFileName, "r");
   File out= SPIFFS.open(tempFileName, "w");
 
@@ -137,6 +145,7 @@ void PropertyListClass::putProperty(const char *key, const char *value) {
   // st = millis();
 
   finalizeChangeFile(in, out);
+  endInt();
   // LOGGER << "Put Property write: " << (millis() - st) << endl;
   // LOGGER.flush();
 }
@@ -152,12 +161,14 @@ char *PropertyListClass::readProperty(const char *key) {
       if (line.startsWith(_key)) {
         strcpy(commonBuffer200, line.c_str() + _key.length());
         in.close();
+        endInt();
         return commonBuffer200;
       }
     }
     in.close();
   }
   commonBuffer200[0] = 0;
+  endInt();
   return commonBuffer200;
 }
 
@@ -165,7 +176,10 @@ void PropertyListClass::removeArrayProperty(const __FlashStringHelper *key) {
   if (!assertInit()) return;
 
   String _key = String(key);
-  if (_key.length() == 0) return;
+  if (_key.length() == 0) {
+    endInt();
+    return;
+  }
   File in = SPIFFS.open(configFileName, "r");
   File out= SPIFFS.open(tempFileName, "w");
 
@@ -176,6 +190,7 @@ void PropertyListClass::removeArrayProperty(const __FlashStringHelper *key) {
   }
 
   finalizeChangeFile(in, out);
+  endInt();
 }
 
 void PropertyListClass::finalizeChangeFile(File &in, File &out) {
@@ -190,9 +205,19 @@ void PropertyListClass::finalizeChangeFile(File &in, File &out) {
   }
 }
 
+int PropertyListClass::beginInt() {
+  return SPIFFS.begin();
+}
+
+void PropertyListClass::endInt() {
+  SPIFFS.end();
+  initialized = false;
+}
+
 void PropertyListClass::begin(MenuHandler *handler) {
-  setupPropList(handler);
-  bool res =  SPIFFS.begin();
+  int res = beginInt();
+  setupPropList(&menuHandler);
+
   //LOGGER <<"SPFFS begin = " << res << endl;
   if (!res) {
     SPIFFS.format();
@@ -214,10 +239,12 @@ void PropertyListClass::begin(MenuHandler *handler) {
   } else {
     //LOGGER << " successfully deleted" << endl;
   }
-  initialized = true;
+  //initialized = true;
+  endInt();
 }
 
 void PropertyListClass::prop_list_cfg(const char *line) {
+  PropertyList.beginInt();
   File in = SPIFFS.open(PropertyList.configFileName, "r");
   LOGGER << F("---vESPrinoCFG_start---\n");
   LOGGER.flush();
@@ -233,4 +260,5 @@ void PropertyListClass::prop_list_cfg(const char *line) {
   LOGGER.flush();
   delay(1);
   in.close();
+  PropertyList.endInt();
 }

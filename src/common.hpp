@@ -261,7 +261,7 @@ void registerPlugin(Plugin *plugin);
 void registerSensor(Sensor *sensor);
 wl_status_t waitForWifi(uint16_t timeoutMs = 15000);
 void wifiConnectMulti();
-void startAutoWifiConfig();
+void startAutoWifiConfig(const char *ch);
 void wifiOff();
 void fireEvent(const char *name);
 #endif

@@ -1,6 +1,8 @@
 #ifndef PropertyList_h
 #define PropertyList_h
 
+#define SPIFFS_CACHE 0
+
 
 #include <Arduino.h>
 #include "FS.h"
@@ -10,6 +12,8 @@
 class PropertyListClass {
 public:
   PropertyListClass();
+  int beginInt();
+  void endInt();
   void begin(MenuHandler *handler);
   void putProperty(const __FlashStringHelper *key, const char *value);
   void putProperty(const __FlashStringHelper *key, const __FlashStringHelper *value);

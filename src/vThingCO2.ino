@@ -92,6 +92,7 @@ void setupPlugins(MenuHandler *handler) {
     plugins.get(i)->setup(handler);
     menuHandler.loop();
     delay(1);
+    heap("");
 
   }
   LOGGER << F("\n--- Setup SENSORS ---\n");
@@ -101,6 +102,7 @@ void setupPlugins(MenuHandler *handler) {
     sensors.get(i)->setup(handler);
     menuHandler.loop();
     delay(1);
+    heap("");
 
   }
   LOGGER << F("\n--- Setup DESTINATIONS ---\n");
@@ -110,6 +112,7 @@ void setupPlugins(MenuHandler *handler) {
     destinations.get(i)->setup(handler);
     menuHandler.loop();
     delay(1);
+    heap("");
 
   }
 //  LOGGER << F("\n--- Setup DONE ---\n");
@@ -172,9 +175,13 @@ void fireEvent(const char *name) {
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 void setup() {
   Serial.begin(9600);
+  heap("Heap at start");
   PropertyList.begin(&menuHandler);
+  heap("1");
   LOGGER.init();
+  heap("2");
   wifiConnectMulti();
+  heap("3");
   pinMode(D8, OUTPUT);    //enable power via D8
   digitalWrite(D8, HIGH);
   // //delay(1000);
@@ -185,8 +192,8 @@ void setup() {
   //LOGGER.flush();
   //delay(100);
 
-  heap("Heap at start");
   LOGGER.flush();
+  heap("4");
   //Wire.begin(D1, D6);
   //WiFi.begin();
   // #if defined(VTHING_CO2) || defined(VTHING_VESPRINO)
@@ -200,24 +207,32 @@ void setup() {
   //WiFi.mode(WIFI_OFF);
 
   printVersion();
+  heap("5");
   menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
+  heap("6");
+
   CommonCommands commCmd;
   commCmd.registerCommands(&menuHandler);
   OTA_registerCommands(&menuHandler);
   WIFI_registerCommands(&menuHandler);
+  heap("7");
 
   LOGGER << F("ready >") << endl;
   LOGGER << F("Waiting for auto-connect") << endl;
 
 //  deepSleepWake = isDeepSleepWake();
   rtcMemStore.init();
+  heap("8");
   PowerManager.setup(&menuHandler);
+  heap("9");
   I2CHelper::beginI2C(PropertyList.readLongProperty(PROP_I2C_DISABLED_PORTS), &LOGGER);
   pinMode(D8, INPUT);
+  heap("10");
 
 
   DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
   if (DEBUG) LOGGER << F("DEBUG is: ") << DEBUG;
+  heap("11");
 
 
   if (PowerManager.isWokeFromDeepSleep() == false) {
@@ -230,9 +245,11 @@ void setup() {
   }
 
   //MigrateSettingsIfNeeded();
+  heap("12");
 
   EEPROM.begin(100);
 
+  heap("13");
 
   // #ifdef VTHING_STARTER
   //   //initVThingStarter();
@@ -246,13 +263,22 @@ void setup() {
   //registerDestination(&customHTTPDest);
 
   registerPlugin(&TimerManager);
+  heap("14");
+
   //registerPlugin(&PowerManager);
   setupPlugins(&menuHandler);
 
+  heap("15");
+
   //SAP_HCP_IOT_Plugin::registerCommands(&menuHandler);
   AT_FW_Plugin::registerCommands(&menuHandler);
+  heap("bb");
   CustomURL_Plugin::registerCommands(&menuHandler);
+  heap("cc");
+
   URLShortcuts::registerCommands(&menuHandler);
+  heap("dd");
+
   //MQTT_RegisterCommands(&menuHandler);
 #ifdef VTHING_CO2
   //CO2_registerCommands(&menuHandler);

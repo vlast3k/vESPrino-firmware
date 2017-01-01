@@ -2,7 +2,7 @@
 #include "plugins/SAP_HCP_IOT_Plugin.hpp"
 #include "plugins/CustomURL_Plugin.hpp"
 #include "plugins/PropertyList.hpp"
-#include <ESP8266WiFiMulti.h>
+//#include <ESP8266WiFiMulti.h>
 #include "WiFiManager.h"
 #ifdef VESP_PING_SSL
 #include <WiFiClientSecure.h>
@@ -18,16 +18,27 @@ ESP8266WiFiMulti  *wifiMulti = NULL;
 
 IPAddress ip = WiFi.localIP();
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
+enum VSP_WIFI_STATE  {VSP_WIFI_CONNECTING, VSP_WIFI_CONNECTED, VSP_WIFI_NOCONFIG, VSP_WIFI_FAILED};
+uint32_t lostWifiConnection = 0;
+
+wl_status_t wifiState = WL_NO_SHIELD;
 
 void handleWifi() {
-  if (wifiMulti && millis() > 8000) wifiMulti->run();
+  //if (wifiMulti && millis() > 8000) wifiMulti->run();
   //LOGGER << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
+  //if (wifiMulti) wifiMulti->run();
+  if (WiFi.status() != wifiState) {
+    wifiState = WiFi.status();
+    Serial << "------State changed to: " << WiFi.status() << endl;
+
+  }
+  //delay(100);
   if (ip == WiFi.localIP()) return;
   else if (WiFi.status() == WL_CONNECTED) {
     ip = WiFi.localIP();
-#ifdef SAP_AUTH
-    vSAP_Auth(EE_WIFI_P1_30B, EE_WIFI_P1_30B);
-#endif
+    #ifdef SAP_AUTH
+        vSAP_Auth(EE_WIFI_P1_30B, EE_WIFI_P1_30B);
+    #endif
     //neopixel.cmdLedHandleColorInst(F("ledcolor blue"));
     LOGGER << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
     fireEvent("wifiConnected");
@@ -99,6 +110,8 @@ void connectToWifi(const char *s1, const char *s2, const char *s3) {
   PropertyList.putProperty(EE_WIFI_P1, s2);
   PropertyList.putProperty(EE_WIFI_P2, s3);
   LOGGER << F("Connecting to: \"") << s1 << F("\", \"") << s2 << F("\"") << endl;
+  WiFi.disconnect();
+  delay(500);
   wifiConnectMulti();
   //wifiConnectToStoredSSID();
   //LOGGER << "Connecting to " << s1 << endl;
@@ -167,7 +180,7 @@ void sendPingPort(const char *p) {
   p = extractStringFromQuotes(p, port, 20);
   int iport = atoi(port);
   int res;
-  LOGGER << F("Test connection to to:") << host << F(":") << port << ", secure:" << secure << endl;
+  LOGGER << F("Test connection to to:") << host << F(":") << port << F(", secure:") << secure << endl;
 
   if (secure) {
     #ifdef VESP_PING_SSL
@@ -237,15 +250,16 @@ void wifiConnectMulti() {
   //WiFi.forceSleepWake();
   //delay(100);
   WiFi.persistent(false);
+  WiFi.mode(WIFI_OFF);
   WiFi.mode(WIFI_STA);
   applyStaticWifiConfig();
-  wifiMulti = new ESP8266WiFiMulti();
-  wifiMulti->addAP("vladiHome", "0888414447");
+  //wifiMulti = new ESP8266WiFiMulti();
+  //wifiMulti->addAP("vladiHome", "0888414447");
   //wifiMulti->addAP("Andreev", "4506285842");
   String ssid = PropertyList.readProperty(EE_WIFI_SSID);
   String pass = PropertyList.readProperty(EE_WIFI_P1);
   if (ssid.length() && ssid.length() < 40 && pass.length() < 100) {
-    wifiMulti->addAP(ssid.c_str(), pass.c_str());
+    //wifiMulti->addAP(ssid.c_str(), pass.c_str());
     char x[120], y[120];
     strcpy(x, ssid.c_str());
     strcpy(y, pass.c_str());
@@ -256,10 +270,10 @@ void wifiConnectMulti() {
 
 void wifiOff() {
   WiFi.disconnect(true); //mode = wifi Off
-  if (wifiMulti) {
-    delete wifiMulti;
-    wifiMulti = NULL;
-  }
+  // if (wifiMulti) {
+  //   delete wifiMulti;
+  //   wifiMulti = NULL;
+  // }
   //WiFi.forceSleepBegin();
 }
 
@@ -306,57 +320,58 @@ void WIFI_registerCommands(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("sleeptype"), CMD_BEGIN, cmdSleeptype, F("")));
   handler->registerCommand(new MenuEntry(F("delay"), CMD_BEGIN, cmdDelay, F("")));
   handler->registerCommand(new MenuEntry(F("ipconfig"), CMD_EXACT, cmdIPConfig, F("Dump IP configuration")));
+  handler->registerCommand(new MenuEntry(F("autoconfig"), CMD_EXACT, startAutoWifiConfig, F("startAutoWifiConfig")));
 }
 
 extern NeopixelVE neopixel;
-void startAutoWifiConfig() {
-  char custom_http1[140] = "Custom HTTP URL 1";
-  char custom_http2[140] = "Custom HTTP URL 2";
-  char custom_http3[140] = "Custom HTTP URL 3";
-  char mqtt_server[40] = "mqtt_server";
-  char mqtt_port[6] = "1883";
-  char mqtt_msg1[140] = "<mqtt topic>:<msg1>";
-  char mqtt_msg2[140] = "<mqtt topic>:<msg2>";
-  char mqtt_msg3[140] = "<mqtt topic>:<msg3>";
+void startAutoWifiConfig(const char *ch) {
+  // char custom_http1[140] = "Custom HTTP URL 1";
+  // char custom_http2[140] = "Custom HTTP URL 2";
+  // char custom_http3[140] = "Custom HTTP URL 3";
+  // char mqtt_server[40] = "mqtt_server";
+  // char mqtt_port[6] = "1883";
+  // char mqtt_msg1[140] = "<mqtt topic>:<msg1>";
+  // char mqtt_msg2[140] = "<mqtt topic>:<msg2>";
+  // char mqtt_msg3[140] = "<mqtt topic>:<msg3>";
   shouldSend = false;
   WiFiManager wifiManager;
-  WiFiManagerParameter par_custom_http1("http1", "http1", custom_http1, 140);
-  WiFiManagerParameter par_custom_http2("http2", "http2", custom_http2, 140);
-  WiFiManagerParameter par_custom_http3("http3", "http3", custom_http3, 140);
-  WiFiManagerParameter par_custom_mqtt_server("mqttserver", "mqtt server", mqtt_server, 40);
-  WiFiManagerParameter par_custom_mqtt_port("port", "mqtt port", mqtt_port, 6);
-  WiFiManagerParameter par_custom_mqtt_msg1("mqmsg1", "mqmsg1", mqtt_msg1, 140);
-  WiFiManagerParameter par_custom_mqtt_msg2("mqmsg2", "mqmsg2", mqtt_msg2, 140);
-  WiFiManagerParameter par_custom_mqtt_msg3("mqmsg3", "mqmsg3", mqtt_msg3, 140);
-  wifiManager.addParameter(&par_custom_http1);
-  wifiManager.addParameter(&par_custom_http2);
-  wifiManager.addParameter(&par_custom_http3);
-  wifiManager.addParameter(&par_custom_mqtt_server);
-  wifiManager.addParameter(&par_custom_mqtt_port);
-  wifiManager.addParameter(&par_custom_mqtt_msg1);
-  wifiManager.addParameter(&par_custom_mqtt_msg2);
-  wifiManager.addParameter(&par_custom_mqtt_msg3);
-  neopixel.cmdLedSetBrgInst(F("ledbrg 90"));
-  neopixel.cmdLedHandleColorInst(F("ledcolor blue"));
+  // WiFiManagerParameter par_custom_http1("http1", "http1", custom_http1, 140);
+  // WiFiManagerParameter par_custom_http2("http2", "http2", custom_http2, 140);
+  // WiFiManagerParameter par_custom_http3("http3", "http3", custom_http3, 140);
+  // WiFiManagerParameter par_custom_mqtt_server("mqttserver", "mqtt server", mqtt_server, 40);
+  // WiFiManagerParameter par_custom_mqtt_port("port", "mqtt port", mqtt_port, 6);
+  // WiFiManagerParameter par_custom_mqtt_msg1("mqmsg1", "mqmsg1", mqtt_msg1, 140);
+  // WiFiManagerParameter par_custom_mqtt_msg2("mqmsg2", "mqmsg2", mqtt_msg2, 140);
+  // WiFiManagerParameter par_custom_mqtt_msg3("mqmsg3", "mqmsg3", mqtt_msg3, 140);
+  // wifiManager.addParameter(&par_custom_http1);
+  // wifiManager.addParameter(&par_custom_http2);
+  // wifiManager.addParameter(&par_custom_http3);
+  // wifiManager.addParameter(&par_custom_mqtt_server);
+  // wifiManager.addParameter(&par_custom_mqtt_port);
+  // wifiManager.addParameter(&par_custom_mqtt_msg1);
+  // wifiManager.addParameter(&par_custom_mqtt_msg2);
+  // wifiManager.addParameter(&par_custom_mqtt_msg3);
+  // neopixel.cmdLedSetBrgInst(F("ledbrg 90"));
+  // neopixel.cmdLedHandleColorInst(F("ledcolor blue"));
 
   WiFi.persistent(false);
   wifiManager.setConnectTimeout(10);
   wifiManager.autoConnect("vAirMonitor");
 
-  menuHandler.handleCommand(F("custom_url_clean"));
-  if (par_custom_http1.getValue()[0]) menuHandler.handleCommand((String(F("custom_url_add \"0\",\"")) + par_custom_http1.getValue() + "\"").c_str());
-  if (par_custom_http2.getValue()[0]) menuHandler.handleCommand((String(F("custom_url_add \"1\",\"")) + par_custom_http2.getValue() + "\"").c_str());
-  if (par_custom_http3.getValue()[0]) menuHandler.handleCommand((String(F("custom_url_add \"2\",\"")) + par_custom_http3.getValue() + "\"").c_str());
-  if (par_custom_mqtt_server.getValue()[0]) {
-    char x[200];
-    sprintf(x, String(F("mqtt_setup \"%s\",\"%s\",\"\",\"\",\"\"")).c_str(), par_custom_mqtt_server.getValue(), par_custom_mqtt_port.getValue());
-    menuHandler.handleCommand(x);
-  }
-  menuHandler.handleCommand(F("mqtt_msg_clean"));
-  if (par_custom_mqtt_msg1.getValue()[0]) menuHandler.handleCommand((String(F("mqtt_msg_add \"0\"")) + par_custom_mqtt_msg1.getValue()).c_str());
-  if (par_custom_mqtt_msg2.getValue()[0]) menuHandler.handleCommand((String(F("mqtt_msg_add \"1\"")) + par_custom_mqtt_msg2.getValue()).c_str());
-  if (par_custom_mqtt_msg3.getValue()[0]) menuHandler.handleCommand((String(F("mqtt_msg_add \"2\"")) + par_custom_mqtt_msg3.getValue()).c_str());
-
+  // menuHandler.handleCommand(F("custom_url_clean"));
+  // if (par_custom_http1.getValue()[0]) menuHandler.handleCommand((String(F("custom_url_add \"0\",\"")) + par_custom_http1.getValue() + "\"").c_str());
+  // if (par_custom_http2.getValue()[0]) menuHandler.handleCommand((String(F("custom_url_add \"1\",\"")) + par_custom_http2.getValue() + "\"").c_str());
+  // if (par_custom_http3.getValue()[0]) menuHandler.handleCommand((String(F("custom_url_add \"2\",\"")) + par_custom_http3.getValue() + "\"").c_str());
+  // if (par_custom_mqtt_server.getValue()[0]) {
+  //   char x[200];
+  //   sprintf(x, String(F("mqtt_setup \"%s\",\"%s\",\"\",\"\",\"\"")).c_str(), par_custom_mqtt_server.getValue(), par_custom_mqtt_port.getValue());
+  //   menuHandler.handleCommand(x);
+  // }
+  // menuHandler.handleCommand(F("mqtt_msg_clean"));
+  // if (par_custom_mqtt_msg1.getValue()[0]) menuHandler.handleCommand((String(F("mqtt_msg_add \"0\"")) + par_custom_mqtt_msg1.getValue()).c_str());
+  // if (par_custom_mqtt_msg2.getValue()[0]) menuHandler.handleCommand((String(F("mqtt_msg_add \"1\"")) + par_custom_mqtt_msg2.getValue()).c_str());
+  // if (par_custom_mqtt_msg3.getValue()[0]) menuHandler.handleCommand((String(F("mqtt_msg_add \"2\"")) + par_custom_mqtt_msg3.getValue()).c_str());
+  //
   PropertyList.putProperty(EE_WIFI_SSID, WiFi.SSID().c_str());
   PropertyList.putProperty(EE_WIFI_P1, WiFi.psk().c_str());
   menuHandler.handleCommand(F("prop_list"));

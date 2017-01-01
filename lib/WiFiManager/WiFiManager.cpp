@@ -280,7 +280,7 @@ uint8_t WiFiManager::waitForConnectResult() {
 
 void WiFiManager::startWPS() {
   DEBUG_WM(F("START WPS"));
-  WiFi.beginWPSConfig();
+//  WiFi.beginWPSConfig();
   DEBUG_WM(F("END WPS"));
 }
 /*
