@@ -46,7 +46,7 @@ extern "C" {
 #include <I2CHelper.hpp>
 #include "plugins/LoggingPrinter.hpp"
 
-#define BUILD_NUM "20161230"
+#define BUILD_NUM "20170103"
 
 //#define SERIAL_PORT LOGGER
 #define EE_WIFI_SSID F("wifi.ssid")
@@ -82,7 +82,7 @@ extern "C" {
 #define LED_NO_I2C        F("rlnrln")
 #define LED_LOST_I2C      F("rynryn")
 #define LED_WIFI_SEARCH   F("cb")
-#define LED_WIFI_FOUND    F("bbbbn")
+#define LED_WIFI_FOUND    F("ggggn")
 #define LED_WIFI_FAILED   F("rrrrn")
 #define LED_SEND_OK       F("gng")
 #define LED_SEND_FAILED   F("rnrnr")

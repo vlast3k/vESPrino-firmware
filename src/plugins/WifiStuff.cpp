@@ -44,7 +44,7 @@ void handleWifi() {
     #endif
     //neopixel.cmdLedHandleColorInst(F("ledcolor blue"));
     LOGGER << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
-    fireEvent("wifiConnected");
+    //fireEvent("wifiConnected");
 
     // handleCommandVESPrino("vecmd led_mblue");
     // handleCommandVESPrino("vecmd ledmode_2_3");
@@ -70,10 +70,12 @@ wl_status_t waitForWifi(uint16_t timeoutMs) {
     menuHandler.loop();
     if ((i%10) == 0)  {
       LOGGER << '.';
+      if (wifiAlreadyWaited) return WiFi.status();
       neopixel.signal(LED_WIFI_SEARCH);
     }
   }
   LOGGER << endl;
+  if (wifiAlreadyWaited) return WiFi.status();
   if (WiFi.status() == WL_CONNECTED) neopixel.signal(LED_WIFI_FOUND);
   else neopixel.signal(LED_WIFI_FAILED);
   wifiAlreadyWaited = true;
