@@ -20,6 +20,12 @@ void NeopixelVE::setup(MenuHandler *handler) {
  void NeopixelVE::cmdLedHandleColor(const char* line) {neopixel.cmdLedHandleColorInst(line);}
  void NeopixelVE::cmdLedSetBrg(const char* line) {neopixel.cmdLedSetBrgInst(line);}
  void NeopixelVE::cmdLedHandleMode(const char* line) {neopixel.cmdLedHandleModeInst(line);}
+ void NeopixelVE::signal(const __FlashStringHelper *seq) {
+   if (DEBUG) {
+     String cmd = String("ledcolor seq") + seq;
+     cmdLedHandleColorInst(cmd.c_str());
+   }
+ }
 
  void NeopixelVE::handleSequence(const char *seq) {
    seq = seq + 3;
@@ -30,13 +36,12 @@ void NeopixelVE::setup(MenuHandler *handler) {
      for (char ch = *seq; ch >= '0' && ch <= '9'; ch = *(++seq));
      switch (*seq) {
        case 'r': c = Cred; break;
-       case 'b': c = Cblue; break;
+       case 'b': c = Cmblue; break;
        case 'g': c = Cgreen; break;
        case 'y': c = Cyellow; break;
-       case 'c': c = Ccyan; break;
        case 'w': c = Cwhite; break;
        case 'l': c = Clila; break;
-       case 'p': c = Cpink; break;
+       case 'c': c = Ccyan; break;
        case 'n':
        default:  c = Cblack; break;
      }

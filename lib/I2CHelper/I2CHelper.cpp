@@ -163,8 +163,9 @@ void I2CHelper::cmdScanI2C(const char *ignore) {
   findI2C(a, b, 0, true);
 }
 
-void I2CHelper::beginI2C(long disabledPorts, Stream *_LOGGER) {
+I2C_STATE I2CHelper::beginI2C(long disabledPorts, Stream *_LOGGER) {
   LOGGER = _LOGGER;
+  I2C_STATE ret;
 //  brzo_i2c_setup(D5, D1, 50000);
   //Wire.begin(D5, D1);
   uint32_t rtcI2c = rtcMemStore.getGenData(GEN_I2C_BUS);
@@ -181,12 +182,15 @@ void I2CHelper::beginI2C(long disabledPorts, Stream *_LOGGER) {
     if (hasI2CDevices(i2cSDA, i2cSCL, s1, s2, false)) {
       *LOGGER << F("I2C Bus on SDA:SCA (") << i2cSDA << F(":") << i2cSCL << F(")");
       Wire.begin(i2cSDA, i2cSCL);
+      ret = I2C_BEGIN;
     } else {
-      *LOGGER << F("I2C Bus is not responding. Restarting!")<< endl;
-      ESP.restart();
+      *LOGGER << F("I2C Bus is not responding. NO I2C Devices during this session!")<< endl;
+      return I2C_LOST;
+      //ESP.restart();
     }
   } else {
     *LOGGER << F("No I2C Devices found\n");
+    ret = I2C_NODEVICES;
   }
 
   if (!rtcI2c) {
@@ -195,6 +199,8 @@ void I2CHelper::beginI2C(long disabledPorts, Stream *_LOGGER) {
     data = data | ((uint8_t)i2cSCL << 8);
     rtcMemStore.setGenData(GEN_I2C_BUS, data);
   }
+
+  return ret;
 }
 
 uint8_t I2CHelper::slowEndTransmission(uint8_t sendStop) {

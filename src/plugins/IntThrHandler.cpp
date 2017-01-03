@@ -4,6 +4,8 @@
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
 #include "plugins/PowerManager.hpp"
+#include "plugins/NeopixelVE.hpp"
+extern NeopixelVE neopixel;
 
 //Timer *tmrSendValueTimer;
 Timer *tmrRawRead;
@@ -60,8 +62,11 @@ void conditionalSend(bool forceSend) {
 //  if (forceSend || someThresholdExceeded) {
 //  wifiConnectMulti();
 
+  bool res = true;
   if (forceSend) {
-    for (int i=0; i < destinations.size(); i++) destinations.get(i)->process(values);
+    for (int i=0; i < destinations.size(); i++) res = res && destinations.get(i)->process(values);
+    if (res) neopixel.signal(LED_SEND_OK);
+    else neopixel.signal(LED_SEND_FAILED);
   //tmrSendValueTimer->Start();
   }
 //  wifiOff();

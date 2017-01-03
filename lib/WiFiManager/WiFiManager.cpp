@@ -138,14 +138,14 @@ boolean WiFiManager::autoConnect(char const *apName, char const *apPassword) {
   //String pass = getPassword();
 
   // attempt to connect; should it fail, fall back to AP
-  WiFi.mode(WIFI_STA);
-
-  if (connectWifi("", "") == WL_CONNECTED)   {
-    DEBUG_WM(F("IP Address:"));
-    DEBUG_WM(WiFi.localIP());
-    //connected
-    return true;
-  }
+  // WiFi.mode(WIFI_STA);
+  //
+  // if (connectWifi("", "") == WL_CONNECTED)   {
+  //   DEBUG_WM(F("IP Address:"));
+  //   DEBUG_WM(WiFi.localIP());
+  //   //connected
+  //   return true;
+  // }
 
   return startConfigPortal(apName, apPassword);
 }
@@ -165,8 +165,11 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
 
   connect = false;
   setupConfigPortal();
+}
 
-  while (_configPortalTimeout == 0 || millis() < _configPortalStart + _configPortalTimeout) {
+void WiFiManager::loop() {
+
+  //while (_configPortalTimeout == 0 || millis() < _configPortalStart + _configPortalTimeout) {
     //DNS
     dnsServer->processNextRequest();
     //HTTP
@@ -189,7 +192,7 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
           //todo: check if any custom parameters actually exist, and check if they really changed maybe
           _savecallback();
         }
-        break;
+        return;
       }
 
       if (_shouldBreakAfterConfig) {
@@ -199,16 +202,16 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
           //todo: check if any custom parameters actually exist, and check if they really changed maybe
           _savecallback();
         }
-        break;
+        return;
       }
     }
-    yield();
-  }
-
-  server.reset();
-  dnsServer.reset();
-
-  return  WiFi.status() == WL_CONNECTED;
+  //   yield();
+  // }
+  //
+  // server.reset();
+  // dnsServer.reset();
+  //
+  // return  WiFi.status() == WL_CONNECTED;
 }
 
 
@@ -358,14 +361,14 @@ void WiFiManager::handleRoot() {
   }
 
   String page = FPSTR(HTTP_HEAD);
-  page.replace(F("{v}"), "Options");
+  page.replace(F("{v}"), F("Options"));
   page += FPSTR(HTTP_SCRIPT);
   page += FPSTR(HTTP_STYLE);
   page += _customHeadElement;
   page += FPSTR(HTTP_HEAD_END);
-  page += "<h1>";
+  page += FPSTR("<h1>");
   page += _apName;
-  page += "</h1>";
+  page += FPSTR("</h1>");
   page += F("<h3>WiFiManager</h3>");
   page += FPSTR(HTTP_PORTAL_OPTIONS);
   page += FPSTR(HTTP_END);
@@ -378,7 +381,7 @@ void WiFiManager::handleRoot() {
 void WiFiManager::handleWifi(boolean scan) {
 
   String page = FPSTR(HTTP_HEAD);
-  page.replace(F("{v}"), "Config ESP");
+  page.replace(F("{v}"), F("Config ESP"));
   page += FPSTR(HTTP_SCRIPT);
   page += FPSTR(HTTP_STYLE);
   page += _customHeadElement;

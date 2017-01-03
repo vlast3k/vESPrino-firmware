@@ -2,6 +2,7 @@
 #include "plugins/SAP_HCP_IOT_Plugin.hpp"
 #include "plugins/CustomURL_Plugin.hpp"
 #include "plugins/PropertyList.hpp"
+#include "plugins/NeopixelVE.hpp"
 //#include <ESP8266WiFiMulti.h>
 #include "WiFiManager.h"
 #ifdef VESP_PING_SSL
@@ -9,6 +10,7 @@
 #endif
 
 ESP8266WiFiMulti  *wifiMulti = NULL;
+WiFiManager *wifiManager = NULL;
 
 #define PROP_WIFI_STATIC_IP F("wifi.staticip")
 #define PROP_WIFI_GATEWAY F("wifi.gateway")
@@ -32,6 +34,7 @@ void handleWifi() {
     Serial << "------State changed to: " << WiFi.status() << endl;
 
   }
+  if (wifiManager) wifiManager->loop();
   //delay(100);
   if (ip == WiFi.localIP()) return;
   else if (WiFi.status() == WL_CONNECTED) {
@@ -53,28 +56,32 @@ bool wifiAlreadyWaited = false;
 wl_status_t waitForWifi(uint16_t timeoutMs) {
   if (wifiAlreadyWaited == true) return WiFi.status();
   if (WiFi.status() == WL_CONNECTED)  return WL_CONNECTED;
-  fireEvent("wifiSearching");
-  LOGGER << F("Waiting for WiFi ");
+  //fireEvent("wifiSearching");
+  LOGGER << F("\nWaiting for WiFi ");
   //bool putLF = false;
   int delayFix = 100;
   //const static uint32_t timeoutMs =1000L;
   bool a=true;
-  for (int i=0; i*delayFix < timeoutMs; i++) {
+  uint32_t st=millis();
+  for (int i=0; millis() < st + timeoutMs; i++) {
     if (WiFi.status() == WL_CONNECTED) break;
     delay(delayFix);
     handleWifi();
     menuHandler.loop();
     if ((i%10) == 0)  {
       LOGGER << '.';
+      neopixel.signal(LED_WIFI_SEARCH);
     }
   }
   LOGGER << endl;
+  if (WiFi.status() == WL_CONNECTED) neopixel.signal(LED_WIFI_FOUND);
+  else neopixel.signal(LED_WIFI_FAILED);
   wifiAlreadyWaited = true;
   return WiFi.status();
 }
 
 void activeWait() {
-  for (int i=1; i < 31; i++) {
+  for (int i=1; i < 5; i++) {
     delay(100);
   //  handleWifi();
     menuHandler.loop();
@@ -334,7 +341,7 @@ void startAutoWifiConfig(const char *ch) {
   // char mqtt_msg2[140] = "<mqtt topic>:<msg2>";
   // char mqtt_msg3[140] = "<mqtt topic>:<msg3>";
   shouldSend = false;
-  WiFiManager wifiManager;
+  wifiManager = new WiFiManager();
   // WiFiManagerParameter par_custom_http1("http1", "http1", custom_http1, 140);
   // WiFiManagerParameter par_custom_http2("http2", "http2", custom_http2, 140);
   // WiFiManagerParameter par_custom_http3("http3", "http3", custom_http3, 140);
@@ -355,8 +362,8 @@ void startAutoWifiConfig(const char *ch) {
   // neopixel.cmdLedHandleColorInst(F("ledcolor blue"));
 
   WiFi.persistent(false);
-  wifiManager.setConnectTimeout(10);
-  wifiManager.autoConnect("vAirMonitor");
+  wifiManager->setConnectTimeout(10);
+  wifiManager->autoConnect("vAirMonitor");
 
   // menuHandler.handleCommand(F("custom_url_clean"));
   // if (par_custom_http1.getValue()[0]) menuHandler.handleCommand((String(F("custom_url_add \"0\",\"")) + par_custom_http1.getValue() + "\"").c_str());
@@ -372,10 +379,10 @@ void startAutoWifiConfig(const char *ch) {
   // if (par_custom_mqtt_msg2.getValue()[0]) menuHandler.handleCommand((String(F("mqtt_msg_add \"1\"")) + par_custom_mqtt_msg2.getValue()).c_str());
   // if (par_custom_mqtt_msg3.getValue()[0]) menuHandler.handleCommand((String(F("mqtt_msg_add \"2\"")) + par_custom_mqtt_msg3.getValue()).c_str());
   //
-  PropertyList.putProperty(EE_WIFI_SSID, WiFi.SSID().c_str());
-  PropertyList.putProperty(EE_WIFI_P1, WiFi.psk().c_str());
-  menuHandler.handleCommand(F("prop_list"));
-  neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
-  neopixel.cmdLedHandleColorInst(F("ledcolor lila"));
+  // PropertyList.putProperty(EE_WIFI_SSID, WiFi.SSID().c_str());
+  // PropertyList.putProperty(EE_WIFI_P1, WiFi.psk().c_str());
+  // menuHandler.handleCommand(F("prop_list"));
+  // neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
+  // neopixel.cmdLedHandleColorInst(F("ledcolor lila"));
   //LOGGER << "wifiaaaaaaaaa: " << WiFi.SSID() << " : " << WiFi.psk() << endl;
 }

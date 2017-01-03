@@ -75,6 +75,18 @@ extern "C" {
 #define PROP_SERVO_PORT F("servo.port")
 #define PROP_I2C_DISABLED_PORTS F("i2c.disabled.ports")
 #define PROP_TEMP_ADJ F("temp.adjustment")
+
+
+#define LED_START         F("95lnln")
+#define LED_START_DS      F("95lnlnln")
+#define LED_NO_I2C        F("rlnrln")
+#define LED_LOST_I2C      F("rynryn")
+#define LED_WIFI_SEARCH   F("cb")
+#define LED_WIFI_FOUND    F("bbbbn")
+#define LED_WIFI_FAILED   F("rrrrn")
+#define LED_SEND_OK       F("gng")
+#define LED_SEND_FAILED   F("rnrnr")
+#define LED_GO_DEEPSLEEP
 // #define EE_WIFI_SSID_30B 0
 // #define EE_WIFI_P1_30B 30
 // #define EE_WIFI_P2_30B 60

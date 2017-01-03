@@ -48,7 +48,10 @@ void LoggingPrinter::myWrite(const uint8_t *buffer, size_t size) {
 
 void LoggingPrinter::myWrite(uint8_t chr) {
   if (logURL.length() == 0 && !logToWss) return;
-  if (length == MAXSIZE -1) return; // the case when flushLog connects to Wifi, and it dumps
+  //Serial << '_' << chr;
+  if (length == MAXSIZE -1){
+    return; // the case when flushLog connects to Wifi, and it dumps
+  }
   data[length++] = chr;
   data[length] = 0;
   //if (logToWss && data[length-1] == '\n') flushLog();
