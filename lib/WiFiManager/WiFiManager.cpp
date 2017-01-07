@@ -138,21 +138,21 @@ boolean WiFiManager::autoConnect(char const *apName, char const *apPassword) {
   //String pass = getPassword();
 
   // attempt to connect; should it fail, fall back to AP
-  // WiFi.mode(WIFI_STA);
-  //
-  // if (connectWifi("", "") == WL_CONNECTED)   {
-  //   DEBUG_WM(F("IP Address:"));
-  //   DEBUG_WM(WiFi.localIP());
-  //   //connected
-  //   return true;
-  // }
+  WiFi.mode(WIFI_STA);
+
+  if (connectWifi("", "") == WL_CONNECTED)   {
+    DEBUG_WM(F("IP Address:"));
+    DEBUG_WM(WiFi.localIP());
+    //connected
+    return true;
+  }
 
   return startConfigPortal(apName, apPassword);
 }
 
-boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPassword) {
+void WiFiManager::startConfigPortalAsync(char const *apName, char const *apPassword) {
   //setup AP
-  WiFi.mode(WIFI_AP_STA);
+  WiFi.mode(WIFI_AP);
   DEBUG_WM(F("SET AP STA"));
 
   _apName = apName;
@@ -167,51 +167,60 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
   setupConfigPortal();
 }
 
-void WiFiManager::loop() {
-
-  //while (_configPortalTimeout == 0 || millis() < _configPortalStart + _configPortalTimeout) {
-    //DNS
-    dnsServer->processNextRequest();
-    //HTTP
-    server->handleClient();
+bool WiFiManager::loopConfigPortal() {
+  //DNS
+  dnsServer->processNextRequest();
+  //HTTP
+  server->handleClient();
 
 
-    if (connect) {
-      connect = false;
-      delay(2000);
-      DEBUG_WM(F("Connecting to new AP"));
+  if (connect) {
+    connect = false;
+    delay(2000);
+    DEBUG_WM(F("Connecting to new AP"));
 
-      // using user-provided  _ssid, _pass in place of system-stored ssid and pass
-      if (connectWifi(_ssid, _pass) != WL_CONNECTED) {
-        DEBUG_WM(F("Failed to connect."));
-      } else {
-        //connected
-        WiFi.mode(WIFI_STA);
-        //notify that configuration has changed and any optional parameters should be saved
-        if ( _savecallback != NULL) {
-          //todo: check if any custom parameters actually exist, and check if they really changed maybe
-          _savecallback();
-        }
-        return;
+    // using user-provided  _ssid, _pass in place of system-stored ssid and pass
+    if (connectWifi(_ssid, _pass) != WL_CONNECTED) {
+      DEBUG_WM(F("Failed to connect."));
+    } else {
+      //connected
+      WiFi.mode(WIFI_STA);
+      //notify that configuration has changed and any optional parameters should be saved
+      if ( _savecallback != NULL) {
+        //todo: check if any custom parameters actually exist, and check if they really changed maybe
+        _savecallback();
       }
-
-      if (_shouldBreakAfterConfig) {
-        //flag set to exit after config after trying to connect
-        //notify that configuration has changed and any optional parameters should be saved
-        if ( _savecallback != NULL) {
-          //todo: check if any custom parameters actually exist, and check if they really changed maybe
-          _savecallback();
-        }
-        return;
-      }
+      return true;
     }
-  //   yield();
-  // }
-  //
-  // server.reset();
-  // dnsServer.reset();
-  //
-  // return  WiFi.status() == WL_CONNECTED;
+
+    if (_shouldBreakAfterConfig) {
+      //flag set to exit after config after trying to connect
+      //notify that configuration has changed and any optional parameters should be saved
+      if ( _savecallback != NULL) {
+        //todo: check if any custom parameters actually exist, and check if they really changed maybe
+        _savecallback();
+      }
+      return true;
+    }
+  }
+  yield();
+  return false;
+}
+
+void WiFiManager::stopConfigPortalAsync() {
+  server.reset();
+  dnsServer.reset();
+}
+
+
+boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPassword) {
+  startConfigPortalAsync(apName, apPassword);
+  while (_configPortalTimeout == 0 || millis() < _configPortalStart + _configPortalTimeout) {
+    if (loopConfigPortal()) break;
+  }
+  stopConfigPortalAsync();
+
+  return  WiFi.status() == WL_CONNECTED;
 }
 
 
@@ -283,7 +292,7 @@ uint8_t WiFiManager::waitForConnectResult() {
 
 void WiFiManager::startWPS() {
   DEBUG_WM(F("START WPS"));
-//  WiFi.beginWPSConfig();
+  //WiFi.beginWPSConfig();
   DEBUG_WM(F("END WPS"));
 }
 /*
@@ -366,9 +375,9 @@ void WiFiManager::handleRoot() {
   page += FPSTR(HTTP_STYLE);
   page += _customHeadElement;
   page += FPSTR(HTTP_HEAD_END);
-  page += FPSTR("<h1>");
+  page += F("<h1>");
   page += _apName;
-  page += FPSTR("</h1>");
+  page += F("</h1>");
   page += F("<h3>WiFiManager</h3>");
   page += FPSTR(HTTP_PORTAL_OPTIONS);
   page += FPSTR(HTTP_END);
@@ -458,7 +467,7 @@ void WiFiManager::handleWifi(boolean scan) {
         }
 
       }
-      page += "<br/>";
+      page += F("<br/>");
     }
   }
 
@@ -492,28 +501,28 @@ void WiFiManager::handleWifi(boolean scan) {
   if (_sta_static_ip) {
 
     String item = FPSTR(HTTP_FORM_PARAM);
-    item.replace(F("{i}"), "ip");
-    item.replace(F("{n}"), "ip");
-    item.replace(F("{p}"), "Static IP");
-    item.replace(F("{l}"), "15");
+    item.replace(F("{i}"), F("ip"));
+    item.replace(F("{n}"), F("ip"));
+    item.replace(F("{p}"), F("Static IP"));
+    item.replace(F("{l}"), F("15"));
     item.replace(F("{v}"), _sta_static_ip.toString());
 
     page += item;
 
     item = FPSTR(HTTP_FORM_PARAM);
-    item.replace(F("{i}"), "gw");
-    item.replace(F("{n}"), "gw");
-    item.replace(F("{p}"), "Static Gateway");
-    item.replace(F("{l}"), "15");
+    item.replace(F("{i}"), F("gw"));
+    item.replace(F("{n}"), F("gw"));
+    item.replace(F("{p}"), F("Static Gateway"));
+    item.replace(F("{l}"), F("15"));
     item.replace(F("{v}"), _sta_static_gw.toString());
 
     page += item;
 
     item = FPSTR(HTTP_FORM_PARAM);
-    item.replace(F("{i}"), "sn");
-    item.replace(F("{n}"), "sn");
-    item.replace(F("{p}"), "Subnet");
-    item.replace(F("{l}"), "15");
+    item.replace(F("{i}"), F("sn"));
+    item.replace(F("{n}"), F("sn"));
+    item.replace(F("{p}"), F("Subnet"));
+    item.replace(F("{l}"), F("15"));
     item.replace(F("{v}"), _sta_static_sn.toString());
 
     page += item;

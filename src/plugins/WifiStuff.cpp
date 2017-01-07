@@ -9,8 +9,9 @@
 #include <WiFiClientSecure.h>
 #endif
 
-ESP8266WiFiMulti  *wifiMulti = NULL;
 WiFiManager *wifiManager = NULL;
+ESP8266WiFiMulti  *wifiMulti = NULL;
+void stopAutoWifiConfig();
 
 #define PROP_WIFI_STATIC_IP F("wifi.staticip")
 #define PROP_WIFI_GATEWAY F("wifi.gateway")
@@ -29,12 +30,12 @@ void handleWifi() {
   //if (wifiMulti && millis() > 8000) wifiMulti->run();
   //LOGGER << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
   //if (wifiMulti) wifiMulti->run();
-  if (WiFi.status() != wifiState) {
-    wifiState = WiFi.status();
-    Serial << "------State changed to: " << WiFi.status() << endl;
-
+  if (wifiManager) wifiManager->loopConfigPortal();
+  if (WiFi.status() == WL_NO_SSID_AVAIL && wifiManager == NULL) {
+    startAutoWifiConfig("");
+    //wifiState = WiFi.status();
+    //Serial << "------State changed to: " << WiFi.status() << endl;
   }
-  if (wifiManager) wifiManager->loop();
   //delay(100);
   if (ip == WiFi.localIP()) return;
   else if (WiFi.status() == WL_CONNECTED) {
@@ -44,6 +45,8 @@ void handleWifi() {
     #endif
     //neopixel.cmdLedHandleColorInst(F("ledcolor blue"));
     LOGGER << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
+    stopAutoWifiConfig();
+    if (!rtcMemStore.wasInDeepSleep()) menuHandler.scheduleCommand("wss_start");
     //fireEvent("wifiConnected");
 
     // handleCommandVESPrino("vecmd led_mblue");
@@ -274,6 +277,8 @@ void wifiConnectMulti() {
     strcpy(y, pass.c_str());
     //LOGGER << "wifibegin :: " << x << y << endl;
     WiFi.begin(x, y);
+  } else {
+    menuHandler.scheduleCommand(F("autoconfig"));
   }
 }
 
@@ -332,6 +337,21 @@ void WIFI_registerCommands(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("autoconfig"), CMD_EXACT, startAutoWifiConfig, F("startAutoWifiConfig")));
 }
 
+void cbOnSaveConfigCallback() {
+  PropertyList.putProperty(EE_WIFI_SSID, WiFi.SSID().c_str());
+  PropertyList.putProperty(EE_WIFI_P1, WiFi.psk().c_str());
+  stopAutoWifiConfig();
+}
+
+void stopAutoWifiConfig() {
+  if (wifiManager) {
+    wifiManager->stopConfigPortalAsync();
+    delete wifiManager;
+    wifiManager = NULL;
+    menuHandler.scheduleCommand(F("ledcolor seqcncncncn"));
+  }
+}
+
 extern NeopixelVE neopixel;
 void startAutoWifiConfig(const char *ch) {
   // char custom_http1[140] = "Custom HTTP URL 1";
@@ -343,7 +363,6 @@ void startAutoWifiConfig(const char *ch) {
   // char mqtt_msg2[140] = "<mqtt topic>:<msg2>";
   // char mqtt_msg3[140] = "<mqtt topic>:<msg3>";
   shouldSend = false;
-  wifiManager = new WiFiManager();
   // WiFiManagerParameter par_custom_http1("http1", "http1", custom_http1, 140);
   // WiFiManagerParameter par_custom_http2("http2", "http2", custom_http2, 140);
   // WiFiManagerParameter par_custom_http3("http3", "http3", custom_http3, 140);
@@ -360,12 +379,19 @@ void startAutoWifiConfig(const char *ch) {
   // wifiManager.addParameter(&par_custom_mqtt_msg1);
   // wifiManager.addParameter(&par_custom_mqtt_msg2);
   // wifiManager.addParameter(&par_custom_mqtt_msg3);
-  // neopixel.cmdLedSetBrgInst(F("ledbrg 90"));
-  // neopixel.cmdLedHandleColorInst(F("ledcolor blue"));
+  neopixel.cmdLedSetBrgInst(F("ledbrg 80"));
+  neopixel.cmdLedHandleColorInst(F("ledcolor mblue"));
 
   WiFi.persistent(false);
-  wifiManager->setConnectTimeout(10);
-  wifiManager->autoConnect("vAirMonitor");
+  wifiManager = new WiFiManager();
+  //wifiManager.setConnectTimeout(10);
+  String chipId = String(ESP.getChipId(), HEX);
+  chipId.toUpperCase();
+
+  String name = String(F("vAirMonitor_")) + chipId;
+  //wifiManager.autoConnect(name.c_str());
+  wifiManager->setSaveConfigCallback(cbOnSaveConfigCallback);
+  wifiManager->startConfigPortalAsync(name.c_str());
 
   // menuHandler.handleCommand(F("custom_url_clean"));
   // if (par_custom_http1.getValue()[0]) menuHandler.handleCommand((String(F("custom_url_add \"0\",\"")) + par_custom_http1.getValue() + "\"").c_str());
@@ -381,8 +407,9 @@ void startAutoWifiConfig(const char *ch) {
   // if (par_custom_mqtt_msg2.getValue()[0]) menuHandler.handleCommand((String(F("mqtt_msg_add \"1\"")) + par_custom_mqtt_msg2.getValue()).c_str());
   // if (par_custom_mqtt_msg3.getValue()[0]) menuHandler.handleCommand((String(F("mqtt_msg_add \"2\"")) + par_custom_mqtt_msg3.getValue()).c_str());
   //
-  // PropertyList.putProperty(EE_WIFI_SSID, WiFi.SSID().c_str());
-  // PropertyList.putProperty(EE_WIFI_P1, WiFi.psk().c_str());
+//  PropertyList.putProperty(EE_WIFI_SSID, WiFi.SSID().c_str());
+//  PropertyList.putProperty(EE_WIFI_P1, WiFi.psk().c_str());
+//  menuHandler.scheduleCommand(F("restart"));
   // menuHandler.handleCommand(F("prop_list"));
   // neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
   // neopixel.cmdLedHandleColorInst(F("ledcolor lila"));

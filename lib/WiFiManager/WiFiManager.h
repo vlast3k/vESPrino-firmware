@@ -77,6 +77,10 @@ class WiFiManager
 
     void          resetSettings();
 
+    void startConfigPortalAsync(char const *apName, char const *apPassword = NULL);
+    void stopConfigPortalAsync();
+    bool loopConfigPortal();
+
     //sets timeout before webserver loop ends and exits even if there has been no setup.
     //usefully for devices that failed to connect at some point and got stuck in a webserver loop
     //in seconds setConfigPortalTimeout is a new name for setTimeout

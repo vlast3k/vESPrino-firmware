@@ -29,26 +29,27 @@ void WebSocketServerClass::loop() {
 void WebSocketServerClass::cmdStartWebSocketServerInst() {
   if (server != NULL) delete server;
   if (waitForWifi() != WL_CONNECTED) return;
-  server = new WebSocketsServer(81);
+  server = new WebSocketsServer(8266);
   //menuHandler.scheduleCommand("nop 0");
   //server->on("/", WebSocketServerClass::onCommand);
   server->begin();
   server->onEvent(WebSocketServerClass::onWebSocketEvent);
 
-  LOGGER.print(F("\n\nSend commands to http://"));
-  LOGGER.print(WiFi.localIP());
-  LOGGER.println(F("/?cmd=..."));
-
-  String hostname = PropertyList.readProperty(PROP_ESP_HOSTNAME);
-  if (hostname.length() == 0) hostname = "vthing";
-  LOGGER << F("Web Server accessible on :") << endl;
-  LOGGER << F("   http://") << WiFi.localIP() << endl;
-  if (MDNS.begin(hostname.c_str())) {
-    LOGGER << F("   http://") << hostname << F(".local/") << endl;
-    MDNS.addService("http", "tcp", 80);
-  }
-  NBNS.begin(hostname.c_str());
-  LOGGER << F("   http://") << hostname << F("/") << endl;
+  LOGGER << F("\n\nWebSockets Server started on wss://") << WiFi.localIP() << F(":") << 8266 << endl;
+  LOGGER << F("Open http://config.vair-monitor.com to configure device online") << endl;
+  // LOGGER.print(WiFi.localIP());
+  // LOGGER.println(F("/?cmd=..."));
+  //
+  // String hostname = PropertyList.readProperty(PROP_ESP_HOSTNAME);
+  // if (hostname.length() == 0) hostname = "vthing";
+  // LOGGER << F("Web Server accessible on :") << endl;
+  // LOGGER << F("   http://") << WiFi.localIP() << endl;
+  // if (MDNS.begin(hostname.c_str())) {
+  //   LOGGER << F("   http://") << hostname << F(".local/") << endl;
+  //   MDNS.addService("http", "tcp", 80);
+  // }
+  // NBNS.begin(hostname.c_str());
+  // LOGGER << F("   http://") << hostname << F("/") << endl;
 }
 
 void WebSocketServerClass::sendData(uint8_t * payload, size_t length) {
