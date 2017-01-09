@@ -12,7 +12,7 @@
 class CustomHTTPDest : public Destination {
 public:
   CustomHTTPDest();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void loop() {};
   static void menuAddCustomUrl(const char *line);
   static void menuAddCustomUrlJ(const char *line);

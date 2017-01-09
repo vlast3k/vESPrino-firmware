@@ -12,7 +12,7 @@
 class WebServerClass : public Plugin {
 public:
   WebServerClass() ;
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   const char* getName() {
     return "WebServer";
   }

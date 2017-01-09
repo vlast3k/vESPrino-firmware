@@ -139,7 +139,7 @@ void replaceDecimalSeparator(String &src) {
   if (!decimalSeparator) {
     decimalSeparator = PropertyList.readProperty(PROP_DECIMAL_SEPARATOR)[0];
     if (!decimalSeparator) decimalSeparator = '.';
-    LOGGER << "Decimal Separator is: " << decimalSeparator << endl;
+    //LOGGER << "Decimal Separator is: " << decimalSeparator << endl;
   }
   src.replace('.', decimalSeparator);
 }

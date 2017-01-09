@@ -31,7 +31,7 @@ void handleWifi() {
   //LOGGER << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
   //if (wifiMulti) wifiMulti->run();
   if (wifiManager) wifiManager->loopConfigPortal();
-  if (WiFi.status() == WL_NO_SSID_AVAIL && wifiManager == NULL) {
+  if (WiFi.status() == WL_NO_SSID_AVAIL && wifiManager == NULL && PowerManager.isWokeFromDeepSleep() == false) {
     startAutoWifiConfig("");
     //wifiState = WiFi.status();
     //Serial << "------State changed to: " << WiFi.status() << endl;
@@ -46,7 +46,7 @@ void handleWifi() {
     //neopixel.cmdLedHandleColorInst(F("ledcolor blue"));
     LOGGER << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
     stopAutoWifiConfig();
-    if (!rtcMemStore.wasInDeepSleep()) menuHandler.scheduleCommand("wss_start");
+    if (!PowerManager.isWokeFromDeepSleep()) menuHandler.scheduleCommand("wss_start");
     //fireEvent("wifiConnected");
 
     // handleCommandVESPrino("vecmd led_mblue");
@@ -278,7 +278,8 @@ void wifiConnectMulti() {
     //LOGGER << "wifibegin :: " << x << y << endl;
     WiFi.begin(x, y);
   } else {
-    menuHandler.scheduleCommand(F("autoconfig"));
+    wifiAlreadyWaited = true;
+    if (!PowerManager.isWokeFromDeepSleep()) menuHandler.scheduleCommand(F("autoconfig"));
   }
 }
 

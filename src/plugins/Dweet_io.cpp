@@ -10,7 +10,7 @@ DweetIOClass::DweetIOClass() {
   registerPlugin(this);
 }
 
-void DweetIOClass::setup(MenuHandler *handler) {
+bool DweetIOClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("dweet_start"), CMD_BEGIN, DweetIOClass::cmdDweetStart, F("dweet_start interval_Sec")));
   handler->registerCommand(new MenuEntry(F("dweet_process"), CMD_EXACT, DweetIOClass::cmdDweetProcess, F("dweet_process - checks if there are new dweets")));
   String s = PropertyList.readProperty(PROP_DWEET_AUTOSTART);
@@ -20,6 +20,8 @@ void DweetIOClass::setup(MenuHandler *handler) {
     //cmdDweetStart(s.c_str());
   }
   isAcceptStoredDweets = PropertyList.readBoolProperty(PROP_DWEET_ACCEPT_STORED_DWEETS);
+  return false;
+
 }
 
 void DweetIOClass::cmdDweetStart(const char *cmd) {

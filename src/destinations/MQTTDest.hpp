@@ -14,7 +14,7 @@
 class MQTTDest : public Destination {
 public:
   MQTTDest();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void loop();
   static void cmdMqttSetup(const char *line);
   static void cmdMqttMsgAdd(const char *line);

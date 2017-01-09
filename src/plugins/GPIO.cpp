@@ -10,11 +10,13 @@ GPIOClass::GPIOClass() {
   registerPlugin(this);
 }
 
-void GPIOClass::setup(MenuHandler *handler) {
+bool GPIOClass::setup(MenuHandler *handler) {
    handler->registerCommand(new MenuEntry(F("gpio_set"), CMD_BEGIN, GPIOClass::cmdGPIOSet, F("gpio_set <gpio> <1/0/F>")));
    String str = PropertyList.readProperty(PROP_GPIOCFG);   //,H4,L12,H1,P3  - P - for PIR - do a double check 100 ms after 1 seen
    initPortsFromString(str.c_str());
    oldState = getGPIOState();
+   return false;
+
 }
 
 void GPIOClass::cmdGPIOSet(const char *line) {

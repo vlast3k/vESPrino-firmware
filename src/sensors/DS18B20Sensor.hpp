@@ -9,7 +9,7 @@
 class DS18B20Sensor : public Sensor {
 public:
   DS18B20Sensor();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
   const char* getName() {
     return "DS18B20";

@@ -8,7 +8,7 @@
 class CDM7160Sensor : public Sensor {
 public:
   CDM7160Sensor();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
   const char* getName() {
     return "CDM7160";

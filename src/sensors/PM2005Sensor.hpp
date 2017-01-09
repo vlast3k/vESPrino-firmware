@@ -12,7 +12,7 @@
 class PM2005Sensor : public Sensor {
 public:
   PM2005Sensor();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
   const char* getName() {
     return "PM2005";

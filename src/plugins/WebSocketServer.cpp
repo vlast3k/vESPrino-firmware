@@ -12,11 +12,13 @@ WebSocketServerClass::WebSocketServerClass() {
   registerPlugin(this);
 }
 
-void WebSocketServerClass::setup(MenuHandler *handler) {
+bool WebSocketServerClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("wss_start"), CMD_BEGIN, WebSocketServerClass::cmdStartWebSocketServer, F("wss_start")));
   if (!PowerManager.isWokeFromDeepSleep() && PropertyList.readBoolProperty(PROP_WSSERVER_STARTONBOOT)) {
     menuHandler.scheduleCommand("wss_start");
   }
+  return false;
+
 }
 
 void WebSocketServerClass::cmdStartWebSocketServer(const char *ignore) {

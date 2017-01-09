@@ -14,7 +14,7 @@
 class WebSocketServerClass : public Plugin {
 public:
   WebSocketServerClass() ;
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   const char* getName() {
     return "WebSocketServer";
   }

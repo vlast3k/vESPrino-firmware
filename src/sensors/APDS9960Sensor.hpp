@@ -9,7 +9,7 @@
 class APDS9960Sensor : public Sensor {
 public:
   APDS9960Sensor();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
   const char* getName() {
     return "APDS9960";

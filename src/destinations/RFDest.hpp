@@ -19,7 +19,7 @@
 class RFDest : public Destination {
 public:
   RFDest();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void loop() {};
 
   bool process(LinkedList<Pair*> &data);

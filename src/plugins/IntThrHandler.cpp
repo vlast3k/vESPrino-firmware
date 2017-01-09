@@ -52,8 +52,6 @@ void conditionalSend(bool forceSend) {
   rtcIt ++;
   if (rtcIt >= PropertyList.readLongProperty(PROP_SND_INT) / PowerManagerClass::IterationDurationS) rtcIt = 0;
   rtcMemStore.setIterations(rtcIt);
-  LOGGER << F("\n--- DestHanlder: sendValue --- ") << forceSend<< endl;
-  LOGGER.flush();
   LinkedList<Pair *> values = LinkedList<Pair* >();
   addCommonValues(&values);
   for (int i=0; i < sensors.size(); i++)  sensors.get(i)->getData(&values);
@@ -64,6 +62,8 @@ void conditionalSend(bool forceSend) {
 
   bool res = true;
   if (forceSend) {
+    LOGGER << F("\n---Sending data---") << endl;
+    LOGGER.flush();
     for (int i=0; i < destinations.size(); i++) res = res && destinations.get(i)->process(values);
     if (res) neopixel.signal(LED_SEND_OK);
     else neopixel.signal(LED_SEND_FAILED);
@@ -83,7 +83,7 @@ void conditionalSend(bool forceSend) {
 // }
 
 void onRawRead() {
-  menuHandler.scheduleCommand("sendNowCond");
+  menuHandler.scheduleCommand("@sendNowCond");
   //conditionalSend(false);
 }
 

@@ -13,11 +13,13 @@ WebServerClass::WebServerClass() {
   registerPlugin(this);
 }
 
-void WebServerClass::setup(MenuHandler *handler) {
+bool WebServerClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("webserver_start"), CMD_BEGIN, WebServerClass::cmdStartWebServer, F("webserver_start")));
   if (!PowerManager.isWokeFromDeepSleep() && PropertyList.readBoolProperty(PROP_WEBSERVER_STARTONBOOT)) {
     menuHandler.scheduleCommand("webserver_start");
   }
+  return false;
+
 }
 
 void WebServerClass::cmdStartWebServer(const char *ignore) {

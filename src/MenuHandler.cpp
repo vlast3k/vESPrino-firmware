@@ -117,8 +117,10 @@ void MenuHandler::processCommands() {
   if (!schedulingEnabled) return;
   if (currentlyExecutingCommand) return;
   bool hadCommands = false;
+  bool isSilent = true;
   while (pendingCommands.size() > 0) {
     String *s = pendingCommands.shift();
+    isSilent = isSilent && (s->charAt(0) == '@');
     currentlyExecutingCommand = true;
     handleCommand(s->c_str());
     currentlyExecutingCommand = false;
@@ -126,7 +128,7 @@ void MenuHandler::processCommands() {
     delay(1);
     hadCommands = true;
   }
-   if (hadCommands)  {
+   if (hadCommands && !isSilent)  {
   //   handleCommand("nop");
      LOGGER << F("ready >\n");
      LOGGER.flushLog();
@@ -134,18 +136,23 @@ void MenuHandler::processCommands() {
 }
 
 void MenuHandler::handleCommand(const char *line) {
-  // if (DEBUG) {
-  //   LOGGER << F("Executing: ");
-  if (strcmp("nop", line)) {
-    const char *x = line;
-    for (int i=0; *x; x++, i++) {
-      LOGGER << *x;
-      if ((i%50) == 0) LOGGER.flush();
+  // check for silent command
+  bool silent = false;
+  if (line[0] != '@') {
+    if (strcmp("nop", line)) {
+      const char *x = line;
+      for (int i=0; *x; x++, i++) {
+        LOGGER << *x;
+        if ((i%50) == 0) LOGGER.flush();
+      }
+      LOGGER << endl;
+    //   LOGGER.flush();
     }
-    LOGGER << endl;
-  //   LOGGER.flush();
+  } else {
+    silent = true;
+    line ++;
   }
-  //dumpArray(line);
+
   String s1;
   for (int i=0; i < commands->size(); i++) {
     MenuEntry *m = commands->get(i);

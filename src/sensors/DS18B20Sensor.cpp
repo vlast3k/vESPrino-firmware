@@ -15,7 +15,7 @@ DS18B20Sensor::DS18B20Sensor() {
   registerSensor(this);
 }
 
-void DS18B20Sensor::setup(MenuHandler *handler) {
+bool DS18B20Sensor::setup(MenuHandler *handler) {
   // handler->registerCommand(new MenuEntry(F("testSensor"), CMD_EXACT, &DS18B20Sensor::toggle, F("testSensor toggle testSesnor")));
   // enabled = PropertyList.readBoolProperty(F("test.sensor"));
   char result[10];
@@ -32,6 +32,8 @@ void DS18B20Sensor::setup(MenuHandler *handler) {
   } else {
     hasSensor = false;
   }
+  return hasSensor;
+
 }
 
 void DS18B20Sensor::initPort(char *result) {

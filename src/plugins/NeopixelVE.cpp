@@ -8,13 +8,15 @@ extern NeopixelVE neopixel;
 NeopixelVE::NeopixelVE() {
   registerPlugin(this);
 }
-void NeopixelVE::setup(MenuHandler *handler) {
+bool NeopixelVE::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("ledcolor"), CMD_BEGIN, NeopixelVE::cmdLedHandleColor, F("ledcolor")));
   handler->registerCommand(new MenuEntry(F("ledbrg"), CMD_BEGIN, NeopixelVE::cmdLedSetBrg, F("ledbrg")));
   handler->registerCommand(new MenuEntry(F("ledmode"), CMD_BEGIN, NeopixelVE::cmdLedHandleMode, F("ledmode")));
   // else if (strstr(line, "led_"))       ledHandleColor(strstr(line, "_")+1);
   // else if (strstr(line, "ledbrg_"))    ledSetBrg(strstr(line, "_")+1);
   // else if (strstr(line, "ledmode_"))   ledHandleMode(strstr(line, "_")+1);
+  return false;
+
 }
 
  void NeopixelVE::cmdLedHandleColor(const char* line) {neopixel.cmdLedHandleColorInst(line);}

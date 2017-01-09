@@ -9,9 +9,10 @@ TestSensor::TestSensor() {
   registerSensor(this);
 }
 
-void TestSensor::setup(MenuHandler *handler) {
+bool TestSensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("testSensor"), CMD_EXACT, &TestSensor::toggle, F("testSensor toggle testSesnor")));
   enabled = PropertyList.readBoolProperty(F("test.sensor"));
+  return enabled;
 
 }
 

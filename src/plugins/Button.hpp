@@ -9,7 +9,7 @@
 class ButtonClass : public Plugin {
 public:
   ButtonClass();
-  //void setup(MenuHandler *handler);
+  //bool setup(MenuHandler *handler);
   const char* getName() {
     return "PowerManager";
   }

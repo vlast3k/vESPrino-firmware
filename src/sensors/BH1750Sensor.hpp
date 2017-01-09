@@ -9,7 +9,7 @@
 class BH1750Sensor : public Sensor {
 public:
   BH1750Sensor();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
   const char* getName() {
     return "BH1750";

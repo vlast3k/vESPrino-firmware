@@ -12,7 +12,7 @@
 class SerialDumpDest : public Destination {
 public:
   SerialDumpDest();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void loop() {};
 
   bool process(LinkedList<Pair*> &data);

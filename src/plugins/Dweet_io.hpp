@@ -8,7 +8,7 @@
 class DweetIOClass : public Plugin {
 public:
   DweetIOClass() ;
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   const char* getName() {
     return "DweetIO";
   }

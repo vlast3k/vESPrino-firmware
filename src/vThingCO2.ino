@@ -1,4 +1,4 @@
-#define panic() __panic_func("", __LINE__, __func__)
+//#define panic() __panic_func("", __LINE__, __func__)
 
 //H801 build with 1mb / 256k
 //#define VTHING_H801_LED
@@ -86,39 +86,30 @@ void registerDestination(Destination *destination) {
 }
 
 void setupPlugins(MenuHandler *handler) {
-  //menuHandler.handleCommand(F("scani2c"));
-  LOGGER << F("\n--- Setup PLUGINS ---\n");
-  for (int i=0; i < plugins.size(); i++) {
-//    LOGGER << F("Setup plugin: ") << plugins.get(i)->getName() << endl;
-    LOGGER << plugins.get(i)->getName() << endl;
-    plugins.get(i)->setup(handler);
-    menuHandler.loop();
-    delay(1);
-  //  heap("");
-
-  }
   LOGGER << F("\n--- Setup SENSORS ---\n");
+  if (DEBUG) LOGGER << F("\n--- Setup PLUGINS ---\n");
+  for (int i=0; i < plugins.size(); i++) {
+    if (DEBUG) LOGGER << plugins.get(i)->getName() << endl;
+    if (plugins.get(i)->setup(handler)) LOGGER << F("Found: ") << plugins.get(i)->getName();
+    menuHandler.loop();
+    delay(1);
+  }
+
+  if (DEBUG) LOGGER << F("\n--- Setup SENSORS ---\n");
   for (int i=0; i < sensors.size(); i++) {
-//    LOGGER << F("Setup sensor: ") << sensors.get(i)->getName() << endl;
-    LOGGER << sensors.get(i)->getName() << endl;
-    sensors.get(i)->setup(handler);
+    if (DEBUG) LOGGER << sensors.get(i)->getName() << endl;
+    if (sensors.get(i)->setup(handler)) LOGGER << F("Found: ") << sensors.get(i)->getName();
     menuHandler.loop();
     delay(1);
-    //heap("");
-
   }
-  LOGGER << F("\n--- Setup DESTINATIONS ---\n");
+
+  if (DEBUG) LOGGER << F("\n--- Setup DESTINATIONS ---\n");
   for (int i=0; i < destinations.size(); i++) {
-    LOGGER << destinations.get(i)->getName() << endl;
-    //LOGGER << F("Setup Destination: ") << destinations.get(i)->getName() << endl;
-    destinations.get(i)->setup(handler);
+    if (DEBUG) LOGGER << destinations.get(i)->getName() << endl;
+    if (destinations.get(i)->setup(handler)) LOGGER << F("Found: ") << destinations.get(i)->getName();
     menuHandler.loop();
     delay(1);
-    //heap("");
-
   }
-//  LOGGER << F("\n--- Setup DONE ---\n");
-
 }
 
 void loopPlugins() {
@@ -177,7 +168,7 @@ void fireEvent(const char *name) {
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 void setup() {
   Serial.begin(9600);
-  heap("Heap at start");
+  if (DEBUG) heap("Heap at start");
   PropertyList.begin(&menuHandler);
   //heap("1");
   LOGGER.init();
@@ -294,12 +285,14 @@ void setup() {
 
   setup_IntThrHandler(&menuHandler);
 
-  heap("At setup end");
-  fireEvent("setupEnd");
+  if (DEBUG) heap("At setup end");
+  LOGGER << F("Device initialized.") << endl;
+  //if (DEBUG) fireEvent("setupEnd");
 }
 
 //int aa = 0;
 uint32_t wfStart = 0;
+bool checkedFUPD = false;
 void loop() {
   handleWifi();
   menuHandler.loop();
@@ -309,6 +302,10 @@ void loop() {
   loop_IntThrHandler();
   menuHandler.loop();
   PowerManager.loopPowerManager();
+  if (!PowerManager.isWokeFromDeepSleep() && !checkedFUPD) {
+    checkedFUPD = true;
+    menuHandler.scheduleCommand(F("fupd"));
+  }
   //delay(1000);
 
 }

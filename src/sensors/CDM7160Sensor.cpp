@@ -7,10 +7,10 @@ CDM7160Sensor::CDM7160Sensor() {
   registerSensor(this);
 }
 
-void CDM7160Sensor::setup(MenuHandler *handler) {
+bool CDM7160Sensor::setup(MenuHandler *handler) {
   if (!rtcMemStore.hasSensor(RTC_SENSOR_CDM7160)) {
     hasSensor = false;
-    return;
+    return false;
   }
   handler->registerCommand(new MenuEntry(F("cdmloop"), CMD_BEGIN, &CDM7160Sensor::onCmdLoop, F("cdmtest b - b for DEBUG - test CDM7160 sensor")));
   handler->registerCommand(new MenuEntry(F("cdmtest"), CMD_BEGIN, &CDM7160Sensor::onCmdTest, F("cdmtest b - b for DEBUG - test CDM7160 sensor")));
@@ -18,12 +18,13 @@ void CDM7160Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("cdmreg"), CMD_BEGIN, &CDM7160Sensor::onChangeReg, F("cdmreg \"regid\" \"value\"")));
   handler->registerCommand(new MenuEntry(F("cdmperf"), CMD_BEGIN, &CDM7160Sensor::onPerf, F("cdmreg \"regid\" \"value\"")));
   if (I2CHelper::i2cSDA > -1 && I2CHelper::checkI2CDevice(CDM_ADDR_WRITE)) {
-    LOGGER << F("Found CDM7160 CO2 Sensor") << endl;
+    //LOGGER << F("Found CDM7160 CO2 Sensor") << endl;
     if (!PowerManager.isWokeFromDeepSleep()) configureSensor();
     hasSensor = true;
   } else {
     rtcMemStore.setSensorState(RTC_SENSOR_CDM7160, false);
   }
+  return hasSensor;
 }
 
 void CDM7160Sensor::onPerf(const char *ignore) {
@@ -188,12 +189,12 @@ void CDM7160Sensor::onChangeReg(const char *line) {
   for (int i=0; i < 5; i++) {
     uint8_t curVal =  readI2CByte(reg);
     if (curVal == 0xFF) continue;
-    LOGGER << F("Before : ") << _HEX(curVal) << F(" : ") << _BIN(curVal) << endl;
+    //LOGGER << F("Before : ") << _HEX(curVal) << F(" : ") << _BIN(curVal) << endl;
     int ret = writeByte(reg, val);
     if (ret > 0) continue;
     curVal =  readI2CByte(reg);
     if (curVal == 0xFF) continue;
-    LOGGER << F("After : ") << _HEX(curVal) << F(" : ") << _BIN(curVal) << endl;
+    //LOGGER << F("After : ") << _HEX(curVal) << F(" : ") << _BIN(curVal) << endl;
     break;
   }
 

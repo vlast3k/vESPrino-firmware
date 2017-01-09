@@ -9,11 +9,13 @@ ServoV::ServoV() {
   registerPlugin(this);
 }
 
-void ServoV::setup(MenuHandler *handler) {
+bool ServoV::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("setServoPort"), CMD_BEGIN, ServoV::cmdSetServoPort, F("setServoPort [0:16]? (blank for off)")));
   handler->registerCommand(new MenuEntry(F("setServoPos"), CMD_BEGIN, ServoV::cmdSetServoPos, F("setServoPos [0:180]")));
   //s.attach(D6);
   initServo();
+  return false;
+
 }
 
 void ServoV::cmdSetServoPort(const char *cmd) {

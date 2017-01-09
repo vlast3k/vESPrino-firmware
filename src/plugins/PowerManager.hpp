@@ -12,7 +12,7 @@ public:
   PowerManagerClass() {
     isLowPower = false;
   };
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void loopPowerManager();
   static void onTimeout();
   static void onNop(const char* line);

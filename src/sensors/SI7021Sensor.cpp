@@ -10,9 +10,11 @@ SI7021Sensor::SI7021Sensor() {
   registerSensor(this);
 }
 
-void SI7021Sensor::setup(MenuHandler *handler) {
+bool SI7021Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("siInit"), CMD_EXACT, &SI7021Sensor::onCmdInit, F("")));
-  initSensor();
+  if (initSensor()) return true;
+  closeSensor();
+  return false;
 
 }
 
@@ -59,7 +61,7 @@ bool SI7021Sensor::initSensor() {
     rtcMemStore.setSensorState(RTC_SENSOR_SI7021, false);
     return false;
   }
-  LOGGER << F("Found SI7021 - Temperature/Humidity Sensor") << endl;
+  //LOGGER << F("Found SI7021 - Temperature/Humidity Sensor") << endl;
   LOGGER.flush();
   si7021->setHumidityRes(12); // Humidity = 12-bit / Temperature = 14-bit
   return true;

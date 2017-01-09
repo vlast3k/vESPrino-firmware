@@ -9,7 +9,7 @@
 class SI7021Sensor : public Sensor {
 public:
   SI7021Sensor();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
   const char* getName() {
     return "SI7021";

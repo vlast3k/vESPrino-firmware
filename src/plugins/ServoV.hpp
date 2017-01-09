@@ -8,7 +8,7 @@
 class ServoV : public Plugin {
 public:
   ServoV() ;
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   const char* getName() {
     return "Servo";
   }

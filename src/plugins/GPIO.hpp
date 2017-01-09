@@ -8,7 +8,7 @@
 class GPIOClass : public Plugin {
 public:
   GPIOClass() ;
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   const char* getName() {
     return "GPIO";
   }

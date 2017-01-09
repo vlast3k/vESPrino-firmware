@@ -8,7 +8,7 @@
 class TestSensor : public Sensor {
 public:
   TestSensor();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
   const char* getName() {
     return "TEST";

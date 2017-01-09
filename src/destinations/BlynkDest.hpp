@@ -13,7 +13,7 @@
 class BlynkDest : public Destination {
 public:
   BlynkDest();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void loop();
 
   bool process(LinkedList<Pair*> &data);

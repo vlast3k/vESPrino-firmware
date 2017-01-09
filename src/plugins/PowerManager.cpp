@@ -22,7 +22,7 @@ void PowerManagerClass::cmdDeepSleepInst(const char *line) {
   }
   delay(1000);
 }
-void PowerManagerClass::setup(MenuHandler *handler) {
+bool PowerManagerClass::setup(MenuHandler *handler) {
   WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
   //WiFi.setSleepMode(WIFI_NONE_SLEEP);
   IterationDurationS = PropertyList.readLongProperty(PROP_ITERATION_DURATION);
@@ -44,6 +44,8 @@ void PowerManagerClass::setup(MenuHandler *handler) {
   if (isLowPower) {
     LOGGER << F("Device will go to Deep Sleep mode, once data is sent. Press [Enter] to abort\n");
   }
+  return false;
+
   //isLowPower = rtcMemStore.getTest();
 }
 

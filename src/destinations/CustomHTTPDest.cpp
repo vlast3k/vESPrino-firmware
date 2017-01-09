@@ -13,11 +13,12 @@ CustomHTTPDest::CustomHTTPDest() {
   registerDestination(this);
 }
 
-void CustomHTTPDest::setup(MenuHandler *handler) {
+bool CustomHTTPDest::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("custom_url_add"), CMD_BEGIN, &CustomHTTPDest::menuAddCustomUrl, F("custom_url_add \"idx\",\"url\"")));
   handler->registerCommand(new MenuEntry(F("custom_url_jadd"), CMD_BEGIN, &CustomHTTPDest::menuAddCustomUrlJ, F("custom_url_add \"idx\",\"url\"")));
   handler->registerCommand(new MenuEntry(F("custom_url_clean"), CMD_EXACT, &CustomHTTPDest::menuCleanCustomUrl, F("custom_url_clean - clean all custom urls")));
   handler->registerCommand(new MenuEntry(F("call_url"), CMD_BEGIN, &CustomHTTPDest::cmdCallUrl, F("call_url http://xxx  or call_url {\"url\"=\"<url>\", \"method\"=\"POST|GET..\", \"ct\"=\"content-type\", \"pay\"=\"body payload\"}")));
+  return false;
 }
 
 void CustomHTTPDest::menuCleanCustomUrl(const char *line) {

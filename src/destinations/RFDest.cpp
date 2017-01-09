@@ -15,10 +15,10 @@ RFDest::RFDest() {
   registerDestination(this);
 }
 
-void RFDest::setup(MenuHandler *handler) {
+bool RFDest::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("rf_setaddr"), CMD_BEGIN, &RFDest::cmdSetAddr, F("rf_setaddr \"CO2\" \"136\"")));
   handler->registerCommand(new MenuEntry(F("rf_test"), CMD_BEGIN, &RFDest::cmdTest, F("rf_setaddr \"CO2\" \"136\"")));
-  checkIfDefaultsAreSet();
+//  checkIfDefaultsAreSet();
   enabled = PropertyList.readBoolProperty(F("rf.enabled"));
   if (enabled) {
     LOGGER << F("enabled\n");
@@ -32,6 +32,7 @@ void RFDest::setup(MenuHandler *handler) {
     // RFXmeter(12, 0, 1111);
     // delay(1000);
   }
+  return enabled;
 }
 
 void RFDest::checkIfDefaultsAreSet() {

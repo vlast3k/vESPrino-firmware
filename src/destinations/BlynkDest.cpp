@@ -22,9 +22,10 @@ BlynkDest::BlynkDest() {
   registerDestination(this);
 }
 
-void BlynkDest::setup(MenuHandler *handler) {
+bool BlynkDest::setup(MenuHandler *handler) {
   //handler->registerCommand(new MenuEntry(F("serial_dump_toggle"), CMD_EXACT, &BlynkDest::toggle, F("serial_dump_toggle toggle serial dump output")));
   enabled = PropertyList.readBoolProperty(PROP_BLYNK_ENABLED);
+  return enabled;
   // if (enabled) {
   //   menuHandler.scheduleCommand("nop 0");
   // }

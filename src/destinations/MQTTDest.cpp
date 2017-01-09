@@ -18,7 +18,7 @@ MQTTDest::MQTTDest() {
   registerDestination(this);
 }
 
-void MQTTDest::setup(MenuHandler *handler) {
+bool MQTTDest::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("mqtt_setup"), CMD_BEGIN, &MQTTDest::cmdMqttSetup, F("mqtt_setup \"idx\"value")));
   handler->registerCommand(new MenuEntry(F("mqtt_msg_add"), CMD_BEGIN, &MQTTDest::cmdMqttMsgAdd, F("mqtt_msg_add \"idx\"value")));
   handler->registerCommand(new MenuEntry(F("call_mqtt"), CMD_BEGIN, &MQTTDest::cmdCallMqtt, F("call_mqtt topic message")));
@@ -26,9 +26,10 @@ void MQTTDest::setup(MenuHandler *handler) {
   if (PropertyList.readBoolProperty(PROP_MQTT_LISTEN)) {
     if (!mqttStart()) {
       mqttEnd(false);
-      return;
+      return false;
     }
   }
+  return false;
 }
 
 void MQTTDest::setupMqttListen() {

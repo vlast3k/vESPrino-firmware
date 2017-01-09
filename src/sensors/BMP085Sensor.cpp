@@ -11,9 +11,11 @@ BMP085Sensor::BMP085Sensor() {
   registerSensor(this);
 }
 
-void BMP085Sensor::setup(MenuHandler *handler) {
+bool BMP085Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("bmpInit"), CMD_EXACT, &BMP085Sensor::onCmdInit, F("")));
-  bmp085Sensor.initSensor();
+  if (bmp085Sensor.initSensor()) return true;
+  closeSensor();
+  return false;
 
 }
 
@@ -57,14 +59,14 @@ bool BMP085Sensor::initSensor() {
 
   }
   if (!init) {
-    if (DEBUG) LOGGER << F("BMP085 - init failed!") << endl;
+    //if (DEBUG) LOGGER << F("BMP085 - init failed!") << endl;
     delete bme;
     bme = NULL;
     rtcMemStore.setSensorState(RTC_SENSOR_BMP180, false);
 
     return false;
   }
-  LOGGER << F("Found BMP085 - Temperature/Pressure Sensor") << endl;
+  //LOGGER << F("Found BMP085 - Temperature/Pressure Sensor") << endl;
   LOGGER.flush();
   return true;
 }

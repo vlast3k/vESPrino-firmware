@@ -13,7 +13,7 @@
 class CO2Sensor : public Sensor {
 public:
   CO2Sensor();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void loop() {};
   const char* getSensorId();
   float getValue();

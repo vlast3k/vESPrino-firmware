@@ -11,13 +11,14 @@ AnnemometerClass::AnnemometerClass() {
   registerPlugin(this);
 }
 
-void AnnemometerClass::setup(MenuHandler *handler) {
+bool AnnemometerClass::setup(MenuHandler *handler) {
    handler->registerCommand(new MenuEntry(F("annemStart"), CMD_BEGIN, AnnemometerClass::cmdStart, F("annemStart D7 - port number start annemometer")));
    String s = PropertyList.readProperty(PROP_ANNEM_CONNECTED);
    if (s.length()) {
      s = String("annemStart ") + s;
      menuHandler.scheduleCommand(s.c_str());
    }
+   return false;
 }
 
 void AnnemometerClass::cmdStart(const char *line) {

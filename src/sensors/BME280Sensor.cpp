@@ -10,9 +10,11 @@ BME280Sensor::BME280Sensor() {
   registerSensor(this);
 }
 
-void BME280Sensor::setup(MenuHandler *handler) {
+bool BME280Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("bmeInit"), CMD_EXACT, &BME280Sensor::onCmdInit, F("")));
-  bme280Sensor.initSensor();
+  if (bme280Sensor.initSensor()) return true;
+  closeSensor();
+  return false;
 
 }
 
@@ -55,13 +57,13 @@ bool BME280Sensor::initSensor() {
 
   }
   if (!init) {
-    if (DEBUG) LOGGER << F("BME280 - init failed!") << endl;
+    //if (DEBUG) LOGGER << F("BME280 - init failed!") << endl;
     delete bme;
     bme = NULL;
     rtcMemStore.setSensorState(RTC_SENSOR_BME280, false);
     return false;
   }
-  LOGGER << F("Found BME280 - Temperature/Humidity/Pressure Sensor") << endl;
+  //LOGGER << F("Found BME280 - Temperature/Humidity/Pressure Sensor") << endl;
   LOGGER.flush();
   return true;
 }

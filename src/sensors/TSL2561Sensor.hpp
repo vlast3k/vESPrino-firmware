@@ -9,7 +9,7 @@
 class TSL2561Sensor : public Sensor {
 public:
   TSL2561Sensor();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
   const char* getName() {
     return "TSL2561";

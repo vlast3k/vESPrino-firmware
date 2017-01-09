@@ -11,7 +11,7 @@
 class BMP085Sensor : public Sensor {
 public:
   BMP085Sensor();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
   const char* getName() {
     return "BMP085";

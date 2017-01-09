@@ -11,7 +11,7 @@
 class BME280Sensor : public Sensor {
 public:
   BME280Sensor();
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
   const char* getName() {
     return "BME280";

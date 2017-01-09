@@ -10,10 +10,11 @@ TSL2561Sensor::TSL2561Sensor() {
   registerSensor(this);
 }
 
-void TSL2561Sensor::setup(MenuHandler *handler) {
+bool TSL2561Sensor::setup(MenuHandler *handler) {
   //handler->regsterCommand(new MenuEntry(F("tslInit"), CMD_EXACT, &TSL2561Sensor::onCmdInit, F("")));
-  initSensor();
+  if (initSensor()) return true;
   closeSensor();
+  return false;
 }
 
 void TSL2561Sensor::onCmdInit(const char *ignore) {
@@ -39,11 +40,11 @@ bool TSL2561Sensor::initSensor() {
     delay(100);
   }
   if (!init) {
-    if (DEBUG) LOGGER << F("TSL2561 - init failed!") << endl;
+    //if (DEBUG) LOGGER << F("TSL2561 - init failed!") << endl;
     rtcMemStore.setSensorState(RTC_SENSOR_TSL2561, false);
     return false;
   }
-  LOGGER << F("Found TSL2561 - LUX Sensor") << endl;
+  //LOGGER << F("Found TSL2561 - LUX Sensor") << endl;
   return true;
 }
 

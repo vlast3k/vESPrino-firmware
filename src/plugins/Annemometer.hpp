@@ -8,7 +8,7 @@
 class AnnemometerClass : public Plugin {
 public:
   AnnemometerClass() ;
-  void setup(MenuHandler *handler);
+  bool setup(MenuHandler *handler);
   const char* getName() {
     return "Annemometer";
   }

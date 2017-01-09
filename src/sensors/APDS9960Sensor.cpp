@@ -11,8 +11,12 @@ APDS9960Sensor::APDS9960Sensor() {
 //  APDS9960Sensor::isr_flag = 0;
 }
 
-void APDS9960Sensor::setup(MenuHandler *handler) {
-  if (!initSensor()) closeSensor();
+bool APDS9960Sensor::setup(MenuHandler *handler) {
+  if (!initSensor()) {
+    closeSensor();
+    return false;
+  }
+  return true;
 }
 
 void APDS9960Sensor::onCmdInit(const char *ignore) {
@@ -36,12 +40,12 @@ bool APDS9960Sensor::initSensor() {
   }
 
   if (!init) {
-    if (DEBUG) LOGGER << F("APDS9960 - init failed!") << endl;
+    //if (DEBUG) LOGGER << F("APDS9960 - init failed!") << endl;
     digitalWrite(D8, d8prev);
     rtcMemStore.setSensorState(RTC_SENSOR_APDS9960, false);
     return false;
   }
-  LOGGER << F("Found APDS9960 - Gesture Sensor") << endl;
+  //LOGGER << F("Found APDS9960 - Gesture Sensor") << endl;
 
   if ( sensor->enableGestureSensor(true) ) {
     LOGGER.println(F("Gesture sensor is now running"));
