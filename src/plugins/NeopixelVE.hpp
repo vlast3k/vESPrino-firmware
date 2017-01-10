@@ -44,6 +44,7 @@ private:
   uint32_t lastChange = 0;
   float ledBrg = 0.7f;
   int ledMode = 0;
+  RgbColor currentColor = Cblack;
   //const RgbColor allColors[] = {Cred, Cpink, Clila, Cviolet, Cblue, Cmblue, Ccyan, Cgreen, Cyellow, Corange};
 
 

@@ -45,6 +45,7 @@ void handleWifi() {
     #endif
     //neopixel.cmdLedHandleColorInst(F("ledcolor blue"));
     LOGGER << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
+    neopixel.signal(LED_WIFI_FOUND);
     stopAutoWifiConfig();
     if (!PowerManager.isWokeFromDeepSleep()) menuHandler.scheduleCommand("wss_start");
     //fireEvent("wifiConnected");
@@ -79,8 +80,7 @@ wl_status_t waitForWifi(uint16_t timeoutMs) {
   }
   LOGGER << endl;
   if (wifiAlreadyWaited) return WiFi.status();
-  if (WiFi.status() == WL_CONNECTED) neopixel.signal(LED_WIFI_FOUND);
-  else neopixel.signal(LED_WIFI_FAILED);
+  if (WiFi.status() != WL_CONNECTED) neopixel.signal(LED_WIFI_FAILED);
   wifiAlreadyWaited = true;
   return WiFi.status();
 }
@@ -97,26 +97,26 @@ void activeWait() {
 }
 
 
-//char x[30], y[30];
-
-int wifiConnectToStoredSSID() {
-  String ssid, pass;
-  ssid = PropertyList.readProperty(EE_WIFI_SSID);
-  pass = PropertyList.readProperty(EE_WIFI_P1);
-  LOGGER << F("Connecting to: \"") << ssid << F("\", \"") << pass << F("\"") << endl;
-  WiFi.disconnect();
-  delay(500);
-  WiFi.mode(WIFI_STA);
-  // strcpy(x, ssid.c_str());
-  // strcpy(y, pass.c_str());
-  // if (y[0] == 'B') {
-  // //  strcpy(x, "vladiHome");
-  //   strcpy(y, "0888414447");
-  // }
-  // LOGGER << F("Connecting to: \"") << x << F("\", \"") << y << F("\"") << endl;
-  WiFi.begin(ssid.c_str(), pass.c_str());
-  //WiFi.begin("MarinaResidence", "sdsa");
-}
+// //char x[30], y[30];
+//
+// int wifiConnectToStoredSSID() {
+//   String ssid, pass;
+//   ssid = PropertyList.readProperty(EE_WIFI_SSID);
+//   pass = PropertyList.readProperty(EE_WIFI_P1);
+//   LOGGER << F("Connecting to: \"") << ssid << F("\", \"") << pass << F("\"") << endl;
+//   WiFi.disconnect();
+//   delay(500);
+//   WiFi.mode(WIFI_STA);
+//   // strcpy(x, ssid.c_str());
+//   // strcpy(y, pass.c_str());
+//   // if (y[0] == 'B') {
+//   // //  strcpy(x, "vladiHome");
+//   //   strcpy(y, "0888414447");
+//   // }
+//   // LOGGER << F("Connecting to: \"") << x << F("\", \"") << y << F("\"") << endl;
+//   WiFi.begin(ssid.c_str(), pass.c_str());
+//   //WiFi.begin("MarinaResidence", "sdsa");
+// }
 void connectToWifi(const char *s1, const char *s2, const char *s3) {
   PropertyList.putProperty(EE_WIFI_SSID, s1);
   PropertyList.putProperty(EE_WIFI_P1, s2);
@@ -125,6 +125,8 @@ void connectToWifi(const char *s1, const char *s2, const char *s3) {
   WiFi.disconnect();
   delay(500);
   wifiConnectMulti();
+  if (waitForWifi() != WL_CONNECTED) Serial << F("Failed to connect to WiFi") << endl;
+
   //wifiConnectToStoredSSID();
   //LOGGER << "Connecting to " << s1 << endl;
 //  for (int i=0; i<10 && WiFi.status() != WL_CONNECTED; i--) {
@@ -170,7 +172,7 @@ void wifiScanNetworks(const char *ignore) {
   LOGGER.println("");
 
   WiFi.mode(WIFI_STA);
-  wifiConnectToStoredSSID();
+  //wifiConnectToStoredSSID();
 
   // Wait a bit before scanning again
 
@@ -276,7 +278,9 @@ void wifiConnectMulti() {
     strcpy(x, ssid.c_str());
     strcpy(y, pass.c_str());
     //LOGGER << "wifibegin :: " << x << y << endl;
+    wifiAlreadyWaited = false;
     WiFi.begin(x, y);
+    neopixel.signal(LED_WIFI_SEARCH);
   } else {
     wifiAlreadyWaited = true;
     if (!PowerManager.isWokeFromDeepSleep()) menuHandler.scheduleCommand(F("autoconfig"));

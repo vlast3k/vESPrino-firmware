@@ -82,10 +82,10 @@ extern "C" {
 #define LED_NO_I2C        F("rlnrln")
 #define LED_LOST_I2C      F("rynryn")
 #define LED_WIFI_SEARCH   F("cb")
-#define LED_WIFI_FOUND    F("ggggn")
-#define LED_WIFI_FAILED   F("rrrrn")
-#define LED_SEND_OK       F("gng")
-#define LED_SEND_FAILED   F("rnrnr")
+#define LED_WIFI_FOUND    F("cncncn")
+#define LED_WIFI_FAILED   F("rcrcrcrcn")
+#define LED_SEND_OK       F("ngngngd")
+#define LED_SEND_FAILED   F("nrnrnrd")
 #define LED_GO_DEEPSLEEP
 // #define EE_WIFI_SSID_30B 0
 // #define EE_WIFI_P1_30B 30

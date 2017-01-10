@@ -31,6 +31,7 @@ bool NeopixelVE::setup(MenuHandler *handler) {
 
  void NeopixelVE::handleSequence(const char *seq) {
    seq = seq + 3;
+   RgbColor oldColor = currentColor;
    while (*seq) {
      RgbColor c;
      int b = atoi(seq);
@@ -44,10 +45,13 @@ bool NeopixelVE::setup(MenuHandler *handler) {
        case 'w': c = Cwhite; break;
        case 'l': c = Clila; break;
        case 'c': c = Ccyan; break;
+       case 'd': c = oldColor;break;// Serial << "CurrentColor: " << c << endl; break;
        case 'n':
        default:  c = Cblack; break;
      }
-     c = RgbColor::LinearBlend(c, Cblack, ledBrg);
+     //old color - do not add blend, just reuse old color
+
+     if (*seq != 'd') c = RgbColor::LinearBlend(c, Cblack, ledBrg);
      setLedColor(c);
      delay(333);
      seq ++;
@@ -144,6 +148,7 @@ void NeopixelVE::setLedColor(const RgbColor &color) {
   NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> strip(1, 2);
   strip.Begin();
   strip.SetPixelColor(0, color);
+  currentColor = color;
   strip.Show();
   delay(1);
   Serial1.end();

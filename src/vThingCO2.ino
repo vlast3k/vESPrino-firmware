@@ -91,6 +91,7 @@ void setupPlugins(MenuHandler *handler) {
   for (int i=0; i < plugins.size(); i++) {
     if (DEBUG) LOGGER << plugins.get(i)->getName() << endl;
     if (plugins.get(i)->setup(handler)) LOGGER << F("Found: ") << plugins.get(i)->getName();
+    handleWifi();
     menuHandler.loop();
     delay(1);
   }
@@ -99,6 +100,7 @@ void setupPlugins(MenuHandler *handler) {
   for (int i=0; i < sensors.size(); i++) {
     if (DEBUG) LOGGER << sensors.get(i)->getName() << endl;
     if (sensors.get(i)->setup(handler)) LOGGER << F("Found: ") << sensors.get(i)->getName();
+    handleWifi();
     menuHandler.loop();
     delay(1);
   }
@@ -107,6 +109,7 @@ void setupPlugins(MenuHandler *handler) {
   for (int i=0; i < destinations.size(); i++) {
     if (DEBUG) LOGGER << destinations.get(i)->getName() << endl;
     if (destinations.get(i)->setup(handler)) LOGGER << F("Found: ") << destinations.get(i)->getName();
+    handleWifi();
     menuHandler.loop();
     delay(1);
   }
