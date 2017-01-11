@@ -34,6 +34,7 @@ void CommonCommands::dumpCfg(const char *s) {
   }
 }
 void espRestart(const char* ignore) {
+  menuHandler.handleCommand("wss_stop");
   rtcMemStore.clear();
   ESP.restart();
 }

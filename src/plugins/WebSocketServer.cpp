@@ -13,22 +13,36 @@ WebSocketServerClass::WebSocketServerClass() {
 }
 
 bool WebSocketServerClass::setup(MenuHandler *handler) {
-  handler->registerCommand(new MenuEntry(F("wss_start"), CMD_BEGIN, WebSocketServerClass::cmdStartWebSocketServer, F("wss_start")));
-  if (!PowerManager.isWokeFromDeepSleep() && PropertyList.readBoolProperty(PROP_WSSERVER_STARTONBOOT)) {
+  handler->registerCommand(new MenuEntry(F("wss_start"), CMD_BEGIN, WebSocketServerClass::cmdStartServer, F("wss_start")));
+  handler->registerCommand(new MenuEntry(F("wss_stop"), CMD_EXACT, WebSocketServerClass::cmdStopServer, F("wss_stop")));
+if (!PowerManager.isWokeFromDeepSleep() && PropertyList.readBoolProperty(PROP_WSSERVER_STARTONBOOT)) {
     menuHandler.scheduleCommand("wss_start");
   }
   return false;
 
 }
 
-void WebSocketServerClass::cmdStartWebSocketServer(const char *ignore) {
-  myWSS.cmdStartWebSocketServerInst();
+void WebSocketServerClass::cmdStartServer(const char *ignore) {
+  myWSS.cmdStartServerInst();
 }
+
+void WebSocketServerClass::cmdStopServer(const char *ignore) {
+  myWSS.cmdStopServerInst();
+}
+
+void WebSocketServerClass::cmdStopServerInst() {
+  if (server!= NULL) {
+    delete server;
+    server = NULL;
+  }
+}
+
+
 void WebSocketServerClass::loop() {
   if (server != NULL) server->loop();
 }
 
-void WebSocketServerClass::cmdStartWebSocketServerInst() {
+void WebSocketServerClass::cmdStartServerInst() {
   if (server != NULL) delete server;
   if (waitForWifi() != WL_CONNECTED) return;
   server = new WebSocketsServer(8266);

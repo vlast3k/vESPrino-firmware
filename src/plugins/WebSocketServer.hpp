@@ -21,8 +21,10 @@ public:
   void loop();
   // static void onCommand();
   // void onCommandInst();
-  static void cmdStartWebSocketServer(const char *ignore);
-  void cmdStartWebSocketServerInst();
+  static void cmdStartServer(const char *ignore);
+  static void cmdStopServer(const char *ignore);
+  void cmdStopServerInst();
+  void cmdStartServerInst();
   static void onWebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
   void onWebSocketEventInst(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
   void sendData(uint8_t * payload, size_t length);

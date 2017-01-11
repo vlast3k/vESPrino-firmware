@@ -86,7 +86,6 @@ void registerDestination(Destination *destination) {
 }
 
 void setupPlugins(MenuHandler *handler) {
-  LOGGER << F("\n--- Setup SENSORS ---\n");
   if (DEBUG) LOGGER << F("\n--- Setup PLUGINS ---\n");
   for (int i=0; i < plugins.size(); i++) {
     if (DEBUG) LOGGER << plugins.get(i)->getName() << endl;
