@@ -30,6 +30,8 @@ void handleWifi() {
   //if (wifiMulti && millis() > 8000) wifiMulti->run();
   //LOGGER << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
   //if (wifiMulti) wifiMulti->run();
+  //LOGGER << "Wifi state hw: " << WiFi.status()<< endl;
+
   if (wifiManager) wifiManager->loopConfigPortal();
   if (WiFi.status() == WL_NO_SSID_AVAIL && wifiManager == NULL && PowerManager.isWokeFromDeepSleep() == false) {
     startAutoWifiConfig("");
@@ -37,7 +39,7 @@ void handleWifi() {
     //Serial << "------State changed to: " << WiFi.status() << endl;
   }
   //delay(100);
-  if (ip == WiFi.localIP()) return;
+  if (ip == WiFi.localIP() && WiFi.status() == WL_CONNECTED && wifiState == WL_CONNECTED) return;
   else if (WiFi.status() == WL_CONNECTED) {
     ip = WiFi.localIP();
     #ifdef SAP_AUTH
@@ -54,6 +56,7 @@ void handleWifi() {
     // handleCommandVESPrino("vecmd ledmode_2_3");
   }
   ip = WiFi.localIP();
+  wifiState = WiFi.status();
 }
 
 bool wifiAlreadyWaited = false;
@@ -266,6 +269,9 @@ void wifiConnectMulti() {
   PERF("WIFI 1")
   WiFi.persistent(false);
   WiFi.mode(WIFI_OFF);
+  //LOGGER << "Wifi state 1: " << WiFi.status()<< endl;
+  delay(500);
+  //LOGGER << "Wifi state 2: " << WiFi.status()<< endl;
   WiFi.mode(WIFI_STA);
   PERF("WIFI 2")
   applyStaticWifiConfig();
@@ -285,9 +291,13 @@ void wifiConnectMulti() {
     strcpy(y, pass.c_str());
     //LOGGER << "wifibegin :: " << x << y << endl;
     wifiAlreadyWaited = false;
+    //LOGGER << "Wifi state 3: " << WiFi.status()<< endl;
+
     WiFi.begin(x, y);
     neopixel.signal(LED_WIFI_SEARCH);
     PERF("WIFI 5")
+    //LOGGER << "Wifi state 4: " << WiFi.status()<< endl;
+
 
   } else {
     wifiAlreadyWaited = true;

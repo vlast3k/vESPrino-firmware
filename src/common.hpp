@@ -79,8 +79,8 @@ extern "C" {
 
 #define LED_START         F("95lnln")
 #define LED_START_DS      F("95lnlnln")
-#define LED_NO_I2C        F("rlnrln")
-#define LED_LOST_I2C      F("rynryn")
+#define LED_NO_I2C        F("rlrlrld")
+#define LED_LOST_I2C      F("ryryryd")
 #define LED_WIFI_SEARCH   F("cb")
 #define LED_WIFI_FOUND    F("cncncn")
 #define LED_WIFI_FAILED   F("rcrcrcrcn")
@@ -111,6 +111,7 @@ extern "C" {
 #define SAP_IOT_BTN_MSGID "spBtMID"
 
 #define PERF(str) LOGGER << str << ":" << millis() << endl;
+//#define PERF(str)
 //#define H801_API_KEY "h801key"
 //#define XX_SND_INT  "xxSndInt"
 //#define XX_SND_THR  "xxSndThr"
