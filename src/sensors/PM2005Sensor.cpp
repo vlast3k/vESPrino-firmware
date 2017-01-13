@@ -131,7 +131,7 @@ void PM2005Sensor::sendCommand(uint8_t *toSend) {
   Wire.setClock(10000);
   int res = -1;
   for (int i=1; i <=6; i++) toSend[7] ^= toSend[i];
-  dump(toSend, 8);
+  if (DEBUG) dump(toSend, 8);
 
   for (int i=0; i<5; i++) {
     Wire.beginTransmission(0x28);
