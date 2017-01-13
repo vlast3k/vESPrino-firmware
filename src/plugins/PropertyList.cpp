@@ -3,7 +3,7 @@
 #include "PropertyList.hpp"
 #include "common.hpp"
 
-
+void reportProperty(String &key, String &value);
 
 PropertyListClass::PropertyListClass() {
   //LOGGER <<"Create Property List";
@@ -67,6 +67,13 @@ char *PropertyListClass::readProperty(const String &key) {
 bool PropertyListClass::readBoolProperty(const __FlashStringHelper *key) {
   char ch = readProperty(key)[0];
   return !(ch == 0 || ch == '0' || ch == 'f')  ;
+}
+
+bool PropertyListClass::toBool(String &str) {
+  char ch = str.charAt(0);
+//  ..Serial << "ProprlisttoBool: ch=" << ch << endl;
+  return !(ch == 0 || ch == '0' || ch == 'f')  ;
+
 }
 
 bool PropertyListClass::hasProperty(const __FlashStringHelper *key) {
@@ -170,6 +177,26 @@ char *PropertyListClass::readProperty(const char *key) {
   commonBuffer200[0] = 0;
   endInt();
   return commonBuffer200;
+}
+
+void PropertyListClass::reportProperties() {
+  if (assertInit()) {
+    File in = SPIFFS.open(configFileName, "r");
+    int r;
+    while (r = in.available()) {
+      String line = in.readStringUntil('\n');
+      int e = line.indexOf('=');
+      if (e > -1) {
+        String key = line.substring(0, e);
+        String value = line.substring(e+1, line.length());
+        key.trim();
+        value.trim();
+        reportProperty(key, value);
+      }
+    }
+    in.close();
+  }
+  endInt();
 }
 
 void PropertyListClass::removeArrayProperty(const __FlashStringHelper *key) {

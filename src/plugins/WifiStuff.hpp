@@ -16,12 +16,13 @@
 
 class WifiStuffClass : public Plugin {
 public:
-  //WifiStuffClass() ;
+  WifiStuffClass() ;
   bool setup(MenuHandler *handler);
   const char* getName() {
     return "WifiStuff";
   }
   void loop(){};
+  void onProperty(String &key, String &value);
   void handleWifi();
   wl_status_t waitForWifi(uint16_t timeoutMs=10000);
   void activeWait();
@@ -48,7 +49,8 @@ private:
   IPAddress ip = WiFi.localIP();
   wl_status_t wifiState = WL_NO_SHIELD;
   bool wifiAlreadyWaited = false;
-
+  IPAddress staticIp, gateway, subnet, dns1, dns2;
+  String ssid, pass;
 
 
 };

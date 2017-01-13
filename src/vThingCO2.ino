@@ -159,6 +159,21 @@ void loopPlugins() {
   //LOGGER << F("\n--- Loop all DONE ---\n");
 }
 
+void reportProperty(String &key, String &value) {
+  for (int i=0; i < plugins.size(); i++) {
+    plugins.get(i)->onProperty(key, value);
+    yield();
+  }
+  for (int i=0; i < sensors.size(); i++) {
+    sensors.get(i)->onProperty(key, value);
+    yield();
+  }
+  for (int i=0; i < destinations.size(); i++) {
+    destinations.get(i)->onProperty(key, value);
+    yield();
+  }
+}
+
 // bool isDeepSleepWake() {
 //   uint32_t dd;
 //   ESP.rtcUserMemoryRead(0, &dd, sizeof(dd));
@@ -194,18 +209,23 @@ extern NeopixelVE neopixel; // there was a reason to put it here and not in comm
 void setup() {
   Serial.begin(9600);
   if (DEBUG) heap("Heap at start");
+  PERF("Setup a")
   PropertyList.begin(&menuHandler);
+  PERF("Setup b")
+  PropertyList.reportProperties();
   //heap("1");
   LOGGER.init();
+  PERF("Setup c")
   rtcMemStore.init();
+  PERF("Setup d")
   //heap("8");
-  PowerManager.setup(&menuHandler);
+  PowerManager.setupInt(&menuHandler);
   //heap("9");
   //heap("10");
   PERF("Setup 1")
 
 
-  DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
+  //DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
   //DEBUG = true;
   if (DEBUG) LOGGER << F("DEBUG is: ") << DEBUG;
   //heap("11");

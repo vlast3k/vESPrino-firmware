@@ -25,11 +25,12 @@ public:
   long readLongProperty(const __FlashStringHelper *key);
   bool hasProperty(const char *key);
   bool hasProperty(const __FlashStringHelper *key);
-
+  void reportProperties();
   char *getArrayProperty(const __FlashStringHelper *key, int idx);
   void removeArrayProperty(const __FlashStringHelper *key);
   void putArrayProperty(const __FlashStringHelper *key, int idx, const char *value);
   void factoryReset();
+  static bool toBool(String &str);
 
   String configFileName;// = F("/vs_cfg.txt");
   String tempFileName;// = F("/vs_cfg.tmp");

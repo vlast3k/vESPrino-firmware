@@ -2,17 +2,17 @@
 #ifndef PowerManager_h
 #define PowerManager_h
 
-
+#include "interfaces/Plugin.hpp"
 #include "MenuHandler.hpp"
 #include <Timer.h>
 
 
-class PowerManagerClass  {
+class PowerManagerClass : public Plugin   {
 public:
-  PowerManagerClass() {
-    isLowPower = false;
-  };
-  bool setup(MenuHandler *handler);
+  PowerManagerClass();
+  void onProperty(String &key, String &value);
+  bool setupInt(MenuHandler *handler);
+
   void loopPowerManager();
   static void onTimeout();
   static void onNop(const char* line);
@@ -29,7 +29,7 @@ public:
 private:
   Timer *timer;
   bool wokeFromDeepSleep;
-  uint16_t timeoutIntervalS;
+  int16_t timeoutIntervalS = -1;
 
 
 };

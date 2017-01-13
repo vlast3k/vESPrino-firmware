@@ -111,8 +111,8 @@ extern "C" {
 #define SAP_IOT_TOKEN "spTok"
 #define SAP_IOT_BTN_MSGID "spBtMID"
 
-#define PERF(str) LOGGER << str << ":" << millis() << endl;
-//#define PERF(str)
+//#define PERF(str) LOGGER << str << ":" << millis() << endl;
+#define PERF(str)
 //#define H801_API_KEY "h801key"
 //#define XX_SND_INT  "xxSndInt"
 //#define XX_SND_THR  "xxSndThr"

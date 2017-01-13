@@ -8,7 +8,21 @@
 //enum VSP_WIFI_STATE  {VSP_WIFI_CONNECTING, VSP_WIFI_CONNECTED, VSP_WIFI_NOCONFIG, VSP_WIFI_FAILED};
 extern WifiStuffClass WifiStuff;
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
+void registerPlugin(Plugin *plugin);
+WifiStuffClass::WifiStuffClass() {
+  registerPlugin(this);
+}
 
+void WifiStuffClass::onProperty(String &key, String &value) {
+  if (key == PROP_WIFI_STATIC_IP) staticIp.fromString(value);
+  else if (key == PROP_WIFI_GATEWAY) gateway.fromString(value);
+  else if (key == PROP_WIFI_SUBNET) subnet.fromString(value);
+  else if (key == PROP_WIFI_DNS1) dns1.fromString(value);
+  else if (key == PROP_WIFI_DNS2) dns2.fromString(value);
+  else if (key == EE_WIFI_SSID) ssid = value;
+  else if (key == EE_WIFI_P1) pass = value;
+  //LOGGER << "onProp:" << key << ":" << value << endl;
+}
 void WifiStuffClass::handleWifi() {
   //if (wifiMulti && millis() > 8000) wifiMulti->run();
   //LOGGER << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
@@ -253,18 +267,21 @@ void WifiStuffClass::wifiConnectMulti() {
   WiFi.persistent(false);
   WiFi.mode(WIFI_OFF);
   //LOGGER << "Wifi state 1: " << WiFi.status()<< endl;
-  delay(500);
+  //delay(500);
   //LOGGER << "Wifi state 2: " << WiFi.status()<< endl;
   WiFi.mode(WIFI_STA);
   PERF("WIFI 2")
-  applyStaticWifiConfig();
+  if (staticIp != 0) {
+    WiFi.config(staticIp, gateway, subnet, dns1, dns2);
+  }
+  //applyStaticWifiConfig();
   PERF("WIFI 3")
 
   //wifiMulti = new ESP8266WiFiMulti();
   //wifiMulti->addAP("vladiHome", "0888414447");
   //wifiMulti->addAP("Andreev", "4506285842");
-  String ssid = PropertyList.readProperty(EE_WIFI_SSID);
-  String pass = PropertyList.readProperty(EE_WIFI_P1);
+  // String ssid = PropertyList.readProperty(EE_WIFI_SSID);
+  // String pass = PropertyList.readProperty(EE_WIFI_P1);
   PERF("WIFI 4")
 
   if (ssid.length() && ssid.length() < 40 && pass.length() < 100) {
@@ -341,7 +358,7 @@ bool WifiStuffClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("delay"), CMD_BEGIN, WifiStuffClass::cmdDelay, F("")));
   handler->registerCommand(new MenuEntry(F("ipconfig"), CMD_EXACT, WifiStuffClass::cmdIPConfig, F("Dump IP configuration")));
   handler->registerCommand(new MenuEntry(F("autoconfig"), CMD_EXACT, WifiStuffClass::startAutoWifiConfig, F("startAutoWifiConfig")));
-  return true;
+  return false;
 }
 
 void WifiStuffClass::cbOnSaveConfigCallback() {
