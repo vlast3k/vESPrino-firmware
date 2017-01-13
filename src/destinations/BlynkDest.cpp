@@ -11,6 +11,8 @@
 #include "MenuHandler.hpp"
 #include "plugins/PropertyList.hpp"
 #include "plugins/AT_FW_Plugin.hpp"
+#include "plugins/WifiStuff.hpp"
+extern WifiStuffClass WifiStuff;
 
 #define PROP_BLYNK_ENABLED F("blynk.enabled")
 #define PROP_BLYNK_AUTH F("blynk.auth")
@@ -33,7 +35,7 @@ bool BlynkDest::setup(MenuHandler *handler) {
 
 void BlynkDest::loop() {
   if (!enabled) return;
-  if (waitForWifi() != WL_CONNECTED) return;
+  if (WifiStuff.waitForWifi() != WL_CONNECTED) return;
   if (!calledConfig) {
     _blynkWifiClient = new WiFiClient();
     _blynkTransport = new BlynkArduinoClient(*_blynkWifiClient);

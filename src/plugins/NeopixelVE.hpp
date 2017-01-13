@@ -3,7 +3,7 @@
 
 #include "interfaces/Plugin.hpp"
 #include "MenuHandler.hpp"
-#include "common.hpp"
+//#include "common.hpp"
 #include <NeoPixelBus.h>
 #define TOTAL_COLORS 5
 #define Cred     RgbColor(255, 0, 0)

@@ -12,6 +12,7 @@ public:
   virtual const char* getName() {
     return "No Name";
   }
+  virtual void onProperty(String &key, String &value){};
 };
 
 #endif

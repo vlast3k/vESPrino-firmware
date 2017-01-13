@@ -10,12 +10,14 @@
 #include "CO2Sensor.hpp"
 #include <LinkedList.h>
 #include <I2CHelper.hpp>
+#include "plugins/TimerManager.hpp"
+extern TimerManagerClass TimerManager;
 
 extern CO2Sensor co2Sensor;
 
 #define CUBIC_PRESENT "present"
 #define CUBIC_MISSING "missing"
-
+extern TimerManagerClass TimerManager;
 CO2Sensor::CO2Sensor() :
     co2Threshold("CO2", 1),
     cubicCo2(&CO2Sensor::onCo2Status_static, EE_RESET_CO2_1B, &LOGGER),

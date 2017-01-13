@@ -7,6 +7,9 @@
 #include "MenuHandler.hpp"
 #include "plugins/PropertyList.hpp"
 #include "plugins/AT_FW_Plugin.hpp"
+#include "plugins/WifiStuff.hpp"
+extern WifiStuffClass WifiStuff;
+
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 
 CustomHTTPDest::CustomHTTPDest() {
@@ -114,7 +117,7 @@ int CustomHTTPDest::invokeURL(String &s, LinkedList<Pair *> &data) {
 }
 
 int CustomHTTPDest::invokeURL(String &url, String &method, String &contentType, String &pay) {
-  if (waitForWifi() != WL_CONNECTED) return -10;
+  if (WifiStuff.waitForWifi() != WL_CONNECTED) return -10;
   LOGGER << F("Calling HTTP: [") << url << "]" << endl;
   if (pay.length()) LOGGER << F("CustomHTTPDest::payload = ") << pay << endl;
   LOGGER.flush();

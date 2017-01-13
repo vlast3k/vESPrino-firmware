@@ -35,6 +35,7 @@
 #include "destinations/BlynkDest.hpp"
 #include "sensors/DS18B20Sensor.hpp"
 #include "plugins/LoggingPrinter.hpp"
+#include "plugins/WifiStuff.hpp"
 
 
 //boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
@@ -54,6 +55,7 @@ LinkedList<Sensor *> sensors = LinkedList<Sensor *>();
 LinkedList<Destination *> destinations = LinkedList<Destination *>();
 LinkedList<Thr *> thresholds = LinkedList<Thr *>();
 //LinkedList<Timer *> timers = LinkedList<Timer *>();
+WifiStuffClass WifiStuff;
 WebSocketServerClass myWSS;
 PropertyListClass PropertyList;
 PowerManagerClass PowerManager;

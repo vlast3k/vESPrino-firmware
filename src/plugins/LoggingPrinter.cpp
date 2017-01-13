@@ -6,6 +6,8 @@
 #include <ESP8266HTTPClient.h>
 #include "plugins/WebSocketServer.hpp"
 #include <Hash.h>
+#include "plugins/WifiStuff.hpp"
+extern WifiStuffClass WifiStuff;
 
 extern WebSocketServerClass myWSS;
 void LoggingPrinter::init() {
@@ -19,7 +21,7 @@ void LoggingPrinter::init() {
 
 void LoggingPrinter::sendData() {
   if (!length) return;
-  if (logURL.length() > 0 && waitForWifi() == WL_CONNECTED) {
+  if (logURL.length() > 0 && WifiStuff.waitForWifi() == WL_CONNECTED) {
     Serial << F("Sending log...") << length << F(":") << logURL << endl;// << String((char*)data);
     HTTPClient http;
     //heap("");
@@ -30,7 +32,7 @@ void LoggingPrinter::sendData() {
     Serial << F("sent: ") << res << endl;
 
   }
-  if (logToWss && waitForWifi() == WL_CONNECTED) {
+  if (logToWss && WifiStuff.waitForWifi() == WL_CONNECTED) {
     //Serial << "Sending wss:" << _HEX(*data) << endl;
     myWSS.sendData(data, length);
   }

@@ -9,7 +9,8 @@
 #include "plugins/AT_FW_Plugin.hpp"
 #include <PubSubClient.h>
 #include <ESP8266WiFi.h>
-
+#include "plugins/WifiStuff.hpp"
+extern WifiStuffClass WifiStuff;
 extern MQTTDest mqttDest;
 #define PROP_MQTT_SUBS_TOPIC F("mqtt.subs.topic")
 #define PROP_MQTT_LISTEN F("mqtt.listen")
@@ -118,7 +119,7 @@ void MQTTDest::cmdCallMqttInst(const char *line) {
   String msg = x+1;
   LOGGER << F("Will send mqtt to:") << topic <<":[" << msg << "]" << endl;
   LOGGER.flush();
-  if (waitForWifi() != WL_CONNECTED) return;
+  if (WifiStuff.waitForWifi() != WL_CONNECTED) return;
 
   if (!mqttStart()) {
     mqttEnd(false);
@@ -143,7 +144,7 @@ bool MQTTDest::process(LinkedList<Pair *> &data) {
   }
   String s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), 0);
   if (!s.length()) return true;
-  if (waitForWifi() != WL_CONNECTED) return false;
+  if (WifiStuff.waitForWifi() != WL_CONNECTED) return false;
 
   if (!mqttStart()) {
     mqttEnd(false);
@@ -200,7 +201,7 @@ bool MQTTDest::reconnect() {
 }
 
 bool MQTTDest::mqttStart() {
-  if (waitForWifi() != WL_CONNECTED) {
+  if (WifiStuff.waitForWifi() != WL_CONNECTED) {
     if (DEBUG) LOGGER << F("MQTT Dest: Cannot send while wifi offline\n");
     return false;
   }

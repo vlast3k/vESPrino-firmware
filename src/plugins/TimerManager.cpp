@@ -1,4 +1,3 @@
-
 #include "plugins/TimerManager.hpp"
 #include "interfaces/Plugin.hpp"
 #include <LinkedList.h>
@@ -8,9 +7,12 @@
 #include <plugins/PropertyList.hpp>
 #include <Streaming.h>
 #include "plugins/LoggingPrinter.hpp"
+#include "plugins/WifiStuff.hpp"
+
+extern WifiStuffClass WifiStuff;
 
 extern LoggingPrinter LOGGER;
-extern bool DEBUG;
+extern boolean DEBUG;
 wl_status_t waitForWifi(uint16_t timeoutMs);
 
 extern RTCMemStore rtcMemStore;
@@ -57,7 +59,7 @@ extern RTCMemStore rtcMemStore;
 
   void getTimeFromGoogle(String &time) {
     if (DEBUG) LOGGER << F("Check time from google") << endl;
-    if (waitForWifi(7000) != WL_CONNECTED) return;
+    if (WifiStuff.waitForWifi(7000) != WL_CONNECTED) return;
     HTTPClient http;
     const char *headers[1] = {"Date"};
     http.begin(F("http://google.com/"));

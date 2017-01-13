@@ -3,6 +3,8 @@
 #include <ESP8266httpUpdate.h>
 #include "common.hpp"
 
+#include "plugins/WifiStuff.hpp"
+extern WifiStuffClass WifiStuff;
 
 void autoUpdateIfForced(const char *ignore);
 String getForceUpdateBuild();
@@ -83,7 +85,7 @@ String getHTTPFile(String url) {
 
 void autoUpdateIfForced(const char *ignore) {
   //LOGGER << F("Waiting for Wifi connection\n");
-  if (waitForWifi(10000) != WL_CONNECTED) return;
+  if (WifiStuff.waitForWifi(10000) != WL_CONNECTED) return;
   String urlGen = String(F("http://anker-bg.com/vlast3k/vesprino/"));
   String chipid =  String(ESP.getChipId(), 16);
   chipid.toUpperCase();

@@ -3,10 +3,11 @@
 #include <ESP8266WiFi.h>
 #include "common.hpp"
 #include <Timer.h>
+#include "plugins/TimerManager.hpp"
+extern TimerManagerClass TimerManager;
 
 #define PROP_ITERATION_DURATION F("pwr.iterdur")
 #define PROP_TIMEOUT_INTERVAL F("pwr.timeoutint")
-
 uint8_t PowerManagerClass::IterationDurationS = 30;
 void PowerManagerClass::cmdDeepSleep(const char *line) {
   PowerManager.cmdDeepSleepInst(line);

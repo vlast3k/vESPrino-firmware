@@ -29,7 +29,7 @@ extern "C" {
 #include "destinations/CustomHTTPDest.hpp"
 #include "destinations/SerialDumpDest.hpp"
 #include "plugins/PropertyList.hpp"
-#include "plugins/TimerManager.hpp"
+//#include "plugins/TimerManager.hpp"
 #include "plugins/PowerManager.hpp"
 #include "sensors/SI7021Sensor.hpp"
 #include "sensors/BME280Sensor.hpp"
@@ -42,6 +42,7 @@ extern "C" {
 #include "destinations/RFDest.hpp"
 #include <RTCMemStore.hpp>
 #include <ESP8266WiFiMulti.h>
+//#include "plugins/WifiStuff.hpp"
 #include "plugins/NeopixelVE.hpp"
 #include <I2CHelper.hpp>
 #include "plugins/LoggingPrinter.hpp"
@@ -120,7 +121,6 @@ extern "C" {
 #define HTTPS_STR "https://"
 
 void OTA_registerCommands(MenuHandler *handler);
-void WIFI_registerCommands(MenuHandler *handler);
 void MQTT_RegisterCommands(MenuHandler *handler);
 void VESP_registerCommands(MenuHandler *handler);
 void CO2_registerCommands(MenuHandler *handler);
@@ -131,7 +131,7 @@ void setSendThreshold(const char *line);
 // void getTS(const char* line);
 // void sendTS();
 // void testUBI();
-void setWifi(const char* p);
+//void setWifi(const char* p);
 // void atCIPSTART(const char *p);
 // void mockATCommand(const char *line);
 // void cfgGENIOT(const char *p);
@@ -144,7 +144,7 @@ void sendMQTT(String msg);
 // int processResponseCodeATFW(HTTPClient *http, int rc);
 char *extractStringFromQuotes(const char* src, char *dest, int destSize);
 void storeToEE(int address, const char *str, int maxLength);
-void handleWifi();
+//void handleWifi();
 // void connectToWifi(const char *s1, const char *s2, const char *s3);
 // void wifiScanNetworks();
 // int wifiConnectToStoredSSID();
@@ -160,7 +160,7 @@ void putJSONConfig(const char *key, int value, boolean commit = true);
 void putJSONConfig(const char *key, const char *value, boolean isArrayValue = false, boolean commit = true);
 void dumpTemp();
 void factoryReset(char *line = NULL);
-void activeWait();
+//void activeWait();
 char *getJSONConfig(const char *item, char *buf, char *p1 = NULL, char *p3=NULL);
 //void testJSON(const char *ignore);
 // void testHttpUpdate();
@@ -251,7 +251,7 @@ extern char commonBuffer200[200];
 extern CustomHTTPDest customHTTPDest;
 extern SerialDumpDest serialDumpDest;
 extern PropertyListClass PropertyList;
-extern TimerManagerClass TimerManager;
+//extern TimerManagerClass TimerManager;
 extern PowerManagerClass PowerManager;
 extern SI7021Sensor si7021Sensor;
 extern BME280Sensor bme280Sensor;
@@ -265,6 +265,7 @@ extern RTCMemStore rtcMemStore;
 extern ESP8266WiFiMulti  *wifiMulti;
 extern RFDest rfDest;
 extern LoggingPrinter LOGGER;
+//extern WifiStuffClass WifiStuff;
 //extern NeopixelVE neopixel;
 
 //void MigrateSettingsIfNeeded();
@@ -275,10 +276,10 @@ void setup_IntThrHandler(MenuHandler *handler);
 void registerDestination(Destination *destination);
 void registerPlugin(Plugin *plugin);
 void registerSensor(Sensor *sensor);
-wl_status_t waitForWifi(uint16_t timeoutMs = 15000);
-void wifiConnectMulti();
-void startAutoWifiConfig(const char *ch);
-void wifiOff();
+//wl_status_t waitForWifi(uint16_t timeoutMs = 15000);
+//void wifiConnectMulti();
+//void startAutoWifiConfig(const char *ch);
+//void wifiOff();
 void fireEvent(const char *name);
 void initDecimalSeparator();
 #endif

@@ -1,11 +1,14 @@
 #include "plugins/Dweet_io.hpp"
 #include "MenuHandler.hpp"
 #include <Timer.h>
+#include "plugins/TimerManager.hpp"
+#include "plugins/WifiStuff.hpp"
+extern WifiStuffClass WifiStuff;
 
 #define PROP_DWEET_CMDKEY F("dweet.cmdkey")
 #define PROP_DWEET_AUTOSTART F("dweet.autostart")
 #define PROP_DWEET_ACCEPT_STORED_DWEETS F("dweet.acceptStoredDweets")
-
+extern TimerManagerClass TimerManager;
 DweetIOClass::DweetIOClass() {
   registerPlugin(this);
 }
@@ -60,13 +63,13 @@ void DweetIOClass::onGetDweets() {
 }
 
 bool DweetIOClass::getDweetCommand(char *cmd) {
-    if (waitForWifi() != WL_CONNECTED) return false;
+    if (WifiStuff.waitForWifi() != WL_CONNECTED) return false;
     uint32_t mstart = millis();
     char lastDweet[30];
     rtcMemStore.getLastDweet(lastDweet);
 
     if (!dwKey.length()) return false;
-    if (waitForWifi() != WL_CONNECTED) return false ;
+    if (WifiStuff.waitForWifi() != WL_CONNECTED) return false ;
     String url = String(F("http://dweet.io/get/latest/dweet/for/")) + dwKey;
 
     HTTPClient http;

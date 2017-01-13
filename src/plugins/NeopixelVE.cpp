@@ -1,10 +1,10 @@
 #include "plugins/NeopixelVE.hpp"
-#include "MenuHandler.hpp"
-#include "common.hpp"
-#include <NeoPixelBus.h>
+//#include "plugins/WifiStuff.hpp"
+
 RgbColor allColors[] = {Cred, Clila, Cmblue, Cgreen, Cyellow};
 extern NeopixelVE neopixel;
-
+void registerPlugin(Plugin *plugin);
+extern boolean DEBUG;
 NeopixelVE::NeopixelVE() {
   registerPlugin(this);
 }

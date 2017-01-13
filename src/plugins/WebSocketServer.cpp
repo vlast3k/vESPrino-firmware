@@ -3,6 +3,8 @@
 #include <Timer.h>
 #include <ESP8266NetBIOS.h>
 #include <ESP8266mDNS.h>
+#include "plugins/WifiStuff.hpp"
+extern WifiStuffClass WifiStuff;
 
 //const char* apiKey = "Qw8rdb20aV";
 //http://randomkeygen.com/
@@ -44,7 +46,7 @@ void WebSocketServerClass::loop() {
 
 void WebSocketServerClass::cmdStartServerInst() {
   if (server != NULL) delete server;
-  if (waitForWifi() != WL_CONNECTED) return;
+  if (WifiStuff.waitForWifi() != WL_CONNECTED) return;
   server = new WebSocketsServer(8266);
   //menuHandler.scheduleCommand("nop 0");
   //server->on("/", WebSocketServerClass::onCommand);

@@ -1,32 +1,15 @@
-#include "common.hpp"
-#include "plugins/SAP_HCP_IOT_Plugin.hpp"
-#include "plugins/CustomURL_Plugin.hpp"
-#include "plugins/PropertyList.hpp"
-#include "plugins/NeopixelVE.hpp"
-//#include <ESP8266WiFiMulti.h>
-#include "WiFiManager.h"
-#ifdef VESP_PING_SSL
-#include <WiFiClientSecure.h>
-#endif
-
-WiFiManager *wifiManager = NULL;
-ESP8266WiFiMulti  *wifiMulti = NULL;
-void stopAutoWifiConfig();
-
+#include "plugins/WifiStuff.hpp"
 #define PROP_WIFI_STATIC_IP F("wifi.staticip")
 #define PROP_WIFI_GATEWAY F("wifi.gateway")
 #define PROP_WIFI_SUBNET F("wifi.subnet")
 #define PROP_WIFI_DNS1 F("wifi.dns1")
 #define PROP_WIFI_DNS2 F("wifi.dns2")
 
-IPAddress ip = WiFi.localIP();
+//enum VSP_WIFI_STATE  {VSP_WIFI_CONNECTING, VSP_WIFI_CONNECTED, VSP_WIFI_NOCONFIG, VSP_WIFI_FAILED};
+extern WifiStuffClass WifiStuff;
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
-enum VSP_WIFI_STATE  {VSP_WIFI_CONNECTING, VSP_WIFI_CONNECTED, VSP_WIFI_NOCONFIG, VSP_WIFI_FAILED};
-uint32_t lostWifiConnection = 0;
 
-wl_status_t wifiState = WL_NO_SHIELD;
-
-void handleWifi() {
+void WifiStuffClass::handleWifi() {
   //if (wifiMulti && millis() > 8000) wifiMulti->run();
   //LOGGER << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
   //if (wifiMulti) wifiMulti->run();
@@ -59,8 +42,8 @@ void handleWifi() {
   wifiState = WiFi.status();
 }
 
-bool wifiAlreadyWaited = false;
-wl_status_t waitForWifi(uint16_t timeoutMs) {
+
+wl_status_t WifiStuffClass::waitForWifi(uint16_t timeoutMs) {
   if (wifiAlreadyWaited == true) return WiFi.status();
   if (WiFi.status() == WL_CONNECTED)  return WL_CONNECTED;
   //fireEvent("wifiSearching");
@@ -88,7 +71,7 @@ wl_status_t waitForWifi(uint16_t timeoutMs) {
   return WiFi.status();
 }
 
-void activeWait() {
+void WifiStuffClass::activeWait() {
   for (int i=1; i < 5; i++) {
     delay(100);
   //  handleWifi();
@@ -120,7 +103,7 @@ void activeWait() {
 //   WiFi.begin(ssid.c_str(), pass.c_str());
 //   //WiFi.begin("MarinaResidence", "sdsa");
 // }
-void connectToWifi(const char *s1, const char *s2, const char *s3) {
+void WifiStuffClass::connectToWifi(const char *s1, const char *s2, const char *s3) {
   PropertyList.putProperty(EE_WIFI_SSID, s1);
   PropertyList.putProperty(EE_WIFI_P1, s2);
   PropertyList.putProperty(EE_WIFI_P2, s3);
@@ -145,7 +128,7 @@ void connectToWifi(const char *s1, const char *s2, const char *s3) {
 
 
 
-void wifiScanNetworks(const char *ignore) {
+void WifiStuffClass::wifiScanNetworks(const char *ignore) {
   LOGGER.println(F("scan start"));
   WiFi.disconnect();
   delay(500);
@@ -181,15 +164,15 @@ void wifiScanNetworks(const char *ignore) {
 
 }
 
-void setWifi(const char* p) {
+void WifiStuffClass::setWifi(const char* p) {
   char s1[50], s2[130], s3[30];
   p = extractStringFromQuotes(p, s1, sizeof(s1));
   p = extractStringFromQuotes(p, s2, sizeof(s2));
   p = extractStringFromQuotes(p, s3, sizeof(s3));
-  connectToWifi(s1, s2, s3);
+  WifiStuff.connectToWifi(s1, s2, s3);
 }
 
-void sendPingPort(const char *p) {
+void WifiStuffClass::sendPingPort(const char *p) {
   char host[30],  port[20];
   bool secure = false;
   if (strstr(p, "pings")) secure = true;
@@ -234,7 +217,7 @@ void sendPingPort(const char *p) {
 //   }
 // }
 
-void cmdSleeptype(const char *line) {
+void WifiStuffClass::cmdSleeptype(const char *line) {
   int type = atoi(strchr(line, ' ') + 1);
   LOGGER << F("set sleep type to:") << type<< endl;
   switch (type) {
@@ -244,13 +227,13 @@ void cmdSleeptype(const char *line) {
   }
 }
 
-void cmdDelay(const char *line) {
+void WifiStuffClass::cmdDelay(const char *line) {
   int d = atoi(strchr(line, ' ') + 1);
   LOGGER << F("delay for:") << d<< endl;
   delay(d);
 }
 
-void applyStaticWifiConfig() {
+void WifiStuffClass::applyStaticWifiConfig() {
   if (PropertyList.hasProperty(PROP_WIFI_STATIC_IP)) {
     IPAddress ip, gw, su, d1, d2;
     ip.fromString(PropertyList.readProperty(PROP_WIFI_STATIC_IP));
@@ -262,8 +245,8 @@ void applyStaticWifiConfig() {
   }
 }
 
-void wifiConnectMulti() {
-  if (wifiMulti) delete wifiMulti;
+void WifiStuffClass::wifiConnectMulti() {
+  //if (wifiMulti) delete wifiMulti;
   //WiFi.forceSleepWake();
   //delay(100);
   PERF("WIFI 1")
@@ -305,7 +288,7 @@ void wifiConnectMulti() {
   }
 }
 
-void wifiOff() {
+void WifiStuffClass::wifiOff() {
   WiFi.disconnect(true); //mode = wifi Off
   // if (wifiMulti) {
   //   delete wifiMulti;
@@ -315,7 +298,7 @@ void wifiOff() {
 }
 
 
-void setStaticWifi(const char* cmd) {
+void WifiStuffClass::setStaticWifi(const char* cmd) {
   cmd = strchr(cmd, ' ') + 1;
   char *x = strchr(cmd, ',');
   *x = 0;
@@ -340,7 +323,7 @@ void setStaticWifi(const char* cmd) {
   //applyStaticWifiConfig();
 }
 
-void cmdIPConfig(const char *ignore) {
+void WifiStuffClass::cmdIPConfig(const char *ignore) {
   LOGGER << F("IP: ") << WiFi.localIP() << endl;
   LOGGER << F("GW: ") << WiFi.gatewayIP() << endl;
   LOGGER << F("SU: ") << WiFi.subnetMask() << endl;
@@ -348,25 +331,26 @@ void cmdIPConfig(const char *ignore) {
   LOGGER << F("D2: ") << WiFi.dnsIP(1) << endl;
 }
 
-void WIFI_registerCommands(MenuHandler *handler) {
-  handler->registerCommand(new MenuEntry(F("scan"), CMD_EXACT, &wifiScanNetworks, F("Scan available WiFi networks")));
-  handler->registerCommand(new MenuEntry(F("wifi"), CMD_BEGIN, &setWifi, F("wifi \"SSID\", \"PASS\"")));
-  handler->registerCommand(new MenuEntry(F("static_ip"), CMD_BEGIN, &setStaticWifi, F("static_ip ip,gateway,subnetMask,dns1,dns2")));
-  handler->registerCommand(new MenuEntry(F("ping"), CMD_BEGIN, sendPingPort, F("")));
+bool WifiStuffClass::setup(MenuHandler *handler) {
+  handler->registerCommand(new MenuEntry(F("scan"), CMD_EXACT, WifiStuffClass::wifiScanNetworks, F("Scan available WiFi networks")));
+  handler->registerCommand(new MenuEntry(F("wifi"), CMD_BEGIN, WifiStuffClass::setWifi, F("wifi \"SSID\", \"PASS\"")));
+  handler->registerCommand(new MenuEntry(F("static_ip"), CMD_BEGIN, WifiStuffClass::setStaticWifi, F("static_ip ip,gateway,subnetMask,dns1,dns2")));
+  handler->registerCommand(new MenuEntry(F("ping"), CMD_BEGIN, WifiStuffClass::sendPingPort, F("")));
   //handler->registerCommand(new MenuEntry(F("sndiot"), CMD_BEGIN, sndIOT, F("")));
-  handler->registerCommand(new MenuEntry(F("sleeptype"), CMD_BEGIN, cmdSleeptype, F("")));
-  handler->registerCommand(new MenuEntry(F("delay"), CMD_BEGIN, cmdDelay, F("")));
-  handler->registerCommand(new MenuEntry(F("ipconfig"), CMD_EXACT, cmdIPConfig, F("Dump IP configuration")));
-  handler->registerCommand(new MenuEntry(F("autoconfig"), CMD_EXACT, startAutoWifiConfig, F("startAutoWifiConfig")));
+  handler->registerCommand(new MenuEntry(F("sleeptype"), CMD_BEGIN, WifiStuffClass::cmdSleeptype, F("")));
+  handler->registerCommand(new MenuEntry(F("delay"), CMD_BEGIN, WifiStuffClass::cmdDelay, F("")));
+  handler->registerCommand(new MenuEntry(F("ipconfig"), CMD_EXACT, WifiStuffClass::cmdIPConfig, F("Dump IP configuration")));
+  handler->registerCommand(new MenuEntry(F("autoconfig"), CMD_EXACT, WifiStuffClass::startAutoWifiConfig, F("startAutoWifiConfig")));
+  return true;
 }
 
-void cbOnSaveConfigCallback() {
+void WifiStuffClass::cbOnSaveConfigCallback() {
   PropertyList.putProperty(EE_WIFI_SSID, WiFi.SSID().c_str());
   PropertyList.putProperty(EE_WIFI_P1, WiFi.psk().c_str());
-  stopAutoWifiConfig();
+  WifiStuff.stopAutoWifiConfig();
 }
 
-void stopAutoWifiConfig() {
+void WifiStuffClass::stopAutoWifiConfig() {
   if (wifiManager) {
     wifiManager->stopConfigPortalAsync();
     delete wifiManager;
@@ -375,8 +359,7 @@ void stopAutoWifiConfig() {
   }
 }
 
-extern NeopixelVE neopixel;
-void startAutoWifiConfig(const char *ch) {
+void WifiStuffClass::startAutoWifiConfig(const char *ch) {
   // char custom_http1[140] = "Custom HTTP URL 1";
   // char custom_http2[140] = "Custom HTTP URL 2";
   // char custom_http3[140] = "Custom HTTP URL 3";
@@ -406,15 +389,15 @@ void startAutoWifiConfig(const char *ch) {
   neopixel.cmdLedHandleColorInst(F("ledcolor mblue"));
 
   WiFi.persistent(false);
-  wifiManager = new WiFiManager();
+  WifiStuff.wifiManager = new WiFiManager();
   //wifiManager.setConnectTimeout(10);
   String chipId = String(ESP.getChipId(), HEX);
   chipId.toUpperCase();
 
   String name = String(F("vAirMonitor_")) + chipId;
   //wifiManager.autoConnect(name.c_str());
-  wifiManager->setSaveConfigCallback(cbOnSaveConfigCallback);
-  wifiManager->startConfigPortalAsync(name.c_str());
+  WifiStuff.wifiManager->setSaveConfigCallback(WifiStuffClass::cbOnSaveConfigCallback);
+  WifiStuff.wifiManager->startConfigPortalAsync(name.c_str());
 
   // menuHandler.handleCommand(F("custom_url_clean"));
   // if (par_custom_http1.getValue()[0]) menuHandler.handleCommand((String(F("custom_url_add \"0\",\"")) + par_custom_http1.getValue() + "\"").c_str());

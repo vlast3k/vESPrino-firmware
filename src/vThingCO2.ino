@@ -21,10 +21,15 @@
 #include <Wire.h>
 #include "plugins/NeopixelVE.hpp"
 #include <I2CHelper.hpp>
+#include "plugins/WifiStuff.hpp"
+extern WifiStuffClass WifiStuff;
+#include "plugins/TimerManager.hpp"
+extern TimerManagerClass TimerManager;
 
 //#include <wiring_private.h>
 using namespace std;
 
+extern TimerManagerClass TimerManager;
 
 //  Timer *tmrStopLED;
 
@@ -90,7 +95,7 @@ void setupPlugins(MenuHandler *handler) {
   for (int i=0; i < plugins.size(); i++) {
     if (DEBUG) LOGGER << plugins.get(i)->getName() << endl;
     if (plugins.get(i)->setup(handler)) LOGGER << F("Found: ") << plugins.get(i)->getName();
-    handleWifi();
+    WifiStuff.handleWifi();
     menuHandler.loop();
     delay(1);
   }
@@ -107,7 +112,7 @@ void setupPlugins(MenuHandler *handler) {
         foundSensors += name + ",";
       }
     }
-    handleWifi();
+    WifiStuff.handleWifi();
     menuHandler.loop();
     delay(1);
   }
@@ -126,7 +131,7 @@ void setupPlugins(MenuHandler *handler) {
     if (DEBUG) LOGGER << destinations.get(i)->getName() << endl;
     if (destinations.get(i)->setup(handler)) LOGGER << F("Found: ") << destinations.get(i)->getName();
     LOGGER.flush();
-    handleWifi();
+    WifiStuff.handleWifi();
     menuHandler.loop();
     delay(1);
   }
@@ -220,7 +225,7 @@ void setup() {
   PERF("Setup 3")
 
   //heap("2");
-  wifiConnectMulti();
+  WifiStuff.wifiConnectMulti();
   yield();
   PERF("Setup 4")
 
@@ -262,7 +267,7 @@ void setup() {
   CommonCommands commCmd;
   commCmd.registerCommands(&menuHandler);
   OTA_registerCommands(&menuHandler);
-  WIFI_registerCommands(&menuHandler);
+  //WIFI_registerCommands(&menuHandler);
   yield();
   PERF("Setup 6")
 
@@ -357,7 +362,7 @@ void setup() {
 uint32_t wfStart = 0;
 bool checkedFUPD = false;
 void loop() {
-  handleWifi();
+  WifiStuff.handleWifi();
   yield();
   menuHandler.loop();
   yield();
