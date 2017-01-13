@@ -44,6 +44,7 @@ void addCommonValues(LinkedList<Pair *> *data) {
 }
 
 void conditionalSend(bool forceSend) {
+  PERF("SEND 1")
   yield();
   int rtcIt = rtcMemStore.getIterations();
   //LOGGER << "rtcit = " << rtcIt << endl;
@@ -64,6 +65,8 @@ void conditionalSend(bool forceSend) {
     }
   }
 
+  PERF("SEND 2")
+
   //bool someThresholdExceeded = checkThresholds(values);
 //  if (forceSend || someThresholdExceeded) {
 //  wifiConnectMulti();
@@ -76,7 +79,7 @@ void conditionalSend(bool forceSend) {
     yield();
     for (int i=0; i < destinations.size(); i++) {
       uint32_t x = millis();
-      res = res && destinations.get(i)->process(values);
+      res = destinations.get(i)->process(values) && res;
       x = millis() - x;
       LOGGER << destinations.get(i)->getName() << " : " <<  x << F("ms") << endl;
     }
@@ -90,7 +93,9 @@ void conditionalSend(bool forceSend) {
   if (DEBUG) heap("");
   tmrRawRead->setInterval(PowerManagerClass::IterationDurationS * 1000);
   tmrRawRead->Start();
+  PERF("SEND 3")
   LOGGER.flushLog();
+
 }
 
 // void on_SendValue() {
