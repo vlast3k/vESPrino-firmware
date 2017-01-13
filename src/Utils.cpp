@@ -135,11 +135,11 @@ int getListItemCount(const char* str) {
 }
 
 char decimalSeparator = 0;
+void initDecimalSeparator() {
+  decimalSeparator = PropertyList.readProperty(PROP_DECIMAL_SEPARATOR)[0];
+  if (!decimalSeparator) decimalSeparator = '.';
+}
+
 void replaceDecimalSeparator(String &src) {
-  if (!decimalSeparator) {
-    decimalSeparator = PropertyList.readProperty(PROP_DECIMAL_SEPARATOR)[0];
-    if (!decimalSeparator) decimalSeparator = '.';
-    //LOGGER << "Decimal Separator is: " << decimalSeparator << endl;
-  }
   src.replace('.', decimalSeparator);
 }

@@ -46,6 +46,7 @@ MenuHandler menuHandler;
 char atCIPSTART_IP[20];
 char commonBuffer200[200];
 bool deepSleepWake = false;
+String storedSensors;
 //int8_t i2cSDA = -1, i2cSCL = -1;
 
 LinkedList<Plugin *> plugins = LinkedList<Plugin *>();

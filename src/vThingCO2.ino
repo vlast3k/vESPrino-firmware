@@ -42,8 +42,8 @@ using namespace std;
 
 
 
-
-
+#define PROP_SENSORS F("has.sensors")
+#define PROP_STORED_I2C F("stored.i2c")
 #endif
 int pgpio0, pgpio2;
 
@@ -96,18 +96,36 @@ void setupPlugins(MenuHandler *handler) {
   }
 
   if (DEBUG) LOGGER << F("\n--- Setup SENSORS ---\n");
+  storedSensors = PropertyList.readProperty(PROP_SENSORS);
+  String foundSensors = "";
   for (int i=0; i < sensors.size(); i++) {
-    if (DEBUG) LOGGER << sensors.get(i)->getName() << endl;
-    if (sensors.get(i)->setup(handler)) LOGGER << F("Found: ") << sensors.get(i)->getName();
+    String name = sensors.get(i)->getName();
+    if (DEBUG) LOGGER << name << " : " << (storedSensors.indexOf(name) > -1) << endl;
+    if (!storedSensors.length() || storedSensors.indexOf(name) > -1) {
+      if (sensors.get(i)->setup(handler)) {
+        LOGGER << F("Found: ") << name << endl;
+        foundSensors += name + ",";
+      }
+    }
     handleWifi();
     menuHandler.loop();
     delay(1);
+  }
+  if (storedSensors.length() && storedSensors != foundSensors) {
+    LOGGER << F("Expected Sensors: ") << storedSensors << F(" found: ") << foundSensors << endl;
+    LOGGER.flush();
+    LOGGER << F("if the device configuration is changed, trigger a Factory Reset to update sensors\n");
+    LOGGER.flush();
+  } else if (storedSensors.length() == 0) {
+    if (!foundSensors.length()) foundSensors = "none";
+    PropertyList.putProperty(PROP_SENSORS, foundSensors.c_str());
   }
 
   if (DEBUG) LOGGER << F("\n--- Setup DESTINATIONS ---\n");
   for (int i=0; i < destinations.size(); i++) {
     if (DEBUG) LOGGER << destinations.get(i)->getName() << endl;
     if (destinations.get(i)->setup(handler)) LOGGER << F("Found: ") << destinations.get(i)->getName();
+    LOGGER.flush();
     handleWifi();
     menuHandler.loop();
     delay(1);
@@ -119,19 +137,19 @@ void loopPlugins() {
   for (int i=0; i < plugins.size(); i++) {
   //  LOGGER << F("Loop plugin: ") << plugins.get(i)->getName() << endl;
     plugins.get(i)->loop();
-    delay(1);
+    yield();
   }
   //S/erial << F("\n--- Loop SENSORS ---\n");
   for (int i=0; i < sensors.size(); i++) {
   //  LOGGER << F("Loop sensor: ") << sensors.get(i)->getName() << endl;
     sensors.get(i)->loop();
-    delay(1);
+    yield();
   }
   //S/erial << F("\n--- Loop DESTINATIONS ---\n");
   for (int i=0; i < destinations.size(); i++) {
     //LOGGER << F("Loop Destination: ") << destinations.get(i)->getName() << endl;
     destinations.get(i)->loop();
-    delay(1);
+    yield();
   }
   //LOGGER << F("\n--- Loop all DONE ---\n");
 }
@@ -179,12 +197,14 @@ void setup() {
   PowerManager.setup(&menuHandler);
   //heap("9");
   //heap("10");
+  PERF("Setup 1")
 
 
   DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
   //DEBUG = true;
   if (DEBUG) LOGGER << F("DEBUG is: ") << DEBUG;
   //heap("11");
+  PERF("Setup 2")
 
 
   if (PowerManager.isWokeFromDeepSleep() == false) {
@@ -197,12 +217,18 @@ void setup() {
     neopixel.cmdLedHandleColorInst(F("ledcolor black"));
     neopixel.signal(LED_START_DS);
   }
+  PERF("Setup 3")
 
   //heap("2");
   wifiConnectMulti();
+  yield();
+  PERF("Setup 4")
+
   //heap("3");
   pinMode(D8, OUTPUT);    //enable power via D8
   digitalWrite(D8, HIGH);
+  yield();
+
   // //delay(1000);
   //neopixel.cmdLedHandleColorInst(F("ledcolor green"));
   // pinMode(D8, OUTPUT);
@@ -226,6 +252,9 @@ void setup() {
   //WiFi.mode(WIFI_OFF);
 
   printVersion();
+  yield();
+  PERF("Setup 5")
+
   //heap("5");
   menuHandler.registerCommand(new MenuEntry(F("info"), CMD_EXACT, printVersion, F("")));
   //heap("6");
@@ -234,19 +263,37 @@ void setup() {
   commCmd.registerCommands(&menuHandler);
   OTA_registerCommands(&menuHandler);
   WIFI_registerCommands(&menuHandler);
+  yield();
+  PERF("Setup 6")
+
   //heap("7");
 
-  LOGGER << F("ready >") << endl;
-  LOGGER << F("Waiting for auto-connect") << endl;
+  //LOGGER << F("ready >") << endl;
+  //LOGGER << F("Waiting for auto-connect") << endl;
 
 //  deepSleepWake = isDeepSleepWake();
-
-  I2C_STATE i2c= I2CHelper::beginI2C(PropertyList.readLongProperty(PROP_I2C_DISABLED_PORTS), &LOGGER);
+  uint16_t storedI2c = strtoul(PropertyList.readProperty(PROP_STORED_I2C), NULL, 0);
+  I2C_STATE i2c= I2CHelper::beginI2C(PropertyList.readLongProperty(PROP_I2C_DISABLED_PORTS), storedI2c, &LOGGER);
+  yield();
   switch (i2c) {
     case I2C_LOST: neopixel.signal(LED_LOST_I2C); break;
-    case I2C_NODEVICES: neopixel.signal(LED_NO_I2C);break;
+    case I2C_NODEVICES: neopixel.signal(LED_NO_I2C);
+    case I2C_BEGIN: {
+      uint16_t data = 0;
+      data = data | (uint8_t)I2CHelper::i2cSDA;
+      data = data | ((uint8_t)I2CHelper::i2cSCL << 8);
+      if (storedI2c != data) {
+        char val [10];
+        sprintf(val, "0x%02X%02X", I2CHelper::i2cSCL, I2CHelper::i2cSDA);
+        Serial << "i2c bus storing: " << val << endl;
+        Serial.flush();
+        PropertyList.putProperty(PROP_STORED_I2C, val);
+      }
+
+    }
   }
     //espRestart("");
+  PERF("Setup 7")
 
   pinMode(D8, INPUT);
 
@@ -254,8 +301,10 @@ void setup() {
   //heap("12");
 
   EEPROM.begin(100);
+  yield();
 
   //heap("13");
+  PERF("Setup 8")
 
   // #ifdef VTHING_STARTER
   //   //initVThingStarter();
@@ -273,6 +322,7 @@ void setup() {
 
   //registerPlugin(&PowerManager);
   setupPlugins(&menuHandler);
+  PERF("Setup 9")
 
   //heap("15");
 
@@ -284,11 +334,22 @@ void setup() {
 
   URLShortcuts::registerCommands(&menuHandler);
   //heap("dd");
+  PERF("Setup 10")
+
+  yield();
 
   setup_IntThrHandler(&menuHandler);
+  PERF("Setup 11")
+
+  initDecimalSeparator();
+  PERF("Setup 12")
 
   if (DEBUG) heap("At setup end");
   LOGGER << F("Device initialized.") << endl;
+  LOGGER.flush();
+  yield();
+  PERF("Setup 13")
+
   //if (DEBUG) fireEvent("setupEnd");
 }
 
@@ -297,7 +358,9 @@ uint32_t wfStart = 0;
 bool checkedFUPD = false;
 void loop() {
   handleWifi();
+  yield();
   menuHandler.loop();
+  yield();
   if (SKIP_LOOP) {delay(100); return;}
 
   loopPlugins();

@@ -44,7 +44,7 @@ void addCommonValues(LinkedList<Pair *> *data) {
 }
 
 void conditionalSend(bool forceSend) {
-
+  yield();
   int rtcIt = rtcMemStore.getIterations();
   //LOGGER << "rtcit = " << rtcIt << endl;
   //LOGGER.flush();
@@ -54,17 +54,32 @@ void conditionalSend(bool forceSend) {
   rtcMemStore.setIterations(rtcIt);
   LinkedList<Pair *> values = LinkedList<Pair* >();
   addCommonValues(&values);
-  for (int i=0; i < sensors.size(); i++)  sensors.get(i)->getData(&values);
+  for (int i=0; i < sensors.size(); i++)  {
+    yield();
+    if (storedSensors.indexOf(sensors.get(i)->getName()) > -1) {
+      uint32_t x = millis();
+      sensors.get(i)->getData(&values);
+      x = millis() - x;
+      LOGGER << sensors.get(i)->getName() << " : " <<  x << F("ms") << endl;
+    }
+  }
 
   //bool someThresholdExceeded = checkThresholds(values);
 //  if (forceSend || someThresholdExceeded) {
 //  wifiConnectMulti();
+  yield();
 
   bool res = true;
   if (forceSend) {
     LOGGER << F("\n---Sending data---") << endl;
     LOGGER.flush();
-    for (int i=0; i < destinations.size(); i++) res = res && destinations.get(i)->process(values);
+    yield();
+    for (int i=0; i < destinations.size(); i++) {
+      uint32_t x = millis();
+      res = res && destinations.get(i)->process(values);
+      x = millis() - x;
+      LOGGER << destinations.get(i)->getName() << " : " <<  x << F("ms") << endl;
+    }
     if (res) neopixel.signal(LED_SEND_OK);
     else neopixel.signal(LED_SEND_FAILED);
   //tmrSendValueTimer->Start();

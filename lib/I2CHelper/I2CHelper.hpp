@@ -15,7 +15,7 @@ public:
   static bool findI2C(int8_t &sda, int8_t &scl, long disabledPorts, bool debug);
   static void i2cHigh();
   static void cmdScanI2C(const char *ignore);
-  static I2C_STATE beginI2C(long disabledPorts, Stream *LOGGER);
+  static I2C_STATE beginI2C(long disabledPorts, uint16_t storedI2c, Stream *LOGGER);
   static uint8_t slowEndTransmission(uint8_t sendStop = true);
   static bool isBitSet(uint32_t val, int bit);
 

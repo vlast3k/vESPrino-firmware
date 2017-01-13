@@ -52,7 +52,9 @@ void WebSocketServerClass::cmdStartServerInst() {
   server->onEvent(WebSocketServerClass::onWebSocketEvent);
 
   LOGGER << F("\n\nWebSockets Server started on wss://") << WiFi.localIP() << F(":") << 8266 << endl;
+  LOGGER.flush();
   LOGGER << F("Open http://config.vair-monitor.com to configure device online") << endl;
+  LOGGER.flush();
   // LOGGER.print(WiFi.localIP());
   // LOGGER.println(F("/?cmd=..."));
   //
@@ -91,6 +93,7 @@ void WebSocketServerClass::onWebSocketEventInst(uint8_t num, WStype_t type, uint
                   LOGGER.setLogToWSS(true);
                   server->sendTXT(num, "Connected");
                   LOGGER.printf(String(F("[%u] Connected from %d.%d.%d.%d url: %s\n")).c_str(), num, ip[0], ip[1], ip[2], ip[3], payload);
+                  LOGGER.flush();
 
   				// send message to client
               }

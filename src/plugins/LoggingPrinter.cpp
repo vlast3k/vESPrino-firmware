@@ -12,6 +12,7 @@ void LoggingPrinter::init() {
   logURL = PropertyList.readProperty(PROP_LOG_DEST);
   if (logURL.length() > 0) {
     Serial << F("Will log to: ") << logURL << endl;
+    Serial.flush();
     //waitForWifi();
   }
 }
@@ -69,6 +70,7 @@ size_t LoggingPrinter::write(const uint8_t *buffer, size_t size) {
 size_t LoggingPrinter::write(uint8_t data) {
   //Serial.write('{');
   Serial.write(data);
+  if (data == '\n') Serial.flush();
   //if (logToWss) myWSS.sendData(data);
   //Serial.write('}');
   myWrite(data);

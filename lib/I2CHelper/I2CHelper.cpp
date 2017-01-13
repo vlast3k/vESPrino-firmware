@@ -136,6 +136,7 @@ bool I2CHelper::findI2C(int8_t &sda, int8_t &scl, long disabledPorts, bool debug
         sda = gpios[i];
         scl = gpios[k];
         LOGGER->printf(String(F("Found i2c bus on SDA:SCL = %s:%s (%d:%d)\n")).c_str(), gpios_str[i].c_str(), gpios_str[k].c_str(), sda, scl);
+        LOGGER->flush();
         return true;
       }
       delay(1);
@@ -163,12 +164,12 @@ void I2CHelper::cmdScanI2C(const char *ignore) {
   findI2C(a, b, 0, true);
 }
 
-I2C_STATE I2CHelper::beginI2C(long disabledPorts, Stream *_LOGGER) {
+I2C_STATE I2CHelper::beginI2C(long disabledPorts, uint16_t rtcI2c, Stream *_LOGGER) {
   LOGGER = _LOGGER;
   I2C_STATE ret;
 //  brzo_i2c_setup(D5, D1, 50000);
   //Wire.begin(D5, D1);
-  uint32_t rtcI2c = rtcMemStore.getGenData(GEN_I2C_BUS);
+  //uint32_t rtcI2c = rtcMemStore.getGenData(GEN_I2C_BUS);
   if (rtcI2c) {
     i2cSDA = (int8_t) rtcI2c & 0xFF;
     i2cSCL = (int8_t) ((rtcI2c >> 8) & 0xFF);
@@ -180,7 +181,7 @@ I2C_STATE I2CHelper::beginI2C(long disabledPorts, Stream *_LOGGER) {
     String s1 = String(i2cSDA);
     String s2 = String(i2cSCL);
     if (hasI2CDevices(i2cSDA, i2cSCL, s1, s2, false)) {
-      *LOGGER << F("I2C Bus on SDA:SCA (") << i2cSDA << F(":") << i2cSCL << F(")");
+      *LOGGER << F("Using I2C Bus on SDA:SCA (") << i2cSDA << F(":") << i2cSCL << F(")") << endl;
       Wire.begin(i2cSDA, i2cSCL);
       ret = I2C_BEGIN;
     } else {
@@ -193,12 +194,12 @@ I2C_STATE I2CHelper::beginI2C(long disabledPorts, Stream *_LOGGER) {
     ret = I2C_NODEVICES;
   }
 
-  if (!rtcI2c) {
-    uint32_t data = 0;
-    data = data | (uint8_t)i2cSDA;
-    data = data | ((uint8_t)i2cSCL << 8);
-    rtcMemStore.setGenData(GEN_I2C_BUS, data);
-  }
+  // if (!rtcI2c) {
+  //   uint32_t data = 0;
+  //   data = data | (uint8_t)i2cSDA;
+  //   data = data | ((uint8_t)i2cSCL << 8);
+  //   rtcMemStore.setGenData(GEN_I2C_BUS, data);
+  // }
 
   return ret;
 }

@@ -24,6 +24,7 @@ bool MQTTDest::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("call_mqtt"), CMD_BEGIN, &MQTTDest::cmdCallMqtt, F("call_mqtt topic message")));
   handler->registerCommand(new MenuEntry(F("mqtt_msg_clean"), CMD_EXACT, &MQTTDest::cmdCleanCustomUrl, F("mqtt_msg_clean - clean all mqtt messages")));
   if (PropertyList.readBoolProperty(PROP_MQTT_LISTEN)) {
+    mqttListen = true;
     if (!mqttStart()) {
       mqttEnd(false);
       return false;
@@ -133,7 +134,7 @@ bool MQTTDest::process(LinkedList<Pair *> &data) {
   LOGGER << F("MQTTDest::process") << endl;
   LOGGER.flush();
 //  heap("");
-  if (PropertyList.readBoolProperty(PROP_MQTT_LISTEN)) {
+  if (mqttListen) {
     if (!client ) {
       if (!mqttStart()) {
         mqttEnd(false);

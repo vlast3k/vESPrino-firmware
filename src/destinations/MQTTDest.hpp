@@ -37,6 +37,7 @@ private:
   WiFiClient *wclient;
   bool isListening = false;
   void setupMqttListen();
+  bool mqttListen = false;
   //static const __FlashStringHelper* PROP_CUSTOM_URL_ARR;// = F("custom_url_arr");
 };
 

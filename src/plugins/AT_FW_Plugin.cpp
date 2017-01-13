@@ -31,8 +31,7 @@ void AT_FW_Plugin::mockATCommand(const char *line) {
 }
 
 int AT_FW_Plugin::processResponseCodeATFW(HTTPClient *http, int rc) {
-  if (rc > 0) LOGGER << F("Response Code: ") << rc << endl;
-  else LOGGER << F("Error Code: ") << rc << " = " << http->errorToString(rc).c_str() << endl;
+  if (rc <= 0) LOGGER << F("Error Code: ") << rc << " = " << http->errorToString(rc).c_str() << endl;
   if (rc > 0) {
     if (DEBUG) {
       LOGGER << F("Payload: [");

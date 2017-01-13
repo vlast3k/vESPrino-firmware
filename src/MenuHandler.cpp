@@ -51,7 +51,7 @@ bool MenuHandler::processUserInput() {
     //LOGGER.flush();
     //LOGGER.setTimeout(5000);
     scheduleCommand(line);
-    scheduleCommand("nop");
+    scheduleCommand("@nop");
     //LOGGER << endl << F("OK") << endl;
     return true;
   }
@@ -138,19 +138,18 @@ void MenuHandler::processCommands() {
 void MenuHandler::handleCommand(const char *line) {
   // check for silent command
   bool silent = false;
-  if (line[0] != '@') {
-    if (strcmp("nop", line)) {
-      const char *x = line;
-      for (int i=0; *x; x++, i++) {
-        LOGGER << *x;
-        if ((i%50) == 0) LOGGER.flush();
-      }
-      LOGGER << endl;
-    //   LOGGER.flush();
-    }
-  } else {
+  if (line[0] == '@') {
     silent = true;
     line ++;
+  }
+  if (!silent && strcmp("nop", line)) {
+    const char *x = line;
+    for (int i=0; *x; x++, i++) {
+      LOGGER << *x;
+      if ((i%50) == 0) LOGGER.flush();
+    }
+    LOGGER << endl;
+  //   LOGGER.flush();
   }
 
   String s1;

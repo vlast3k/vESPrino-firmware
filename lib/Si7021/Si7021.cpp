@@ -12,7 +12,8 @@ SI7021::SI7021()
 
 bool SI7021::begin()
 {
-	Wire.begin();											// Begin I2C
+
+	//Wire.begin();											// Begin I2C
     //Serial.println("a0aaaaaa22222");
     //delay(100);
 	//Wire.begin();											// Begin I2C
@@ -199,7 +200,7 @@ uint8_t SI7021::readRegister(uint8_t reg)
     Wire.beginTransmission(SI7021_ADDR);
     Wire.write(reg);
     Wire.endTransmission(false);
-    delay(150);
+    delay(10);
     Wire.requestFrom(SI7021_ADDR, 1);
     return Wire.read();
 }
@@ -210,7 +211,7 @@ uint16_t SI7021::readSensor(uint8_t reg)
     Wire.beginTransmission(SI7021_ADDR);
     Wire.write(reg);
     Wire.endTransmission(false);
-    delay(150);
+    delay(25);
     Wire.requestFrom(SI7021_ADDR, 2);
     var = Wire.read() << 8;
     var |= Wire.read() & 0x0FF;

@@ -263,15 +263,21 @@ void wifiConnectMulti() {
   if (wifiMulti) delete wifiMulti;
   //WiFi.forceSleepWake();
   //delay(100);
+  PERF("WIFI 1")
   WiFi.persistent(false);
   WiFi.mode(WIFI_OFF);
   WiFi.mode(WIFI_STA);
+  PERF("WIFI 2")
   applyStaticWifiConfig();
+  PERF("WIFI 3")
+
   //wifiMulti = new ESP8266WiFiMulti();
   //wifiMulti->addAP("vladiHome", "0888414447");
   //wifiMulti->addAP("Andreev", "4506285842");
   String ssid = PropertyList.readProperty(EE_WIFI_SSID);
   String pass = PropertyList.readProperty(EE_WIFI_P1);
+  PERF("WIFI 4")
+
   if (ssid.length() && ssid.length() < 40 && pass.length() < 100) {
     //wifiMulti->addAP(ssid.c_str(), pass.c_str());
     char x[120], y[120];
@@ -281,6 +287,8 @@ void wifiConnectMulti() {
     wifiAlreadyWaited = false;
     WiFi.begin(x, y);
     neopixel.signal(LED_WIFI_SEARCH);
+    PERF("WIFI 5")
+
   } else {
     wifiAlreadyWaited = true;
     if (!PowerManager.isWokeFromDeepSleep()) menuHandler.scheduleCommand(F("autoconfig"));

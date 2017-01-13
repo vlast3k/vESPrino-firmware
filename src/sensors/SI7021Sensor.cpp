@@ -11,24 +11,29 @@ SI7021Sensor::SI7021Sensor() {
 }
 
 bool SI7021Sensor::setup(MenuHandler *handler) {
-  handler->registerCommand(new MenuEntry(F("siInit"), CMD_EXACT, &SI7021Sensor::onCmdInit, F("")));
-  if (initSensor()) return true;
-  closeSensor();
-  return false;
+  //handler->registerCommand(new MenuEntry(F("siInit"), CMD_EXACT, &SI7021Sensor::onCmdInit, F("")));
+  if (initSensor()) {
+    String adjStr = PropertyList.readProperty(PROP_TEMP_ADJ);
+    adj = atof(adjStr.c_str());
+    closeSensor();
+    return true;
+  } else {
+    closeSensor();
+    return false;
+  }
 
 }
 
-void SI7021Sensor::onCmdInit(const char *ignore) {
-  si7021Sensor.initSensor();
-}
+// void SI7021Sensor::onCmdInit(const char *ignore) {
+//   si7021Sensor.initSensor();
+// }
 
 void SI7021Sensor::getData(LinkedList<Pair *> *data) {
   //LOGGER << "SI721 get Data" << endl;
   //delay(100);
    if (!initSensor()) return;
    double temp = si7021->readTemp();
-   String adj = PropertyList.readProperty(PROP_TEMP_ADJ);
-   double adjTemp = temp + atof(adj.c_str());
+   double adjTemp = temp + adj;
    String t1 = String(adjTemp);
    String t1r = String(temp);
    replaceDecimalSeparator(t1);
@@ -37,14 +42,14 @@ void SI7021Sensor::getData(LinkedList<Pair *> *data) {
    data->add(new Pair("TEMPR", t1r));
    data->add(new Pair("HUM", String((int)si7021->readHumidity())));
    closeSensor();
-    // LOGGER << "end si7021" << endl;
 }
 
 bool SI7021Sensor::initSensor() {
-  if (!rtcMemStore.hasSensor(RTC_SENSOR_SI7021)) return false;
+  //if (!rtcMemStore.hasSensor(RTC_SENSOR_SI7021)) return false;
   if (I2CHelper::i2cSDA ==  -1) return false;
   closeSensor();
   si7021 = new SI7021();
+  yield();
   //si7021->reset();
   //si7021->begin(D1, D6); // Runs : Wire.begin() + reset()
   //LOGGER << "SI7021 init :" <<  si7021->getDeviceID() << endl;
@@ -58,12 +63,12 @@ bool SI7021Sensor::initSensor() {
   if (!init) {
     delete si7021;
     si7021 = NULL;
-    rtcMemStore.setSensorState(RTC_SENSOR_SI7021, false);
+    //rtcMemStore.setSensorState(RTC_SENSOR_SI7021, false);
     return false;
   }
   //LOGGER << F("Found SI7021 - Temperature/Humidity Sensor") << endl;
-  LOGGER.flush();
-  si7021->setHumidityRes(12); // Humidity = 12-bit / Temperature = 14-bit
+  //LOGGER.flush();
+  if (si7021->getHumidityRes() != 12) si7021->setHumidityRes(12); // Humidity = 12-bit / Temperature = 14-bit
   return true;
 }
 

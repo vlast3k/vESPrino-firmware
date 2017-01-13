@@ -109,6 +109,8 @@ extern "C" {
 #define SAP_IOT_DEVID "spDvId"
 #define SAP_IOT_TOKEN "spTok"
 #define SAP_IOT_BTN_MSGID "spBtMID"
+
+#define PERF(str) LOGGER << str << ":" << millis() << endl;
 //#define H801_API_KEY "h801key"
 //#define XX_SND_INT  "xxSndInt"
 //#define XX_SND_THR  "xxSndThr"
@@ -237,6 +239,7 @@ extern bool shouldSend;
 extern boolean DEBUG;
 extern boolean SKIP_LOOP;
 extern MenuHandler menuHandler;
+extern String storedSensors;
 extern Timer *tmrStopLED;
 extern LinkedList<Plugin *> plugins;
 extern LinkedList<Sensor *> sensors;
@@ -276,4 +279,5 @@ void wifiConnectMulti();
 void startAutoWifiConfig(const char *ch);
 void wifiOff();
 void fireEvent(const char *name);
+void initDecimalSeparator();
 #endif

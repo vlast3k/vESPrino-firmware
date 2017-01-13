@@ -19,7 +19,7 @@ public:
   float getValue();
   void getData(LinkedList<Pair*> *data);
   const char* getName() {
-    return "CO2";
+    return "CM110x";
   }
 
 private:
