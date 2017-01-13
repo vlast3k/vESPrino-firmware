@@ -2,13 +2,14 @@
 #include "MenuHandler.hpp"
 #include <Timer.h>
 #include "plugins/TimerManager.hpp"
+extern TimerManagerClass TimerManager;
 #include "plugins/WifiStuff.hpp"
 extern WifiStuffClass WifiStuff;
 
 #define PROP_DWEET_CMDKEY F("dweet.cmdkey")
 #define PROP_DWEET_AUTOSTART F("dweet.autostart")
 #define PROP_DWEET_ACCEPT_STORED_DWEETS F("dweet.acceptStoredDweets")
-extern TimerManagerClass TimerManager;
+
 DweetIOClass::DweetIOClass() {
   registerPlugin(this);
 }

@@ -24,7 +24,7 @@ private:
   bool intReadData(int &pm25, int &pm10, int &status, int &mode) ;
   bool intBegin();
   void setDynamicMode();
-  void checkMode();
+  void checkMode(LinkedList<Pair *> *data = NULL);
   static void onCmdQuiet(const char *line);
   static void onCmdInterval(const char *line);
   void setTimingMeasuringMode(uint16_t intervalSec);

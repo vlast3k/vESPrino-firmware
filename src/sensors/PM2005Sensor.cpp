@@ -33,7 +33,7 @@ bool PM2005Sensor::setup(MenuHandler *handler) {
 
 }
 
-void PM2005Sensor::checkMode() {
+void PM2005Sensor::checkMode(LinkedList<Pair *> *data) {
   Wire.setClock(10000);
   int pm25, pm10, mode, status;
   if (!intReadData(pm25, pm10, status, mode)) return;
@@ -54,6 +54,10 @@ void PM2005Sensor::checkMode() {
   LOGGER.flush();
   if (interval < 300 && mode != 5) setDynamicMode();
   else if (interval >= 300 && mode != interval) setTimingMeasuringMode(interval);
+  if (data) {
+    data->add(new Pair("PMMODE", String(mode)));
+    data->add(new Pair("PMINT", String(interval)));
+  }
   //intReadData(pm25, pm10, status, mode);
 }
 
@@ -83,7 +87,7 @@ void PM2005Sensor::onCmdInterval(const char *line) {
 
 void PM2005Sensor::getData(LinkedList<Pair *> *data) {
   if (!hasSensor) return;
-  checkMode();
+  checkMode(data);
   int pm25, pm10, mode, status;
   if (!intReadData(pm25, pm10, status, mode)) return;
   data->add(new Pair("PM25", String(pm25)));

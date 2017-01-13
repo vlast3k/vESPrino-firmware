@@ -12,6 +12,7 @@
 #define TMR_STOPPED 0
 #define PROP_TZOFFSET F("tz.offset")
 #define ONE_DAY_MS 24L*60*60*1000
+#define NO_TIME 0xFFFFFFFFL
 enum TimeInPeriod {TP_UNDEFINED, TP_IN, TP_OUT};
 class TimerManagerClass : public Plugin {
 public:
@@ -19,8 +20,8 @@ public:
   void loop();
   static TimeInPeriod isTimeInPeriod(const char *startc, const char* endc);
   static uint32_t timeToMs(const char *d1);
-  static int32_t updateLastTime();
-  static int32_t getGMTime();
+  static uint32_t updateLastTime();
+  static uint32_t getGMTime();
   const char* getName() {
     return "TimerManager";
   }

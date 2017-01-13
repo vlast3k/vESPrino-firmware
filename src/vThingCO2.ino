@@ -231,7 +231,7 @@ void setup() {
   //heap("11");
   PERF("Setup 2")
 
-
+  //Serial << "is woke from ds: " << PowerManager.isWokeFromDeepSleep() << endl;
   if (PowerManager.isWokeFromDeepSleep() == false) {
     neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
     neopixel.cmdLedHandleColorInst(F("ledcolor lila"));

@@ -6,6 +6,9 @@
 #include "plugins/PowerManager.hpp"
 #include "plugins/NeopixelVE.hpp"
 extern NeopixelVE neopixel;
+#include "plugins/TimerManager.hpp"
+extern TimerManagerClass TimerManager;
+
 
 //Timer *tmrSendValueTimer;
 Timer *tmrRawRead;
@@ -41,6 +44,7 @@ void addCommonValues(LinkedList<Pair *> *data) {
   chipId.toUpperCase();
   data->add(new Pair("CHIPID", chipId));
   data->add(new Pair("RUNTIME", String((millis() + rtcMemStore.getGenData(GEN_MSCOUNTER)) / 1000)));
+  data->add(new Pair("GMTTIME", String(TimerManager.getGMTime())));
 }
 
 void conditionalSend(bool forceSend) {

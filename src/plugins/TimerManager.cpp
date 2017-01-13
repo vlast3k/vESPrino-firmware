@@ -28,22 +28,25 @@ extern RTCMemStore rtcMemStore;
     }
   }
 
-  const char *msToStr(uint32_t ms) {
-    String s;
+  const char *msToStr(uint32_t ms, String &s) {
+    if (ms == 0) return "nan";
     ms /= 1000;
     ms /= 60;
+    s = "";
     s+= (int)ms/60;
     s+= ":";
     s+= ms %60;
+    //Serial << "mstostr: " << s << endl;
     return s.c_str();
   }
 
   TimeInPeriod TimerManagerClass::isTimeInPeriod(const char *startc, const char* endc) {
-    int32_t  now   = getGMTime();
-    if (now < 0) return TP_UNDEFINED;
-    //if (DEBUG) LOGGER << F("now(): ") << msToStr(now) << endl;
+    uint32_t  now   = getGMTime();
+    String s;
+    if (now == NO_TIME) return TP_UNDEFINED;
+    if (DEBUG) LOGGER << F("now(): ") << msToStr(now, s) << endl;
     now += PropertyList.readLongProperty(PROP_TZOFFSET) * 60 * 1000;
-    //if (DEBUG) LOGGER << F("now(tz adjusted): ") << msToStr(now) << endl;
+    if (DEBUG) LOGGER << F("now(tz adjusted): ") << msToStr(now, s) << endl;
     if (now < 0) now += ONE_DAY_MS;
     uint32_t start = timeToMs(startc);
     uint32_t end   = timeToMs(endc);
@@ -71,27 +74,30 @@ extern RTCMemStore rtcMemStore;
 
   }
 
-  int32_t TimerManagerClass::updateLastTime() {
+  uint32_t TimerManagerClass::updateLastTime() {
     String googleTime;
+    String s;
     getTimeFromGoogle(googleTime);
     const char *d1 = googleTime.c_str();
-    if (strlen(d1) < 20) return -1;
+    if (strlen(d1) < 20) return NO_TIME;
     //if (DEBUG) LOGGER << F("Time From Google: ") << d1 << endl;
-    int32_t tg = timeToMs(d1 + strlen(d1) - 12);
+    uint32_t tg = timeToMs(d1 + strlen(d1) - 12);
     rtcMemStore.setGenData(GEN_LASTTIME, tg); //in case the format of the time changes 01 vs 1
-    //LOGGER << "  time google: " << msToStr(tg) << endl;
+    //LOGGER << "  time google: " << msToStr(tg, s) << endl;
     return tg;
   }
 
-  int32_t TimerManagerClass::getGMTime() {
+  uint32_t TimerManagerClass::getGMTime() {
     //LOGGER << "GetGMTTime..." << endl;
+    //String s;
     uint32_t lastTime  = rtcMemStore.getGenData(GEN_LASTTIME);
-    uint32_t msCounter = rtcMemStore.getGenData(GEN_MSCOUNTER) + millis();;
-    //LOGGER << "  lastTime: " << msToStr(lastTime) << endl;
-    //LOGGER << "  msCounter: " << msToStr(msCounter) << endl;
+    uint32_t msCounter = rtcMemStore.getGenData(GEN_MSCOUNTER) + millis();
+    //LOGGER << "  lastTime: " << msToStr(lastTime, s) << " @ " << lastTime << endl;
+    //LOGGER << "  msCounter: " << msToStr(msCounter, s) << " @ " << msCounter << endl;
+    //LOGGER.flush();
     if (lastTime == 0 || msCounter > 24L*60*60*1000) {
-      int32_t x = updateLastTime();
-      if (x>0) lastTime = x;
+      uint32_t x = updateLastTime();
+      if (x != NO_TIME) lastTime = x;
     }
-    return lastTime ? lastTime + msCounter : -1;
+    return lastTime ? lastTime + msCounter : NO_TIME;
   }
