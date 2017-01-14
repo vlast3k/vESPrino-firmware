@@ -48,7 +48,7 @@ void WifiStuffClass::handleWifi() {
     stopAutoWifiConfig();
     if (!PowerManager.isWokeFromDeepSleep()) {
       menuHandler.scheduleCommand("wss_start");
-    //  storeStaticWifiInRTC();
+      storeStaticWifiInRTC();
     }
 
     //fireEvent("wifiConnected");
@@ -263,6 +263,22 @@ void WifiStuffClass::applyStaticWifiConfig() {
   }
 }
 
+void WifiStuffClass::loadStaticIPConfigFromRTC() {
+  staticIp = rtcMemStore.getGenData(GEN_WIFI_STATIC_IP);
+  gateway = rtcMemStore.getGenData(GEN_WIFI_GW);
+  subnet = rtcMemStore.getGenData(GEN_WIFI_SUB);
+  dns1 = rtcMemStore.getGenData(GEN_WIFI_DNS1);
+  dns2 = rtcMemStore.getGenData(GEN_WIFI_DNS2);
+}
+
+void WifiStuffClass::storeStaticWifiInRTC() {
+  rtcMemStore.setGenData(GEN_WIFI_STATIC_IP, WiFi.localIP());
+  rtcMemStore.setGenData(GEN_WIFI_GW, WiFi.gatewayIP());
+  rtcMemStore.setGenData(GEN_WIFI_SUB, WiFi.subnetMask());
+  rtcMemStore.setGenData(GEN_WIFI_DNS1, WiFi.dnsIP(0));
+  rtcMemStore.setGenData(GEN_WIFI_DNS2, WiFi.dnsIP(1));
+}
+
 void WifiStuffClass::wifiConnectMulti() {
   //if (wifiMulti) delete wifiMulti;
   //WiFi.forceSleepWake();
@@ -275,7 +291,9 @@ void WifiStuffClass::wifiConnectMulti() {
   //LOGGER << "Wifi state 2: " << WiFi.status()<< endl;
   WiFi.mode(WIFI_STA);
   PERF("WIFI 2")
-  //if (PowerManager.is)
+  if (PowerManager.isWokeFromDeepSleep()) {
+    loadStaticIPConfigFromRTC();
+  }
   if (staticIp != 0) {
     WiFi.config(staticIp, gateway, subnet, dns1, dns2);
   }

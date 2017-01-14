@@ -41,7 +41,7 @@ extern RTCMemStore rtcMemStore;
   }
 
   TimeInPeriod TimerManagerClass::isTimeInPeriod(const char *startc, const char* endc) {
-    uint32_t  now   = getGMTime();
+    int32_t  now   = getGMTime();
     String s;
     if (now == NO_TIME) return TP_UNDEFINED;
     if (DEBUG) LOGGER << F("now(): ") << msToStr(now, s) << endl;
@@ -57,6 +57,7 @@ extern RTCMemStore rtcMemStore;
   }
 
   uint32_t TimerManagerClass::timeToMs(const char *d1) {
+    //converts 19:40 to ms from 00:00
     return (((d1[0]-'0')*10 + d1[1]-'0')*60 + (d1[3]-'0')*10 + d1[4]-'0')*60*1000;
   }
 
@@ -82,7 +83,9 @@ extern RTCMemStore rtcMemStore;
     if (strlen(d1) < 20) return NO_TIME;
     //if (DEBUG) LOGGER << F("Time From Google: ") << d1 << endl;
     uint32_t tg = timeToMs(d1 + strlen(d1) - 12);
-    rtcMemStore.setGenData(GEN_LASTTIME, tg); //in case the format of the time changes 01 vs 1
+    rtcMemStore.setGenData(GEN_LASTTIME, tg);
+    rtcMemStore.setGenData(GEN_TIME_LAST_UPD_INT, rtcMemStore.getGenData(GEN_MSCOUNTER) + millis());
+    //LOGGER << "  time google: " << msToStr(tg, s) << endl;
     //LOGGER << "  time google: " << msToStr(tg, s) << endl;
     return tg;
   }
@@ -92,12 +95,15 @@ extern RTCMemStore rtcMemStore;
     //String s;
     uint32_t lastTime  = rtcMemStore.getGenData(GEN_LASTTIME);
     uint32_t msCounter = rtcMemStore.getGenData(GEN_MSCOUNTER) + millis();
+    uint32_t lastUpdInt= rtcMemStore.getGenData(GEN_TIME_LAST_UPD_INT);
     //LOGGER << "  lastTime: " << msToStr(lastTime, s) << " @ " << lastTime << endl;
     //LOGGER << "  msCounter: " << msToStr(msCounter, s) << " @ " << msCounter << endl;
     //LOGGER.flush();
-    if (lastTime == 0 || msCounter > 24L*60*60*1000) {
+    if (lastTime == 0 || msCounter - lastUpdInt > 60L*60*1000) {
       uint32_t x = updateLastTime();
       if (x != NO_TIME) lastTime = x;
     }
-    return lastTime ? lastTime + msCounter : NO_TIME;
+    msCounter = rtcMemStore.getGenData(GEN_MSCOUNTER) + millis();
+    lastUpdInt= rtcMemStore.getGenData(GEN_TIME_LAST_UPD_INT);
+    return lastTime ? lastTime + msCounter - lastUpdInt : NO_TIME;
   }

@@ -42,6 +42,7 @@ public:
   void stopAutoWifiConfig();
   static void startAutoWifiConfig(const char *ch);
   void storeStaticWifiInRTC();
+  void loadStaticIPConfigFromRTC();
 
 private:
   WiFiManager *wifiManager = NULL;
