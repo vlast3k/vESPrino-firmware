@@ -153,5 +153,23 @@ void NeopixelVE::setLedColor(const RgbColor &color) {
   delay(1);
   Serial1.end();
   Serial1.flush();
-  delay(10);
+  //delay(10);
+}
+
+int NeopixelVE::getAmbientLightRaw() {
+  uint32_t sum=0;
+  int samples = 10;
+  for (int i=0; i<samples; i++) sum += analogRead(A0);
+  return sum/samples;
+}
+
+int NeopixelVE::getAmbientLight(int stopMs) {
+  RgbColor cur = currentColor;
+  if (stopMs) {
+     setLedColor(Cblack);
+     delay(stopMs);
+   }
+  int light = getAmbientLightRaw();
+  if (stopMs) setLedColor(cur);
+  return light;
 }

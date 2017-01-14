@@ -35,6 +35,8 @@ public:
   void cmdLedHandleModeInst(const __FlashStringHelper* s){cmdLedHandleModeInst(String(s).c_str());};
   void handleSequence(const char *seq);
   void signal(const __FlashStringHelper *seq);
+  int getAmbientLightRaw();
+  int getAmbientLight(int stopMs);
 private:
   static void cmdLedHandleColor(const char* line);
   static void cmdLedSetBrg(const char* line);
