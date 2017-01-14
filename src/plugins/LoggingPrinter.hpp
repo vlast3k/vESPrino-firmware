@@ -1,6 +1,7 @@
 #ifndef LoggingPrinterH
 #define LoggingPrinterH
 #include <Stream.h>
+#include <Print.h>
 #include <Streaming.h>
 #include "interfaces/Plugin.hpp"
 #include "plugins/PropertyList.hpp"

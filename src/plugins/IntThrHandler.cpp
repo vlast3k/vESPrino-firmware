@@ -45,6 +45,7 @@ void addCommonValues(LinkedList<Pair *> *data) {
   data->add(new Pair("CHIPID", chipId));
   data->add(new Pair("RUNTIME", String((millis() + rtcMemStore.getGenData(GEN_MSCOUNTER)) / 1000)));
   data->add(new Pair("GMTTIME", String(TimerManager.getGMTime())));
+  data->add(new Pair("RSSI", String(WiFi.RSSI())));
 }
 
 void conditionalSend(bool forceSend) {

@@ -41,6 +41,7 @@ public:
   static void cbOnSaveConfigCallback();
   void stopAutoWifiConfig();
   static void startAutoWifiConfig(const char *ch);
+  void storeStaticWifiInRTC();
 
 private:
   WiFiManager *wifiManager = NULL;

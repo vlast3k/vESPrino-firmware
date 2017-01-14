@@ -6,6 +6,11 @@
 #define GEN_LASTTIME 1
 #define GEN_SENSOR_STATE 2
 #define GEN_I2C_BUS 3
+#define GEN_WIFI_STATIC_IP 4
+#define GEN_WIFI_GW 5
+#define GEN_WIFI_SUB 6
+#define GEN_WIFI_DNS1 7
+#define GEN_WIFI_DNS2 8
 
 #define RTC_SENSOR_APDS9960 0
 #define RTC_SENSOR_BH1750   1
@@ -23,13 +28,18 @@ struct RTCData {
     genData[GEN_SENSOR_STATE] = 0xFFFF;
     genData[GEN_I2C_BUS] = 0;
     genData[GEN_LASTTIME] = 0;
+    genData[GEN_WIFI_STATIC_IP] = 0;
+    genData[GEN_WIFI_GW] = 0;
+    genData[GEN_WIFI_SUB] = 0;
+    genData[GEN_WIFI_DNS1] = 0;
+    genData[GEN_WIFI_DNS2] = 0;
     lastDweetCreated[0] = 0;
   }
   uint32_t crc32;
   uint32_t interations = 0;
   uint32_t millisStartIteration;
   uint32_t inDeepSleep = 0;
-  uint32_t genData[5];
+  uint32_t genData[10];
   RunningAverageSt avg1;
   uint8_t padding[3];
   char lastDweetCreated[30];

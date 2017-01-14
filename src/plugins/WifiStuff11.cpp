@@ -46,7 +46,11 @@ void WifiStuffClass::handleWifi() {
     LOGGER << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
     neopixel.signal(LED_WIFI_FOUND);
     stopAutoWifiConfig();
-    if (!PowerManager.isWokeFromDeepSleep()) menuHandler.scheduleCommand("wss_start");
+    if (!PowerManager.isWokeFromDeepSleep()) {
+      menuHandler.scheduleCommand("wss_start");
+    //  storeStaticWifiInRTC();
+    }
+
     //fireEvent("wifiConnected");
 
     // handleCommandVESPrino("vecmd led_mblue");
@@ -271,6 +275,7 @@ void WifiStuffClass::wifiConnectMulti() {
   //LOGGER << "Wifi state 2: " << WiFi.status()<< endl;
   WiFi.mode(WIFI_STA);
   PERF("WIFI 2")
+  //if (PowerManager.is)
   if (staticIp != 0) {
     WiFi.config(staticIp, gateway, subnet, dns1, dns2);
   }
