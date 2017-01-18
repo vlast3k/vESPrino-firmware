@@ -23,7 +23,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 typedef void (*CallBackType)();
-
+//typedef std::function<void(void)> TTimerHandlerFunction;
 class Timer{
 private:
 	void Create(unsigned long int ms, CallBackType callback, bool isSingle);

@@ -24,13 +24,14 @@
 #include "plugins/WifiStuff.hpp"
 extern WifiStuffClass WifiStuff;
 #include "plugins/TimerManager.hpp"
+#include "plugins/DestinationManager.hpp"
 extern TimerManagerClass TimerManager;
 
 //#include <wiring_private.h>
 using namespace std;
 
 extern TimerManagerClass TimerManager;
-
+extern DestinationManagerClass DestinationManager;
 //  Timer *tmrStopLED;
 
 
@@ -212,12 +213,13 @@ void setup() {
   PERF("Setup a")
   PropertyList.begin(&menuHandler);
   PERF("Setup b")
-  PropertyList.reportProperties();
   //heap("1");
   LOGGER.init();
   PERF("Setup c")
   rtcMemStore.init();
   PERF("Setup d")
+  PropertyList.reportProperties();
+  DestinationManager.onIterationStart();
   //heap("8");
   PowerManager.setupInt(&menuHandler);
   //heap("9");
@@ -245,7 +247,9 @@ void setup() {
   PERF("Setup 3")
 
   //heap("2");
-  WifiStuff.wifiConnectMulti();
+  if (DestinationManager.getWillSendThisIteration()) {
+    WifiStuff.wifiConnectMulti();
+  }
   yield();
   PERF("Setup 4")
 
@@ -361,10 +365,10 @@ void setup() {
   //heap("dd");
   PERF("Setup 10")
 
-  yield();
+  //yield();
 
-  setup_IntThrHandler(&menuHandler);
-  PERF("Setup 11")
+  //setup_IntThrHandler(&menuHandler);
+  //PERF("Setup 11")
 
   initDecimalSeparator();
   PERF("Setup 12")
@@ -389,7 +393,7 @@ void loop() {
   if (SKIP_LOOP) {delay(100); return;}
 
   loopPlugins();
-  loop_IntThrHandler();
+  //loop_IntThrHandler();
   menuHandler.loop();
   PowerManager.loopPowerManager();
   if (!PowerManager.isWokeFromDeepSleep() && !checkedFUPD) {

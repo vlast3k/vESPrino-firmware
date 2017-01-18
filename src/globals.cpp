@@ -33,6 +33,7 @@
 #include "plugins/GPIO.hpp"
 #include "plugins/ServoV.hpp"
 #include "plugins/Annemometer.hpp"
+#include "plugins/DestinationManager.hpp"
 #include "destinations/BlynkDest.hpp"
 #include "sensors/DS18B20Sensor.hpp"
 #include "plugins/LoggingPrinter.hpp"
@@ -89,3 +90,4 @@ APDS9960Sensor _APDS9960Sensor;
 ServoV _ServoV;
 AnnemometerClass annemometer;
 BlynkDest blynkDest;
+DestinationManagerClass DestinationManager;

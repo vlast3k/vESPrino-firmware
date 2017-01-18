@@ -146,6 +146,9 @@ void PropertyListClass::putProperty(const char *key, const char *value) {
     if (!line.startsWith(_key)) out.println(line);
   }
   if (value[0]) out << key << "=" << value << endl;
+  String skey = key;
+  String sval = value;
+  reportProperty(skey, sval);
 
   // LOGGER << "Put Property set: " << (millis() - st) << endl;
   // LOGGER.flush();

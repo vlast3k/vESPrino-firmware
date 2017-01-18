@@ -161,7 +161,8 @@ void MenuHandler::handleCommand(const char *line) {
     // LOGGER << m->cmd << endl;
     if ( (m->cmdExactMatch && !strcmp(line, cmd)) ||
         (!m->cmdExactMatch &&  strstr(line, cmd) == line) ) {
-          m->handler(line);
+          if (m->handler) m->handler(line);
+          else m->fhandler(line);
           return;
     }
   }

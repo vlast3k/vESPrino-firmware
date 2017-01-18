@@ -4,18 +4,22 @@
 #define MenuHandler_h
 #include <Arduino.h>
 #include <LinkedList.h>
-
-
+#include <functional>
 
 typedef void (*MenuHandlerFunction)(const char *line);
+typedef std::function<void(const char *line)> THandlerFunction;
 class MenuEntry {
   public:
     MenuEntry(const __FlashStringHelper *_cmd, bool _cmdExactMatch, MenuHandlerFunction _handler, const __FlashStringHelper *_description) :
       cmd(_cmd), cmdExactMatch(_cmdExactMatch), handler(_handler), description(_description) {};
 
+    MenuEntry(const __FlashStringHelper *_cmd, bool _cmdExactMatch, THandlerFunction _handler, const __FlashStringHelper *_description) :
+      cmd(_cmd), cmdExactMatch(_cmdExactMatch), fhandler(_handler), description(_description) {};
+
     const __FlashStringHelper *cmd;
     bool cmdExactMatch;
-    MenuHandlerFunction handler;
+    MenuHandlerFunction handler = NULL;
+    THandlerFunction fhandler = NULL;
     const __FlashStringHelper *description;
 };
 

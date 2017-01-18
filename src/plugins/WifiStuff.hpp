@@ -50,7 +50,7 @@ private:
   uint32_t lostWifiConnection = 0;
   IPAddress ip = WiFi.localIP();
   wl_status_t wifiState = WL_NO_SHIELD;
-  bool wifiAlreadyWaited = false;
+  bool wifiAlreadyWaited = true;
   IPAddress staticIp, gateway, subnet, dns1, dns2;
   String ssid, pass;
 
