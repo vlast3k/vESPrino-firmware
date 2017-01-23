@@ -67,10 +67,11 @@ NeopixelVE neopixel;
 LoggingPrinter LOGGER;
 
 CO2Sensor co2Sensor;
+SI7021Sensor si7021Sensor;
+#ifndef HARDCODED_SENSORS
 CustomHTTPDest customHTTPDest;
 SerialDumpDest serialDumpDest;
 TestSensor testSensor;
-SI7021Sensor si7021Sensor;
 BME280Sensor bme280Sensor;
 BMP085Sensor bmp085Sensor;
 PM2005Sensor pm2005Sensor;
@@ -90,4 +91,5 @@ APDS9960Sensor _APDS9960Sensor;
 ServoV _ServoV;
 AnnemometerClass annemometer;
 BlynkDest blynkDest;
+#endif
 DestinationManagerClass DestinationManager;

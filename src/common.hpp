@@ -48,6 +48,8 @@ extern "C" {
 #include "plugins/LoggingPrinter.hpp"
 
 #define BUILD_NUM "20170122"
+//#define HARDCODED_SENSORS "CM110x,SI7021,"
+
 
 //#define SERIAL_PORT LOGGER
 #define EE_WIFI_SSID F("wifi.ssid")

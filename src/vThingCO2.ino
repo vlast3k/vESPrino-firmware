@@ -25,7 +25,9 @@
 extern WifiStuffClass WifiStuff;
 #include "plugins/TimerManager.hpp"
 #include "plugins/DestinationManager.hpp"
+
 extern TimerManagerClass TimerManager;
+extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 
 //#include <wiring_private.h>
 using namespace std;
@@ -33,7 +35,6 @@ using namespace std;
 extern TimerManagerClass TimerManager;
 extern DestinationManagerClass DestinationManager;
 //  Timer *tmrStopLED;
-
 
 //NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
 
@@ -102,7 +103,11 @@ void setupPlugins(MenuHandler *handler) {
   }
 
   if (DEBUG) LOGGER << F("\n--- Setup SENSORS ---\n");
+  #ifdef HARDCODED_SENSORS
+  storedSensors = HARDCODED_SENSORS;
+  #else
   storedSensors = PropertyList.readProperty(PROP_SENSORS);
+  #endif
   String foundSensors = "";
   for (int i=0; i < sensors.size(); i++) {
     String name = sensors.get(i)->getName();
@@ -122,9 +127,16 @@ void setupPlugins(MenuHandler *handler) {
     LOGGER.flush();
     LOGGER << F("if the device configuration is changed, trigger a Factory Reset to update sensors\n");
     LOGGER.flush();
+    #ifdef HARDCODED_SENSORS
+    neopixel.cmdLedHandleColorInst(F("ledcolor seq95r"));
+    #endif
   } else if (storedSensors.length() == 0) {
     if (!foundSensors.length()) foundSensors = "none";
     PropertyList.putProperty(PROP_SENSORS, foundSensors.c_str());
+  } else {
+    #ifdef HARDCODED_SENSORS
+    neopixel.cmdLedHandleColorInst(F("ledcolor seq95g"));
+    #endif
   }
 
   if (DEBUG) LOGGER << F("\n--- Setup DESTINATIONS ---\n");
@@ -206,7 +218,6 @@ void fireEvent(const char *name) {
   menuHandler.scheduleCommandProperty(s.c_str());
 }
 
-extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 void setup() {
   Serial.begin(9600);
   if (DEBUG) heap("Heap at start");
@@ -355,6 +366,9 @@ void setup() {
   setupPlugins(&menuHandler);
   PERF("Setup 9")
 
+  #ifdef HARDCODED_SENSORS
+  //delay(100000000L);
+  #endif
   //heap("15");
 
   //SAP_HCP_IOT_Plugin::registerCommands(&menuHandler);

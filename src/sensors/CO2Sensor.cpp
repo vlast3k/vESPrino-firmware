@@ -123,11 +123,11 @@ void CO2Sensor::onCo2Status(CubicStatus status) {
     menuHandler.scheduleCommand("ledcolor blue");
     tmrStopLED->Stop();
   } else if (status == CB_WARMUP) {
-    menuHandler.scheduleCommand("ledcolor yellow");
+    //menuHandler.scheduleCommand("ledcolor yellow");
   } else if (status == CB_STARTED) {
     if (!PropertyList.readBoolProperty(PROP_CUBIC_CO2_POWERSAFE)) {
-      menuHandler.scheduleCommand("ledcolor green");
-      tmrStopLED->Start();
+      //menuHandler.scheduleCommand("ledcolor green");
+      //tmrStopLED->Start();
     }
   }
 }

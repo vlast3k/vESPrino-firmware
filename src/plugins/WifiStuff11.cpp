@@ -31,7 +31,9 @@ void WifiStuffClass::handleWifi() {
 
   if (wifiManager) wifiManager->loopConfigPortal();
   if (WiFi.status() == WL_NO_SSID_AVAIL && wifiManager == NULL && PowerManager.isWokeFromDeepSleep() == false) {
+    #ifndef HARDCODED_SENSORS
     startAutoWifiConfig("");
+    #endif
     //wifiState = WiFi.status();
     //Serial << "------State changed to: " << WiFi.status() << endl;
   }
@@ -269,7 +271,9 @@ void WifiStuffClass::wifiConnectMulti() {
 
   } else {
     wifiAlreadyWaited = true;
+    #ifndef HARDCODED_SENSORS
     if (!PowerManager.isWokeFromDeepSleep()) menuHandler.scheduleCommand(F("autoconfig"));
+    #endif
   }
 }
 
