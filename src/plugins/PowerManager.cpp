@@ -79,11 +79,11 @@ void PowerManagerClass::onNop(const char *line) {
 void PowerManagerClass::onNopInst(const char *line) {
   int t = timeoutIntervalS;
   if (strchr(line, ' '))  t = atoi(strchr(line, ' ') + 1);
-  if (DEBUG) LOGGER << F("PowerManager timeout: ") << t << endl;
+  //if (DEBUG) LOGGER << F("PowerManager timeout: ") << t << endl;
   timeoutIntervalS = t;
   if (t == 0) {
     timer->Stop();
-    if (DEBUG) LOGGER << F("PowerManager disabled")<< endl;
+    //if (DEBUG) LOGGER << F("PowerManager disabled")<< endl;
   } else {
     timer->setInterval(1000L*t);
     timer->Start();

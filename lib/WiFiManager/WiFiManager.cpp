@@ -80,10 +80,10 @@ void WiFiManager::setupConfigPortal() {
   DEBUG_WM(F("Configuring access point... "));
   DEBUG_WM(_apName);
   if (_apPassword != NULL) {
-    if (strlen(_apPassword) < 8 || strlen(_apPassword) > 63) {
+    if (strlen(_apPassword.c_str()) < 8 || strlen(_apPassword.c_str()) > 63) {
       // fail passphrase to short or long!
       DEBUG_WM(F("Invalid AccessPoint password. Ignoring"));
-      _apPassword = NULL;
+      _apPassword = "";
     }
     DEBUG_WM(_apPassword);
   }
@@ -95,9 +95,9 @@ void WiFiManager::setupConfigPortal() {
   }
 
   if (_apPassword != NULL) {
-    WiFi.softAP(_apName, _apPassword);//password option
+    WiFi.softAP(_apName.c_str(), _apPassword.c_str());//password option
   } else {
-    WiFi.softAP(_apName);
+    WiFi.softAP(_apName.c_str());
   }
 
   delay(500); // Without delay I've seen the IP address blank
@@ -226,7 +226,7 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
 
 int WiFiManager::connectWifi(String ssid, String pass) {
   DEBUG_WM(F("Connecting as wifi client..."));
-
+  //Serial << "WifiManager: " << ssid << "," << pass << endl;
   // check if we've got static_ip settings, if we do, use those.
   if (_sta_static_ip) {
     DEBUG_WM(F("Custom STA IP/GW/Subnet"));

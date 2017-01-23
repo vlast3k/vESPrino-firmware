@@ -19,6 +19,7 @@
 #define Cwhite   RgbColor(255, 255, 255)
 #define Cblack   RgbColor(0)
 
+enum SignalType {SIGNAL_DEBUG, SIGNAL_FIRST};
 class NeopixelVE : public Plugin {
 public:
   NeopixelVE();
@@ -34,7 +35,7 @@ public:
   void cmdLedSetBrgInst(const __FlashStringHelper* s) {cmdLedSetBrgInst(String(s).c_str());};
   void cmdLedHandleModeInst(const __FlashStringHelper* s){cmdLedHandleModeInst(String(s).c_str());};
   void handleSequence(const char *seq);
-  void signal(const __FlashStringHelper *seq);
+  void signal(const __FlashStringHelper *seq, SignalType sig = SIGNAL_DEBUG);
   int getAmbientLightRaw();
   int getAmbientLight(int stopMs);
 private:

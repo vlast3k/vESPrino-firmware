@@ -1,5 +1,9 @@
 #include "plugins/NeopixelVE.hpp"
+#include "plugins/PowerManager.hpp"
+#include <Streaming.h>
 //#include "plugins/WifiStuff.hpp"
+
+extern PowerManagerClass PowerManager;
 
 RgbColor allColors[] = {Cred, Clila, Cmblue, Cgreen, Cyellow};
 extern NeopixelVE neopixel;
@@ -22,8 +26,12 @@ bool NeopixelVE::setup(MenuHandler *handler) {
  void NeopixelVE::cmdLedHandleColor(const char* line) {neopixel.cmdLedHandleColorInst(line);}
  void NeopixelVE::cmdLedSetBrg(const char* line) {neopixel.cmdLedSetBrgInst(line);}
  void NeopixelVE::cmdLedHandleMode(const char* line) {neopixel.cmdLedHandleModeInst(line);}
- void NeopixelVE::signal(const __FlashStringHelper *seq) {
-   if (DEBUG) {
+ void NeopixelVE::signal(const __FlashStringHelper *seq, SignalType sig) {
+   //Serial << "signal: " << seq << endl;
+   bool show = false;
+   if (DEBUG) show = true;
+   if (!PowerManager.isWokeFromDeepSleep() && sig == SIGNAL_FIRST) show = true;
+   if (show) {
      String cmd = String("ledcolor seq") + seq;
      cmdLedHandleColorInst(cmd.c_str());
    }
@@ -45,6 +53,7 @@ bool NeopixelVE::setup(MenuHandler *handler) {
        case 'w': c = Cwhite; break;
        case 'l': c = Clila; break;
        case 'c': c = Ccyan; break;
+       case 'm': c = Cmblue; break;
        case 'd': c = oldColor;break;// Serial << "CurrentColor: " << c << endl; break;
        case 'n':
        default:  c = Cblack; break;
@@ -62,7 +71,7 @@ bool NeopixelVE::setup(MenuHandler *handler) {
   static char color[100] = "";
   if (line) line = strstr(line, " ");
   if (line) strncpy(color, line + 1, sizeof(color));
-  //LOGGER << "color: " << color;
+  //Serial << "cmdLedHandleColorInst: " << line << endl;
   //color.trim();
   if (strlen(color) == 0) return;
   if (strstr(color, "seq") == color) {
@@ -93,6 +102,7 @@ bool NeopixelVE::setup(MenuHandler *handler) {
 }
 
 void NeopixelVE::cmdLedSetBrgInst(const char *line) {
+  //Serial << "Handle brighjt: " << line << endl;
   line = strstr(line, " ");
   if (!line) return;
   ledBrg = ((float)atoi(line + 1))/100;

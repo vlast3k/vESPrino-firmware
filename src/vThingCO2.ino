@@ -219,9 +219,11 @@ void setup() {
   rtcMemStore.init();
   PERF("Setup d")
   PropertyList.reportProperties();
+  PERF("Setup e")
+  PowerManager.setupInt(&menuHandler);
+  PERF("Setup f")
   DestinationManager.onIterationStart();
   //heap("8");
-  PowerManager.setupInt(&menuHandler);
   //heap("9");
   //heap("10");
   PERF("Setup 1")
