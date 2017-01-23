@@ -52,7 +52,7 @@ void MQTTDest::setupMqttListen() {
 }
 
 void MQTTDest::cmdMqttSetup(const char *p) {
-  char mqttServer[30], mqttPortS[6], mqttClient[20], mqttUser[45], mqttPass[15], mqttTopic[40];
+  char mqttServer[30], mqttPortS[6], mqttClient[20], mqttUser[45], mqttPass[45], mqttTopic[40];
   p = extractStringFromQuotes(p, mqttServer, sizeof(mqttServer));
   p = extractStringFromQuotes(p, mqttPortS,   sizeof(mqttPortS));
   p = extractStringFromQuotes(p, mqttClient, sizeof(mqttClient));
