@@ -47,7 +47,7 @@ extern "C" {
 #include <I2CHelper.hpp>
 #include "plugins/LoggingPrinter.hpp"
 
-#define BUILD_NUM "20170122"
+#define BUILD_NUM "20170124"
 //#define HARDCODED_SENSORS "CM110x,SI7021,"
 
 

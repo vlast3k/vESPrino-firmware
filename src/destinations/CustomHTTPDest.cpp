@@ -86,7 +86,7 @@ bool CustomHTTPDest::process(LinkedList<Pair *> &data) {
   do {
     String s = PropertyList.getArrayProperty(F("custom_url_arr"), i++);
     if (!s.length()) break;
-    status = status && isOKResponse(invokeURL(s, data));
+    status = isOKResponse(invokeURL(s, data)) && status;
   } while(true);
 
   return (i==1) ? false : status;

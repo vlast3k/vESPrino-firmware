@@ -152,13 +152,15 @@ bool MQTTDest::process(LinkedList<Pair *> &data) {
   }
   //int i=0;
   String mqttTopic = F("vair");//  = PropertyList.readProperty(EE_MQTT_TOPIC);
+  bool status = true;
   for (int i=0; ; i++) {
     s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), i);
     if (!s.length()) break;
     replaceValuesInURL(data, s);
     if (hasPlaceholders(s)) {
-      mqttEnd(false);
-      return false;
+      status = false;
+      //mqttEnd(false);
+      continue;
     }
     if (s.indexOf(':') > -1) {
       mqttTopic = s.substring(0,s.indexOf(':'));
@@ -172,7 +174,7 @@ bool MQTTDest::process(LinkedList<Pair *> &data) {
     }
   }
   mqttEnd(true);
-  return true;
+  return status;
   //heap("");
 }
 

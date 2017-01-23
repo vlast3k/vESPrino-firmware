@@ -108,7 +108,8 @@ void WifiStuffClass::connectToWifi(const char *s1, const char *s2, const char *s
   PropertyList.putProperty(EE_WIFI_P2, s3);
   LOGGER << F("Connecting to: \"") << s1 << F("\", \"") << s2 << F("\"") << endl;
   WiFi.disconnect();
-  delay(500);
+  WiFi.mode(WIFI_OFF);
+  delay(2500);
   wifiConnectMulti();
   if (waitForWifi() != WL_CONNECTED) Serial << F("Failed to connect to WiFi") << endl;
 }
@@ -119,6 +120,8 @@ void WifiStuffClass::wifiScanNetworks(const char *ignore) {
   LOGGER.println(F("scan start"));
   WiFi.disconnect();
   delay(500);
+
+  WiFi.mode(WIFI_STA);
 
   // WiFi.scanNetworks will return the number of networks found
   int n = WiFi.scanNetworks();
