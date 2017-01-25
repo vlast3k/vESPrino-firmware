@@ -6,8 +6,6 @@
 #include "plugins/TimerManager.hpp"
 extern TimerManagerClass TimerManager;
 
-#define PROP_ITERATION_DURATION F("pwr.iterdur")
-#define PROP_TIMEOUT_INTERVAL F("pwr.timeoutint")
 uint8_t PowerManagerClass::IterationDurationS = 0;
 
 PowerManagerClass::PowerManagerClass() {

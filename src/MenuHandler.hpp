@@ -32,6 +32,8 @@ class MenuHandler {
     void listCommands();
     void scheduleCommand(const char *cmd);
     void handleCommand(const char *line);
+    void scheduleCommand(String &cmd) {scheduleCommand(cmd.c_str());}
+    void handleCommand(String &line) {handleCommand(line.c_str());}
     void scheduleCommand(const __FlashStringHelper *s) {scheduleCommand(String(s).c_str());};
     void handleCommand(const __FlashStringHelper *s) {handleCommand(String(s).c_str());};
     void scheduleCommandProperty(const char *prop);

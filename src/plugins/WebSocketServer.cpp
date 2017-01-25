@@ -1,3 +1,4 @@
+#include "defines.h"
 #include "plugins/WebSocketServer.hpp"
 #include "MenuHandler.hpp"
 #include <Timer.h>
@@ -85,10 +86,14 @@ void WebSocketServerClass::sendData(uint8_t ch) {
 void WebSocketServerClass::onWebSocketEventInst(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
 
       switch(type) {
-          case WStype_DISCONNECTED:
+          case WStype_DISCONNECTED: {
               LOGGER.printf(String(F("[%u] Disconnected!\n")).c_str(), num);
-              menuHandler.scheduleCommand("nop 300");
+              String timeoutInt = PropertyList.readProperty(PROP_TIMEOUT_INTERVAL);
+              String s = F("nop ");
+              s += timeoutInt;
+              menuHandler.scheduleCommand(s);
               break;
+            }
           case WStype_CONNECTED:
               {
                   IPAddress ip = server->remoteIP(num);
