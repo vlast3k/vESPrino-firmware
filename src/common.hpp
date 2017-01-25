@@ -165,7 +165,8 @@ void replaceDecimalSeparator(String &src);
 //#endif
 extern boolean hasSSD1306, hasSI7021, hasPN532, hasBMP180, hasBH1750, hasAPDS9960, hasPIR;
 extern bool shouldSend;
-extern boolean DEBUG;
+extern bool DEBUG;
+extern bool SLAVE;
 extern boolean SKIP_LOOP;
 extern MenuHandler menuHandler;
 extern String storedSensors;
