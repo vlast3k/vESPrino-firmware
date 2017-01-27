@@ -46,7 +46,9 @@ void WifiStuffClass::handleWifi() {
     #endif
     //neopixel.cmdLedHandleColorInst(F("ledcolor blue"));
     LOGGER << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
+    #ifndef HARDCODED_SENSORS
     neopixel.signal(LED_WIFI_FOUND, SIGNAL_FIRST);
+    #endif
     stopAutoWifiConfig();
     if (!SLAVE && !PowerManager.isWokeFromDeepSleep()) {
       menuHandler.scheduleCommand("wss_start");
@@ -86,7 +88,9 @@ wl_status_t WifiStuffClass::waitForWifi(uint16_t timeoutMs) {
   }
   LOGGER << endl;
   if (wifiAlreadyWaited) return WiFi.status();
+  #ifndef HARDCODED_SENSORS
   if (WiFi.status() != WL_CONNECTED) neopixel.signal(LED_WIFI_FAILED, SIGNAL_FIRST);
+  #endif
   wifiAlreadyWaited = true;
   return WiFi.status();
 }
@@ -256,6 +260,12 @@ void WifiStuffClass::wifiConnectMulti() {
   // String ssid = PropertyList.readProperty(EE_WIFI_SSID);
   // String pass = PropertyList.readProperty(EE_WIFI_P1);
   PERF("WIFI 4")
+  #ifdef HARDCODED_SENSORS
+  if (ssid.length() == 0) {
+    ssid = "vladiHome";
+    pass = "0888414447";
+  }
+  #endif
 
   if (ssid.length() && ssid.length() < 40 && pass.length() < 100) {
     //wifiMulti->addAP(ssid.c_str(), pass.c_str());

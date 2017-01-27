@@ -324,6 +324,7 @@ void setup() {
       uint16_t data = 0;
       data = data | (uint8_t)I2CHelper::i2cSDA;
       data = data | ((uint8_t)I2CHelper::i2cSCL << 8);
+      #ifndef HARDCODED_SENSORS
       if (storedI2c != data) {
         char val [10];
         sprintf(val, "0x%02X%02X", I2CHelper::i2cSCL, I2CHelper::i2cSDA);
@@ -331,6 +332,7 @@ void setup() {
         Serial.flush();
         PropertyList.putProperty(PROP_STORED_I2C, val);
       }
+      #endif
 
     }
   }

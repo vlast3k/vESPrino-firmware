@@ -52,12 +52,16 @@ bool CO2Sensor::setup(MenuHandler *handler) {
   if (!cubicCo2.init(DEBUG, disabledSerialPorts)) {
     hasSensor = false;
     rtcMemStore.setSensorState(RTC_SENSOR_CUBICCO2, false);
+    #ifndef HARDCODED_SENSORS
     if (state != CUBIC_PRESENT) PropertyList.putProperty(PROP_NO_CUBIC_CO2, CUBIC_MISSING);
+    #endif
     return hasSensor;
   }
 
   if (state != CUBIC_PRESENT) {
+    #ifndef HARDCODED_SENSORS
     PropertyList.putProperty(PROP_NO_CUBIC_CO2, CUBIC_PRESENT);
+    #endif
   }
 //  cubicCo2.init();// return;
   hasSensor = true;
