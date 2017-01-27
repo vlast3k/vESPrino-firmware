@@ -24,6 +24,7 @@ CubicGasSensors::CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, Strea
 //   return false;
 //
 // }
+#ifdef ESP8266
 bool CubicGasSensors::init(bool DEBUG, uint32_t disabledPorts) {
     for (int j=0; j<3; j++) {
         for (int i=0; i < 4; i++) {
@@ -51,6 +52,7 @@ bool CubicGasSensors::init(bool DEBUG, uint32_t disabledPorts) {
     (*LOGGER).flush();
     return false;
 }
+#endif
 
 int CubicGasSensors::getSWVersion(bool dbg) {
   DEBUG = dbg;
@@ -173,7 +175,7 @@ int CubicGasSensors::rawReadCM1106_CO2(bool dbg) {
 }
 
 
-int CubicGasSensors::getCO2(boolean dbg) {
+int CubicGasSensors::getCO2(bool dbg) {
   DEBUG = dbg;
   //(*LOGGER) << "11111\n";
   if (checkForReset()) return -1;

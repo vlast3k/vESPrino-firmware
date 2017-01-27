@@ -17,7 +17,8 @@ public:
   void cmdStartInst(const char *line);
   void onProperty(String &key, String &value);
   void addCommonValues(LinkedList<Pair *> *data);
-  void conditionalSend(bool forceSend);
+  void addContextValues(LinkedList<Pair *> *values, const char *context);
+  void conditionalSend(bool forceSend, const char *context);
   static void onRawRead() ;
   static void cmdSendNow(const char* ignore);
   static void cmdSendNowCond(const char* ignore);

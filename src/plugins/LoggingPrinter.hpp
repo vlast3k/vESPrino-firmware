@@ -17,6 +17,9 @@ public:
     String logURL;
     int length = 0;
     bool logToWss = false;
+    bool slowLog = false;
+    LoggingPrinter();
+    void onProperty(String &key, String &value);
     void init();
     void sendData();
     void flushLog();

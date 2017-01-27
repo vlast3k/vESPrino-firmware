@@ -25,7 +25,7 @@ void DestinationManagerClass::onProperty(String &key, String &value) {
 bool DestinationManagerClass::setup(MenuHandler *handler) {
   tmrRawRead     = new Timer(0, DestinationManagerClass::onRawRead);
   handler->registerCommand(new MenuEntry(F("wsi"), CMD_BEGIN, &DestinationManagerClass::setSendInterval , F("")));
-  handler->registerCommand(new MenuEntry(F("sendNow"), CMD_EXACT, &DestinationManagerClass::cmdSendNow, F("Process destinatios and send")));
+  handler->registerCommand(new MenuEntry(F("sendNow"), CMD_BEGIN, &DestinationManagerClass::cmdSendNow, F("Process destinatios and send")));
   handler->registerCommand(new MenuEntry(F("sendNowCond"), CMD_EXACT, &DestinationManagerClass::cmdSendNowCond, F("Process destinatios and send")));
   tmrRawRead->Start();
   return false;
@@ -85,13 +85,32 @@ bool DestinationManagerClass::sendDataToDestinations(LinkedList<Pair *> *values)
   return res;
 }
 
-void DestinationManagerClass::conditionalSend(bool forceSend) {
+void DestinationManagerClass::addContextValues(LinkedList<Pair *> *values, const char *context) {
+  if (context == NULL) return;
+  int count = getListItemCount(context);
+
+  if ((count % 2) != 0) {
+    LOGGER << F("Bad Context:[") << context << F("]") << endl;
+    return;
+  }
+  char buf[50];
+  for (int i=0; i < count; i+=2) {
+    String key   = getListItem(context, buf, i);
+    String value = getListItem(context, buf, i+1);
+    key.trim();
+    value.trim();
+    values->add(new Pair(key, value));
+  }
+}
+
+void DestinationManagerClass::conditionalSend(bool forceSend, const char *context) {
   PERF("SEND 1")
   yield();
   forceSend = forceSend || getWillSendThisIteration();
   if (!forceSend) return;
   LinkedList<Pair *> values = LinkedList<Pair* >();
   addCommonValues(&values);
+  addContextValues(&values, strchr(context, ' '));
   readSensorValues(&values);
   PERF("SEND 2")
   yield();
@@ -119,12 +138,12 @@ void DestinationManagerClass::onRawRead() {
   //conditionalSend(false);
 }
 
-void DestinationManagerClass::cmdSendNow(const char* ignore) {
-  DestinationManager.conditionalSend(true);
+void DestinationManagerClass::cmdSendNow(const char* context) {
+  DestinationManager.conditionalSend(true, context);
 }
 
-void DestinationManagerClass::cmdSendNowCond(const char* ignore) {
-  DestinationManager.conditionalSend(false);
+void DestinationManagerClass::cmdSendNowCond(const char* context) {
+  DestinationManager.conditionalSend(false, context);
 }
 
 void DestinationManagerClass::setSendInterval(const char *line) {

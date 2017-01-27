@@ -10,6 +10,12 @@
 extern WifiStuffClass WifiStuff;
 
 extern WebSocketServerClass myWSS;
+#define PROP_SLOWLOG F("logger.slow")
+
+LoggingPrinter::LoggingPrinter() {
+  registerPlugin(this);
+}
+
 void LoggingPrinter::init() {
   logURL = PropertyList.readProperty(PROP_LOG_DEST);
   if (logURL.length() > 0) {
@@ -17,6 +23,12 @@ void LoggingPrinter::init() {
     Serial.flush();
     //waitForWifi();
   }
+}
+
+void LoggingPrinter::onProperty(String &key, String &value) {
+  if (key == PROP_SLOWLOG) slowLog = (value == "1");
+
+  //Serial << "key = " << key << " is " << PROP_DEBUG << " : " << (key == PROP_DEBUG) << endl;
 }
 
 void LoggingPrinter::sendData() {
@@ -64,6 +76,7 @@ void LoggingPrinter::myWrite(uint8_t chr) {
 size_t LoggingPrinter::write(const uint8_t *buffer, size_t size) {
 //  Serial.write('{');
   Serial.write(buffer, size);
+  if (slowLog) delay(50);
   //if (logToWss) myWSS.sendData(data, size);
   //Serial.write('}');
   myWrite(buffer, size);
@@ -73,6 +86,7 @@ size_t LoggingPrinter::write(uint8_t data) {
   //Serial.write('{');
   Serial.write(data);
   if (data == '\n') Serial.flush();
+  if (slowLog) delay(1);
   //if (logToWss) myWSS.sendData(data);
   //Serial.write('}');
   myWrite(data);

@@ -11,7 +11,10 @@
 #include <Stream.h>
 #include <EEPROM.h>
 #include <Arduino.h>
-#include <I2CHelper.hpp>
+
+#ifdef ESP8266
+ #include <I2CHelper.hpp>
+#endif
 
 
 
@@ -33,8 +36,10 @@ class CubicGasSensors
   // user-accessible "public" interface
   public:
     CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, Stream *_LOGGER, uint8_t _rx=100, uint8_t _tx=100 ) ;
+  #ifdef ESP8266
     bool init(bool DEBUG, uint32_t disabledPorts);
-    int getCO2(boolean dbg=false);
+  #endif
+    int getCO2(bool dbg=false);
     void printDebugInfo();
     int rawReadCM1106_CO2(bool dbg=false);
     int getSWVersion(bool dbg=false);
@@ -54,7 +59,11 @@ class CubicGasSensors
     CubicStatus currentStatus = CB_INIT;
     bool sentResetCmd = false;
     //uint8_t ports[4][2] ={{5,12},{12,5},{14,13},{13,14}};
+#ifdef ESP8266
     uint8_t ports[4][2] ={ {D7, D6}, {D6, D7}, {D5, D1}, {D1, D5}};
+#else
+    uint8_t ports[0][0];// ={ {D7, D6}, {D6, D7}, {D5, D1}, {D1, D5}};
+#endif
     uint8_t sensorType = CM1106;
 
     void setStatus(CubicStatus newStatus);

@@ -412,7 +412,8 @@ void loop() {
   //loop_IntThrHandler();
   menuHandler.loop();
   PowerManager.loopPowerManager();
-  if (!PowerManager.isWokeFromDeepSleep() && !checkedFUPD) {
+
+  if (!SLAVE && !PowerManager.isWokeFromDeepSleep() && !checkedFUPD) {
     checkedFUPD = true;
     menuHandler.scheduleCommand(F("fupd"));
   }

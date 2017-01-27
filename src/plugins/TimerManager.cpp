@@ -12,7 +12,7 @@
 extern WifiStuffClass WifiStuff;
 
 extern LoggingPrinter LOGGER;
-extern boolean DEBUG;
+extern bool DEBUG;
 wl_status_t waitForWifi(uint16_t timeoutMs);
 
 extern RTCMemStore rtcMemStore;

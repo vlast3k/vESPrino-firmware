@@ -27,6 +27,7 @@ void PowerManagerClass::cmdDeepSleepInst(const char *line) {
   }
   delay(1000);
 }
+
 void PowerManagerClass::onProperty(String &key, String &value) {
   if (key == PROP_ITERATION_DURATION) IterationDurationS = atol(value.c_str());
   else if (key == PROP_TIMEOUT_INTERVAL) timeoutIntervalS = atol(value.c_str());

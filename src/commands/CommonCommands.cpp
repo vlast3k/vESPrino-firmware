@@ -39,6 +39,10 @@ void espRestart(const char* ignore) {
   ESP.restart();
 }
 
+void CommonCommands::enableSlave(const char *ignore) {
+  SLAVE=true;
+}
+
 void CommonCommands::factoryReset(const char *ignore) {
   LOGGER << F("Doing Factory Reset, and restarting...") << endl;
   //LOGGER << "was in deep sleep: "<< rtcMemStore.wasInDeepSleep()<< endl;
@@ -118,4 +122,5 @@ void CommonCommands::registerCommands(MenuHandler *handler) {
   //handler->registerCommand(new MenuEntry(F("tms"), CMD_EXACT, cmdTestMemStore, F("")));
   //handler->registerCommand(new MenuEntry(F("sertest"), CMD_BEGIN, cmdSerTest, F("")));
   handler->registerCommand(new MenuEntry(F("oled"), CMD_BEGIN, oledHandleCommand, F("oled message")));
+  handler->registerCommand(new MenuEntry(F("slave"), CMD_BEGIN, &CommonCommands::enableSlave, F("slave")));
 }

@@ -15,9 +15,9 @@ public:
   int beginInt();
   void endInt();
   void begin(MenuHandler *handler);
-  void putProperty(const __FlashStringHelper *key, const char *value);
-  void putProperty(const __FlashStringHelper *key, const __FlashStringHelper *value);
-  void putProperty(const char *key, const char *value);
+  void putProperty(const __FlashStringHelper *key, const char *value, bool runtimeProp = false);
+  void putProperty(const __FlashStringHelper *key, const __FlashStringHelper *value, bool runtimeProp = false);
+  void putProperty(const char *key, const char *value, bool runtimeProp = false);
   char *readProperty(const __FlashStringHelper *key);
   char *readProperty(const char *key);
   char *readProperty(const String &key);

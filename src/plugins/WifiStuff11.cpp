@@ -30,7 +30,7 @@ void WifiStuffClass::handleWifi() {
   //LOGGER << "Wifi state hw: " << WiFi.status()<< endl;
 
   if (wifiManager) wifiManager->loopConfigPortal();
-  if (WiFi.status() == WL_NO_SSID_AVAIL && wifiManager == NULL && PowerManager.isWokeFromDeepSleep() == false) {
+  if (!SLAVE && WiFi.status() == WL_NO_SSID_AVAIL && wifiManager == NULL && PowerManager.isWokeFromDeepSleep() == false) {
     #ifndef HARDCODED_SENSORS
     startAutoWifiConfig("");
     #endif
@@ -48,7 +48,7 @@ void WifiStuffClass::handleWifi() {
     LOGGER << F("IP address: ") << WiFi.localIP() << F(" in ") << millis() << F(" ms") << endl << F("GOT IP") << endl;
     neopixel.signal(LED_WIFI_FOUND, SIGNAL_FIRST);
     stopAutoWifiConfig();
-    if (!PowerManager.isWokeFromDeepSleep()) {
+    if (!SLAVE && !PowerManager.isWokeFromDeepSleep()) {
       menuHandler.scheduleCommand("wss_start");
       storeStaticWifiInRTC();
     }
@@ -275,7 +275,7 @@ void WifiStuffClass::wifiConnectMulti() {
   } else {
     wifiAlreadyWaited = true;
     #ifndef HARDCODED_SENSORS
-    if (!PowerManager.isWokeFromDeepSleep()) menuHandler.scheduleCommand(F("autoconfig"));
+    if (!SLAVE && !PowerManager.isWokeFromDeepSleep()) menuHandler.scheduleCommand(F("autoconfig"));
     #endif
   }
 }

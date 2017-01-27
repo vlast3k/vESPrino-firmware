@@ -167,7 +167,7 @@ extern boolean hasSSD1306, hasSI7021, hasPN532, hasBMP180, hasBH1750, hasAPDS996
 extern bool shouldSend;
 extern bool DEBUG;
 extern bool SLAVE;
-extern boolean SKIP_LOOP;
+extern bool SKIP_LOOP;
 extern MenuHandler menuHandler;
 extern String storedSensors;
 extern Timer *tmrStopLED;

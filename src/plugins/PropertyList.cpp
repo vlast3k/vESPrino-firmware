@@ -29,15 +29,17 @@ void PropertyListClass::format_spiffs(const char *line) {
 }
 void PropertyListClass::prop_set(const char *line) {
   char key[50], value[200];
+  bool runtimeProp = strstr(line, "prop_setr") == line;
   line = extractStringFromQuotes(line, key, sizeof(key));
   line = extractStringFromQuotes(line, value, sizeof(value));
-  PropertyList.putProperty(key, value);
+  PropertyList.putProperty(key, value, runtimeProp);
 }
 
 void PropertyListClass::prop_jset(const char *line) {
   char key[50];
+  bool runtimeProp = strstr(line, "prop_jsetr") == line;
   line = extractStringFromQuotes(line, key, sizeof(key));
-  PropertyList.putProperty(key, line);
+  PropertyList.putProperty(key, line, runtimeProp);
 }
 
 bool PropertyListClass::assertInit() {
@@ -48,12 +50,12 @@ bool PropertyListClass::assertInit() {
   return initialized;
 }
 
-void PropertyListClass::putProperty(const __FlashStringHelper *key, const char *value) {
-  putProperty(String(key).c_str(), value);
+void PropertyListClass::putProperty(const __FlashStringHelper *key, const char *value, bool runtimeProp) {
+  putProperty(String(key).c_str(), value, runtimeProp);
 }
 
-void PropertyListClass::putProperty(const __FlashStringHelper *key, const __FlashStringHelper *value) {
-  putProperty(String(key).c_str(), String(value).c_str());
+void PropertyListClass::putProperty(const __FlashStringHelper *key, const __FlashStringHelper *value, bool runtimeProp) {
+  putProperty(String(key).c_str(), String(value).c_str(), runtimeProp);
 }
 
 char *PropertyListClass::readProperty(const __FlashStringHelper *key) {
@@ -124,8 +126,13 @@ void PropertyListClass::factoryReset() {
   endInt();
 }
 
-void PropertyListClass::putProperty(const char *key, const char *value) {
+void PropertyListClass::putProperty(const char *key, const char *value, bool runtimeProp) {
   // uint32_t st = millis();
+  String skey = key;
+  String sval = value;
+  reportProperty(skey, sval);
+  if (runtimeProp) return;
+
   if (!key[0]) {
     endInt();
   }
@@ -146,9 +153,6 @@ void PropertyListClass::putProperty(const char *key, const char *value) {
     if (!line.startsWith(_key)) out.println(line);
   }
   if (value[0]) out << key << "=" << value << endl;
-  String skey = key;
-  String sval = value;
-  reportProperty(skey, sval);
 
   // LOGGER << "Put Property set: " << (millis() - st) << endl;
   // LOGGER.flush();
