@@ -50,7 +50,7 @@ private:
   void trim(char *str);
   bool initialized = false;
   bool assertInit();
-  //char buffer[200];
+  static void getPropKey(String &line, String &key);
 
 };
 

@@ -87,7 +87,7 @@ void MenuHandler::cmdListN(const char *list) {
   char *delim;
   if (strstr(list, delimDash) == list) delim = delimDash;
   else delim = delimStar;
-  LOGGER << "delim = " << delim << " " << strlen(delim);
+  //LOGGER << "delim = " << delim << " " << strlen(delim);
   list = list + strlen(delim);
   char *x;
   while ((x = strstr(list, delim)) != NULL) {

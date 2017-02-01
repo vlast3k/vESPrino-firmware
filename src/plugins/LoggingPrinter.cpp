@@ -76,7 +76,7 @@ void LoggingPrinter::myWrite(uint8_t chr) {
 size_t LoggingPrinter::write(const uint8_t *buffer, size_t size) {
 //  Serial.write('{');
   Serial.write(buffer, size);
-  if (slowLog) delay(50);
+  if (slowLog) delay(100);
   //if (logToWss) myWSS.sendData(data, size);
   //Serial.write('}');
   myWrite(buffer, size);
@@ -86,7 +86,7 @@ size_t LoggingPrinter::write(uint8_t data) {
   //Serial.write('{');
   Serial.write(data);
   if (data == '\n') Serial.flush();
-  if (slowLog) delay(1);
+  if (slowLog) delay(2);
   //if (logToWss) myWSS.sendData(data);
   //Serial.write('}');
   myWrite(data);

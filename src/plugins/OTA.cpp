@@ -16,6 +16,7 @@ void doHttpUpdate(int mode, const char *url) {
     #elif defined(VTHING_STARTER)
       url = "http://anker-bg.com/vlast3k/vthing_starter/latest.bin";
     #elif defined(VTHING_VESPRINO)
+    //  http://anker-bg.com/vlast3k/vesprino/ard.bin
       url = "http://anker-bg.com/vlast3k/vesprino/latest.bin";
     #elif defined(VTHING_H801_LED)
       url = "http://anker-bg.com/vlast3k/h801/latest.bin";
@@ -89,7 +90,11 @@ void autoUpdateIfForced(const char *ignore) {
   String urlGen = String(F("http://anker-bg.com/vlast3k/vesprino/"));
   String chipid =  String(ESP.getChipId(), 16);
   chipid.toUpperCase();
+#ifdef HARDCODED_SENSORS
+  String urlChip = String(F("http://anker-bg.com/vlast3k/vesprino/hardcoded/"));
+#else
   String urlChip = String(F("http://anker-bg.com/vlast3k/vesprino/")) + chipid + String(F("/"));
+#endif
   String forcedUpdateGen  = getHTTPFile(urlGen + F("forced.txt"));
   String forcedUpdateChip = getHTTPFile(urlChip + F("forced.txt"));
   uint32_t fc = atol(forcedUpdateChip.c_str());

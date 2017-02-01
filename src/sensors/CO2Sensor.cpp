@@ -131,7 +131,7 @@ void CO2Sensor::onCo2Status(CubicStatus status) {
   } else if (status == CB_STARTED) {
     if (!PropertyList.readBoolProperty(PROP_CUBIC_CO2_POWERSAFE)) {
       //menuHandler.scheduleCommand("ledcolor green");
-      //tmrStopLED->Start();
+      tmrStopLED->Start();
     }
   }
 }

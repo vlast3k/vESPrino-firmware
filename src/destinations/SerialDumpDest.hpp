@@ -14,6 +14,7 @@ public:
   SerialDumpDest();
   bool setup(MenuHandler *handler);
   void loop() {};
+  void onProperty(String &key, String &value);
 
   bool process(LinkedList<Pair*> &data);
   static void toggle(const char *line);

@@ -8,10 +8,17 @@
 #include "plugins/PropertyList.hpp"
 #include "plugins/AT_FW_Plugin.hpp"
 
+
+#define PROP_SERIALDUMP F("serial.dump")
 SerialDumpDest::SerialDumpDest() {
   enabled = true;
   registerDestination(this);
 }
+
+void SerialDumpDest::onProperty(String &key, String &value) {
+  if (key == PROP_SERIALDUMP) enabled = (value == "1");
+}
+
 
 bool SerialDumpDest::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("serial_dump_toggle"), CMD_EXACT, &SerialDumpDest::toggle, F("serial_dump_toggle toggle serial dump output")));

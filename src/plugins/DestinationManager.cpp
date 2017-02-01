@@ -19,7 +19,10 @@ DestinationManagerClass::DestinationManagerClass() {
 }
 
 void DestinationManagerClass::onProperty(String &key, String &value) {
-  if (key == PROP_SND_INT) intSendValue = atol(value.c_str()) * 1000;
+  if (key == PROP_SND_INT) {
+    intSendValue = atol(value.c_str()) * 1000;
+  //  if (!intSendValue) tmrRawRead->Stop();
+  }
 }
 
 bool DestinationManagerClass::setup(MenuHandler *handler) {
@@ -27,7 +30,8 @@ bool DestinationManagerClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("wsi"), CMD_BEGIN, &DestinationManagerClass::setSendInterval , F("")));
   handler->registerCommand(new MenuEntry(F("sendNow"), CMD_BEGIN, &DestinationManagerClass::cmdSendNow, F("Process destinatios and send")));
   handler->registerCommand(new MenuEntry(F("sendNowCond"), CMD_EXACT, &DestinationManagerClass::cmdSendNowCond, F("Process destinatios and send")));
-  tmrRawRead->Start();
+
+  if (intSendValue) tmrRawRead->Start();
   return false;
 }
 
@@ -59,6 +63,7 @@ void DestinationManagerClass::onIterationStart() {
   if (rtcIt >= (intSendValue/1000) / PowerManagerClass::IterationDurationS) rtcIt = 0;
   rtcMemStore.setIterations(rtcIt);
 }
+
 void DestinationManagerClass::readSensorValues(LinkedList<Pair *> *values) {
   for (int i=0; i < sensors.size(); i++)  {
     yield();
@@ -123,8 +128,10 @@ void DestinationManagerClass::conditionalSend(bool forceSend, const char *contex
   for (int i=0; i < values.size(); i++)  delete  values.get(i);
 
   if (DEBUG) heap("");
-  tmrRawRead->setInterval(intSendValue);
-  tmrRawRead->Start();
+  if (intSendValue) {
+    tmrRawRead->setInterval(intSendValue);
+    tmrRawRead->Start();
+  }
   PERF("SEND 3")
   LOGGER.flushLog();
 }
@@ -151,7 +158,8 @@ void DestinationManagerClass::setSendInterval(const char *line) {
   if (strchr(line, ' ')) {
     interval = atoi(strchr(line, ' ') + 1);
   }
-  int iterations = std::max(1, interval / PowerManagerClass::IterationDurationS);
+  int iterations = 0;
+  if (interval) iterations = std::max(1, interval / PowerManagerClass::IterationDurationS);
 
   PropertyList.putProperty(PROP_SND_INT, String(iterations * PowerManagerClass::IterationDurationS).c_str());
   //PropertyList.putProperty(PROP_SND_ITER, String(iterations).c_str());

@@ -10,6 +10,7 @@ char *extractStringFromQuotes(const char* src, char *dest, int destSize) {
     return NULL;
   }
   char *p1, *p2;
+  *dest = 0;
   if (!(p1 = strchr(src, '\"'))) return 0;
   if (!(p2 = strchr(p1+1, '\"'))) return 0;
   int len = std::min(p2-p1, destSize);

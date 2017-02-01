@@ -14,7 +14,7 @@ PropertyListClass::PropertyListClass() {
 
 void PropertyListClass::setupPropList(MenuHandler *handler) {
 //  LOGGER <<"PropList, register commands\n";
-  handler->registerCommand(new MenuEntry(F("prop_list"), CMD_EXACT, &PropertyListClass::prop_list_cfg, F("prop_list")));
+  handler->registerCommand(new MenuEntry(F("prop_list"), CMD_BEGIN, &PropertyListClass::prop_list_cfg, F("prop_list")));
   handler->registerCommand(new MenuEntry(F("format_spiffs"), CMD_EXACT, &PropertyListClass::format_spiffs, F("format_spiffs")));
   handler->registerCommand(new MenuEntry(F("prop_set"), CMD_BEGIN, &PropertyListClass::prop_set, F("prop_set \"key\" \"value\"")));
   handler->registerCommand(new MenuEntry(F("prop_jset"), CMD_BEGIN, &PropertyListClass::prop_jset, F("prop_jset \"key\"value")));
@@ -132,6 +132,8 @@ void PropertyListClass::putProperty(const char *key, const char *value, bool run
   String sval = value;
   reportProperty(skey, sval);
   if (runtimeProp) return;
+  String currentValue = readProperty(key);
+  if (currentValue == value) return;
 
   if (!key[0]) {
     endInt();
@@ -277,20 +279,30 @@ void PropertyListClass::begin(MenuHandler *handler) {
   endInt();
 }
 
+void PropertyListClass::getPropKey(String &line, String &key) {
+  if (line.indexOf("=") > -1) key = line.substring(0, line.indexOf("=") - 1);
+}
+
 void PropertyListClass::prop_list_cfg(const char *line) {
+  const char *selectedProps = NULL;
+  if (strlen(line) > 10) selectedProps = line;
   PropertyList.beginInt();
   File in = SPIFFS.open(PropertyList.configFileName, "r");
-  LOGGER << F("---vESPrinoCFG_start---\n");
+  if (!selectedProps) LOGGER << F("---vESPrinoCFG_start---\n");
   LOGGER.flush();
   delay(1);
   while (in.available())  {
     String s = in.readStringUntil('\n');
     s.trim();
-    LOGGER << s << endl;
-    LOGGER.flush();
+    String key;
+    getPropKey(s, key);
+    if (!selectedProps || strstr(selectedProps, key.c_str()) > 0) {
+      LOGGER << s << endl;
+      LOGGER.flush();
+    }
     delay(1);
   }
-  LOGGER << F("---vESPrinoCFG_end---\n");
+  if (!selectedProps)  LOGGER << F("---vESPrinoCFG_end---\n");
   LOGGER.flush();
   delay(1);
   in.close();

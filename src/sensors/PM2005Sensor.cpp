@@ -16,16 +16,19 @@ void dump(uint8_t *r, int len) {
 }
 
 bool PM2005Sensor::setup(MenuHandler *handler) {
+  hasSensor = false;
   if (!rtcMemStore.hasSensor(RTC_SENSOR_PM2005)) {
-    hasSensor = false;
     return hasSensor;
   }
   handler->registerCommand(new MenuEntry(F("pm2005quiet"), CMD_BEGIN, &PM2005Sensor::onCmdQuiet, F("pm2005quiet 22:00,03:00,180 (start, end, tz offset in minutes)")));
   handler->registerCommand(new MenuEntry(F("pm2005int"), CMD_BEGIN, &PM2005Sensor::onCmdInterval, F("pm2005int 20,3600 (measure time in seconds - active, quiet (<300sec = dynamic mode)")));
   if (I2CHelper::i2cSDA > -1 && I2CHelper::checkI2CDevice(0x28)) {
     //LOGGER << F("Found PM2005 - Dust / Particle Sensor\n");
-    hasSensor = true;
-    checkMode();
+    int a,b,c,d;
+    if (intReadData(a,b,c,d)) {
+      hasSensor = true;
+      checkMode();
+    }
   } else{
     rtcMemStore.setSensorState(RTC_SENSOR_PM2005, false);
   }
@@ -34,7 +37,6 @@ bool PM2005Sensor::setup(MenuHandler *handler) {
 }
 
 void PM2005Sensor::checkMode(LinkedList<Pair *> *data) {
-  Wire.setClock(10000);
   int pm25, pm10, mode, status;
   if (!intReadData(pm25, pm10, status, mode)) return;
   String qs = PropertyList.readProperty(PROP_PM2005_QSTART);
@@ -145,6 +147,7 @@ void PM2005Sensor::sendCommand(uint8_t *toSend) {
 }
 
 bool PM2005Sensor::intReadData(int &pm25, int &pm10, int &status, int &mode) {
+  Wire.setClock(10000);
   if (!intBegin()) {
     if (DEBUG) LOGGER << F("\nFailed to connect to PM2005\n");
     LOGGER.flush();
