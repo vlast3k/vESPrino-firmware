@@ -140,6 +140,8 @@ void setupPlugins(MenuHandler *handler) {
     #endif
   }
 
+  LOGGER << F("\nFound Sensors: ") << foundSensors << endl << endl;
+
   if (DEBUG) LOGGER << F("\n--- Setup DESTINATIONS ---\n");
   for (int i=0; i < destinations.size(); i++) {
     if (DEBUG) LOGGER << destinations.get(i)->getName() << endl;
