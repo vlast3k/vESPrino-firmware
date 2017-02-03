@@ -83,10 +83,13 @@ bool DestinationManagerClass::sendDataToDestinations(LinkedList<Pair *> *values)
   yield();
   for (int i=0; i < destinations.size(); i++) {
     uint32_t x = millis();
-    res = destinations.get(i)->process(*values) && res;
+    bool xx =destinations.get(i)->process(*values);
+    //Serial << "dest result" << xx << endl;
+    res = xx && res;
     x = millis() - x;
     LOGGER << destinations.get(i)->getName() << " : " <<  x << F("ms") << endl;
   }
+  //Serial << "Returning ::: " << res << endl;
   return res;
 }
 
@@ -122,7 +125,10 @@ void DestinationManagerClass::conditionalSend(bool forceSend, const char *contex
   bool res = true;
   if (forceSend) res = sendDataToDestinations(&values);
   if (res) neopixel.signal(LED_SEND_OK);
-  else neopixel.signal(LED_SEND_FAILED);
+  else {
+    neopixel.signal(LED_SEND_FAILED);
+    if (WiFi.status() != WL_CONNECTED) neopixel.signal(F("70r"));
+  }
 
 
   for (int i=0; i < values.size(); i++)  delete  values.get(i);

@@ -89,7 +89,7 @@ bool CustomHTTPDest::process(LinkedList<Pair *> &data) {
     status = isOKResponse(invokeURL(s, data)) && status;
   } while(true);
 
-  return (i==1) ? false : status;
+  //return (i==1) ? false : status;
   return status;
 }
 

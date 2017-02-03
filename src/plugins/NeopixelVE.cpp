@@ -27,7 +27,7 @@ bool NeopixelVE::setup(MenuHandler *handler) {
  void NeopixelVE::cmdLedSetBrg(const char* line) {neopixel.cmdLedSetBrgInst(line);}
  void NeopixelVE::cmdLedHandleMode(const char* line) {neopixel.cmdLedHandleModeInst(line);}
  void NeopixelVE::signal(const __FlashStringHelper *seq, SignalType sig) {
-   //Serial << "signal: " << seq << endl;
+   if (DEBUG) Serial << "signal: " << seq << endl;
    bool show = false;
    if (DEBUG) show = true;
    if (!PowerManager.isWokeFromDeepSleep() && sig == SIGNAL_FIRST) show = true;
