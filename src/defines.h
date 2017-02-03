@@ -1,6 +1,6 @@
 #define PROP_ITERATION_DURATION F("pwr.iterdur")
 #define PROP_TIMEOUT_INTERVAL F("pwr.timeoutint")
-#define BUILD_NUM "20170131"
+#define BUILD_NUM "20170203"
 //#define HARDCODED_SENSORS "CM110x,SI7021,"
 
 

@@ -60,7 +60,7 @@ class CubicGasSensors
     bool sentResetCmd = false;
     //uint8_t ports[4][2] ={{5,12},{12,5},{14,13},{13,14}};
 #ifdef ESP8266
-    uint8_t ports[4][2] ={ {D7, D6}, {D6, D7}, {D5, D1}, {D1, D5}};
+    uint8_t ports[4][2] ={ {D6, D7},{D7, D6},  {D5, D1}, {D1, D5}};
 #else
     uint8_t ports[0][0];// ={ {D7, D6}, {D6, D7}, {D5, D1}, {D1, D5}};
 #endif

@@ -41,7 +41,7 @@ bool CO2Sensor::setup(MenuHandler *handler) {
   }
   pinMode(D8, OUTPUT);    //enable power via D8
   digitalWrite(D8, HIGH);
-  delay(1000);
+  delay(2000);
   //this is needed as if the LOGGER Port querries the port of the servo, then servo no longer wifiScanNetworks
   //maybe due to the timers...
   String servoPort = PropertyList.readProperty(PROP_SERVO_PORT);
