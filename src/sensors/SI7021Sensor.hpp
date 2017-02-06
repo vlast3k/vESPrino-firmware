@@ -16,10 +16,12 @@ public:
   }
   bool initSensor();
   void closeSensor();
+  void testHeat();
 private:
   //static void onCmdInit(const char *ignore);
   SI7021 *si7021 = NULL;
   float adj = 0;
+  double firstRead = 0;
 
 
 };

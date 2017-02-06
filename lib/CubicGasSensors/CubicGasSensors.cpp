@@ -27,7 +27,7 @@ CubicGasSensors::CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, Strea
 #ifdef ESP8266
 bool CubicGasSensors::init(bool DEBUG, uint32_t disabledPorts) {
     for (int j=0; j<3; j++) {
-        for (int i=0; i < 4; i++) {
+        for (int i=0; i < 6; i++) {
             rx = ports[i][0];
             tx = ports[i][1];
             if (I2CHelper::isBitSet(disabledPorts, rx) || I2CHelper::isBitSet(disabledPorts, tx)) continue;

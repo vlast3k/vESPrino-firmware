@@ -7,11 +7,26 @@
 #include <I2CHelper.hpp>
 
 SI7021Sensor::SI7021Sensor() {
+  // Wire.begin(D6, D7);
+  // si7021 = new SI7021();
+  // si7021->begin();
+  // firstRead = si7021->readTemp();
   registerSensor(this);
 }
 
+void SI7021Sensor::testHeat() {
+  Wire.begin(D6, D7);
+  si7021 = new SI7021();
+  si7021->begin();
+  firstRead = si7021->readTemp();
+  //for (int i=0; i<20; i++) {
+    Serial << millis() << ": " <<firstRead << endl;
+//    delay(100);
+//  }
+}
 bool SI7021Sensor::setup(MenuHandler *handler) {
   //handler->registerCommand(new MenuEntry(F("siInit"), CMD_EXACT, &SI7021Sensor::onCmdInit, F("")));
+  //Serial << "First Read is: " << firstRead <<endl;
   if (initSensor()) {
     String adjStr = PropertyList.readProperty(PROP_TEMP_ADJ);
     adj = atof(adjStr.c_str());
@@ -32,7 +47,9 @@ void SI7021Sensor::getData(LinkedList<Pair *> *data) {
   //LOGGER << "SI721 get Data" << endl;
   //delay(100);
    if (!initSensor()) return;
-   double temp = si7021->readTemp();
+   double temp;
+   if (millis() < 10000L) temp = firstRead;
+   else temp = si7021->readTemp();
    double adjTemp = temp + adj;
    String t1 = String(adjTemp);
    String t1r = String(temp);

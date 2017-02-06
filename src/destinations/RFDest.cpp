@@ -70,7 +70,9 @@ void RFDest::sendPing(int num) {
 }
 
 int RFDest::getGPIO() {
-  if (co2Sensor.hasSensor) return D1;
+//  return D8;
+  if (co2Sensor.hasSensor && I2CHelper::i2cSDA != D1 &&  I2CHelper::i2cSCL != D1) return D1;
+  else if (co2Sensor.hasSensor) return D8;
   else return D6;
 }
 bool RFDest::process(LinkedList<Pair *> &data) {
