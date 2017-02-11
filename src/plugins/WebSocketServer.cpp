@@ -18,9 +18,9 @@ WebSocketServerClass::WebSocketServerClass() {
 bool WebSocketServerClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("wss_start"), CMD_BEGIN, WebSocketServerClass::cmdStartServer, F("wss_start")));
   handler->registerCommand(new MenuEntry(F("wss_stop"), CMD_EXACT, WebSocketServerClass::cmdStopServer, F("wss_stop")));
-  if (!PowerManager.isWokeFromDeepSleep() && PropertyList.readBoolProperty(PROP_WSSERVER_STARTONBOOT)) {
-    menuHandler.scheduleCommand("wss_start");
-  }
+  // if (!PowerManager.isWokeFromDeepSleep()) {
+  //   menuHandler.scheduleCommand("wss_start");
+  // }
   return false;
 
 }

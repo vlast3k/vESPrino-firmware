@@ -53,6 +53,8 @@ private:
   bool wifiAlreadyWaited = true;
   IPAddress staticIp, gateway, subnet, dns1, dns2;
   String ssid, pass;
+  bool wssDisable = false;
+  bool autoCfgDisable = false;
 
 
 };

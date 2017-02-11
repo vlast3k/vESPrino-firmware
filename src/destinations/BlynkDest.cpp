@@ -58,20 +58,21 @@ Pair* BlynkDest::getPair(LinkedList<Pair *> &data, String &key) {
 
 bool BlynkDest::process(LinkedList<Pair *> &data) {
   if (!enabled) return true;
+  if (WifiStuff.waitForWifi() != WL_CONNECTED) return false;
   loop();
+  if (!calledConfig) return false;
   String cfg = PropertyList.readProperty(PROP_BLYNK_CFG);
   if (DEBUG)  LOGGER << F("[BLYNK] cfg: ") << cfg << endl;
   const char *str = cfg.c_str();
   char buf[10];
   int i = 0;
   int count = getListItemCount(str);
-
   if ((count % 2) != 0) {
     LOGGER << F("Bad Blynk configuration : ") << str << endl;
     return false;
   }
-
-  for (int i=0; i< 50 && !Blynk->connected(); i++) {
+  uint32_t startConnect = millis();
+  for (int i=0; i< 50 && !Blynk->connected() && (millis() - startConnect < 15000); i++) {
     delay(10);
     Blynk->run();
   }

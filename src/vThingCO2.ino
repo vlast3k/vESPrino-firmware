@@ -26,6 +26,11 @@ extern WifiStuffClass WifiStuff;
 #include "plugins/TimerManager.hpp"
 #include "plugins/DestinationManager.hpp"
 
+#include <ESP8266WiFi.h>
+extern "C" {
+#include <user_interface.h>
+}
+
 extern TimerManagerClass TimerManager;
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 
@@ -223,6 +228,8 @@ void fireEvent(const char *name) {
 
 void setup() {
   Serial.begin(9600);
+  // si7021Sensor.testHeat();
+  // delay(1000000L);
   if (DEBUG) heap("Heap at start");
   PERF("Setup a")
   PropertyList.begin(&menuHandler);
@@ -399,13 +406,13 @@ void setup() {
   LOGGER.flush();
   yield();
   PERF("Setup 13")
-
-  //if (DEBUG) fireEvent("setupEnd");
 }
 
 //int aa = 0;
 uint32_t wfStart = 0;
 bool checkedFUPD = false;
+
+
 void loop() {
   WifiStuff.handleWifi();
   yield();

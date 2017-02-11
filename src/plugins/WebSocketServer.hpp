@@ -9,7 +9,7 @@
 
 
 #define PROP_ESP_HOSTNAME F("hostname")
-#define PROP_WSSERVER_STARTONBOOT F("wss.autostart")
+
 
 class WebSocketServerClass : public Plugin {
 public:

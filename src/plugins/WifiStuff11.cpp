@@ -4,6 +4,8 @@
 #define PROP_WIFI_SUBNET F("wifi.subnet")
 #define PROP_WIFI_DNS1 F("wifi.dns1")
 #define PROP_WIFI_DNS2 F("wifi.dns2")
+#define PROP_WSSERVER_DISABLE F("wss.disable")
+#define PROP_AUTOCFG_DISABLE F("autocfg.disable")
 
 //enum VSP_WIFI_STATE  {VSP_WIFI_CONNECTING, VSP_WIFI_CONNECTED, VSP_WIFI_NOCONFIG, VSP_WIFI_FAILED};
 extern WifiStuffClass WifiStuff;
@@ -21,6 +23,8 @@ void WifiStuffClass::onProperty(String &key, String &value) {
   else if (key == PROP_WIFI_DNS2) dns2.fromString(value);
   else if (key == EE_WIFI_SSID) ssid = value;
   else if (key == EE_WIFI_P1) pass = value;
+  else if (key == PROP_WSSERVER_DISABLE) wssDisable = value;
+  else if (key == PROP_AUTOCFG_DISABLE) autoCfgDisable = value;
   //LOGGER << "onProp:" << key << ":" << value << endl;
 }
 void WifiStuffClass::handleWifi() {
@@ -30,7 +34,10 @@ void WifiStuffClass::handleWifi() {
   //LOGGER << "Wifi state hw: " << WiFi.status()<< endl;
 
   if (wifiManager) wifiManager->loopConfigPortal();
-  if (!SLAVE && WiFi.status() == WL_NO_SSID_AVAIL && wifiManager == NULL && PowerManager.isWokeFromDeepSleep() == false) {
+  if (!SLAVE && WiFi.status() == WL_NO_SSID_AVAIL
+       && wifiManager == NULL
+       && PowerManager.isWokeFromDeepSleep() == false
+       && !wssDisable) {
     #ifndef HARDCODED_SENSORS
     startAutoWifiConfig("");
     #endif
@@ -50,7 +57,7 @@ void WifiStuffClass::handleWifi() {
     neopixel.signal(LED_WIFI_FOUND, SIGNAL_FIRST);
     #endif
     stopAutoWifiConfig();
-    if (!SLAVE && !PowerManager.isWokeFromDeepSleep()) {
+    if (!SLAVE && !PowerManager.isWokeFromDeepSleep() && !wssDisable) {
       menuHandler.scheduleCommand("wss_start");
       storeStaticWifiInRTC();
     }
