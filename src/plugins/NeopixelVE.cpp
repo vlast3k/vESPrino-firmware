@@ -11,7 +11,9 @@ void registerPlugin(Plugin *plugin);
 extern boolean DEBUG;
 NeopixelVE::NeopixelVE() {
   registerPlugin(this);
+  lightOff = getAmbientLight(0);
 }
+
 bool NeopixelVE::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("ledcolor"), CMD_BEGIN, NeopixelVE::cmdLedHandleColor, F("ledcolor")));
   handler->registerCommand(new MenuEntry(F("ledbrg"), CMD_BEGIN, NeopixelVE::cmdLedSetBrg, F("ledbrg")));
@@ -37,13 +39,28 @@ bool NeopixelVE::setup(MenuHandler *handler) {
    }
  }
 
+ float NeopixelVE::getAutoBrg() {
+   int factor;
+   if (lightOff < 400) factor = 30;
+   else if (lightOff < 800) factor = 20;
+   else factor = 15;
+   return (99.0F - ((float)lightOff / factor)) / 100;
+ }
+
  void NeopixelVE::handleSequence(const char *seq) {
    seq = seq + 3;
    RgbColor oldColor = currentColor;
    while (*seq) {
      RgbColor c;
      int b = atoi(seq);
-     if (b > 0) ledBrg = (float)b/100;
+     if (b > 10) {
+       ledBrg = (float)b/100;
+       isAutoBrg = false;
+     } else if (b == 1) {
+       ledBrg = getAutoBrg();
+       //Serial << "nw ledBrg = " << ledBrg << endl;
+       isAutoBrg = true;
+     }
      for (char ch = *seq; ch >= '0' && ch <= '9'; ch = *(++seq));
      switch (*seq) {
        case 'r': c = Cred; break;
@@ -60,7 +77,10 @@ bool NeopixelVE::setup(MenuHandler *handler) {
      }
      //old color - do not add blend, just reuse old color
 
-     if (*seq != 'd') c = RgbColor::LinearBlend(c, Cblack, ledBrg);
+     if (*seq != 'd') {
+       c = RgbColor::LinearBlend(c, Cblack, ledBrg);
+       lastColorChar = *seq;
+     }
      setLedColor(c);
      delay(333);
      seq ++;
@@ -76,29 +96,31 @@ bool NeopixelVE::setup(MenuHandler *handler) {
   if (strlen(color) == 0) return;
   if (strstr(color, "seq") == color) {
     neopixel.handleSequence(color);
-    return;
+  } else {
+    RgbColor c;
+         if (!strcmp(color, "red"))    c = Cred;
+    else if (!strcmp(color, "blue"))   c = Cblue;
+    else if (!strcmp(color, "green"))  c = Cgreen;
+    else if (!strcmp(color, "yellow")) c = Cyellow;
+    else if (!strcmp(color, "orange")) c = Corange;
+    else if (!strcmp(color, "white"))  c = Cwhite;
+    else if (!strcmp(color, "black"))  c = Cblack;
+    else if (!strcmp(color, "pink"))   c = Cpink;
+    else if (!strcmp(color, "lila"))   c = Clila;
+    else if (!strcmp(color, "violet")) c = Cviolet;
+    else if (!strcmp(color, "mblue"))  c = Cmblue;
+    else if (!strcmp(color, "cyan"))   c = Ccyan;
+    else if (!strcmp(color, "next"))   c = ledNextColor();
+    else {
+      uint32_t data = strtol(color, NULL, 0);
+      //LOGGER << " receveid int: " << data << endl;
+      c = RgbColor((data & 0xFF0000) >> 16, (data & 0x00FF00) >> 8, (data & 0x0000FF));
+    }
+    c = RgbColor::LinearBlend(c, Cblack, ledBrg);
+    setLedColor(c);
   }
-  RgbColor c;
-       if (!strcmp(color, "red"))    c = Cred;
-  else if (!strcmp(color, "blue"))   c = Cblue;
-  else if (!strcmp(color, "green"))  c = Cgreen;
-  else if (!strcmp(color, "yellow")) c = Cyellow;
-  else if (!strcmp(color, "orange")) c = Corange;
-  else if (!strcmp(color, "white"))  c = Cwhite;
-  else if (!strcmp(color, "black"))  c = Cblack;
-  else if (!strcmp(color, "pink"))   c = Cpink;
-  else if (!strcmp(color, "lila"))   c = Clila;
-  else if (!strcmp(color, "violet")) c = Cviolet;
-  else if (!strcmp(color, "mblue"))  c = Cmblue;
-  else if (!strcmp(color, "cyan"))   c = Ccyan;
-  else if (!strcmp(color, "next"))   c = ledNextColor();
-  else {
-    uint32_t data = strtol(color, NULL, 0);
-    //LOGGER << " receveid int: " << data << endl;
-    c = RgbColor((data & 0xFF0000) >> 16, (data & 0x00FF00) >> 8, (data & 0x0000FF));
-  }
-  c = RgbColor::LinearBlend(c, Cblack, ledBrg);
-  setLedColor(c);
+  delay(50);
+  lightOn = getAmbientLight(0);
 }
 
 void NeopixelVE::cmdLedSetBrgInst(const char *line) {
@@ -141,6 +163,22 @@ void NeopixelVE::cmdLedHandleModeInst(const char *line) {
 }
 
 void NeopixelVE::loop() {
+  if (millis() - ambLightRecheck > 1000) {
+    if (abs(lightOn - getAmbientLight(0)) > 60) {
+      //Serial << "old light on " << lightOn <<endl;
+      lightOn = getAmbientLight(0);
+      //Serial << "new light on " << lightOn <<endl;
+      lightOff = getAmbientLight(100);
+      //Serial << F("new AmbientLight = ") << lightOff << endl;
+      if (isAutoBrg) {
+        String cmd = F("ledcolor seq1");
+        cmd+= lastColorChar;
+        Serial << cmd << endl;
+        cmdLedHandleColor(cmd.c_str());
+      }
+    }
+    ambLightRecheck = millis();
+  }
   // if (ledMode == 1) {
   //   if (millis() - lastChange > 500) {
   //     handleDWCommand("led_next");
@@ -168,7 +206,7 @@ void NeopixelVE::setLedColor(const RgbColor &color) {
 
 int NeopixelVE::getAmbientLightRaw() {
   uint32_t sum=0;
-  int samples = 10;
+  int samples = 30;
   for (int i=0; i<samples; i++) sum += analogRead(A0);
   return sum/samples;
 }

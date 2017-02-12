@@ -14,9 +14,12 @@ public:
     return "LDR";
   }
   static void test(const char *line);
+  static void testCont(const char *line);
   //void toggleInst();
 
 private:
+  // int lightOff = 0;
+  // int lightOn = 0;
   //bool enabled = false;
 };
 #endif

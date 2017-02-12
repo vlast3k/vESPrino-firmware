@@ -38,6 +38,9 @@ public:
   void signal(const __FlashStringHelper *seq, SignalType sig = SIGNAL_DEBUG);
   int getAmbientLightRaw();
   int getAmbientLight(int stopMs);
+  int getLightOff() {
+    return lightOff;
+  }
   RgbColor getCurrentColor() {
     return currentColor;
   }
@@ -46,6 +49,7 @@ private:
   static void cmdLedSetBrg(const char* line);
   static void cmdLedHandleMode(const char* line);
   void setLedColor(const RgbColor &color);
+  float getAutoBrg();
   RgbColor ledNextColor();
   uint32_t lastChange = 0;
   float ledBrg = 0.7f;
@@ -53,7 +57,11 @@ private:
   RgbColor currentColor = Cblack;
   //const RgbColor allColors[] = {Cred, Cpink, Clila, Cviolet, Cblue, Cmblue, Ccyan, Cgreen, Cyellow, Corange};
 
-
+  int lightOff = 0;
+  int lightOn = 0;
+  uint32_t ambLightRecheck=0;
+  char lastColorChar = 'n';
+  bool isAutoBrg = false;
   //NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
 
 
