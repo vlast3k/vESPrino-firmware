@@ -38,6 +38,9 @@ public:
   void signal(const __FlashStringHelper *seq, SignalType sig = SIGNAL_DEBUG);
   int getAmbientLightRaw();
   int getAmbientLight(int stopMs);
+  RgbColor getCurrentColor() {
+    return currentColor;
+  }
 private:
   static void cmdLedHandleColor(const char* line);
   static void cmdLedSetBrg(const char* line);

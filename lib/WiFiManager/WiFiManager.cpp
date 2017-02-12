@@ -210,6 +210,7 @@ bool WiFiManager::loopConfigPortal() {
 void WiFiManager::stopConfigPortalAsync() {
   server.reset();
   dnsServer.reset();
+  WiFi.mode(WIFI_STA);
 }
 
 

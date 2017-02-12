@@ -42,7 +42,10 @@ void WebSocketServerClass::cmdStopServerInst() {
 
 
 void WebSocketServerClass::loop() {
-  if (server != NULL) server->loop();
+  if (server != NULL) {
+    server->loop();
+    if (millis() - lastActivity > 5L*60*1000) cmdStopServerInst();
+  }
 }
 
 void WebSocketServerClass::cmdStartServerInst() {
@@ -106,6 +109,7 @@ void WebSocketServerClass::onWebSocketEventInst(uint8_t num, WStype_t type, uint
               }
               break;
           case WStype_TEXT:
+              lastActivity = millis();
               //LOGGER.printf("[%u] get Text: %s\n", num, payload);
               menuHandler.scheduleCommand((char *)payload);
 

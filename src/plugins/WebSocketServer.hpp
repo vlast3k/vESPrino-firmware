@@ -30,6 +30,7 @@ public:
   void sendData(uint8_t * payload, size_t length);
   void sendData(uint8_t ch);
   WebSocketsServer *server;
+  uint32_t lastActivity = 0;
 
 };
 

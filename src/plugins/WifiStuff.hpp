@@ -9,6 +9,7 @@
 #include "plugins/NeopixelVE.hpp"
 //#include <ESP8266WiFiMulti.h>
 #include "WiFiManager.h"
+#include "plugins/NeopixelVE.hpp"
 
 #ifdef VESP_PING_SSL
 #include <WiFiClientSecure.h>
@@ -21,7 +22,7 @@ public:
   const char* getName() {
     return "WifiStuff";
   }
-  void loop(){};
+  void loop();
   void onProperty(String &key, String &value);
   void handleWifi();
   wl_status_t waitForWifi(uint16_t timeoutMs=10000);
@@ -43,6 +44,8 @@ public:
   static void startAutoWifiConfig(const char *ch);
   void storeStaticWifiInRTC();
   void loadStaticIPConfigFromRTC();
+
+  RgbColor colorAfterWifiAutoConfig;
 
 private:
   WiFiManager *wifiManager = NULL;
