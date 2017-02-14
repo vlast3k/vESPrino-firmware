@@ -39,6 +39,8 @@ bool CO2Sensor::setup(MenuHandler *handler) {
     rtcMemStore.setSensorState(RTC_SENSOR_CUBICCO2, false);
     return hasSensor;
   }
+  Serial << F("Turning on CM110x Sensor") << endl;
+  PERF("Turn on")
   pinMode(D8, OUTPUT);    //enable power via D8
   digitalWrite(D8, HIGH);
   delay(2000);
@@ -111,8 +113,8 @@ void CO2Sensor::onStopLED_static() {
 }
 
 void CO2Sensor::onStopLED() {
-  menuHandler.scheduleCommand("ledbrg 98");
-  menuHandler.scheduleCommand("ledcolor black");
+  //menuHandler.scheduleCommand("ledbrg 98");
+  menuHandler.scheduleCommand("ledcolor seqn");
     // strip->SetPixelColor(0, RgbColor(0, 0,0));
     // strip->Show();
 }

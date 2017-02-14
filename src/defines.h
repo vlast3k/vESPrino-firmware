@@ -33,8 +33,8 @@
 #define PROP_TEMP_ADJ F("temp.adjustment")
 
 
-#define LED_START         F("95lnln")
-#define LED_START_DS      F("95lnlnln")
+#define LED_START         F("1lnlnd")
+#define LED_START_DS      F("1lnlnlnd")
 #define LED_NO_I2C        F("rlrlrld")
 #define LED_LOST_I2C      F("ryryryd")
 #define LED_WIFI_SEARCH   F("cb")

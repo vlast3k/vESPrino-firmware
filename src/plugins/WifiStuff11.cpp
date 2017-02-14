@@ -37,7 +37,7 @@ void WifiStuffClass::handleWifi() {
   if (!SLAVE && WiFi.status() == WL_NO_SSID_AVAIL
        && wifiManager == NULL
        && PowerManager.isWokeFromDeepSleep() == false
-       && !wssDisable) {
+       && !autoCfgDisable) {
     #ifndef HARDCODED_SENSORS
     startAutoWifiConfig("");
     #endif
@@ -90,7 +90,7 @@ wl_status_t WifiStuffClass::waitForWifi(uint16_t timeoutMs) {
     if ((i%10) == 0)  {
       LOGGER << '.';
       if (wifiAlreadyWaited) return WiFi.status();
-      neopixel.signal(LED_WIFI_SEARCH);
+      //neopixel.signal(LED_WIFI_SEARCH);
     }
   }
   LOGGER << endl;
@@ -284,7 +284,7 @@ void WifiStuffClass::wifiConnectMulti() {
     //LOGGER << "Wifi state 3: " << WiFi.status()<< endl;
 
     WiFi.begin(x, y);
-    neopixel.signal(LED_WIFI_SEARCH);
+    //neopixel.signal(LED_WIFI_SEARCH);
     PERF("WIFI 5")
     //LOGGER << "Wifi state 4: " << WiFi.status()<< endl;
 
@@ -292,7 +292,7 @@ void WifiStuffClass::wifiConnectMulti() {
   } else {
     wifiAlreadyWaited = true;
     #ifndef HARDCODED_SENSORS
-    if (!SLAVE && !PowerManager.isWokeFromDeepSleep()) menuHandler.scheduleCommand(F("autoconfig"));
+    if (!SLAVE && !PowerManager.isWokeFromDeepSleep() && !autoCfgDisable) menuHandler.scheduleCommand(F("autoconfig"));
     #endif
   }
 }

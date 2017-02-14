@@ -15,6 +15,9 @@ NeopixelVE::NeopixelVE() {
 }
 
 bool NeopixelVE::setup(MenuHandler *handler) {
+  //lightOff = getAmbientLight(0);
+//  int xt = getAmbientLight(200);
+//  Serial << "Neopixel start, lightOff: " << lightOff << ", 200delay: " << xt << endl;
   handler->registerCommand(new MenuEntry(F("ledcolor"), CMD_BEGIN, NeopixelVE::cmdLedHandleColor, F("ledcolor")));
   handler->registerCommand(new MenuEntry(F("ledbrg"), CMD_BEGIN, NeopixelVE::cmdLedSetBrg, F("ledbrg")));
   handler->registerCommand(new MenuEntry(F("ledmode"), CMD_BEGIN, NeopixelVE::cmdLedHandleMode, F("ledmode")));
@@ -30,7 +33,7 @@ bool NeopixelVE::setup(MenuHandler *handler) {
  void NeopixelVE::cmdLedSetBrg(const char* line) {neopixel.cmdLedSetBrgInst(line);}
  void NeopixelVE::cmdLedHandleMode(const char* line) {neopixel.cmdLedHandleModeInst(line);}
  void NeopixelVE::signal(const __FlashStringHelper *seq, SignalType sig) {
-   if (DEBUG) Serial << "signal: " << seq << endl;
+   if (DEBUG) Serial << F("signal: ") << seq << endl;
    bool show = false;
    if (DEBUG) show = true;
    if (!PowerManager.isWokeFromDeepSleep() && sig == SIGNAL_FIRST) show = true;
@@ -42,6 +45,7 @@ bool NeopixelVE::setup(MenuHandler *handler) {
 
  float NeopixelVE::getAutoBrg() {
    int factor;
+   //Serial << "getAutobrg = lightOff =" << lightOff << endl;
    if (lightOff < 400) factor = 30;
    else if (lightOff < 800) factor = 20;
    else factor = 15;
@@ -59,9 +63,10 @@ bool NeopixelVE::setup(MenuHandler *handler) {
        isAutoBrg = false;
      } else if (b == 1) {
        ledBrg = getAutoBrg();
-       //Serial << "nw ledBrg = " << ledBrg << endl;
        isAutoBrg = true;
      }
+     //Serial << "nw ledBrg = " << ledBrg << endl;
+
      for (char ch = *seq; ch >= '0' && ch <= '9'; ch = *(++seq));
      switch (*seq) {
        case 'r': c = Cred; break;
@@ -166,7 +171,8 @@ void NeopixelVE::cmdLedHandleModeInst(const char *line) {
 
 void NeopixelVE::loop() {
   if (millis() - ambLightRecheck > 1000) {
-    if (abs(lightOn - getAmbientLight(0)) > 60) {
+//    Serial << "LightOn: " << lightOn << ", getAmbientLight(0): " << getAmbientLight(0) << endl;
+    if (abs(lightOn - getAmbientLight(0)) > 30) {
       //Serial << "old light on " << lightOn <<endl;
       lightOn = getAmbientLight(0);
       //Serial << "new light on " << lightOn <<endl;

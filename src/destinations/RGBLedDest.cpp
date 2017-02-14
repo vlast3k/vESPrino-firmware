@@ -82,7 +82,7 @@ void RGBLedDest::mapColor(int current, int minVal, int maxVal) {
   RgbColor c = RgbColor::LinearBlend(cStart, cEnd, place);
   c = RgbColor::LinearBlend(c, Cblack, neopixel.getAutoBrg());
   neopixel.setLedColor(c);
-  Serial << "curr: " << current << ", cs: " << colorStart << ", ce: " << colorEnd << ", place = " <<place << endl;
+  //Serial << "curr: " << current << ", cs: " << colorStart << ", ce: " << colorEnd << ", place = " <<place << endl;
 }
 // void NeopixelVE::testMapColor(const char *ignore) {
 //   for (int i=300; i < 3600; i+=50) {
@@ -94,7 +94,7 @@ void RGBLedDest::mapColor(int current, int minVal, int maxVal) {
 
 bool RGBLedDest::process(LinkedList<Pair *> &data) {
   //if (!enabled) return false;
-  LOGGER << F("RGBLedDest::process") << endl;
+  //LOGGER << F("RGBLedDest::process") << endl;
   if (!cfgKey.length()) return true;
   for (int i=0; i < data.size(); i++) {
     Pair *p = data.get(i);

@@ -101,6 +101,7 @@ void setupPlugins(MenuHandler *handler) {
   if (DEBUG) LOGGER << F("\n--- Setup PLUGINS ---\n");
   for (int i=0; i < plugins.size(); i++) {
     if (DEBUG) LOGGER << plugins.get(i)->getName() << endl;
+    PERF(plugins.get(i)->getName());
     if (plugins.get(i)->setup(handler)) LOGGER << F("Found: ") << plugins.get(i)->getName();
     WifiStuff.handleWifi();
     menuHandler.loop();
@@ -114,6 +115,7 @@ void setupPlugins(MenuHandler *handler) {
   storedSensors = PropertyList.readProperty(PROP_SENSORS);
   #endif
   String foundSensors = "";
+  PERF("SETUPSENSORS");
   for (int i=0; i < sensors.size(); i++) {
     String name = sensors.get(i)->getName();
     if (DEBUG) LOGGER << name << " : " << (storedSensors.indexOf(name) > -1) << endl;
@@ -123,9 +125,12 @@ void setupPlugins(MenuHandler *handler) {
         foundSensors += name + ",";
       }
     }
+    PERF(sensors.get(i)->getName());
     WifiStuff.handleWifi();
     menuHandler.loop();
     delay(1);
+    PERF("afterwifi");
+
   }
   if (storedSensors.length() && storedSensors != foundSensors) {
     LOGGER << F("Expected Sensors: ") << storedSensors << F(" found: ") << foundSensors << endl;
@@ -146,15 +151,18 @@ void setupPlugins(MenuHandler *handler) {
   }
 
   LOGGER << F("\nFound Sensors: ") << foundSensors << endl << endl;
-
+  PERF("DESTINATIONS")
   if (DEBUG) LOGGER << F("\n--- Setup DESTINATIONS ---\n");
   for (int i=0; i < destinations.size(); i++) {
     if (DEBUG) LOGGER << destinations.get(i)->getName() << endl;
     if (destinations.get(i)->setup(handler)) LOGGER << F("Found: ") << destinations.get(i)->getName();
     LOGGER.flush();
+    PERF("DESTINATIONS before wifi")
+
     WifiStuff.handleWifi();
     menuHandler.loop();
     delay(1);
+    PERF("DESTINATIONS after wifi")
   }
 }
 
@@ -258,13 +266,13 @@ void setup() {
 
   //Serial << "is woke from ds: " << PowerManager.isWokeFromDeepSleep() << endl;
   if (PowerManager.isWokeFromDeepSleep() == false) {
-    neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
-    neopixel.cmdLedHandleColorInst(F("ledcolor lila"));
+    //neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
+    neopixel.cmdLedHandleColorInst(F("ledcolor seq1l"));
     neopixel.signal(LED_START);
     //activeWait();
   } else {
-    neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
-    neopixel.cmdLedHandleColorInst(F("ledcolor black"));
+    //neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
+    neopixel.cmdLedHandleColorInst(F("ledcolor seqn"));
     neopixel.signal(LED_START_DS);
   }
   PERF("Setup 3")
@@ -410,7 +418,7 @@ void setup() {
 
 //int aa = 0;
 uint32_t wfStart = 0;
-bool checkedFUPD = false;
+//bool checkedFUPD = false;
 
 
 void loop() {
@@ -425,10 +433,10 @@ void loop() {
   menuHandler.loop();
   PowerManager.loopPowerManager();
 
-  if (!SLAVE && !PowerManager.isWokeFromDeepSleep() && !checkedFUPD) {
-    checkedFUPD = true;
-    menuHandler.scheduleCommand(F("fupd"));
-  }
+  // if (!SLAVE && !PowerManager.isWokeFromDeepSleep() && !checkedFUPD) {
+  //   checkedFUPD = true;
+  //   menuHandler.scheduleCommand(F("fupd"));
+  // }
   //delay(1000);
 
 }
