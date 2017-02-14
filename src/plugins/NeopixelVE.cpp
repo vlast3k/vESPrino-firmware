@@ -18,6 +18,7 @@ bool NeopixelVE::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("ledcolor"), CMD_BEGIN, NeopixelVE::cmdLedHandleColor, F("ledcolor")));
   handler->registerCommand(new MenuEntry(F("ledbrg"), CMD_BEGIN, NeopixelVE::cmdLedSetBrg, F("ledbrg")));
   handler->registerCommand(new MenuEntry(F("ledmode"), CMD_BEGIN, NeopixelVE::cmdLedHandleMode, F("ledmode")));
+  //handler->registerCommand(new MenuEntry(F("ledmap"), CMD_BEGIN, NeopixelVE::testMapColor, F("ledmode")));
   // else if (strstr(line, "led_"))       ledHandleColor(strstr(line, "_")+1);
   // else if (strstr(line, "ledbrg_"))    ledSetBrg(strstr(line, "_")+1);
   // else if (strstr(line, "ledmode_"))   ledHandleMode(strstr(line, "_")+1);
@@ -66,6 +67,7 @@ bool NeopixelVE::setup(MenuHandler *handler) {
        case 'r': c = Cred; break;
        case 'b': c = Cmblue; break;
        case 'g': c = Cgreen; break;
+       case 'u': c = Cgreen2; break;
        case 'y': c = Cyellow; break;
        case 'w': c = Cwhite; break;
        case 'l': c = Clila; break;
@@ -220,4 +222,20 @@ int NeopixelVE::getAmbientLight(int stopMs) {
   int light = getAmbientLightRaw();
   if (stopMs) setLedColor(cur);
   return light;
+}
+
+
+RgbColor NeopixelVE::getColorMapping(char c) {
+  switch (c) {
+    case 'r': return Cred;
+    case 'b': return Cmblue;
+    case 'u': return Cgreen2;
+    case 'g': return Cgreen;
+    case 'y': return Cyellow;
+    case 'w': return Cwhite;
+    case 'l': return Clila;
+    case 'c': return Ccyan;
+    case 'm': return Cmblue;
+    default: return Cblack;
+  }
 }

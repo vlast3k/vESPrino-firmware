@@ -13,6 +13,7 @@
 #define Cblue    RgbColor(0, 0, 255)
 #define Cmblue   RgbColor(0, 128, 255)
 #define Ccyan    RgbColor(0, 255, 255)
+#define Cgreen2   RgbColor(0, 255, 64)
 #define Cgreen   RgbColor(0, 255, 0)
 #define Cyellow  RgbColor(255, 255, 0)
 #define Corange  RgbColor(255, 100, 0)
@@ -44,12 +45,14 @@ public:
   RgbColor getCurrentColor() {
     return currentColor;
   }
+  static RgbColor getColorMapping(char c);
+  float getAutoBrg();
+  void setLedColor(const RgbColor &color);
 private:
+//  static void testMapColor(const char *ignore);
   static void cmdLedHandleColor(const char* line);
   static void cmdLedSetBrg(const char* line);
   static void cmdLedHandleMode(const char* line);
-  void setLedColor(const RgbColor &color);
-  float getAutoBrg();
   RgbColor ledNextColor();
   uint32_t lastChange = 0;
   float ledBrg = 0.7f;
