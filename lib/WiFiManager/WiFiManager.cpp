@@ -152,6 +152,10 @@ boolean WiFiManager::autoConnect(char const *apName, char const *apPassword) {
 
 void WiFiManager::startConfigPortalAsync(char const *apName, char const *apPassword) {
   //setup AP
+  WiFi.disconnect();
+  delay(100);
+  WiFi.mode(WIFI_OFF);
+  delay(500);
   WiFi.mode(WIFI_AP_STA); //if it is only AP, once the wifi is selected, it cannot connect
   DEBUG_WM(F("SET AP STA"));
 

@@ -48,6 +48,9 @@ public:
   static RgbColor getColorMapping(char c);
   float getAutoBrg();
   void setLedColor(const RgbColor &color);
+  void putRawCurrentColor(const RgbColor &color) {
+    rawCurrentColor = color;
+  };
 private:
 //  static void testMapColor(const char *ignore);
   static void cmdLedHandleColor(const char* line);
@@ -58,6 +61,7 @@ private:
   float ledBrg = 0.7f;
   int ledMode = 0;
   RgbColor currentColor = Cblack;
+  RgbColor rawCurrentColor = Cblack;
   //const RgbColor allColors[] = {Cred, Cpink, Clila, Cviolet, Cblue, Cmblue, Ccyan, Cgreen, Cyellow, Corange};
 
   int lightOff = 0;

@@ -23,8 +23,11 @@ void WifiStuffClass::onProperty(String &key, String &value) {
   else if (key == PROP_WIFI_DNS2) dns2.fromString(value);
   else if (key == EE_WIFI_SSID) ssid = value;
   else if (key == EE_WIFI_P1) pass = value;
-  else if (key == PROP_WSSERVER_DISABLE) wssDisable = value;
-  else if (key == PROP_AUTOCFG_DISABLE) autoCfgDisable = value;
+  else if (key == PROP_WSSERVER_DISABLE) wssDisable = PropertyList.toBool(value);
+  else if (key == PROP_AUTOCFG_DISABLE) {
+    autoCfgDisable = PropertyList.toBool(value);
+  //  Serial << "autocfgdisable " << value << " "<< PropertyList.toBool(value)<<  endl;
+  }
   //LOGGER << "onProp:" << key << ":" << value << endl;
 }
 void WifiStuffClass::handleWifi() {
@@ -34,11 +37,15 @@ void WifiStuffClass::handleWifi() {
   //LOGGER << "Wifi state hw: " << WiFi.status()<< endl;
 
   if (wifiManager) wifiManager->loopConfigPortal();
-  if (!SLAVE && WiFi.status() == WL_NO_SSID_AVAIL
+  if (!SLAVE && WiFi.status() != WL_CONNECTED
+       && wifiAlreadyWaited
        && wifiManager == NULL
        && PowerManager.isWokeFromDeepSleep() == false
-       && !autoCfgDisable) {
+       && !autoCfgDisable
+     ) {
+    //   Serial << "autocfgdisable is: " << autoCfgDisable << endl;
     #ifndef HARDCODED_SENSORS
+    Serial << "ASDSADSADSAD" << endl;
     startAutoWifiConfig("");
     #endif
     //wifiState = WiFi.status();
@@ -87,12 +94,18 @@ wl_status_t WifiStuffClass::waitForWifi(uint16_t timeoutMs) {
     delay(delayFix);
     menuHandler.loop();
     handleWifi();
+    if (WiFi.status() == WL_NO_SSID_AVAIL) {
+      Serial << F("SSID [") << ssid << F("] not found") << endl;
+      break;
+    }
     if ((i%10) == 0)  {
       LOGGER << '.';
       if (wifiAlreadyWaited) return WiFi.status();
+      //Serial << "------State changed to: " << WiFi.status() << endl;
       //neopixel.signal(LED_WIFI_SEARCH);
     }
   }
+  //Serial << "------State changed to: " << WiFi.status() << endl;
   LOGGER << endl;
   if (wifiAlreadyWaited) return WiFi.status();
   #ifndef HARDCODED_SENSORS
@@ -244,29 +257,19 @@ void WifiStuffClass::wifiConnectMulti() {
   //WiFi.forceSleepWake();
   //delay(100);
   PERF("WIFI 1")
-  WiFi.persistent(false);
-  WiFi.mode(WIFI_OFF);
-  //LOGGER << "Wifi state 1: " << WiFi.status()<< endl;
-  //delay(500);
-  //LOGGER << "Wifi state 2: " << WiFi.status()<< endl;
-  WiFi.mode(WIFI_STA);
   PERF("WIFI 2")
   if (PowerManager.isWokeFromDeepSleep()) {
     loadStaticIPConfigFromRTC();
   }
-  if (staticIp != 0) {
-    //LOGGER << "Setting up static ip: " << staticIp << gateway << subnet << dns1 << dns2 << endl;
-    WiFi.config(staticIp, gateway, subnet, dns1, dns2);
-  }
   //applyStaticWifiConfig();
-  PERF("WIFI 3")
+  //PERF("WIFI 3")
 
   //wifiMulti = new ESP8266WiFiMulti();
   //wifiMulti->addAP("vladiHome", "0888414447");
   //wifiMulti->addAP("Andreev", "4506285842");
   // String ssid = PropertyList.readProperty(EE_WIFI_SSID);
   // String pass = PropertyList.readProperty(EE_WIFI_P1);
-  PERF("WIFI 4")
+//  PERF("WIFI 4")
   #ifdef HARDCODED_SENSORS
   if (ssid.length() == 0) {
     ssid = "vladiHome";
@@ -282,6 +285,14 @@ void WifiStuffClass::wifiConnectMulti() {
     //LOGGER << "wifibegin :: " << x << y << endl;
     wifiAlreadyWaited = false;
     //LOGGER << "Wifi state 3: " << WiFi.status()<< endl;
+    WiFi.persistent(false);
+    WiFi.mode(WIFI_OFF);
+    WiFi.mode(WIFI_STA);
+
+    if (staticIp != 0) {
+      //LOGGER << "Setting up static ip: " << staticIp << gateway << subnet << dns1 << dns2 << endl;
+      WiFi.config(staticIp, gateway, subnet, dns1, dns2);
+    }
 
     WiFi.begin(x, y);
     //neopixel.signal(LED_WIFI_SEARCH);

@@ -19,7 +19,7 @@ extern CO2Sensor co2Sensor;
 #define CUBIC_MISSING "missing"
 extern TimerManagerClass TimerManager;
 CO2Sensor::CO2Sensor() :
-    co2Threshold("CO2", 1),
+    //co2Threshold("CO2", 1),
     cubicCo2(&CO2Sensor::onCo2Status_static, EE_RESET_CO2_1B, &LOGGER),
     startedCO2Monitoring(false)
 
@@ -68,10 +68,10 @@ bool CO2Sensor::setup(MenuHandler *handler) {
 //  cubicCo2.init();// return;
   hasSensor = true;
 
-  tmrStopLED = new Timer(30000L, CO2Sensor::onStopLED_static, true);
-  TimerManager.registerTimer(tmrStopLED, TMR_STOPPED);
+  //tmrStopLED = new Timer(30000L, CO2Sensor::onStopLED_static, true);
+  //TimerManager.registerTimer(tmrStopLED, TMR_STOPPED);
 
-  thresholds.add(&co2Threshold);
+  //thresholds.add(&co2Threshold);
 
 
   handler->registerCommand(new MenuEntry(F("rco"), CMD_EXACT, CO2Sensor::resetCO2_static, F("")));
@@ -114,7 +114,7 @@ void CO2Sensor::onStopLED_static() {
 
 void CO2Sensor::onStopLED() {
   //menuHandler.scheduleCommand("ledbrg 98");
-  menuHandler.scheduleCommand("ledcolor seqn");
+  //menuHandler.scheduleCommand("ledcolor seqn");
     // strip->SetPixelColor(0, RgbColor(0, 0,0));
     // strip->Show();
 }
@@ -126,14 +126,14 @@ void CO2Sensor::onCo2Status_static(CubicStatus status) {
 void CO2Sensor::onCo2Status(CubicStatus status) {
   if (status == CB_CALIBRATE) {
     menuHandler.scheduleCommand("nop 0");
-    menuHandler.scheduleCommand("ledcolor blue");
-    tmrStopLED->Stop();
+    menuHandler.scheduleCommand("ledcolor seq1b");
+    //tmrStopLED->Stop();
   } else if (status == CB_WARMUP) {
     //menuHandler.scheduleCommand("ledcolor yellow");
   } else if (status == CB_STARTED) {
     if (!PropertyList.readBoolProperty(PROP_CUBIC_CO2_POWERSAFE)) {
       //menuHandler.scheduleCommand("ledcolor green");
-      tmrStopLED->Start();
+      //tmrStopLED->Start();
     }
   }
 }

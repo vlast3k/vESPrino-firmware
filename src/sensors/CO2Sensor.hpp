@@ -32,8 +32,8 @@ private:
   CubicGasSensors cubicCo2;
   boolean startedCO2Monitoring = false;
   //RunningAverage raCO2Raw(4);
-  Thr co2Threshold;//("CO2", 1);
-  Timer *tmrStopLED;
+  //Thr co2Threshold;//("CO2", 1);
+  //Timer *tmrStopLED;
 };
 
 #endif

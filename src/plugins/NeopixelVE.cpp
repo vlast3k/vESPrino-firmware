@@ -33,12 +33,13 @@ bool NeopixelVE::setup(MenuHandler *handler) {
  void NeopixelVE::cmdLedSetBrg(const char* line) {neopixel.cmdLedSetBrgInst(line);}
  void NeopixelVE::cmdLedHandleMode(const char* line) {neopixel.cmdLedHandleModeInst(line);}
  void NeopixelVE::signal(const __FlashStringHelper *seq, SignalType sig) {
-   if (DEBUG) Serial << F("signal: ") << seq << endl;
+   //Serial << F("signal: ") << seq << endl;
+   //Serial.flush();
    bool show = false;
    if (DEBUG) show = true;
    if (!PowerManager.isWokeFromDeepSleep() && sig == SIGNAL_FIRST) show = true;
    if (show) {
-     String cmd = String("ledcolor seq") + seq;
+     String cmd = String(F("ledcolor seq")) + seq;
      cmdLedHandleColorInst(cmd.c_str());
    }
  }
@@ -54,9 +55,12 @@ bool NeopixelVE::setup(MenuHandler *handler) {
 
  void NeopixelVE::handleSequence(const char *seq) {
    seq = seq + 3;
-   RgbColor oldColor = currentColor;
+   //Serial << "NeoPixel.handleSequence: " << seq << endl;
+   //Serial.flush();
+   //RgbColor oldColor = currentColor;
+   RgbColor c;
    while (*seq) {
-     RgbColor c;
+
      int b = atoi(seq);
      if (b > 10) {
        ledBrg = (float)b/100;
@@ -78,20 +82,21 @@ bool NeopixelVE::setup(MenuHandler *handler) {
        case 'l': c = Clila; break;
        case 'c': c = Ccyan; break;
        case 'm': c = Cmblue; break;
-       case 'd': c = oldColor;break;// Serial << "CurrentColor: " << c << endl; break;
+       case 'd': c = rawCurrentColor;break;// Serial << "CurrentColor: " << c << endl; break;
        case 'n':
        default:  c = Cblack; break;
      }
      //old color - do not add blend, just reuse old color
-
-     if (*seq != 'd') {
-       c = RgbColor::LinearBlend(c, Cblack, ledBrg);
-       lastColorChar = *seq;
-     }
-     setLedColor(c);
+     RgbColor cBrg = c;
+     //if (*seq != 'd') {
+       cBrg = RgbColor::LinearBlend(c, Cblack, ledBrg);
+    //   lastColorChar = *seq;
+     //}
+     setLedColor(cBrg);
      delay(333);
      seq ++;
    }
+   rawCurrentColor = c;
  }
 
  void NeopixelVE::cmdLedHandleColorInst(const char *line) {
@@ -179,10 +184,8 @@ void NeopixelVE::loop() {
       lightOff = getAmbientLight(100);
       //Serial << F("new AmbientLight = ") << lightOff << endl;
       if (isAutoBrg) {
-        String cmd = F("ledcolor seq1");
-        cmd+= lastColorChar;
-        Serial << cmd << endl;
-        cmdLedHandleColor(cmd.c_str());
+        //String cmd = ;
+        cmdLedHandleColorInst(F("ledcolor seq1d"));
       }
     }
     ambLightRecheck = millis();

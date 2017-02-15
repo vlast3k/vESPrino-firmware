@@ -80,8 +80,10 @@ void RGBLedDest::mapColor(int current, int minVal, int maxVal) {
   RgbColor cEnd   = neopixel.getColorMapping(colorEnd);
 
   RgbColor c = RgbColor::LinearBlend(cStart, cEnd, place);
+  neopixel.putRawCurrentColor(c);
   c = RgbColor::LinearBlend(c, Cblack, neopixel.getAutoBrg());
   neopixel.setLedColor(c);
+
   //Serial << "curr: " << current << ", cs: " << colorStart << ", ce: " << colorEnd << ", place = " <<place << endl;
 }
 // void NeopixelVE::testMapColor(const char *ignore) {
