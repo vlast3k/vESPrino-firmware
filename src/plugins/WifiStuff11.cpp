@@ -45,7 +45,7 @@ void WifiStuffClass::handleWifi() {
      ) {
     //   Serial << "autocfgdisable is: " << autoCfgDisable << endl;
     #ifndef HARDCODED_SENSORS
-    Serial << "ASDSADSADSAD" << endl;
+    //Serial << "ASDSADSADSAD" << endl;
     startAutoWifiConfig("");
     #endif
     //wifiState = WiFi.status();
