@@ -176,26 +176,13 @@ void NeopixelVE::cmdLedHandleModeInst(const char *line) {
 
 void NeopixelVE::loop() {
   if (millis() - ambLightRecheck > 1000) {
-//    Serial << "LightOn: " << lightOn << ", getAmbientLight(0): " << getAmbientLight(0) << endl;
     if (abs(lightOn - getAmbientLight(0)) > 30) {
-      //Serial << "old light on " << lightOn <<endl;
       lightOn = getAmbientLight(0);
-      //Serial << "new light on " << lightOn <<endl;
       lightOff = getAmbientLight(100);
-      //Serial << F("new AmbientLight = ") << lightOff << endl;
-      if (isAutoBrg) {
-        //String cmd = ;
-        cmdLedHandleColorInst(F("ledcolor seq1d"));
-      }
+      if (isAutoBrg) cmdLedHandleColorInst(F("ledcolor seq1d"));
     }
     ambLightRecheck = millis();
   }
-  // if (ledMode == 1) {
-  //   if (millis() - lastChange > 500) {
-  //     handleDWCommand("led_next");
-  //     lastChange = millis();
-  //   }
-  // }
 }
 
 RgbColor NeopixelVE::ledNextColor() {
@@ -237,6 +224,7 @@ int NeopixelVE::getAmbientLight(int stopMs) {
 RgbColor NeopixelVE::getColorMapping(char c) {
   switch (c) {
     case 'r': return Cred;
+    case 'v': return Cviolet;
     case 'b': return Cmblue;
     case 'u': return Cgreen2;
     case 'g': return Cgreen;

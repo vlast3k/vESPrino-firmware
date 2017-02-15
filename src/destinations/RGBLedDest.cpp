@@ -63,7 +63,7 @@ bool RGBLedDest::setup(MenuHandler *handler) {
 // }
 
 void RGBLedDest::mapColor(int current, int minVal, int maxVal) {
-  String colorRange ="uyrl";
+  String colorRange ="uyrv";
   // int minVal = 400;
   // int maxVal = 3400; //3000  ... /4 = 750
   //int current = 1300; // divv = 900
@@ -97,12 +97,21 @@ void RGBLedDest::mapColor(int current, int minVal, int maxVal) {
 bool RGBLedDest::process(LinkedList<Pair *> &data) {
   //if (!enabled) return false;
   //LOGGER << F("RGBLedDest::process") << endl;
-  if (!cfgKey.length()) return true;
-  for (int i=0; i < data.size(); i++) {
-    Pair *p = data.get(i);
-    if (cfgKey == p->key) {
-      int current = atoi(p->value.c_str());
-      mapColor(current, vmin, vmax);
+  if (!cfgKey.length()) {
+    if (millis() > 300L*1000) {
+      if (!turnedOffLedOnce) {
+        neopixel.cmdLedHandleColorInst(F("ledcolor seqn"));
+        turnedOffLedOnce = true;
+      }
+    }
+  } else {
+    turnedOffLedOnce = true;
+    for (int i=0; i < data.size(); i++) {
+      Pair *p = data.get(i);
+      if (cfgKey == p->key) {
+        int current = atoi(p->value.c_str());
+        mapColor(current, vmin, vmax);
+      }
     }
   }
   return true;

@@ -28,6 +28,7 @@ private:
   bool enabled;
   String cfgKey;
   int16_t vmin, vmax;
+  bool turnedOffLedOnce = false;
   //static const __FlashStringHelper* PROP_CUSTOM_URL_ARR;// = F("custom_url_arr");
 };
 

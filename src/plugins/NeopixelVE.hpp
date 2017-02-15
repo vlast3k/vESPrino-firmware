@@ -9,6 +9,7 @@
 #define Cred     RgbColor(255, 0, 0)
 #define Cpink    RgbColor(255, 0, 128)
 #define Clila    RgbColor(255, 0, 255)
+#define Clila    RgbColor(255, 0, 255)
 #define Cviolet  RgbColor(128, 0, 255)
 #define Cblue    RgbColor(0, 0, 255)
 #define Cmblue   RgbColor(0, 128, 255)

@@ -110,6 +110,8 @@ void PowerManagerClass::loopPowerManager() {
     ESP.deepSleep(sec*1000*1000);
     delay(2000);
   } else {
+    //regular restart via deep sleep
+    if (millis() > 24L*60*60*1000) menuHandler.scheduleCommand(F("nop 1"));
     delay(1);
   }
 }
