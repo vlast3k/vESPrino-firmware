@@ -8,6 +8,8 @@ extern TimerManagerClass TimerManager;
 
 uint8_t PowerManagerClass::IterationDurationS = 0;
 
+#define PROP_QUIET_START F("pwr.quiet.start")
+
 PowerManagerClass::PowerManagerClass() {
   registerPlugin(this);
   isLowPower = false;
@@ -32,12 +34,20 @@ void PowerManagerClass::onProperty(String &key, String &value) {
   if (key == PROP_ITERATION_DURATION) IterationDurationS = atol(value.c_str());
   else if (key == PROP_TIMEOUT_INTERVAL) timeoutIntervalS = atol(value.c_str());
   else if (key == PROP_DEBUG) DEBUG = PropertyList.toBool(value);
+  else if (key == PROP_QUIET_START) {
+     quietStart = PropertyList.toBool(value);
+     //wokeFromDeepSleep = true;
+   }
 
   //Serial << "key = " << key << " is " << PROP_DEBUG << " : " << (key == PROP_DEBUG) << endl;
 }
 
 bool PowerManagerClass::setupInt(MenuHandler *handler) {
   WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
+  if (quietStart) {
+    PropertyList.putProperty(PROP_QUIET_START, "");
+    quietStart = true;
+  }
   //WiFi.setSleepMode(WIFI_NONE_SLEEP);
   //IterationDurationS = PropertyList.readLongProperty(PROP_ITERATION_DURATION);
   if (!IterationDurationS) IterationDurationS = 30;
@@ -111,11 +121,16 @@ void PowerManagerClass::loopPowerManager() {
     delay(2000);
   } else {
     //regular restart via deep sleep
-    if (millis() > 24L*60*60*1000) menuHandler.scheduleCommand(F("nop 1"));
+    if (millis() > 5L*60*60*1000) {
+      Serial << "Quiet restart" << endl;
+      PropertyList.putProperty(PROP_QUIET_START, "1");
+      menuHandler.scheduleCommand(F("restart"));
+    }
+      //menuHandler.scheduleCommand(F("nop 1"));
     delay(1);
   }
 }
 
 bool PowerManagerClass::isWokeFromDeepSleep() {
-  return wokeFromDeepSleep;
+  return wokeFromDeepSleep || quietStart;
 }

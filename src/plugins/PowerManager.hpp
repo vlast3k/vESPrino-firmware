@@ -26,9 +26,11 @@ public:
   void cmdDeepSleepInst(const char *line) ;
   bool isWokeFromDeepSleep();
   bool isLowPower;
+  bool isQuietStart() {return quietStart;}
 private:
   Timer *timer;
   bool wokeFromDeepSleep;
+  bool quietStart = false;
   int16_t timeoutIntervalS = -1;
 
 

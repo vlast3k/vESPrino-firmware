@@ -11,7 +11,9 @@ void registerPlugin(Plugin *plugin);
 extern boolean DEBUG;
 NeopixelVE::NeopixelVE() {
   registerPlugin(this);
-  lightOff = getAmbientLight(0);
+  lightOff = 40;
+  //lightOn =
+
 }
 
 bool NeopixelVE::setup(MenuHandler *handler) {
@@ -176,9 +178,12 @@ void NeopixelVE::cmdLedHandleModeInst(const char *line) {
 
 void NeopixelVE::loop() {
   if (millis() - ambLightRecheck > 1000) {
+    //Serial<< "will check. lightOn:" << lightOn << ":"  <<  getAmbientLight(0) << endl;
     if (abs(lightOn - getAmbientLight(0)) > 30) {
       lightOn = getAmbientLight(0);
       lightOff = getAmbientLight(100);
+      //Serial<< "new light off" << lightOff << endl;
+
       if (isAutoBrg) cmdLedHandleColorInst(F("ledcolor seq1d"));
     }
     ambLightRecheck = millis();

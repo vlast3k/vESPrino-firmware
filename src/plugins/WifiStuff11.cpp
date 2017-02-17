@@ -381,6 +381,7 @@ void WifiStuffClass::stopAutoWifiConfig() {
 }
 
 void WifiStuffClass::startAutoWifiConfig(const char *ch) {
+  if (WifiStuff.wifiManager) return;
   shouldSend = false;
   neopixel.cmdLedHandleColorInst(F("ledcolor seq80m"));
   WifiStuff.colorAfterWifiAutoConfig = neopixel.getCurrentColor();
