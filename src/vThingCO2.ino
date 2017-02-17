@@ -233,11 +233,16 @@ void fireEvent(const char *name) {
   s += name;
   menuHandler.scheduleCommandProperty(s.c_str());
 }
+void setup2() {
+  Serial.begin(9600);
+  for (int i=0; i <100; i++) {
+    Serial <<"ALOOOOO"<<endl;
+    delay(1000);
 
+  }
+}
 void setup() {
   Serial.begin(9600);
-  // si7021Sensor.testHeat();
-  // delay(1000000L);
   if (DEBUG) heap("Heap at start");
   PERF("Setup a")
   PropertyList.begin(&menuHandler);
@@ -247,6 +252,10 @@ void setup() {
   PERF("Setup c")
   rtcMemStore.init();
   PERF("Setup d")
+  //reportProperty(String &key, String &value)
+  //OTA_registerCommands(&menuHandler);
+  //delay(1000);
+  //return;
   PropertyList.reportProperties();
   PERF("Setup e")
   PowerManager.setupInt(&menuHandler);
@@ -285,8 +294,8 @@ void setup() {
   PERF("Setup 4")
 
   //heap("3");
-  pinMode(D8, OUTPUT);    //enable power via D8
-  digitalWrite(D8, HIGH);
+  // pinMode(D8, OUTPUT);    //enable power via D8
+  // digitalWrite(D8, HIGH);
   yield();
 
   // //delay(1000);

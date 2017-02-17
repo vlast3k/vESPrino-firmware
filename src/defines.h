@@ -2,6 +2,7 @@
 #define PROP_TIMEOUT_INTERVAL F("pwr.timeoutint")
 #define BUILD_NUM "20170214"
 //#define HARDCODED_SENSORS "CM110x,SI7021,"
+//#define HARDCODED_SENSORS "none,"
 
 
 //#define SERIAL_PORT LOGGER
@@ -66,7 +67,7 @@
 #define SAP_IOT_TOKEN "spTok"
 #define SAP_IOT_BTN_MSGID "spBtMID"
 
-//#define PERF(str) LOGGER << str << ":" << millis() << endl;
+//#define PERF(str) { LOGGER << str << ":" << millis() << endl; LOGGER.flush();delay(100);}
 #define PERF(str)
 //#define H801_API_KEY "h801key"
 //#define XX_SND_INT  "xxSndInt"

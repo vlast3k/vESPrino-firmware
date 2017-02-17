@@ -43,6 +43,7 @@ void PropertyListClass::prop_jset(const char *line) {
 }
 
 bool PropertyListClass::assertInit() {
+  //return false;
   if (!initialized) {
     beginInt();
     initialized = true;
@@ -251,6 +252,7 @@ void PropertyListClass::endInt() {
 }
 
 void PropertyListClass::begin(MenuHandler *handler) {
+  //return;
   int res = beginInt();
   setupPropList(&menuHandler);
 

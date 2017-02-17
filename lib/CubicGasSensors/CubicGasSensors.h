@@ -35,7 +35,9 @@ class CubicGasSensors
 {
   // user-accessible "public" interface
   public:
-    CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, Stream *_LOGGER, uint8_t _rx=100, uint8_t _tx=100 ) ;
+    CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, Stream *_LOGGER, uint8_t _rx=100, uint8_t _tx=100 );
+    //CubicGasSensors( CubicStatusCb _cb, uint16_t _eepromReset, Stream *_LOGGER, uint8_t rx, uint8_t tx) {}
+    CubicGasSensors() {}
   #ifdef ESP8266
     bool init(bool DEBUG, uint32_t disabledPorts);
   #endif
