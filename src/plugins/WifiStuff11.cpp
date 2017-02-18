@@ -270,6 +270,8 @@ void WifiStuffClass::wifiConnectMulti() {
   // String ssid = PropertyList.readProperty(EE_WIFI_SSID);
   // String pass = PropertyList.readProperty(EE_WIFI_P1);
 //  PERF("WIFI 4")
+  // if (WiFi.SSID()) ssid = WiFi.SSID();
+  // if (WiFi.psk())  pass = WiFi.psk();
   #ifdef HARDCODED_SENSORS
   if (ssid.length() == 0) {
     ssid = "vladiHome";
