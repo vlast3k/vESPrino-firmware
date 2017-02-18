@@ -383,7 +383,7 @@ void WifiStuffClass::stopAutoWifiConfig() {
 void WifiStuffClass::startAutoWifiConfig(const char *ch) {
   if (WifiStuff.wifiManager) return;
   shouldSend = false;
-  neopixel.cmdLedHandleColorInst(F("ledcolor seq80m"));
+  neopixel.cmdLedHandleColorInst(F("ledcolor seq1m"));
   WifiStuff.colorAfterWifiAutoConfig = neopixel.getCurrentColor();
 
   WiFi.persistent(false);
@@ -405,6 +405,7 @@ void WifiStuffClass::loop() {
     wifiManager->stopConfigPortalAsync();
     delete wifiManager;
     wifiManager = NULL;
+    autoCfgDisable = true;
     if (colorAfterWifiAutoConfig == neopixel.getCurrentColor()) {
       neopixel.cmdLedHandleColorInst(F("ledcolor black"));
     }

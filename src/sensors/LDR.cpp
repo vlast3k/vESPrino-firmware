@@ -50,5 +50,5 @@ void LDR::test(const char* ignore) {
 void LDR::getData(LinkedList<Pair *> *data) {
 //   LOGGER << F("LDR::getData") << endl;
   // int light = getLight();
-   data->add(new Pair("LDR", String(neopixel.getLightOff())));
+  if (neopixel.ldrEnabled) data->add(new Pair("LDR", String(neopixel.getLightOff())));
 }

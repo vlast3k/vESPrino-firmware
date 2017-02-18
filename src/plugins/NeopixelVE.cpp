@@ -1,10 +1,12 @@
 #include "plugins/NeopixelVE.hpp"
+#include "plugins/PropertyList.hpp"
 #include "plugins/PowerManager.hpp"
 #include <Streaming.h>
 //#include "plugins/WifiStuff.hpp"
 
 extern PowerManagerClass PowerManager;
-
+#define PROP_LDR_OVERRIDE F("ldr.override")
+#define PROP_LDR_ENABLED  F("ldr.enabled")
 RgbColor allColors[] = {Cred, Clila, Cmblue, Cgreen, Cyellow};
 extern NeopixelVE neopixel;
 void registerPlugin(Plugin *plugin);
@@ -14,6 +16,11 @@ NeopixelVE::NeopixelVE() {
   lightOff = 40;
   //lightOn =
 
+}
+
+void NeopixelVE::onProperty(String &key, String &value) {
+  if (key == PROP_LDR_OVERRIDE) lightPreset = atoi(value.c_str());
+  else if (key == PROP_LDR_ENABLED) ldrEnabled = PropertyList.toBool(value);
 }
 
 bool NeopixelVE::setup(MenuHandler *handler) {
@@ -52,7 +59,9 @@ bool NeopixelVE::setup(MenuHandler *handler) {
    if (lightOff < 400) factor = 30;
    else if (lightOff < 800) factor = 20;
    else factor = 15;
-   return (99.0F - ((float)lightOff / factor)) / 100;
+   float res = (99.0F - ((float)lightOff / factor)) / 100;
+   if (DEBUG) Serial << F("LED AutoBrg: ") << res << endl;
+   return res;
  }
 
  void NeopixelVE::handleSequence(const char *seq) {
@@ -105,6 +114,7 @@ bool NeopixelVE::setup(MenuHandler *handler) {
   static char color[100] = "";
   if (line) line = strstr(line, " ");
   if (line) strncpy(color, line + 1, sizeof(color));
+  if (DEBUG) Serial << F("LED SetColor: ") << line << endl;
   //Serial << "cmdLedHandleColorInst: " << line << endl;
   //color.trim();
   if (strlen(color) == 0) return;
@@ -179,7 +189,7 @@ void NeopixelVE::cmdLedHandleModeInst(const char *line) {
 void NeopixelVE::loop() {
   if (millis() - ambLightRecheck > 1000) {
     //Serial<< "will check. lightOn:" << lightOn << ":"  <<  getAmbientLight(0) << endl;
-    if (abs(lightOn - getAmbientLight(0)) > 30) {
+    if (abs(lightOn - getAmbientLight(0)) > (ldrEnabled?20:1)) {
       lightOn = getAmbientLight(0);
       lightOff = getAmbientLight(100);
       //Serial<< "new light off" << lightOff << endl;
@@ -208,10 +218,14 @@ void NeopixelVE::setLedColor(const RgbColor &color) {
 }
 
 int NeopixelVE::getAmbientLightRaw() {
-  uint32_t sum=0;
-  int samples = 30;
-  for (int i=0; i<samples; i++) sum += analogRead(A0);
-  return sum/samples;
+  if (!ldrEnabled) {
+    return (lightPreset+5)*(lightPreset+5);
+  } else {
+    uint32_t sum=0;
+    int samples = 30;
+    for (int i=0; i<samples; i++) sum += analogRead(A0);
+    return sum/samples + lightPreset*abs(lightPreset);
+  }
 }
 
 int NeopixelVE::getAmbientLight(int stopMs) {

@@ -52,6 +52,9 @@ public:
   void putRawCurrentColor(const RgbColor &color) {
     rawCurrentColor = color;
   };
+  uint8_t lightPreset = 6;
+  bool ldrEnabled = false;
+  void onProperty(String &key, String &value);
 private:
 //  static void testMapColor(const char *ignore);
   static void cmdLedHandleColor(const char* line);
@@ -71,7 +74,6 @@ private:
   char lastColorChar = 'n';
   bool isAutoBrg = false;
   //NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
-
 
 };
 
