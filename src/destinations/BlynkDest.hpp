@@ -13,6 +13,7 @@
 class BlynkDest : public Destination {
 public:
   BlynkDest();
+  void onProperty(String &key, String &value);
   bool setup(MenuHandler *handler);
   void loop();
 
@@ -24,8 +25,8 @@ public:
     return "Blynk";
   }
 
-private:
   bool enabled = false;
+private:
   bool calledConfig= false;
   char *auth;
   //static const __FlashStringHelper* PROP_CUSTOM_URL_ARR;// = F("custom_url_arr");

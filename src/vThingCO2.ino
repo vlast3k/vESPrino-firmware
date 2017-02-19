@@ -265,8 +265,6 @@ void setup() {
   //heap("9");
   //heap("10");
   PERF("Setup 1")
-
-
   //DEBUG = PropertyList.readBoolProperty(PROP_DEBUG);
   //DEBUG = true;
   if (DEBUG) LOGGER << F("DEBUG is: ") << DEBUG;

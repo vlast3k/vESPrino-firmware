@@ -13,17 +13,23 @@ void registerPlugin(Plugin *plugin);
 extern boolean DEBUG;
 NeopixelVE::NeopixelVE() {
   registerPlugin(this);
-  lightOff = 40;
-  //lightOn =
+
 
 }
 
 void NeopixelVE::onProperty(String &key, String &value) {
   if (key == PROP_LDR_OVERRIDE) lightPreset = atoi(value.c_str());
-  else if (key == PROP_LDR_ENABLED) ldrEnabled = PropertyList.toBool(value);
+  else if (key == PROP_LDR_ENABLED) {
+    ldrEnabled = PropertyList.toBool(value);
+    lightOff = getAmbientLight(0);
+    lightOn = lightOff;
+  }
 }
 
 bool NeopixelVE::setup(MenuHandler *handler) {
+  // String t = "true";
+  // Serial <<"NEOPIXEL: " << ldrEnabled << " " << PropertyList.toBool(t);
+  //delay(100);
   //lightOff = getAmbientLight(0);
 //  int xt = getAmbientLight(200);
 //  Serial << "Neopixel start, lightOff: " << lightOff << ", 200delay: " << xt << endl;
@@ -224,7 +230,9 @@ int NeopixelVE::getAmbientLightRaw() {
     uint32_t sum=0;
     int samples = 30;
     for (int i=0; i<samples; i++) sum += analogRead(A0);
-    return sum/samples + lightPreset*abs(lightPreset);
+    float res= (sum/samples) * ( 1.0F + (float)lightPreset/10);
+    //Serial << "Ambient Light res: " << res << " " << ( 1.0F + (float)lightPreset/10) <<endl;
+    return res;
   }
 }
 

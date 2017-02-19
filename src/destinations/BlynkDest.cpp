@@ -17,16 +17,24 @@ extern WifiStuffClass WifiStuff;
 #define PROP_BLYNK_ENABLED F("blynk.enabled")
 #define PROP_BLYNK_AUTH F("blynk.auth")
 #define PROP_BLYNK_CFG F("blynk.cfg")
+
+extern BlynkDest blynkDest;
+
 // char auth[] = "77e6e715b5714bd797ff86489d863b76"; // Put your token here
 //        Blynk.run();
 BlynkDest::BlynkDest() {
   //enabled = true;
   registerDestination(this);
 }
+void BlynkDest::onProperty(String &key, String &value) {
+  if (key == PROP_BLYNK_ENABLED) {
+    blynkDest.enabled = PropertyList.toBool(value);
+  }
+}
 
 bool BlynkDest::setup(MenuHandler *handler) {
   //handler->registerCommand(new MenuEntry(F("serial_dump_toggle"), CMD_EXACT, &BlynkDest::toggle, F("serial_dump_toggle toggle serial dump output")));
-  enabled = PropertyList.readBoolProperty(PROP_BLYNK_ENABLED);
+  //enabled = PropertyList.readBoolProperty(PROP_BLYNK_ENABLED);
   return false;
   // if (enabled) {
   //   menuHandler.scheduleCommand("nop 0");

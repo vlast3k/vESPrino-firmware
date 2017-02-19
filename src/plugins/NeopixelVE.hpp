@@ -52,7 +52,7 @@ public:
   void putRawCurrentColor(const RgbColor &color) {
     rawCurrentColor = color;
   };
-  uint8_t lightPreset = 0;
+  int8_t lightPreset = 0;
   bool ldrEnabled = false;
   void onProperty(String &key, String &value);
 private:

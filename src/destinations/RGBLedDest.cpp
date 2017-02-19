@@ -51,7 +51,8 @@ bool RGBLedDest::setup(MenuHandler *handler) {
    }
    int step = (vmax - vmin)/50;
    for (int i=vmin - step; i < vmax + step; i+=step) {
-     Serial << F("Value: ") << i << F(" / ") << vmax << endl;
+     LOGGER << F("Value: ") << i << F(" / ") << vmax << endl;
+     LOGGER.flush();
      delay(150);
      _RGBLedDest.mapColor(i, vmin, vmax);
    }
