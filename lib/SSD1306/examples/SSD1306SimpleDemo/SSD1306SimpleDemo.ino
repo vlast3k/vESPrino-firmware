@@ -55,7 +55,7 @@
 // SSD1306Brzo display(0x3c, D3, D5);
 
 // Initialize the OLED display using Wire library
-SSD1306  display(0x3c, D3, D5);
+SSD1306  display(0x3c, D5, D1); //vESPrino = the display cookie uses those ports
 
 
 #define DEMO_DURATION 3000
@@ -68,7 +68,8 @@ void setup() {
   Serial.begin(115200);
   Serial.println();
   Serial.println();
-
+  pinMode(D8, OUTPUT);  //vESPrino - enable D8 as this is where the display cookie takes the power from
+  digitalWrite(D8, HIGH);
 
   // Initialising the UI will init the display too.
   display.init();
