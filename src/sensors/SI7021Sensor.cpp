@@ -48,8 +48,8 @@ void SI7021Sensor::getData(LinkedList<Pair *> *data) {
   //delay(100);
    if (!initSensor()) return;
    double temp;
-   if (millis() < 10000L) temp = firstRead;
-   else temp = si7021->readTemp();
+   //if (millis() < 10000L) temp = firstRead;
+   temp = si7021->readTemp();
    double adjTemp = temp + adj;
    String t1 = String(adjTemp);
    String t1r = String(temp);

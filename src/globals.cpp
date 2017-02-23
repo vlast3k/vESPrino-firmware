@@ -16,6 +16,7 @@
 #include "sensors/BMP085Sensor.hpp"
 #include "sensors/PM2005Sensor.hpp"
 #include "sensors/CDM7160Sensor.hpp"
+#include "sensors/TGS8100.hpp"
 #include "sensors/LDR.hpp"
 #include "sensors/TestSensor.hpp"
 #include "sensors/TSL2561Sensor.hpp"
@@ -79,7 +80,9 @@ BMP085Sensor bmp085Sensor;
 PM2005Sensor pm2005Sensor;
 CDM7160Sensor cdm7160Sensor;
 DS18B20Sensor _DS18B20Sensor;
+TGS8100 _TGS8100;
 LDR _LDR;
+
 
 MQTTDest mqttDest;
 RFDest rfDest;
