@@ -173,14 +173,24 @@ I2C_STATE I2CHelper::beginI2C(long disabledPorts, uint16_t rtcI2c, Stream *_LOGG
   if (rtcI2c) {
     i2cSDA = (int8_t) rtcI2c & 0xFF;
     i2cSCL = (int8_t) ((rtcI2c >> 8) & 0xFF);
-  } else if (!findI2C(i2cSDA, i2cSCL, disabledPorts, false)) {
+  } else if (!findI2C(i2cSDA, i2cSCL, disabledPorts, false) &&
+             !findI2C(i2cSDA, i2cSCL, disabledPorts, false)) {
+     //for some reason some sensors do not respond immediately, but after some timer
+     //so if we scanned initially and a sensor connected to the first busses was not found
+     //the second time it could be found
      i2cSDA = i2cSCL = -1;
   }
 
   if (i2cSDA > -1) {
     String s1 = String(i2cSDA);
     String s2 = String(i2cSCL);
-    if (hasI2CDevices(i2cSDA, i2cSCL, s1, s2, false)) {
+    bool res = false;
+    for (int i=0; i < 10; i++) {
+      if ((res = hasI2CDevices(i2cSDA, i2cSCL, s1, s2, true))) break;
+      *LOGGER << "i";
+      delay(1000);
+    }
+    if (res) {
       *LOGGER << F("Using I2C Bus on SDA:SCA (") << i2cSDA << F(":") << i2cSCL << F(")") << endl;
       Wire.begin(i2cSDA, i2cSCL);
       ret = I2C_BEGIN;
