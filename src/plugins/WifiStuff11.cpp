@@ -80,8 +80,9 @@ void WifiStuffClass::handleWifi() {
 
 
 wl_status_t WifiStuffClass::waitForWifi(uint16_t timeoutMs) {
-  if (wifiAlreadyWaited == true) return WiFi.status();
   if (WiFi.status() == WL_CONNECTED)  return WL_CONNECTED;
+  if (wifiAlreadyWaited && millis() - wifiAlreadyWaited < 60000L) return WiFi.status();
+  if (wifiAlreadyWaited) wifiConnectMulti();
   //fireEvent("wifiSearching");
   LOGGER << F("\nWaiting for WiFi ");
   //bool putLF = false;
@@ -100,18 +101,18 @@ wl_status_t WifiStuffClass::waitForWifi(uint16_t timeoutMs) {
     }
     if ((i%10) == 0)  {
       LOGGER << '.';
-      if (wifiAlreadyWaited) return WiFi.status();
+      if (wifiAlreadyWaited && millis() - wifiAlreadyWaited < 60000L) return WiFi.status();
       //Serial << "------State changed to: " << WiFi.status() << endl;
       //neopixel.signal(LED_WIFI_SEARCH);
     }
   }
   //Serial << "------State changed to: " << WiFi.status() << endl;
   LOGGER << endl;
-  if (wifiAlreadyWaited) return WiFi.status();
+  if (wifiAlreadyWaited && millis() - wifiAlreadyWaited < 60000L) return WiFi.status();
   #ifndef HARDCODED_SENSORS
   if (WiFi.status() != WL_CONNECTED) neopixel.signal(LED_WIFI_FAILED, SIGNAL_FIRST);
   #endif
-  wifiAlreadyWaited = true;
+  wifiAlreadyWaited = millis();
   return WiFi.status();
 }
 
@@ -285,7 +286,7 @@ void WifiStuffClass::wifiConnectMulti() {
     strcpy(x, ssid.c_str());
     strcpy(y, pass.c_str());
     //LOGGER << "wifibegin :: " << x << y << endl;
-    wifiAlreadyWaited = false;
+    wifiAlreadyWaited = 0;
     //LOGGER << "Wifi state 3: " << WiFi.status()<< endl;
     WiFi.persistent(false);
     WiFi.mode(WIFI_OFF);
@@ -303,7 +304,7 @@ void WifiStuffClass::wifiConnectMulti() {
 
 
   } else {
-    wifiAlreadyWaited = true;
+    wifiAlreadyWaited = millis();
     #ifndef HARDCODED_SENSORS
     if (!SLAVE && !PowerManager.isWokeFromDeepSleep() && !autoCfgDisable) menuHandler.scheduleCommand(F("autoconfig"));
     #endif
