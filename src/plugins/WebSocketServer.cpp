@@ -10,7 +10,7 @@ extern WifiStuffClass WifiStuff;
 //const char* apiKey = "Qw8rdb20aV";
 //http://randomkeygen.com/
 
-
+#define PROP_WSS_STOP_AFTER_MIN F("wss.stop_after_min")
 WebSocketServerClass::WebSocketServerClass() {
   registerPlugin(this);
 }
@@ -44,7 +44,7 @@ void WebSocketServerClass::cmdStopServerInst() {
 void WebSocketServerClass::loop() {
   if (server != NULL) {
     server->loop();
-    if (millis() - lastActivity > 5L*60*1000) cmdStopServerInst();
+    if (stopAfterMin && (millis() - lastActivity > ((uint32_t)stopAfterMin)*60*1000)) cmdStopServerInst();
   }
 }
 
@@ -61,6 +61,10 @@ void WebSocketServerClass::cmdStartServerInst() {
   LOGGER.flush();
   LOGGER << F("Open http://config.vair-monitor.com to configure device online") << endl;
   LOGGER.flush();
+
+  if (PropertyList.hasProperty(PROP_WSS_STOP_AFTER_MIN)) {
+    stopAfterMin = PropertyList.readLongProperty(PROP_WSS_STOP_AFTER_MIN);
+  }
   // LOGGER.print(WiFi.localIP());
   // LOGGER.println(F("/?cmd=..."));
   //

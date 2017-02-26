@@ -31,7 +31,7 @@ public:
   void sendData(uint8_t ch);
   WebSocketsServer *server;
   uint32_t lastActivity = 0;
-
+  uint8_t stopAfterMin = 5;
 };
 
 extern WebSocketServerClass myWSS;
