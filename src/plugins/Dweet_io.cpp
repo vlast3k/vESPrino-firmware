@@ -64,13 +64,13 @@ void DweetIOClass::onGetDweets() {
 }
 
 bool DweetIOClass::getDweetCommand(char *cmd) {
-    if (WifiStuff.waitForWifi() != WL_CONNECTED) return false;
+    if (WifiStuff.waitForWifi(F("Dweet")) != WL_CONNECTED) return false;
     uint32_t mstart = millis();
     char lastDweet[30];
     rtcMemStore.getLastDweet(lastDweet);
 
     if (!dwKey.length()) return false;
-    if (WifiStuff.waitForWifi() != WL_CONNECTED) return false ;
+    if (WifiStuff.waitForWifi(F("Dweet")) != WL_CONNECTED) return false ;
     String url = String(F("http://dweet.io/get/latest/dweet/for/")) + dwKey;
 
     HTTPClient http;

@@ -79,12 +79,12 @@ void WifiStuffClass::handleWifi() {
 }
 
 
-wl_status_t WifiStuffClass::waitForWifi(uint16_t timeoutMs) {
+wl_status_t WifiStuffClass::waitForWifi(String from, uint16_t timeoutMs) {
   if (WiFi.status() == WL_CONNECTED)  return WL_CONNECTED;
   if (wifiAlreadyWaited && millis() - wifiAlreadyWaited < 60000L) return WiFi.status();
   if (wifiAlreadyWaited) wifiConnectMulti();
   //fireEvent("wifiSearching");
-  LOGGER << F("\nWaiting for WiFi ");
+  LOGGER << F("\nWaiting for WiFi from: ") << from;
   //bool putLF = false;
   int delayFix = 100;
   //const static uint32_t timeoutMs =1000L;
@@ -136,7 +136,7 @@ void WifiStuffClass::connectToWifi(const char *s1, const char *s2, const char *s
   WiFi.mode(WIFI_OFF);
   delay(2500);
   wifiConnectMulti();
-  if (waitForWifi() != WL_CONNECTED) Serial << F("Failed to connect to WiFi") << endl;
+  if (waitForWifi(F("Connect")) != WL_CONNECTED) Serial << F("Failed to connect to WiFi") << endl;
 }
 
 
@@ -258,7 +258,6 @@ void WifiStuffClass::wifiConnectMulti() {
   //WiFi.forceSleepWake();
   //delay(100);
   PERF("WIFI 1")
-  PERF("WIFI 2")
   if (PowerManager.isWokeFromDeepSleep()) {
     loadStaticIPConfigFromRTC();
   }
@@ -285,9 +284,7 @@ void WifiStuffClass::wifiConnectMulti() {
     char x[120], y[120];
     strcpy(x, ssid.c_str());
     strcpy(y, pass.c_str());
-    //LOGGER << "wifibegin :: " << x << y << endl;
     wifiAlreadyWaited = 0;
-    //LOGGER << "Wifi state 3: " << WiFi.status()<< endl;
     WiFi.persistent(false);
     WiFi.mode(WIFI_OFF);
     WiFi.mode(WIFI_STA);
@@ -298,11 +295,7 @@ void WifiStuffClass::wifiConnectMulti() {
     }
 
     WiFi.begin(x, y);
-    //neopixel.signal(LED_WIFI_SEARCH);
     PERF("WIFI 5")
-    //LOGGER << "Wifi state 4: " << WiFi.status()<< endl;
-
-
   } else {
     wifiAlreadyWaited = millis();
     #ifndef HARDCODED_SENSORS
@@ -313,11 +306,6 @@ void WifiStuffClass::wifiConnectMulti() {
 
 void WifiStuffClass::wifiOff() {
   WiFi.disconnect(true); //mode = wifi Off
-  // if (wifiMulti) {
-  //   delete wifiMulti;
-  //   wifiMulti = NULL;
-  // }
-  //WiFi.forceSleepBegin();
 }
 
 

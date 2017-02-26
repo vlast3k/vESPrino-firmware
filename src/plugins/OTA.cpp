@@ -86,7 +86,7 @@ String getHTTPFile(String url) {
 
 void autoUpdateIfForced(const char *ignore) {
   //LOGGER << F("Waiting for Wifi connection\n");
-  if (WifiStuff.waitForWifi() != WL_CONNECTED) return;
+  if (WifiStuff.waitForWifi(F("OTA")) != WL_CONNECTED) return;
   String urlGen = String(F("http://anker-bg.com/vlast3k/vesprino/"));
   String chipid =  String(ESP.getChipId(), 16);
   chipid.toUpperCase();

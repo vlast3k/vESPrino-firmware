@@ -25,7 +25,7 @@ public:
   void loop();
   void onProperty(String &key, String &value);
   void handleWifi();
-  wl_status_t waitForWifi(uint16_t timeoutMs=10000);
+  wl_status_t waitForWifi(String from, uint16_t timeoutMs=10000);
   void activeWait();
   void connectToWifi(const char *s1, const char *s2, const char *s3);
   static void wifiScanNetworks(const char *ignore);

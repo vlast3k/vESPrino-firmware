@@ -63,7 +63,7 @@ extern RTCMemStore rtcMemStore;
 
   void getTimeFromGoogle(String &time) {
     if (DEBUG) LOGGER << F("Check time from google") << endl;
-    if (WifiStuff.waitForWifi() != WL_CONNECTED) return;
+    if (WifiStuff.waitForWifi(F("Timer")) != WL_CONNECTED) return;
     HTTPClient http;
     const char *headers[1] = {"Date"};
     http.begin(F("http://google.com/"));

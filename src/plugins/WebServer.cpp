@@ -33,7 +33,7 @@ void WebServerClass::loop() {
 
 void WebServerClass::cmdStartWebServerInst() {
   if (server != NULL) delete server;
-  if (WifiStuff.waitForWifi() != WL_CONNECTED) return;
+  if (WifiStuff.waitForWifi(F("WebServer")) != WL_CONNECTED) return;
   server = new ESP8266WebServer(80);
   //menuHandler.scheduleCommand("nop 0");
   server->on("/", WebServerClass::onCommand);

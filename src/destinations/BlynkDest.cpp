@@ -43,7 +43,7 @@ bool BlynkDest::setup(MenuHandler *handler) {
 
 void BlynkDest::loop() {
   if (!enabled) return;
-  if (WifiStuff.waitForWifi() != WL_CONNECTED) return;
+  if (WifiStuff.waitForWifi(F("Blynk")) != WL_CONNECTED) return;
   if (!calledConfig) {
     _blynkWifiClient = new WiFiClient();
     _blynkTransport = new BlynkArduinoClient(*_blynkWifiClient);
@@ -66,7 +66,7 @@ Pair* BlynkDest::getPair(LinkedList<Pair *> &data, String &key) {
 
 bool BlynkDest::process(LinkedList<Pair *> &data) {
   if (!enabled) return true;
-  if (WifiStuff.waitForWifi() != WL_CONNECTED) return false;
+  if (WifiStuff.waitForWifi(F("Blynk")) != WL_CONNECTED) return false;
   loop();
   if (!calledConfig) return false;
   String cfg = PropertyList.readProperty(PROP_BLYNK_CFG);

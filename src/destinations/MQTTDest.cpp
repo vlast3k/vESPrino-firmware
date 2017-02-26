@@ -119,7 +119,7 @@ void MQTTDest::cmdCallMqttInst(const char *line) {
   String msg = x+1;
   LOGGER << F("Will send mqtt to:") << topic <<":[" << msg << "]" << endl;
   LOGGER.flush();
-  if (WifiStuff.waitForWifi() != WL_CONNECTED) return;
+  if (WifiStuff.waitForWifi(F("MQTT")) != WL_CONNECTED) return;
 
   if (!mqttStart()) {
     mqttEnd(false);
@@ -144,7 +144,7 @@ bool MQTTDest::process(LinkedList<Pair *> &data) {
   }
   String s = PropertyList.getArrayProperty(F("mqtt_msg_arr"), 0);
   if (!s.length()) return true;
-  if (WifiStuff.waitForWifi() != WL_CONNECTED) return false;
+  if (WifiStuff.waitForWifi(F("MQTT")) != WL_CONNECTED) return false;
 
   if (!mqttStart()) {
     mqttEnd(false);
@@ -203,7 +203,7 @@ bool MQTTDest::reconnect() {
 }
 
 bool MQTTDest::mqttStart() {
-  if (WifiStuff.waitForWifi() != WL_CONNECTED) {
+  if (WifiStuff.waitForWifi(F("MQTT")) != WL_CONNECTED) {
     if (DEBUG) LOGGER << F("MQTT Dest: Cannot send while wifi offline\n");
     return false;
   }

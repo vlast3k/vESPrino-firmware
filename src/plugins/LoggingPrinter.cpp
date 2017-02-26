@@ -33,7 +33,7 @@ void LoggingPrinter::onProperty(String &key, String &value) {
 
 void LoggingPrinter::sendData() {
   if (!length) return;
-  if (logURL.length() > 0 && WifiStuff.waitForWifi() == WL_CONNECTED) {
+  if (logURL.length() > 0 && WifiStuff.waitForWifi(F("Log")) == WL_CONNECTED) {
     Serial << F("Sending log...") << length << F(":") << logURL << endl;// << String((char*)data);
     HTTPClient http;
     //heap("");
@@ -44,7 +44,7 @@ void LoggingPrinter::sendData() {
     Serial << F("sent: ") << res << endl;
 
   }
-  if (logToWss && WifiStuff.waitForWifi() == WL_CONNECTED) {
+  if (logToWss && WifiStuff.waitForWifi(F("Log")) == WL_CONNECTED) {
     //Serial << "Sending wss:" << _HEX(*data) << endl;
     myWSS.sendData(data, length);
   }
@@ -63,7 +63,6 @@ void LoggingPrinter::myWrite(const uint8_t *buffer, size_t size) {
 
 void LoggingPrinter::myWrite(uint8_t chr) {
   if (logURL.length() == 0 && !logToWss) return;
-  //Serial << '_' << chr;
   if (length == MAXSIZE -1){
     return; // the case when flushLog connects to Wifi, and it dumps
   }

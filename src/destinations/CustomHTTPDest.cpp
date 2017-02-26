@@ -117,7 +117,7 @@ int CustomHTTPDest::invokeURL(String &s, LinkedList<Pair *> &data) {
 }
 
 int CustomHTTPDest::invokeURL(String &url, String &method, String &contentType, String &pay) {
-  if (WifiStuff.waitForWifi() != WL_CONNECTED) return -10;
+  if (WifiStuff.waitForWifi(F("HTTP")) != WL_CONNECTED) return -10;
   LOGGER << F("Calling HTTP: [") << url << "]" << endl;
   if (pay.length()) LOGGER << F("CustomHTTPDest::payload = ") << pay << endl;
   LOGGER.flush();

@@ -50,7 +50,7 @@ void WebSocketServerClass::loop() {
 
 void WebSocketServerClass::cmdStartServerInst() {
   if (server != NULL) delete server;
-  if (WifiStuff.waitForWifi() != WL_CONNECTED) return;
+  if (WifiStuff.waitForWifi(F("WSS")) != WL_CONNECTED) return;
   server = new WebSocketsServer(8266);
   //menuHandler.scheduleCommand("nop 0");
   //server->on("/", WebSocketServerClass::onCommand);
