@@ -421,8 +421,8 @@ void setup() {
   LOGGER.flush();
   yield();
   PERF("Setup 13")
-  menuHandler.scheduleCommand(F("***gpio_set D6 0***gpio_set D6 F***"));
-  menuHandler.scheduleCommand(F("***gpio_set D1 0***gpio_set D1 F***"));
+  menuHandler.scheduleCommand(F("@***@gpio_set D6 0***@gpio_set D6 F***"));
+  menuHandler.scheduleCommand(F("@***@gpio_set D1 0***@gpio_set D1 F***"));
 }
 
 //int aa = 0;

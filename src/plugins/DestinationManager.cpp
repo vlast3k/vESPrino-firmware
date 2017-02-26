@@ -143,8 +143,11 @@ void DestinationManagerClass::conditionalSend(bool forceSend, const char *contex
 }
 
 void DestinationManagerClass::onRawRead() {
-  menuHandler.scheduleCommand("@sendNowCond");
-  //conditionalSend(false);
+//  menuHandler.scheduleCommand("@sendNowCond");
+  //if a command is invoked, when Wifi waiting happens here, then no other commands
+  //can be executed
+  cmdSendNowCond("");
+  //conditionalSend(false, "");
 }
 
 void DestinationManagerClass::cmdSendNow(const char* context) {

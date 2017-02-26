@@ -41,6 +41,7 @@ void GPIOClass::cmdGPIOSet(const char *line) {
     mode = (s[1] == '1');
     pinMode(gpio, OUTPUT);
     digitalWrite(gpio, mode);
+    //Serial << "GPIO " << gpio << " " << mode << endl;
   }
 }
 
