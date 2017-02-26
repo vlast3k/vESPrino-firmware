@@ -28,7 +28,7 @@ void DestinationManagerClass::onProperty(String &key, String &value) {
 bool DestinationManagerClass::setup(MenuHandler *handler) {
   tmrRawRead     = new Timer(0, DestinationManagerClass::onRawRead);
   handler->registerCommand(new MenuEntry(F("wsi"), CMD_BEGIN, &DestinationManagerClass::setSendInterval , F("")));
-  handler->registerCommand(new MenuEntry(F("sendNow"), CMD_BEGIN, &DestinationManagerClass::cmdSendNow, F("Process destinatios and send")));
+  handler->registerCommand(new MenuEntry(F("sendNow"), CMD_EXACT, &DestinationManagerClass::cmdSendNow, F("Process destinatios and send")));
   handler->registerCommand(new MenuEntry(F("sendNowCond"), CMD_EXACT, &DestinationManagerClass::cmdSendNowCond, F("Process destinatios and send")));
 
   if (intSendValue) tmrRawRead->Start();
@@ -142,12 +142,8 @@ void DestinationManagerClass::conditionalSend(bool forceSend, const char *contex
   LOGGER.flushLog();
 }
 
-// void on_SendValue() {
-//   conditionalSend(true);
-// }
-
 void DestinationManagerClass::onRawRead() {
-  menuHandler.scheduleCommand("@sendNow");
+  menuHandler.scheduleCommand("@sendNowCond");
   //conditionalSend(false);
 }
 
