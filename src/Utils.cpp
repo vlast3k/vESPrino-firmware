@@ -30,6 +30,7 @@ void storeToEE(int address, const char *str, int maxLength) {
 
 void heap(const char * str) {
   LOGGER << "Heap " << str << ": " << ESP.getFreeHeap() << endl;
+  LOGGER.flush();
 }
 
 char *getJSONConfig(const char *item, char *dest, char *p2, char *p3) {
