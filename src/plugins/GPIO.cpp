@@ -12,6 +12,7 @@ GPIOClass::GPIOClass() {
 
 bool GPIOClass::setup(MenuHandler *handler) {
    handler->registerCommand(new MenuEntry(F("gpio_set"), CMD_BEGIN, GPIOClass::cmdGPIOSet, F("gpio_set <gpio> <1/0/F>")));
+   handler->registerCommand(new MenuEntry(F("gpio_get"), CMD_BEGIN, GPIOClass::cmdGPIOGet, F("gpio_get <gpio>")));
    String str = PropertyList.readProperty(PROP_GPIOCFG);   //,H4,L12,H1,P3  - P - for PIR - do a double check 100 ms after 1 seen
    initPortsFromString(str.c_str());
    oldState = getGPIOState();
@@ -19,12 +20,20 @@ bool GPIOClass::setup(MenuHandler *handler) {
 
 }
 
+void GPIOClass::cmdGPIOGet(const char *line) {
+  char *s = strchr(line, ' ');
+  if (!s) return;
+  int g=convertToGPIO(s+1);
+  pinMode(g, INPUT);
+//  LOGGER << "GPIO:" << (s+1) << "(" << g << ") :" << digitalRead(g) << endl;
+}
+
 void GPIOClass::cmdGPIOSet(const char *line) {
   char *s = strchr(line, ' ');
   if (!s) return;
   int gpio;
   bool mode;
-  gpio = atoi(s+1);
+  gpio = convertToGPIO(s+1);
   s = strchr(s+1, ' ');
   if (!s) return;
   if (s[1] == 'F') pinMode(gpio, INPUT);

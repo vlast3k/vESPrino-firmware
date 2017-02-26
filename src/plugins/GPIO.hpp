@@ -26,5 +26,6 @@ private:
   void initPortsFromString(const char *s);
   uint32_t getGPIOState();
   static void cmdGPIOSet(const char *line);
+  static void cmdGPIOGet(const char *line);
 };
 #endif
