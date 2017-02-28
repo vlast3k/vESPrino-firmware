@@ -25,7 +25,7 @@ void GPIOClass::cmdGPIOGet(const char *line) {
   if (!s) return;
   int g=convertToGPIO(s+1);
   pinMode(g, INPUT);
-//  LOGGER << "GPIO:" << (s+1) << "(" << g << ") :" << digitalRead(g) << endl;
+  LOGGER << "GPIO:" << (s+1) << "(" << g << ") :" << digitalRead(g) << endl;
 }
 
 void GPIOClass::cmdGPIOSet(const char *line) {

@@ -26,6 +26,7 @@ public:
   void cmdDeepSleepInst(const char *line) ;
   bool isWokeFromDeepSleep();
   bool isLowPower;
+  bool useDelay = false;
   bool isQuietStart() {return quietStart;}
 private:
   Timer *timer;

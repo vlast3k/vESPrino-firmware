@@ -9,6 +9,7 @@ extern TimerManagerClass TimerManager;
 uint8_t PowerManagerClass::IterationDurationS = 0;
 
 #define PROP_QUIET_START F("pwr.quiet.start")
+#define PROP_USE_DELAY F("pwr.usedelay")
 
 PowerManagerClass::PowerManagerClass() {
   registerPlugin(this);
@@ -34,6 +35,7 @@ void PowerManagerClass::onProperty(String &key, String &value) {
   if (key == PROP_ITERATION_DURATION) IterationDurationS = atol(value.c_str());
   else if (key == PROP_TIMEOUT_INTERVAL) timeoutIntervalS = atol(value.c_str());
   else if (key == PROP_DEBUG) DEBUG = PropertyList.toBool(value);
+  else if (key == PROP_USE_DELAY) useDelay = PropertyList.toBool(value);
   else if (key == PROP_QUIET_START) {
      quietStart = PropertyList.toBool(value);
      //wokeFromDeepSleep = true;
@@ -79,6 +81,7 @@ void PowerManagerClass::onTimeoutInst() {
   timer->Stop();
   isLowPower = true;
   LOGGER << F("Switched to power-safe mode. Press key during start or restart device to exit.") << endl;
+  LOGGER.flush();
 }
 
 void PowerManagerClass::onNop(const char *line) {
@@ -103,7 +106,7 @@ void PowerManagerClass::onNopInst(const char *line) {
 void PowerManagerClass::loopPowerManager() {
   //LOGGER << "Power Manager: " << millis() << endl;
   //LOGGER.flush();
-  if (isLowPower) {
+  if (isLowPower && !useDelay) {
     uint32_t sec = IterationDurationS;
     //if (PropertyList.hasProperty(PROP_SND_INT)) sec = PropertyList.readLongProperty(PROP_SND_INT);
   //rtcMemStore.setIterations(rtcMemStore.getIterations() + 1);
@@ -122,12 +125,15 @@ void PowerManagerClass::loopPowerManager() {
   } else {
     //regular restart via deep sleep
     if (millis() > 5L*60*60*1000) {
-      Serial << "Quiet restart" << endl;
+      Serial << F("Quiet restart") << endl;
       PropertyList.putProperty(PROP_QUIET_START, "1");
       menuHandler.scheduleCommand(F("restart"));
     }
-      //menuHandler.scheduleCommand(F("nop 1"));
-    delay(1);
+    if (isLowPower) {
+      delay(10000L);
+    } else {
+      delay(1);
+    }
   }
 }
 
