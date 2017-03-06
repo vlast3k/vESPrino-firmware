@@ -99,3 +99,6 @@ BlynkDest blynkDest;
 RGBLedDest _RGBLedDest;
 #endif
 DestinationManagerClass DestinationManager;
+
+int16_t globalTemp = -100;
+int8_t globalHum  = -100;

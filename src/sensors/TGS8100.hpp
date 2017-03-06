@@ -10,7 +10,7 @@ public:
   TGS8100();
   bool setup(MenuHandler *handler);
   void getData(LinkedList<Pair*> *data);
-  int readSensorValue(uint16_t &raw, uint16_t &rs, double &ppm);
+  int readSensorValue(uint16_t &raw, uint16_t &rs, double &ppm, uint16_t &rsa, uint16_t &r0);
   static void test(const char *ignore);
   const char* getName() {
     return "TGS8100";

@@ -43,6 +43,9 @@ bool SI7021Sensor::setup(MenuHandler *handler) {
 //   si7021Sensor.initSensor();
 // }
 
+extern int16_t globalTemp;
+extern int8_t globalHum;
+
 void SI7021Sensor::getData(LinkedList<Pair *> *data) {
   //LOGGER << "SI721 get Data" << endl;
   //delay(100);
@@ -58,6 +61,8 @@ void SI7021Sensor::getData(LinkedList<Pair *> *data) {
    data->add(new Pair("TEMP", t1));
    data->add(new Pair("TEMPR", t1r));
    data->add(new Pair("HUM", String((int)si7021->readHumidity())));
+   globalTemp = adjTemp*10;
+   globalHum  = si7021->readHumidity();
    closeSensor();
 }
 
