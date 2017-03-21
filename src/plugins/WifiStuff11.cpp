@@ -6,6 +6,7 @@
 #define PROP_WIFI_DNS2 F("wifi.dns2")
 #define PROP_WSSERVER_DISABLE F("wss.disable")
 #define PROP_AUTOCFG_DISABLE F("autocfg.disable")
+#define PROP_ENABLE_IP_REUSE F("wifi.ipreuse")
 
 //enum VSP_WIFI_STATE  {VSP_WIFI_CONNECTING, VSP_WIFI_CONNECTED, VSP_WIFI_NOCONFIG, VSP_WIFI_FAILED};
 extern WifiStuffClass WifiStuff;
@@ -27,7 +28,8 @@ void WifiStuffClass::onProperty(String &key, String &value) {
   else if (key == PROP_AUTOCFG_DISABLE) {
     autoCfgDisable = PropertyList.toBool(value);
   //  Serial << "autocfgdisable " << value << " "<< PropertyList.toBool(value)<<  endl;
-  }
+} else if (key == PROP_ENABLE_IP_REUSE) ipReuse = true;
+
   //LOGGER << "onProp:" << key << ":" << value << endl;
 }
 void WifiStuffClass::handleWifi() {
@@ -258,7 +260,7 @@ void WifiStuffClass::wifiConnectMulti() {
   //WiFi.forceSleepWake();
   //delay(100);
   PERF("WIFI 1")
-  if (PowerManager.isWokeFromDeepSleep()) {
+  if (PowerManager.isWokeFromDeepSleep() && ipReuse) {
     loadStaticIPConfigFromRTC();
   }
   //applyStaticWifiConfig();

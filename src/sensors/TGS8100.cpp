@@ -18,6 +18,7 @@ TGS8100::TGS8100() {
 
 bool TGS8100::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("tg8test"), CMD_EXACT, &TGS8100::test, F("TGS8100 toggle testSesnor")));
+  handler->registerCommand(new MenuEntry(F("tg8rst"), CMD_EXACT, &TGS8100::reset, F("TGS8100 reset")));
 //  enabled = PropertyList.readBoolProperty(F("test.sensor"));
   if (I2CHelper::i2cSDA != -1 && I2CHelper::checkI2CDevice(0x8)) enabled = true;
   if (!enabled) {
@@ -26,6 +27,18 @@ bool TGS8100::setup(MenuHandler *handler) {
     }
   }
   return enabled;
+}
+
+void TGS8100::reset(const char *ignore) {
+  Wire.setClock(10000L);
+  //bool x = I2CHelper::checkI2CDevice(0x8);
+  Wire.beginTransmission(0x8);
+  Wire.endTransmission();
+  delay(10);
+  Wire.beginTransmission(0x8);
+  Wire.write(MSG_RESET);
+  Wire.write(42);
+  Wire.endTransmission();
 }
 
 int TGS8100::readSensorValue(uint16_t &raw, uint16_t &rs, double &ppm, uint16_t &rsAdj, uint16_t &maxR0) {

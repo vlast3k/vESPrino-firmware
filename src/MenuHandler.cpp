@@ -60,9 +60,9 @@ bool MenuHandler::processUserInput() {
   //LOGGER.setTimeout(5000);
 }
 
-byte MenuHandler::readLine(int timeout) {
+uint16_t MenuHandler::readLine(int timeout) {
   unsigned long deadline = millis() + timeout;
-  int i = 0;
+  uint16_t i = 0;
   while (millis() < deadline) {
     if (Serial.available()) {
       line[i++] = (char) Serial.read();

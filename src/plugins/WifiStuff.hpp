@@ -58,7 +58,7 @@ private:
   String ssid, pass;
   bool wssDisable = false;
   bool autoCfgDisable = false;
-
+  bool ipReuse = false;
 
 };
 #endif

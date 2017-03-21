@@ -47,7 +47,7 @@ class MenuHandler {
     static void cmdCRC(const char *list);
     void processCommands();
 
-    byte readLine(int);
+    uint16_t readLine(int);
     static const int LINE_LEN=450;
     char line[LINE_LEN];
     LinkedList<MenuEntry*> *commands;
