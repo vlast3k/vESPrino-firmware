@@ -32,8 +32,15 @@ void BME280Sensor::getData(LinkedList<Pair *> *data) {
    String adj = PropertyList.readProperty(PROP_TEMP_ADJ);
    double adjTemp = temp + atof(adj.c_str());
    adjTemp -= 0.5F; //BME280 tends to be 0.5C higher
-   data->add(new Pair("TEMP", String(adjTemp)));
-   data->add(new Pair("TEMPR", String(temp)));
+//   replaceDecimalSeparator(t1);
+   String t1 = String(adjTemp);
+   String t1r = String(temp);
+   replaceDecimalSeparator(t1);
+   replaceDecimalSeparator(t1r);
+   data->add(new Pair("TEMP", t1));
+   data->add(new Pair("TEMPR", t1r));
+  //  data->add(new Pair("TEMP", String(adjTemp)));
+  //  data->add(new Pair("TEMPR", String(temp)));
    data->add(new Pair("HUM", String(bme->readHumidity())));
    data->add(new Pair("PRES", String(bme->readPressure() / 100.0F)));
    data->add(new Pair("ALT", String(bme->readAltitude(SEALEVELPRESSURE_HPA))));

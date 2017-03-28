@@ -1,6 +1,6 @@
 #define PROP_ITERATION_DURATION F("pwr.iterdur")
 #define PROP_TIMEOUT_INTERVAL F("pwr.timeoutint")
-#define BUILD_NUM "20170321"
+#define BUILD_NUM "20170328"
 //#define HARDCODED_SENSORS "CM110x,SI7021,"
 //#define HARDCODED_SENSORS "none,"
 
@@ -33,16 +33,27 @@
 #define PROP_I2C_DISABLED_PORTS F("i2c.disabled.ports")
 #define PROP_TEMP_ADJ F("temp.adjustment")
 
-
-#define LED_START         F("1lnlnd")
-#define LED_START_DS      F("1lnlnlnd")
-#define LED_NO_I2C        F("rlrlrld")
-#define LED_LOST_I2C      F("ryryryd")
-#define LED_WIFI_SEARCH   F("cb")
-#define LED_WIFI_FOUND    F("cncncnd")
-#define LED_WIFI_FAILED   F("rcrcrcnd")
-#define LED_SEND_OK       F("ngngngd")
-#define LED_SEND_FAILED   F("nrnrnrd")
+#ifdef COLORBLIND1
+  #define LED_START         F("1lnlnd")
+  #define LED_START_DS      F("1lnlnlnd")
+  #define LED_NO_I2C        F("rlrlrld")
+  #define LED_LOST_I2C      F("ryryryd")
+  #define LED_WIFI_SEARCH   F("cb")
+  #define LED_WIFI_FOUND    F("cncncnd")
+  #define LED_WIFI_FAILED   F("rcrcrcnd")
+  #define LED_SEND_OK       F("nwnwnwd")
+  #define LED_SEND_FAILED   F("nynynyd")
+#else
+  #define LED_START         F("1lnlnd")
+  #define LED_START_DS      F("1lnlnlnd")
+  #define LED_NO_I2C        F("rlrlrld")
+  #define LED_LOST_I2C      F("ryryryd")
+  #define LED_WIFI_SEARCH   F("cb")
+  #define LED_WIFI_FOUND    F("cncncnd")
+  #define LED_WIFI_FAILED   F("rcrcrcnd")
+  #define LED_SEND_OK       F("ngngngd")
+  #define LED_SEND_FAILED   F("nrnrnrd")
+#endif
 #define LED_GO_DEEPSLEEP
 // #define EE_WIFI_SSID_30B 0
 // #define EE_WIFI_P1_30B 30
