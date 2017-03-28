@@ -35,15 +35,19 @@ void BME280Sensor::getData(LinkedList<Pair *> *data) {
 //   replaceDecimalSeparator(t1);
    String t1 = String(adjTemp);
    String t1r = String(temp);
+   String hum = String(bme->readHumidity());
+   String pres = String(bme->readPressure() / 100.0F);
+   String alt  = String(bme->readAltitude(SEALEVELPRESSURE_HPA));
+   replaceDecimalSeparator(hum);
+   replaceDecimalSeparator(pres);
+   replaceDecimalSeparator(alt);
    replaceDecimalSeparator(t1);
    replaceDecimalSeparator(t1r);
    data->add(new Pair("TEMP", t1));
    data->add(new Pair("TEMPR", t1r));
-  //  data->add(new Pair("TEMP", String(adjTemp)));
-  //  data->add(new Pair("TEMPR", String(temp)));
-   data->add(new Pair("HUM", String(bme->readHumidity())));
-   data->add(new Pair("PRES", String(bme->readPressure() / 100.0F)));
-   data->add(new Pair("ALT", String(bme->readAltitude(SEALEVELPRESSURE_HPA))));
+   data->add(new Pair("HUM",  hum));
+   data->add(new Pair("PRES", pres));
+   data->add(new Pair("ALT",  alt));
 
    closeSensor();
     // LOGGER << "end BME280" << endl;

@@ -56,11 +56,13 @@ void SI7021Sensor::getData(LinkedList<Pair *> *data) {
    double adjTemp = temp + adj;
    String t1 = String(adjTemp);
    String t1r = String(temp);
+   String hum = String(si7021->readHumidity());
+   replaceDecimalSeparator(hum);
    replaceDecimalSeparator(t1);
    replaceDecimalSeparator(t1r);
    data->add(new Pair("TEMP", t1));
    data->add(new Pair("TEMPR", t1r));
-   data->add(new Pair("HUM", String((int)si7021->readHumidity())));
+   data->add(new Pair("HUM", hum));
    globalTemp = adjTemp*10;
    globalHum  = si7021->readHumidity();
    closeSensor();
