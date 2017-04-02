@@ -53,9 +53,9 @@ void CDM7160Sensor::getData(LinkedList<Pair *> *data) {
 //  }
   //if (rtcMemStore.getAverage() > 1) data->add(new Pair("CO2", String(rtcMemStore.getAverage())));
   if (rtcMemStore.getAverage() < 10000 && rtcMemStore.getAverage() > 100) {
-    data->add(new Pair("CO2", String(round(rtcMemStore.getAverage()))));
+    data->add(new Pair("CO2", String((int)round(rtcMemStore.getAverage()))));
   }
-  data->add(new Pair("CO2R", String(ppm)));
+  data->add(new Pair("CO2R", String((int)ppm)));
 
 }
 
