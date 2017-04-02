@@ -204,7 +204,7 @@ bool MQTTDest::reconnect() {
 
 bool MQTTDest::mqttStart() {
   if (WifiStuff.waitForWifi(F("MQTT")) != WL_CONNECTED) {
-    if (DEBUG) LOGGER << F("MQTT Dest: Cannot send while wifi offline\n");
+    LOGGER << F("MQTT Dest: Cannot send while wifi offline\n");
     return false;
   }
   if (client) return reconnect();

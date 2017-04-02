@@ -113,7 +113,8 @@ class WiFiManager
     //if this is true, remove duplicated Access Points - defaut true
     void          setRemoveDuplicateAPs(boolean removeDuplicates);
     void          loop();
-
+    String        _ssid                   = "";
+    String        _pass                   = "";
   private:
     std::unique_ptr<DNSServer>        dnsServer;
     std::unique_ptr<ESP8266WebServer> server;
@@ -128,8 +129,7 @@ class WiFiManager
 
     String   _apName                 = "no-net";
     String   _apPassword             = "";
-    String        _ssid                   = "";
-    String        _pass                   = "";
+
     unsigned long _configPortalTimeout    = 0;
     unsigned long _connectTimeout         = 0;
     unsigned long _configPortalStart      = 0;

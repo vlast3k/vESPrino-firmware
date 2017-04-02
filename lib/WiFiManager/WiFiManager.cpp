@@ -180,13 +180,13 @@ bool WiFiManager::loopConfigPortal() {
 
   if (connect) {
     connect = false;
-    delay(2000);
+    delay(10000);
     DEBUG_WM(F("Connecting to new AP"));
 
     // using user-provided  _ssid, _pass in place of system-stored ssid and pass
-    if (connectWifi(_ssid, _pass) != WL_CONNECTED) {
-      DEBUG_WM(F("Failed to connect."));
-    } else {
+    // if (connectWifi(_ssid, _pass) != WL_CONNECTED) {
+    //   DEBUG_WM(F("Failed to connect."));
+    // } else {
       //connected
       WiFi.mode(WIFI_STA);
       //notify that configuration has changed and any optional parameters should be saved
@@ -195,17 +195,17 @@ bool WiFiManager::loopConfigPortal() {
         _savecallback();
       }
       return true;
-    }
+  //  }
 
-    if (_shouldBreakAfterConfig) {
-      //flag set to exit after config after trying to connect
-      //notify that configuration has changed and any optional parameters should be saved
-      if ( _savecallback != NULL) {
-        //todo: check if any custom parameters actually exist, and check if they really changed maybe
-        _savecallback();
-      }
-      return true;
-    }
+    // if (_shouldBreakAfterConfig) {
+    //   //flag set to exit after config after trying to connect
+    //   //notify that configuration has changed and any optional parameters should be saved
+    //   if ( _savecallback != NULL) {
+    //     //todo: check if any custom parameters actually exist, and check if they really changed maybe
+    //     _savecallback();
+    //   }
+    //   return true;
+    // }
   }
   yield();
   return false;

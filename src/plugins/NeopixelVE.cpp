@@ -18,8 +18,11 @@ NeopixelVE::NeopixelVE() {
 }
 
 void NeopixelVE::onProperty(String &key, String &value) {
-  if (key == PROP_LDR_OVERRIDE) lightPreset = atoi(value.c_str());
-  else if (key == PROP_LDR_ENABLED) {
+  if (key == PROP_LDR_OVERRIDE) {
+    lightPreset = atoi(value.c_str());
+    lightOff = getAmbientLight(0);
+    lightOn = lightOff;
+  } else if (key == PROP_LDR_ENABLED) {
     ldrEnabled = PropertyList.toBool(value);
     lightOff = getAmbientLight(0);
     lightOn = lightOff;

@@ -25,6 +25,7 @@
 extern WifiStuffClass WifiStuff;
 #include "plugins/TimerManager.hpp"
 #include "plugins/DestinationManager.hpp"
+#include "destinations/RGBLedDest.hpp"
 
 #include <ESP8266WiFi.h>
 extern "C" {
@@ -39,6 +40,7 @@ using namespace std;
 
 extern TimerManagerClass TimerManager;
 extern DestinationManagerClass DestinationManager;
+extern RGBLedDest _RGBLedDest;
 //  Timer *tmrStopLED;
 
 //NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod>  *strip;// = NeoPixelBus(1, D4);
@@ -277,8 +279,8 @@ void setup() {
     neopixel.cmdLedHandleColorInst(F("ledcolor seq1l"));
     neopixel.signal(LED_START);
     //activeWait();
-  } else {
-    //neopixel.cmdLedSetBrgInst(F("ledbrg 99"));
+  } else if (!_RGBLedDest.isEnabled()){
+    //if we do this when the RFBDest is enabled, then the color is lost after restart
     neopixel.cmdLedHandleColorInst(F("ledcolor seqn"));
     neopixel.signal(LED_START_DS);
   }
@@ -287,6 +289,9 @@ void setup() {
   //heap("2");
   if (DestinationManager.getWillSendThisIteration()) {
     WifiStuff.wifiConnectMulti();
+  } else {
+    LOGGER << F("No Wifi this session\n");
+    WifiStuff.noWifi();
   }
   yield();
   PERF("Setup 4")

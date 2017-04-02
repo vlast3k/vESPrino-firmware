@@ -40,10 +40,12 @@ public:
   static void cmdIPConfig(const char *ignore);
   void WIFI_registerCommands(MenuHandler *handler);
   static void cbOnSaveConfigCallback();
+  void cbOnSaveConfigCallbackInst();
   void stopAutoWifiConfig();
   static void startAutoWifiConfig(const char *ch);
   void storeStaticWifiInRTC();
   void loadStaticIPConfigFromRTC();
+  void noWifi() { wifiAlreadyWaited = 0;}
 
   RgbColor colorAfterWifiAutoConfig;
 

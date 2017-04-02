@@ -19,13 +19,14 @@ public:
   bool process(LinkedList<Pair*> &data);
   static void test(const char *line);
   void testInst();
+  bool isEnabled();
   void mapColor(int current, int minVal, int maxVal);
   const char* getName() {
     return "RGBLed";
   }
 
 private:
-  bool enabled;
+  bool enabled = false;
   String cfgKey;
   int16_t vmin, vmax;
   bool turnedOffLedOnce = false;

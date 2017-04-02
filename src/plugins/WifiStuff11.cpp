@@ -45,7 +45,6 @@ void WifiStuffClass::handleWifi() {
        && PowerManager.isWokeFromDeepSleep() == false
        && !autoCfgDisable
      ) {
-    //   Serial << "autocfgdisable is: " << autoCfgDisable << endl;
     #ifndef HARDCODED_SENSORS
     //Serial << "ASDSADSADSAD" << endl;
     startAutoWifiConfig("");
@@ -70,6 +69,8 @@ void WifiStuffClass::handleWifi() {
       menuHandler.scheduleCommand("wss_start");
       storeStaticWifiInRTC();
     }
+    //wifiAlreadyWaited = millis();
+    autoCfgDisable = true;
 
     //fireEvent("wifiConnected");
 
@@ -248,6 +249,7 @@ void WifiStuffClass::loadStaticIPConfigFromRTC() {
 }
 
 void WifiStuffClass::storeStaticWifiInRTC() {
+  if (WiFi.localIP() == (uint32_t)0) return;
   rtcMemStore.setGenData(GEN_WIFI_STATIC_IP, WiFi.localIP());
   rtcMemStore.setGenData(GEN_WIFI_GW, WiFi.gatewayIP());
   rtcMemStore.setGenData(GEN_WIFI_SUB, WiFi.subnetMask());
@@ -262,8 +264,9 @@ void WifiStuffClass::wifiConnectMulti() {
   PERF("WIFI 1")
   if (PowerManager.isWokeFromDeepSleep() && ipReuse) {
     loadStaticIPConfigFromRTC();
+    LOGGER << "USING IP From RTC:" << staticIp.toString() << endl;
   }
-  //applyStaticWifiConfig();
+  applyStaticWifiConfig();
   //PERF("WIFI 3")
 
   //wifiMulti = new ESP8266WiFiMulti();
@@ -358,8 +361,15 @@ bool WifiStuffClass::setup(MenuHandler *handler) {
 }
 
 void WifiStuffClass::cbOnSaveConfigCallback() {
-  PropertyList.putProperty(EE_WIFI_SSID, WiFi.SSID().c_str());
-  PropertyList.putProperty(EE_WIFI_P1, WiFi.psk().c_str());
+  WifiStuff.cbOnSaveConfigCallbackInst();
+  // PropertyList.putProperty(EE_WIFI_SSID, (wifiManager->_ssid).c_str());
+  // PropertyList.putProperty(EE_WIFI_P1, (wifiManager->_pass).c_str());
+  // WifiStuff.stopAutoWifiConfig();
+}
+
+void WifiStuffClass::cbOnSaveConfigCallbackInst() {
+  PropertyList.putProperty(EE_WIFI_SSID, (wifiManager->_ssid).c_str());
+  PropertyList.putProperty(EE_WIFI_P1, (wifiManager->_pass).c_str());
   WifiStuff.stopAutoWifiConfig();
 }
 

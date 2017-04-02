@@ -130,6 +130,7 @@ void WebSocketServerClass::onWebSocketEventInst(uint8_t num, WStype_t type, uint
               // send message to client
               // webSocket.sendBIN(num, payload, lenght);
               break;
+
       }
 
 }

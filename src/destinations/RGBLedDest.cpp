@@ -13,13 +13,13 @@ extern NeopixelVE neopixel;
 extern RGBLedDest _RGBLedDest;
 #define PROP_RGBLED_CFG F("rgbled.cfg")
 RGBLedDest::RGBLedDest() {
-  enabled = true;
   registerDestination(this);
 }
 
 void RGBLedDest::onProperty(String &key, String &value) {
   if (key == PROP_RGBLED_CFG) {
     if (getListItemCount(value.c_str()) != 3) return;
+    enabled = true;
     char key[20];
     char cvmin[20];
     char cvmax[20];
@@ -32,7 +32,9 @@ void RGBLedDest::onProperty(String &key, String &value) {
   }
 
 }
-
+bool RGBLedDest::isEnabled() {
+  return enabled;
+}
 
 bool RGBLedDest::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("rgbled_test"), CMD_EXACT, &RGBLedDest::test, F("serial_dump_toggle toggle serial dump output")));
