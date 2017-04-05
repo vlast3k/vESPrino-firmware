@@ -245,6 +245,12 @@ void setup2() {
 }
 void setup() {
   Serial.begin(9600);
+  Serial << F("Starting...") << endl;
+  Serial.flush();
+  //return;
+  delay(1000); // workaround for Arduino controlledversion, which restarts multiple times at the begining
+  //w/o this it goes to fast to SPIFFs.begin() where it can go into a constant reboot
+
   if (DEBUG) heap("Heap at start");
   PERF("Setup a")
   PropertyList.begin(&menuHandler);

@@ -43,7 +43,6 @@ void PropertyListClass::prop_jset(const char *line) {
 }
 
 bool PropertyListClass::assertInit() {
-  //return false;
   if (!initialized) {
     beginInt();
     initialized = true;
@@ -247,13 +246,15 @@ int PropertyListClass::beginInt() {
 }
 
 void PropertyListClass::endInt() {
-  SPIFFS.end();
+  if (initialized) SPIFFS.end();
   initialized = false;
 }
 
 void PropertyListClass::begin(MenuHandler *handler) {
   //return;
+  PERF("Before spiffs begin");
   int res = beginInt();
+  PERF("after spiffs begin");
   setupPropList(&menuHandler);
 
   //LOGGER <<"SPFFS begin = " << res << endl;

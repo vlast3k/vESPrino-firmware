@@ -96,8 +96,8 @@ APDS9960Sensor _APDS9960Sensor;
 //ServoV _ServoV;
 AnnemometerClass annemometer;
 BlynkDest blynkDest;
-RGBLedDest _RGBLedDest;
 #endif
+RGBLedDest _RGBLedDest;
 DestinationManagerClass DestinationManager;
 
 int16_t globalTemp = -100;
