@@ -146,3 +146,7 @@ void initDecimalSeparator() {
 void replaceDecimalSeparator(String &src) {
   src.replace('.', decimalSeparator);
 }
+
+uint32_t getRuntimeSec() {
+  return (millis() + rtcMemStore.getGenData(GEN_MSCOUNTER)) / 1000;
+}

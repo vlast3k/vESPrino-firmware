@@ -17,7 +17,7 @@ WebServerClass::WebServerClass() {
 
 bool WebServerClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("webserver_start"), CMD_BEGIN, WebServerClass::cmdStartWebServer, F("webserver_start")));
-  if (!PowerManager.isWokeFromDeepSleep() && PropertyList.readBoolProperty(PROP_WEBSERVER_STARTONBOOT)) {
+  if (PropertyList.readBoolProperty(PROP_WEBSERVER_STARTONBOOT)) {
     menuHandler.scheduleCommand("webserver_start");
   }
   return false;

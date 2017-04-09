@@ -211,4 +211,5 @@ void registerSensor(Sensor *sensor);
 //void wifiOff();
 void fireEvent(const char *name);
 void initDecimalSeparator();
+uint32_t getRuntimeSec();
 #endif

@@ -23,6 +23,7 @@ bool I2CHelper::checkI2CDevice(int addr) {
 }
 
 bool I2CHelper::checkI2CDevice(int sda, int sca, int addr) {
+
   Wire.begin(sda, sca);
   Wire.beginTransmission(addr);
   int res = Wire.endTransmission();

@@ -51,7 +51,7 @@ void DestinationManagerClass::addCommonValues(LinkedList<Pair *> *data) {
   String chipId = String(ESP.getChipId(), HEX);
   chipId.toUpperCase();
   data->add(new Pair("CHIPID", chipId));
-  data->add(new Pair("RUNTIME", String((millis() + rtcMemStore.getGenData(GEN_MSCOUNTER)) / 1000)));
+  data->add(new Pair("RUNTIME", String(getRuntimeSec())));
   data->add(new Pair("GMTTIME", String(TimerManager.getGMTime())));
   data->add(new Pair("RSSI", String(WiFi.RSSI())));
 }
