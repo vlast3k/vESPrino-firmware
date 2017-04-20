@@ -63,10 +63,11 @@ void RFDest::cmdTest(const char *line) {
 
 void RFDest::sendPing(int num) {
   if (!enabled) return;
-  rfBegin(getGPIO(), 0, 1);
+  Serial << F("Ping: ") << num << endl;
+  rfBegin(getGPIO(), 0, 3);
   delay(1);
   RFXmeter(0x42, 0, num);
-  delay(700);
+  delay(200);
 }
 
 int RFDest::getGPIO() {
@@ -88,8 +89,8 @@ bool RFDest::process(LinkedList<Pair *> &data) {
     int addr = atoi(saddr.c_str());
     if (addr < 0) continue;
     long value = atof(p->value.c_str()) * 100;
-    if (DEBUG) LOGGER.printf(String(F("RF X10 Meter: addr=%d, value=%d\n")).c_str(), addr, value);
-    rfBegin(getGPIO(), 0, 1);
+    LOGGER.printf(String(F("RF X10 Meter: addr=%d, value=%d\n")).c_str(), addr, value);
+    rfBegin(getGPIO(), 0, 3);
     delay(1);
     RFXmeter(addr, 0, value);
     // if (p->key == "HUM") {
@@ -99,7 +100,7 @@ bool RFDest::process(LinkedList<Pair *> &data) {
     // } else if (p->key == "TEMP") {
     //   RFXsensor(addr, 't', 't', value/100);
     // }
-    delay(700);
+    delay(200);
   }
   return true;
 }
@@ -228,8 +229,8 @@ void RFDest::SendCommand(uint8_t *data, uint8_t size){
 	for (int i = 0; i < _rf_repeats; i++){
 		SEND_HIGH();delayMicroseconds(X10_RF_SB_LONG);
 		SEND_LOW();delayMicroseconds(X10_RF_SB_SHORT);
-		for(int i=0; i < size; i++) {
-			SendX10RfByte(data[i]);
+		for(int j=0; j < size; j++) {
+			SendX10RfByte(data[j]);
 		}
 	SendX10RfBit(1);
 	delayMicroseconds(X10_RF_GAP);

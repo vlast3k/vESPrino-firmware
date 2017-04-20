@@ -29,7 +29,7 @@ private:
   double getHumAdj(float from, float to);
   double getTempAdj(float from, float to);
   void onProperty(String &key, String &value);
-  int readSensorValue(uint16_t &raw, uint16_t &rs, double &ppm);
+  int readSensorValue(uint16_t &raw, uint16_t &rs, double &ppm, uint16_t &vcc);
   uint8_t getCrc(uint8_t *data, int len);
 };
 #endif

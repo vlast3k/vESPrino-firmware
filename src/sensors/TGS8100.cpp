@@ -10,6 +10,7 @@ extern int8_t  globalHum;
 
 #define MSG_SET_TEMP_HUM 0x1
 #define MSG_RESET 0x2
+#define MSG_READ 0x3
 
 #define PROP_TGS8100_MAXR0 F("tgs81.maxr0")
 
@@ -61,22 +62,23 @@ uint8_t TGS8100::getCrc(uint8_t *data, int len) {
 }
 
 
-int TGS8100::readSensorValue(uint16_t &raw, uint16_t &rs, double &ppm) {
+int TGS8100::readSensorValue(uint16_t &raw, uint16_t &rs, double &ppm, uint16_t &vcc) {
   Wire.setClock(10000L);
   //bool x = I2CHelper::checkI2CDevice(0x8);
   Wire.beginTransmission(0x8);
   Wire.endTransmission();
-  delay(10);
+  uint32_t x = millis();
+  while (millis() - x < 50);
   Wire.beginTransmission(0x8);
-  Wire.write(MSG_SET_TEMP_HUM);
-  Wire.write((uint8_t) (globalTemp >> 8));
-  Wire.write((uint8_t) (globalTemp & 0xFF));
-  Wire.write((uint8_t) (globalHum & 0xFF));
+  Wire.write(MSG_READ);
   Wire.write(42);
   Wire.endTransmission();
+  x = millis();
+  while (millis() - x < 15);
+
   //delay(50);
   //Serial << "tgs811 state: " << x << endl;
-  delay(10);
+  delay(1);
   int len = Wire.requestFrom((uint8_t)8, (size_t)15, true);    // request 6 bytes from slave device #8
   Serial << "Received " << len << " bytes\n";
   uint8_t rcv[20];
@@ -85,14 +87,16 @@ int TGS8100::readSensorValue(uint16_t &raw, uint16_t &rs, double &ppm) {
     rcv[i] = Wire.read();
     Serial << _HEX(rcv[i]) << ",";
   }
-  Serial << endl;
-  if (rcv[6] != 42) {
-    Serial << "TGS8100: ERROR in i2c Communication" << endl;
-    return 0;
-  }
+  // Serial << endl;
+  // if (rcv[6] != 42) {
+  //   Serial << "TGS8100: ERROR in i2c Communication" << endl;
+  //   return 0;
+  // }
 
   uint8_t header = rcv[0];
   uint8_t crc = getCrc(rcv, 9);
+  // Serial << "crcex=" << _HEX(rcv[9]) << endl;
+  // Serial << "crc=" << _HEX(crc) << endl;
   if (rcv[9] != crc) {
     Serial << "TGS8100: ERROR in i2c Communication" << endl;
     return 0;
@@ -103,7 +107,7 @@ int TGS8100::readSensorValue(uint16_t &raw, uint16_t &rs, double &ppm) {
   //rs      = (rcv[2] << 8) + rcv[3];
   //uint16_t ppm100 = (rcv[4] << 8) + rcv[5];
   //rsAdj  = (rcv[6] << 8) + rcv[7];
-  uint16_t vcc    = (rcv[7] << 8) + rcv[8];
+  vcc    = (rcv[7] << 8) + rcv[8];
   //maxR0 = (rcv[10] << 8) + rcv[11];
   //ppm = (float)ppm100/100;
   processData(raw, vcc, rs, ppm);
@@ -159,24 +163,28 @@ double TGS8100::getHumAdj(float from, float to) {
 
 void TGS8100::processData(uint16_t value, uint16_t vcc, uint16_t &rs, double &ppm) {
 //  uint16_t value = raVoc.getAverage();
-  double VIN = (float)vcc / 1000  ;
+  double VIN = (double)vcc / 1000  ;
   double vRfix = VIN* (double)value/1024;
   double RFIX = 220;
   //double R0 = 147; // in room air
   //double R0 = 185; //in outside
   double GRAD = 1.8;
   double cRs = (3.0F - vRfix)/vRfix*RFIX;
-  double adjFactor = 100.0F + getTempAdj(20, globalTemp) + getHumAdj(40, globalHum);
-  Serial << "TempAdj: " << getTempAdj(20, globalTemp) << endl;
+  double tempF = (double)globalTemp/10;
+  double adjFactor = 100.0F + getTempAdj(20, tempF) + getHumAdj(40, globalHum);
+  Serial << "TempAdj: " << getTempAdj(20, tempF) << endl;
   Serial << "HumAdj:  " << getHumAdj(40, globalHum)   << endl;
+  Serial << "adjf: " << adjFactor << endl;
   adjFactor /= (double)100;
   cRsAdj = cRs * adjFactor;
   double rsr0 = cRsAdj/cMaxR0;
-  ppm = pow(1.0F/rsr0, GRAD);
+  //ppm = pow(1.0F/rsr0, GRAD);
+  ppm = pow(rsr0, -2.2F)*0.52F - 0.1F;
+
   uint16_t ppm100 = ppm*100;
   rs = cRs;
   uint16_t rsuadj = cRsAdj;
-  Serial << "cTemp: " << globalTemp;
+  Serial << "cTemp: " << tempF;
   Serial.flush();
   Serial << ", chum: " << globalHum << ", adjF:" << adjFactor << ", cRsAdj: " << cRsAdj << ", rs:" << cRs << endl;
   Serial.flush();
@@ -185,9 +193,9 @@ void TGS8100::processData(uint16_t value, uint16_t vcc, uint16_t &rs, double &pp
 
 extern TGS8100 _TGS8100;
 void TGS8100::test(const char *ignore) {
-  uint16_t raw, rs, rsa, r0;
+  uint16_t raw, rs, rsa, r0, vcc;
   double ppm;
-  Serial << _TGS8100.readSensorValue(raw, rs, ppm) << endl;
+  Serial << _TGS8100.readSensorValue(raw, rs, ppm, vcc) << endl;
 
   // for (int i=0; i < 100; i++) {
   //   Serial << i << ": " << _TGS8100.readSensorValue() << endl;
@@ -197,7 +205,7 @@ void TGS8100::test(const char *ignore) {
 
 void TGS8100::onIteration(uint32_t iterations) {
   // sensor needs 4h to warmup
-  if (iterations < 400) return;
+  if (iterations < 40) return;
   if (cMaxR0 < (uint16_t)cRsAdj) {
     cMaxR0 = cRsAdj;
     String s = String(cMaxR0);
@@ -209,17 +217,18 @@ void TGS8100::getData(LinkedList<Pair *> *data) {
   if (!enabled) return;
 
   LOGGER << F("TGS8100::getData") << endl;
-  uint16_t raw, rs;
+  uint16_t raw, rs, vcc;
   //uint8_t state;
   double ppm;
-  int x = readSensorValue(raw, rs, ppm);
+  int x = readSensorValue(raw, rs, ppm, vcc);
 
   if (x > 0) {
     data->add(new Pair("VOC_RAW", String(raw)));
     data->add(new Pair("VOC_RS", String(rs)));
     data->add(new Pair("VOC_PPM", String(ppm)));
-    data->add(new Pair("VOC_APPM", String(ppm*400)));
+    data->add(new Pair("VOC_APPM", String(400 + (ppm-0.5)*300)));
     data->add(new Pair("VOC_RSA", String(cRsAdj)));
     data->add(new Pair("VOC_R0", String(cMaxR0)));
+    data->add(new Pair("VOC_VCC", String(vcc)));
   }
 }
