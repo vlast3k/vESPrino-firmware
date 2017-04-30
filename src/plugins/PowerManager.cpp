@@ -123,7 +123,6 @@ void PowerManagerClass::loopPowerManager() {
     ESP.deepSleep(sec*1000*1000);
     delay(2000);
   } else {
-    //regular restart via deep sleep
     if (millis() > 5L*60*60*1000) {
       Serial << F("Quiet restart") << endl;
       PropertyList.putProperty(PROP_QUIET_START, "1");

@@ -163,25 +163,27 @@ double TGS8100::getHumAdj(float from, float to) {
 
 void TGS8100::processData(uint16_t value, uint16_t vcc, uint16_t &rs, double &ppm) {
 //  uint16_t value = raVoc.getAverage();
+  double RFIX = 91;
+  //double GRAD = 1.8;
   double VIN = (double)vcc / 1000  ;
-  double vRfix = VIN* (double)value/1024;
-  double RFIX = 220;
+  //double vRfix = VIN* (double)value/1024;
+  //connection VIN -> 3.0v -> 91k -> Analog -> Sensor -> GND
+  double v_rs = VIN* (double)value/1024;
+  double v_rfix = 3 - v_rs;
+  double cRs = v_rs * RFIX / v_rfix;
+  //double RFIX = 220;
   //double R0 = 147; // in room air
   //double R0 = 185; //in outside
-  double GRAD = 1.8;
-  double cRs = (3.0F - vRfix)/vRfix*RFIX;
+  //double cRs = (3.0F - vRfix)/vRfix*RFIX;
   double tempF = (double)globalTemp/10;
   double adjFactor = 100.0F + getTempAdj(20, tempF) + getHumAdj(40, globalHum);
-  Serial << "TempAdj: " << getTempAdj(20, tempF) << endl;
-  Serial << "HumAdj:  " << getHumAdj(40, globalHum)   << endl;
-  Serial << "adjf: " << adjFactor << endl;
   adjFactor /= (double)100;
   cRsAdj = cRs * adjFactor;
   double rsr0 = cRsAdj/cMaxR0;
   //ppm = pow(1.0F/rsr0, GRAD);
   ppm = pow(rsr0, -2.2F)*0.52F - 0.1F;
 
-  uint16_t ppm100 = ppm*100;
+//  uint16_t ppm100 = ppm*100;
   rs = cRs;
   uint16_t rsuadj = cRsAdj;
   Serial << "cTemp: " << tempF;
@@ -189,6 +191,9 @@ void TGS8100::processData(uint16_t value, uint16_t vcc, uint16_t &rs, double &pp
   Serial << ", chum: " << globalHum << ", adjF:" << adjFactor << ", cRsAdj: " << cRsAdj << ", rs:" << cRs << endl;
   Serial.flush();
   Serial << "rsuadj: " << rsuadj << ", vcc: " << vcc << ", cMaxR0: " << cMaxR0 << endl;
+  Serial << "TempAdj: " << getTempAdj(20, tempF) << endl;
+  Serial << "HumAdj:  " << getHumAdj(40, globalHum)   << endl;
+  Serial << "adjf: " << adjFactor << endl;
 }
 
 extern TGS8100 _TGS8100;
