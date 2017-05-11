@@ -19,10 +19,12 @@ public:
   // void toggleInst();
 
 private:
-  uint16_t cMaxR0 = 120;
+  uint16_t cMaxR0 = 0;
+  uint16_t cMaxR0prv = 0;
   double cRsAdj = 0;
   bool enabled = false;
   uint32_t sensorStarted = 0;
+  uint32_t iterationStarted = 0;
 
   void onIteration(uint32_t iterations);
   void processData(uint16_t value, uint16_t vcc, uint16_t &rs, double &ppm);
@@ -31,5 +33,6 @@ private:
   void onProperty(String &key, String &value);
   int readSensorValue(uint16_t &raw, uint16_t &rs, double &ppm, uint16_t &vcc);
   uint8_t getCrc(uint8_t *data, int len);
+  uint16_t getMaxR0();
 };
 #endif

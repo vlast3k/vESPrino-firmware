@@ -58,6 +58,10 @@ void PropertyListClass::putProperty(const __FlashStringHelper *key, const __Flas
   putProperty(String(key).c_str(), String(value).c_str(), runtimeProp);
 }
 
+void PropertyListClass::putProperty(const __FlashStringHelper *key, uint32_t value, bool runtimeProp) {
+  putProperty(String(key).c_str(), String(value).c_str(), runtimeProp);
+}
+
 char *PropertyListClass::readProperty(const __FlashStringHelper *key) {
   return readProperty(String(key).c_str());
 }

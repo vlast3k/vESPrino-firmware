@@ -20,18 +20,12 @@ bool RFDest::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("rf_test"), CMD_BEGIN, &RFDest::cmdTest, F("rf_setaddr \"CO2\" \"136\"")));
 //  checkIfDefaultsAreSet();
   enabled = PropertyList.readBoolProperty(F("rf.enabled"));
-  if (enabled) {
-    LOGGER << F("enabled\n");
-    sendPing(1000);
-    // rfBegin(D6, 0, 1);
-    // delay(1000);
-    // RFXmeter(12, 0, 1111);
-    // delay(1000);
-    // RFXmeter(12, 0, 1111);
-    // delay(1000);
-    // RFXmeter(12, 0, 1111);
-    // delay(1000);
-  }
+  // if (enabled) {
+  //   //LOGGER << F("enabled\n");
+  //   if (PowerManager.isWokeFromDeepSleep() == false) {
+  //    sendPing(1000);
+  //   }
+  // }
   return enabled;
 }
 
@@ -85,10 +79,11 @@ bool RFDest::process(LinkedList<Pair *> &data) {
     String s = F("rf.");
     s += p->key;
     String saddr = PropertyList.readProperty(s);
-    if (saddr.length() == 0) saddr = PropertyList.readProperty(F("rf.GEN"));
+    if (saddr.length() == 0) continue;//.saddr = PropertyList.readProperty(F("rf.GEN"));
     int addr = atoi(saddr.c_str());
     if (addr < 0) continue;
     long value = atof(p->value.c_str()) * 100;
+    if (p->key != F("TEMP")) value /= 100;
     LOGGER.printf(String(F("RF X10 Meter: addr=%d, value=%d\n")).c_str(), addr, value);
     rfBegin(getGPIO(), 0, 3);
     delay(1);

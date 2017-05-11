@@ -414,3 +414,9 @@ void WifiStuffClass::loop() {
     }
   }
 }
+
+void WifiStuffClass::noWifi() {
+  wifiAlreadyWaited = 0;
+  WiFi.disconnect();
+  WiFi.mode(WIFI_OFF);  
+}

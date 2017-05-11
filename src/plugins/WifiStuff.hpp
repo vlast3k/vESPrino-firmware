@@ -45,7 +45,7 @@ public:
   static void startAutoWifiConfig(const char *ch);
   void storeStaticWifiInRTC();
   void loadStaticIPConfigFromRTC();
-  void noWifi() { wifiAlreadyWaited = 0;}
+  void noWifi();
 
   RgbColor colorAfterWifiAutoConfig;
 

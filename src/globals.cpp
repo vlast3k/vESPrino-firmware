@@ -37,6 +37,7 @@
 #include "plugins/DestinationManager.hpp"
 #include "destinations/BlynkDest.hpp"
 #include "sensors/DS18B20Sensor.hpp"
+#include "sensors/PMS7003Sensor.hpp"
 #include "plugins/LoggingPrinter.hpp"
 #include "plugins/WifiStuff.hpp"
 #include "destinations/RGBLedDest.hpp"
@@ -82,7 +83,7 @@ CDM7160Sensor cdm7160Sensor;
 DS18B20Sensor _DS18B20Sensor;
 TGS8100 _TGS8100;
 LDR _LDR;
-
+PMS7003Sensor _PMS7003Sensor;
 
 MQTTDest mqttDest;
 RFDest rfDest;

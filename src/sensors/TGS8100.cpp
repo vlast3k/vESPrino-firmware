@@ -13,7 +13,8 @@ extern int8_t  globalHum;
 #define MSG_READ 0x3
 
 #define PROP_TGS8100_MAXR0 F("tgs81.maxr0")
-
+#define PROP_TGS8100_MAXR0PRV F("tgs81.maxr0prv")
+#define PROP_TGS8100_IT_STARTED F("tgs81.itstart")
 TGS8100::TGS8100() {
   //enabled = true;
   registerSensor(this);
@@ -22,6 +23,10 @@ TGS8100::TGS8100() {
 void TGS8100::onProperty(String &key, String &value) {
   if (key == PROP_TGS8100_MAXR0) {
     cMaxR0 = atol(value.c_str());
+  } else if (key == PROP_TGS8100_MAXR0PRV) {
+    cMaxR0prv = atol(value.c_str());
+  } else if (key == PROP_TGS8100_IT_STARTED) {
+    iterationStarted = atol(value.c_str());
   }
 }
 
@@ -29,6 +34,11 @@ bool TGS8100::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("tg8test"), CMD_EXACT, &TGS8100::test, F("TGS8100 toggle testSesnor")));
   handler->registerCommand(new MenuEntry(F("tg8rst"), CMD_EXACT, &TGS8100::reset, F("TGS8100 reset")));
 //  enabled = PropertyList.readBoolProperty(F("test.sensor"));
+Serial <<"TGS8 " <<  I2CHelper::i2cSDA<<I2CHelper::i2cSCL<<endl;
+  if (I2CHelper::i2cSDA == -1) {
+    enabled = false;
+    return false;
+  }
   if (I2CHelper::i2cSDA != -1 && I2CHelper::checkI2CDevice(0x8)) enabled = true;
   if (!enabled) {
     LOGGER << F("Scanning for TGS8100 ");
@@ -179,7 +189,7 @@ void TGS8100::processData(uint16_t value, uint16_t vcc, uint16_t &rs, double &pp
   double adjFactor = 100.0F + getTempAdj(20, tempF) + getHumAdj(40, globalHum);
   adjFactor /= (double)100;
   cRsAdj = cRs * adjFactor;
-  double rsr0 = cRsAdj/cMaxR0;
+  double rsr0 = cRsAdj/getMaxR0();
   //ppm = pow(1.0F/rsr0, GRAD);
   ppm = pow(rsr0, -2.2F)*0.52F - 0.1F;
 
@@ -208,13 +218,29 @@ void TGS8100::test(const char *ignore) {
   // }
 }
 
+uint16_t TGS8100::getMaxR0() {
+  if (cMaxR0prv > 0) return cMaxR0prv;
+  else return cMaxR0;
+}
+
 void TGS8100::onIteration(uint32_t iterations) {
-  // sensor needs 4h to warmup
-  if (iterations < 40) return;
+  //// sensor needs 4-5h to warmup
+  // one iteration is 8 sec
+  // 75 iterations are 10 min
+  // 600 = 1 hour
+  if (iterations < 600 * 1) return;
+  if (iterationStarted + 600*24 < iterations) {
+    iterationStarted = iterations;
+    if (cMaxR0prv > 0) cMaxR0prv = (cMaxR0prv + cMaxR0)/2;
+    cMaxR0prv = cMaxR0;
+    cMaxR0 = 0;
+    PropertyList.putProperty(PROP_TGS8100_IT_STARTED, iterationStarted);
+    PropertyList.putProperty(PROP_TGS8100_MAXR0, cMaxR0);
+    PropertyList.putProperty(PROP_TGS8100_MAXR0PRV, cMaxR0prv);
+  }
   if (cMaxR0 < (uint16_t)cRsAdj) {
     cMaxR0 = cRsAdj;
-    String s = String(cMaxR0);
-    PropertyList.putProperty(PROP_TGS8100_MAXR0, s.c_str());
+    PropertyList.putProperty(PROP_TGS8100_MAXR0, cMaxR0);
   }
 }
 
@@ -234,6 +260,7 @@ void TGS8100::getData(LinkedList<Pair *> *data) {
     data->add(new Pair("VOC_APPM", String(400 + (ppm-0.5)*300)));
     data->add(new Pair("VOC_RSA", String(cRsAdj)));
     data->add(new Pair("VOC_R0", String(cMaxR0)));
+    data->add(new Pair("VOC_R0PRV", String(cMaxR0prv)));
     data->add(new Pair("VOC_VCC", String(vcc)));
   }
 }

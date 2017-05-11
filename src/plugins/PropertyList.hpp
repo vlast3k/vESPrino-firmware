@@ -17,6 +17,7 @@ public:
   void begin(MenuHandler *handler);
   void putProperty(const __FlashStringHelper *key, const char *value, bool runtimeProp = false);
   void putProperty(const __FlashStringHelper *key, const __FlashStringHelper *value, bool runtimeProp = false);
+  void putProperty(const __FlashStringHelper *key, uint32_t value, bool runtimeProp = false);
   void putProperty(const char *key, const char *value, bool runtimeProp = false);
   char *readProperty(const __FlashStringHelper *key);
   char *readProperty(const char *key);
