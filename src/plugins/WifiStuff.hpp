@@ -25,7 +25,7 @@ public:
   void loop();
   void onProperty(String &key, String &value);
   void handleWifi();
-  wl_status_t waitForWifi(String from, uint16_t timeoutMs=10000);
+  wl_status_t waitForWifi(String from, uint16_t timeoutMs=20000);
   void activeWait();
   void connectToWifi(const char *s1, const char *s2, const char *s3);
   static void wifiScanNetworks(const char *ignore);
@@ -45,7 +45,9 @@ public:
   static void startAutoWifiConfig(const char *ch);
   void storeStaticWifiInRTC();
   void loadStaticIPConfigFromRTC();
+  void clearStaticIPConfigFromRTC();
   void noWifi();
+  void handleFailedConnect();
 
   RgbColor colorAfterWifiAutoConfig;
 
@@ -60,7 +62,7 @@ private:
   String ssid, pass;
   bool wssDisable = false;
   bool autoCfgDisable = false;
-  bool ipReuse = false;
+  bool ipReuse = true;
 
 };
 #endif

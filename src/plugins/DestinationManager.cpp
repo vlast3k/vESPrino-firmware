@@ -10,6 +10,8 @@ extern NeopixelVE neopixel;
 #include "plugins/TimerManager.hpp"
 extern TimerManagerClass TimerManager;
 extern DestinationManagerClass DestinationManager;
+#include "plugins/WifiStuff.hpp"
+extern WifiStuffClass WifiStuff;
 
 Timer *tmrRawRead;
 uint32_t intSendValue   = 120000L;
@@ -116,6 +118,7 @@ void DestinationManagerClass::conditionalSend(bool forceSend, const char *contex
   yield();
   forceSend = forceSend || getWillSendThisIteration();
   if (!forceSend) return;
+  if (WifiStuff.waitForWifi(F("DestMgr")) != WL_CONNECTED) return;
   LinkedList<Pair *> values = LinkedList<Pair* >();
   addCommonValues(&values);
   addContextValues(&values, strchr(context, ' '));
@@ -123,7 +126,7 @@ void DestinationManagerClass::conditionalSend(bool forceSend, const char *contex
   PERF("SEND 2")
   yield();
   bool res = true;
-  if (forceSend) res = sendDataToDestinations(&values);
+  res = sendDataToDestinations(&values);
   if (res) neopixel.signal(LED_SEND_OK);
   else {
     neopixel.signal(LED_SEND_FAILED);

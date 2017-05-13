@@ -18,14 +18,20 @@ RGBLedDest::RGBLedDest() {
 
 void RGBLedDest::onProperty(String &key, String &value) {
   if (key == PROP_RGBLED_CFG) {
-    if (getListItemCount(value.c_str()) != 3) return;
+    int items = getListItemCount(value.c_str());
+    //if (getListItemCount(value.c_str()) 3) return;
     enabled = true;
     char key[20];
     char cvmin[20];
     char cvmax[20];
-    getListItem(value.c_str(), key, 0);
-    getListItem(value.c_str(), cvmin, 1);
-    getListItem(value.c_str(), cvmax, 2);
+    char colors[20];
+    if (items > 0) getListItem(value.c_str(), key, 0);
+    if (items > 1) getListItem(value.c_str(), cvmin, 1);
+    if (items > 2) getListItem(value.c_str(), cvmax, 2);
+    if (items > 3) {
+      getListItem(value.c_str(), colors, 3);
+      vcolors = colors;
+    }
     cfgKey = key;
     vmin = atoi(cvmin);
     vmax = atoi(cvmax);
@@ -51,7 +57,7 @@ bool RGBLedDest::setup(MenuHandler *handler) {
      Serial << F("No RGB Led cfg") << endl;
      return;
    }
-   int step = (vmax - vmin)/50;
+   float step = abs((vmax - vmin)/50);
    for (int i=vmin - step; i < vmax + step; i+=step) {
      LOGGER << F("Value: ") << i << F(" / ") << vmax << endl;
      LOGGER.flush();
@@ -66,19 +72,23 @@ bool RGBLedDest::setup(MenuHandler *handler) {
 // }
 
 void RGBLedDest::mapColor(int current, int minVal, int maxVal) {
-  String colorRange ="uyrv";
+  String colorRange;
+  if (vcolors.length() > 0) colorRange = vcolors;
+  else colorRange ="uyrv";
   // int minVal = 400;
   // int maxVal = 3400; //3000  ... /4 = 750
   //int current = 1300; // divv = 900
   current = constrain(current, minVal, maxVal-1);
+  Serial << "Current = " << current;
   int steps = colorRange.length() - 1;
-  int numPerVal = (maxVal - minVal) / steps; // = 750
-  int colorIdx = (current - minVal) / numPerVal; // = 1
+  int numPerVal = abs ((maxVal - minVal)) / steps; // = 750
+  int colorIdx = abs(current - minVal) / numPerVal; // = 1
   char colorStart = colorRange.charAt(colorIdx);
   char colorEnd   = colorRange.charAt(colorIdx + 1);
   int rangeStart = minVal + numPerVal * colorIdx;
   int currentX = current - rangeStart;
   float place = (float)currentX/numPerVal;
+  Serial << "place = " << place << ", colorIdx = " << colorIdx << endl;
   RgbColor cStart = neopixel.getColorMapping(colorStart);
   RgbColor cEnd   = neopixel.getColorMapping(colorEnd);
 

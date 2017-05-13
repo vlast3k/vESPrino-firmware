@@ -10,33 +10,22 @@
 #include "sensors/CO2Sensor.hpp"
 
 extern CO2Sensor co2Sensor;
+#define PROP_RF_ENABLED F("rf.enabled")
 
 RFDest::RFDest() {
   registerDestination(this);
 }
 
+void RFDest::onProperty(String &key, String &value) {
+  if (key == PROP_RF_ENABLED) {
+    enabled = PropertyList.toBool(value);
+  }
+}
+
 bool RFDest::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("rf_setaddr"), CMD_BEGIN, &RFDest::cmdSetAddr, F("rf_setaddr \"CO2\" \"136\"")));
   handler->registerCommand(new MenuEntry(F("rf_test"), CMD_BEGIN, &RFDest::cmdTest, F("rf_setaddr \"CO2\" \"136\"")));
-//  checkIfDefaultsAreSet();
-  enabled = PropertyList.readBoolProperty(F("rf.enabled"));
-  // if (enabled) {
-  //   //LOGGER << F("enabled\n");
-  //   if (PowerManager.isWokeFromDeepSleep() == false) {
-  //    sendPing(1000);
-  //   }
-  // }
   return enabled;
-}
-
-void RFDest::checkIfDefaultsAreSet() {
-  if (!PropertyList.hasProperty(F("rf.CO2")))  PropertyList.putProperty(F("rf.CO2"),  F("136"));
-  if (!PropertyList.hasProperty(F("rf.PM25"))) PropertyList.putProperty(F("rf.PM25"), F("137"));
-  if (!PropertyList.hasProperty(F("rf.PM10"))) PropertyList.putProperty(F("rf.PM10"), F("138"));
-  if (!PropertyList.hasProperty(F("rf.TEMP"))) PropertyList.putProperty(F("rf.TEMP"), F("140"));
-  if (!PropertyList.hasProperty(F("rf.HUM")))  PropertyList.putProperty(F("rf.HUM"),  F("141"));
-  if (!PropertyList.hasProperty(F("rf.PRES"))) PropertyList.putProperty(F("rf.PRES"), F("142"));
-  if (!PropertyList.hasProperty(F("rf.GEN")))  PropertyList.putProperty(F("rf.GEN"),  F("143"));
 }
 
 void RFDest::cmdSetAddr(const char *line) {

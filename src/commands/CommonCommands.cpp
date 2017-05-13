@@ -45,6 +45,9 @@ void CommonCommands::enableSlave(const char *ignore) {
 
 void CommonCommands::factoryReset(const char *ignore) {
   LOGGER << F("Doing Factory Reset, and restarting...") << endl;
+  //clean up stored Wifi settings in case there were some
+  WiFi.persistent(true);
+  WiFi.disconnect();
   //LOGGER << "was in deep sleep: "<< rtcMemStore.wasInDeepSleep()<< endl;
   // for (int i=0; i < 100; i++) EEPROM.write(i, 0xFF);
   // EEPROM.commit();

@@ -47,10 +47,10 @@ void WebServerClass::cmdStartWebServerInst() {
   if (hostname.length() == 0) hostname = "vthing";
   LOGGER << F("Web Server accessible on :") << endl;
   LOGGER << F("   http://") << WiFi.localIP() << endl;
-  if (MDNS.begin(hostname.c_str())) {
-    LOGGER << F("   http://") << hostname << F(".local/") << endl;
-    MDNS.addService("http", "tcp", 80);
-  }
+  // if (MDNS.begin(hostname.c_str())) {
+  //   LOGGER << F("   http://") << hostname << F(".local/") << endl;
+  //   MDNS.addService("http", "tcp", 80);
+  // }
   NBNS.begin(hostname.c_str());
   LOGGER << F("   http://") << hostname << F("/") << endl;
 }

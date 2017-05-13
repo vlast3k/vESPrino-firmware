@@ -6,7 +6,7 @@
 #define PROP_WIFI_DNS2 F("wifi.dns2")
 #define PROP_WSSERVER_DISABLE F("wss.disable")
 #define PROP_AUTOCFG_DISABLE F("autocfg.disable")
-#define PROP_ENABLE_IP_REUSE F("wifi.ipreuse")
+#define PROP_DISABLE_IP_REUSE F("wifi.disable.ipreuse")
 
 //enum VSP_WIFI_STATE  {VSP_WIFI_CONNECTING, VSP_WIFI_CONNECTED, VSP_WIFI_NOCONFIG, VSP_WIFI_FAILED};
 extern WifiStuffClass WifiStuff;
@@ -17,21 +17,18 @@ WifiStuffClass::WifiStuffClass() {
 }
 
 void WifiStuffClass::onProperty(String &key, String &value) {
-  if (key == PROP_WIFI_STATIC_IP) staticIp.fromString(value);
+  if (key == PROP_WIFI_STATIC_IP)    staticIp.fromString(value);
   else if (key == PROP_WIFI_GATEWAY) gateway.fromString(value);
-  else if (key == PROP_WIFI_SUBNET) subnet.fromString(value);
-  else if (key == PROP_WIFI_DNS1) dns1.fromString(value);
-  else if (key == PROP_WIFI_DNS2) dns2.fromString(value);
-  else if (key == EE_WIFI_SSID) ssid = value;
-  else if (key == EE_WIFI_P1) pass = value;
+  else if (key == PROP_WIFI_SUBNET)  subnet.fromString(value);
+  else if (key == PROP_WIFI_DNS1)    dns1.fromString(value);
+  else if (key == PROP_WIFI_DNS2)    dns2.fromString(value);
+  else if (key == EE_WIFI_SSID)      ssid = value;
+  else if (key == EE_WIFI_P1)        pass = value;
   else if (key == PROP_WSSERVER_DISABLE) wssDisable = PropertyList.toBool(value);
-  else if (key == PROP_AUTOCFG_DISABLE) {
-    autoCfgDisable = PropertyList.toBool(value);
-  //  Serial << "autocfgdisable " << value << " "<< PropertyList.toBool(value)<<  endl;
-} else if (key == PROP_ENABLE_IP_REUSE) ipReuse = true;
-
-  //LOGGER << "onProp:" << key << ":" << value << endl;
+  else if (key == PROP_AUTOCFG_DISABLE)  autoCfgDisable = PropertyList.toBool(value);
+  else if (key == PROP_DISABLE_IP_REUSE)  ipReuse = !PropertyList.toBool(value);
 }
+
 void WifiStuffClass::handleWifi() {
   //if (wifiMulti && millis() > 8000) wifiMulti->run();
   //LOGGER << "ip = " << ip  << ", localip:" << WiFi.localIP() << endl;
@@ -67,8 +64,9 @@ void WifiStuffClass::handleWifi() {
     stopAutoWifiConfig();
     if (!SLAVE && !PowerManager.isWokeFromDeepSleep() && !wssDisable) {
       menuHandler.scheduleCommand("wss_start");
-      storeStaticWifiInRTC();
+
     }
+    storeStaticWifiInRTC();
     //wifiAlreadyWaited = millis();
     autoCfgDisable = true;
 
@@ -86,6 +84,7 @@ wl_status_t WifiStuffClass::waitForWifi(String from, uint16_t timeoutMs) {
   if (WiFi.status() == WL_CONNECTED)  return WL_CONNECTED;
   if (wifiAlreadyWaited && millis() - wifiAlreadyWaited < 60000L) return WiFi.status();
   if (wifiAlreadyWaited) wifiConnectMulti();
+  //WiFi.setOutputPower(30);
   //fireEvent("wifiSearching");
   LOGGER << F("\nWaiting for WiFi from: ") << from;
   //bool putLF = false;
@@ -116,7 +115,18 @@ wl_status_t WifiStuffClass::waitForWifi(String from, uint16_t timeoutMs) {
   if (WiFi.status() != WL_CONNECTED) neopixel.signal(LED_WIFI_FAILED, SIGNAL_FIRST);
   #endif
   wifiAlreadyWaited = millis();
+  handleFailedConnect();
   return WiFi.status();
+}
+
+void WifiStuffClass::handleFailedConnect() {
+  if (WiFi.status() == WL_CONNECTED) return;
+  int failedConnects = rtcMemStore.getGenData(GEN_WIFI_FAILED_CONN);
+  if (failedConnects > 5) {
+    PowerManager.quietRestart();
+  } else {
+    rtcMemStore.setGenData(GEN_WIFI_FAILED_CONN, 1 + failedConnects);
+  }
 }
 
 void WifiStuffClass::activeWait() {
@@ -240,7 +250,12 @@ void WifiStuffClass::applyStaticWifiConfig() {
   }
 }
 
+void WifiStuffClass::clearStaticIPConfigFromRTC() {
+  rtcMemStore.setGenData(GEN_WIFI_STATIC_IP, 0);
+}
+
 void WifiStuffClass::loadStaticIPConfigFromRTC() {
+  if (rtcMemStore.getGenData(GEN_WIFI_STATIC_IP) == 0) return;
   staticIp = rtcMemStore.getGenData(GEN_WIFI_STATIC_IP);
   gateway = rtcMemStore.getGenData(GEN_WIFI_GW);
   subnet = rtcMemStore.getGenData(GEN_WIFI_SUB);
@@ -264,19 +279,11 @@ void WifiStuffClass::wifiConnectMulti() {
   PERF("WIFI 1")
   if (PowerManager.isWokeFromDeepSleep() && ipReuse) {
     loadStaticIPConfigFromRTC();
+    clearStaticIPConfigFromRTC(); // in case connection fails, next time it will take new ip
     LOGGER << "USING IP From RTC:" << staticIp.toString() << endl;
   }
   applyStaticWifiConfig();
-  //PERF("WIFI 3")
 
-  //wifiMulti = new ESP8266WiFiMulti();
-  //wifiMulti->addAP("vladiHome", "0888414447");
-  //wifiMulti->addAP("Andreev", "4506285842");
-  // String ssid = PropertyList.readProperty(EE_WIFI_SSID);
-  // String pass = PropertyList.readProperty(EE_WIFI_P1);
-//  PERF("WIFI 4")
-  // if (WiFi.SSID()) ssid = WiFi.SSID();
-  // if (WiFi.psk())  pass = WiFi.psk();
   #ifdef HARDCODED_SENSORS
   if (ssid.length() == 0) {
     ssid = "vladiHome";
@@ -291,7 +298,10 @@ void WifiStuffClass::wifiConnectMulti() {
     strcpy(y, pass.c_str());
     wifiAlreadyWaited = 0;
     WiFi.persistent(false);
+    WiFi.disconnect();
+    delay(100);
     WiFi.mode(WIFI_OFF);
+    delay(100);
     WiFi.mode(WIFI_STA);
 
     if (staticIp != 0) {
@@ -418,5 +428,5 @@ void WifiStuffClass::loop() {
 void WifiStuffClass::noWifi() {
   wifiAlreadyWaited = 0;
   WiFi.disconnect();
-  WiFi.mode(WIFI_OFF);  
+  WiFi.mode(WIFI_OFF);
 }

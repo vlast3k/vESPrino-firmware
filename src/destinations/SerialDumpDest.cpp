@@ -16,7 +16,7 @@ SerialDumpDest::SerialDumpDest() {
 }
 
 void SerialDumpDest::onProperty(String &key, String &value) {
-  if (key == PROP_SERIALDUMP) enabled = (value == "1");
+  if (key == PROP_SERIALDUMP) enabled = PropertyList.toBool(value);
 }
 
 

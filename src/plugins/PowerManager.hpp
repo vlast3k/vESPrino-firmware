@@ -28,6 +28,7 @@ public:
   bool isLowPower;
   bool useDelay = false;
   bool isQuietStart() {return quietStart;}
+  void quietRestart();
 private:
   Timer *timer;
   bool wokeFromDeepSleep;

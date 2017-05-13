@@ -123,10 +123,8 @@ void PowerManagerClass::loopPowerManager() {
     ESP.deepSleep(sec*1000*1000);
     delay(2000);
   } else {
-    if (millis() > 5L*60*60*1000) {
-      Serial << F("Quiet restart") << endl;
-      PropertyList.putProperty(PROP_QUIET_START, "1");
-      menuHandler.scheduleCommand(F("restart"));
+    if (millis() > 1L*60*60*1000) {
+      quietRestart();
     }
     if (isLowPower) {
       delay(10000L);
@@ -134,6 +132,12 @@ void PowerManagerClass::loopPowerManager() {
       delay(1);
     }
   }
+}
+
+void PowerManagerClass::quietRestart() {
+  Serial << F("Quiet restart") << endl;
+  PropertyList.putProperty(PROP_QUIET_START, "1");
+  menuHandler.scheduleCommand(F("restart"));
 }
 
 bool PowerManagerClass::isWokeFromDeepSleep() {
