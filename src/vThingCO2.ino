@@ -142,6 +142,7 @@ void setupPlugins(MenuHandler *handler) {
     #ifdef HARDCODED_SENSORS
     neopixel.cmdLedHandleColorInst(F("ledcolor seq95r"));
     #endif
+    delay(4000);
   } else if (storedSensors.length() == 0) {
     if (!foundSensors.length()) foundSensors = "none";
     PropertyList.putProperty(PROP_SENSORS, foundSensors.c_str());
