@@ -74,7 +74,7 @@ bool CO2Sensor::setup(MenuHandler *handler) {
   //thresholds.add(&co2Threshold);
 
 
-  handler->registerCommand(new MenuEntry(F("rco"), CMD_EXACT, CO2Sensor::resetCO2_static, F("")));
+  handler->registerCommand(new MenuEntry(F("rcof"), CMD_BEGIN, CO2Sensor::resetCO2_static, F("")));
 
   LOGGER << F("CO2 now: ") << cubicCo2.rawReadCM1106_CO2() << endl;
   if (!PropertyList.readBoolProperty(PROP_CUBIC_CO2_POWERSAFE)) {
@@ -139,9 +139,17 @@ void CO2Sensor::onCo2Status(CubicStatus status) {
 }
 
 void CO2Sensor::resetCO2_static(const char *ignore) {
-  co2Sensor.resetCO2();
+  if (ignore[3] == 'f') {
+    co2Sensor.resetCO2Force();
+  } else {
+    co2Sensor.resetCO2();
+  }
 }
 
+void CO2Sensor::resetCO2Force() {
+  Serial << F("Setting 400 ppm now");
+  co2Sensor.cubicCo2.co2Set400ppm();
+}
 void CO2Sensor::resetCO2() {
   LOGGER << F("Calibration Mode Enabled.\nPlease put the device for 8 minutes at fresh air.\nYou can now put it outside. It will complete calibration once it worked 5 minutes after restart") << endl;
   LOGGER.flush();

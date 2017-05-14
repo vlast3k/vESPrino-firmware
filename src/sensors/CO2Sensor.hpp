@@ -22,6 +22,7 @@ public:
     return "CM110x";
   }
 
+
 private:
   void onCo2Status(CubicStatus status);
   void onStopLED();
@@ -29,6 +30,7 @@ private:
   static void onCo2Status_static(CubicStatus status);
   static void onStopLED_static();
   static void resetCO2_static(const char *ignore);
+  void resetCO2Force();
   CubicGasSensors cubicCo2;
   boolean startedCO2Monitoring = false;
   //RunningAverage raCO2Raw(4);

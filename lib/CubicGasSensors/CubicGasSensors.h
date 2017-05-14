@@ -48,6 +48,7 @@ class CubicGasSensors
     boolean hasStarted() {
         return startedCO2Monitoring;
     }
+    void co2Set400ppm();
   private:
     //bool isInSkippedList(int8_t *list, uint8_t gpio);
     Stream *LOGGER;
@@ -72,7 +73,6 @@ class CubicGasSensors
     byte getCS(byte* buf);
     boolean validateCS(byte* resp);
     boolean sendCmd(uint8_t *cmd, uint8_t *resp);
-    void co2Set400ppm();
     bool checkForReset();
     void dump(uint8_t *r);
     boolean timePassed(unsigned long since, unsigned long interval) {
