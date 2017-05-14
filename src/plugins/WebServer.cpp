@@ -2,8 +2,6 @@
 #include "MenuHandler.hpp"
 #include <Timer.h>
 #include <ESP8266WebServer.h>
-#include <ESP8266NetBIOS.h>
-#include <ESP8266mDNS.h>
 #include "plugins/WifiStuff.hpp"
 extern WifiStuffClass WifiStuff;
 
@@ -43,16 +41,16 @@ void WebServerClass::cmdStartWebServerInst() {
   LOGGER.print(WiFi.localIP());
   LOGGER.println(F("/?cmd=..."));
 
-  String hostname = PropertyList.readProperty(PROP_ESP_HOSTNAME);
-  if (hostname.length() == 0) hostname = "vthing";
   LOGGER << F("Web Server accessible on :") << endl;
   LOGGER << F("   http://") << WiFi.localIP() << endl;
   // if (MDNS.begin(hostname.c_str())) {
   //   LOGGER << F("   http://") << hostname << F(".local/") << endl;
   //   MDNS.addService("http", "tcp", 80);
   // }
-  NBNS.begin(hostname.c_str());
-  LOGGER << F("   http://") << hostname << F("/") << endl;
+  String hostname = PropertyList.readProperty(PROP_ESP_HOSTNAME);
+  if (hostname.length() != 0) {
+    LOGGER << F("   http://") << hostname << F("/") << endl;
+  }
 }
 
 void WebServerClass::onCommand() {

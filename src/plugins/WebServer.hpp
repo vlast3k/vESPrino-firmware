@@ -6,7 +6,7 @@
 #include <Timer.h>
 #include <ESP8266WebServer.h>
 
-#define PROP_ESP_HOSTNAME F("hostname")
+
 #define PROP_WEBSERVER_STARTONBOOT F("ws.autostart")
 
 class WebServerClass : public Plugin {

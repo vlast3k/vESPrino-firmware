@@ -1,5 +1,6 @@
 #define PROP_ITERATION_DURATION F("pwr.iterdur")
 #define PROP_TIMEOUT_INTERVAL F("pwr.timeoutint")
+#define PROP_ESP_HOSTNAME F("hostname")
 #define BUILD_NUM "20170513"
 //#define HARDCODED_SENSORS "CM110x,SI7021,"
 //#define HARDCODED_SENSORS "none,"

@@ -123,32 +123,32 @@ void WiFiManager::setupConfigPortal() {
 
 }
 
-boolean WiFiManager::autoConnect() {
-  String ssid = F("ESP");
-  ssid += String(ESP.getChipId());
-  return autoConnect(ssid.c_str(), NULL);
-}
-
-boolean WiFiManager::autoConnect(char const *apName, char const *apPassword) {
-  DEBUG_WM(F(""));
-  DEBUG_WM(F("AutoConnect"));
-
-  // read eeprom for ssid and pass
-  //String ssid = getSSID();
-  //String pass = getPassword();
-
-  // attempt to connect; should it fail, fall back to AP
-  WiFi.mode(WIFI_STA);
-
-  if (connectWifi("", "") == WL_CONNECTED)   {
-    DEBUG_WM(F("IP Address:"));
-    DEBUG_WM(WiFi.localIP());
-    //connected
-    return true;
-  }
-
-  return startConfigPortal(apName, apPassword);
-}
+// boolean WiFiManager::autoConnect() {
+//   String ssid = F("ESP");
+//   ssid += String(ESP.getChipId());
+//   return autoConnect(ssid.c_str(), NULL);
+// }
+//
+// boolean WiFiManager::autoConnect(char const *apName, char const *apPassword) {
+//   DEBUG_WM(F(""));
+//   DEBUG_WM(F("AutoConnect"));
+//
+//   // read eeprom for ssid and pass
+//   //String ssid = getSSID();
+//   //String pass = getPassword();
+//
+//   // attempt to connect; should it fail, fall back to AP
+//   WiFi.mode(WIFI_STA);
+//
+//   if (connectWifi("", "") == WL_CONNECTED)   {
+//     DEBUG_WM(F("IP Address:"));
+//     DEBUG_WM(WiFi.localIP());
+//     //connected
+//     return true;
+//   }
+//
+//   return startConfigPortal(apName, apPassword);
+// }
 
 void WiFiManager::startConfigPortalAsync(char const *apName, char const *apPassword) {
   //setup AP
@@ -156,7 +156,7 @@ void WiFiManager::startConfigPortalAsync(char const *apName, char const *apPassw
   delay(100);
   WiFi.mode(WIFI_OFF);
   delay(500);
-  WiFi.mode(WIFI_AP_STA); //if it is only AP, once the wifi is selected, it cannot connect
+  WiFi.mode(WIFI_AP); //if it is only AP, once the wifi is selected, it cannot connect
   DEBUG_WM(F("SET AP STA"));
 
   _apName = apName;
@@ -180,14 +180,15 @@ bool WiFiManager::loopConfigPortal() {
 
   if (connect) {
     connect = false;
-    delay(10000);
-    DEBUG_WM(F("Connecting to new AP"));
+    //delay(10000);
+    //DEBUG_WM(F("Connecting to new AP"));
 
     // using user-provided  _ssid, _pass in place of system-stored ssid and pass
     // if (connectWifi(_ssid, _pass) != WL_CONNECTED) {
     //   DEBUG_WM(F("Failed to connect."));
     // } else {
       //connected
+      WiFi.disconnect();
       WiFi.mode(WIFI_STA);
       //notify that configuration has changed and any optional parameters should be saved
       if ( _savecallback != NULL) {
@@ -229,71 +230,71 @@ boolean  WiFiManager::startConfigPortal(char const *apName, char const *apPasswo
 }
 
 
-int WiFiManager::connectWifi(String ssid, String pass) {
-  DEBUG_WM(F("Connecting as wifi client..."));
-  //Serial << "WifiManager: " << ssid << "," << pass << endl;
-  // check if we've got static_ip settings, if we do, use those.
-  if (_sta_static_ip) {
-    DEBUG_WM(F("Custom STA IP/GW/Subnet"));
-    WiFi.config(_sta_static_ip, _sta_static_gw, _sta_static_sn);
-    DEBUG_WM(WiFi.localIP());
-  }
-  //fix for auto connect racing issue
-  if (WiFi.status() == WL_CONNECTED) {
-    DEBUG_WM(F("Already connected. Bailing out."));
-    return WL_CONNECTED;
-  }
-  //check if we have ssid and pass and force those, if not, try with last saved values
-  if (ssid != "") {
-    WiFi.begin(ssid.c_str(), pass.c_str());
-  } else {
-    if (WiFi.SSID()) {
-      DEBUG_WM(F("Using last saved values, should be faster"));
-      //trying to fix connection in progress hanging
-      ETS_UART_INTR_DISABLE();
-      wifi_station_disconnect();
-      ETS_UART_INTR_ENABLE();
+// int WiFiManager::connectWifi(String ssid, String pass) {
+//   DEBUG_WM(F("Connecting as wifi client..."));
+//   //Serial << "WifiManager: " << ssid << "," << pass << endl;
+//   // check if we've got static_ip settings, if we do, use those.
+//   if (_sta_static_ip) {
+//     DEBUG_WM(F("Custom STA IP/GW/Subnet"));
+//     WiFi.config(_sta_static_ip, _sta_static_gw, _sta_static_sn);
+//     DEBUG_WM(WiFi.localIP());
+//   }
+//   //fix for auto connect racing issue
+//   if (WiFi.status() == WL_CONNECTED) {
+//     DEBUG_WM(F("Already connected. Bailing out."));
+//     return WL_CONNECTED;
+//   }
+//   //check if we have ssid and pass and force those, if not, try with last saved values
+//   if (ssid != "") {
+//     WiFi.begin(ssid.c_str(), pass.c_str());
+//   } else {
+//     if (WiFi.SSID()) {
+//       DEBUG_WM(F("Using last saved values, should be faster"));
+//       //trying to fix connection in progress hanging
+//       ETS_UART_INTR_DISABLE();
+//       wifi_station_disconnect();
+//       ETS_UART_INTR_ENABLE();
+//
+//       WiFi.begin();
+//     } else {
+//       DEBUG_WM(F("No saved credentials"));
+//     }
+//   }
+//
+//   int connRes = waitForConnectResult();
+//   DEBUG_WM (F("Connection result: "));
+//   DEBUG_WM ( connRes );
+//   //not connected, WPS enabled, no pass - first attempt
+//   if (_tryWPS && connRes != WL_CONNECTED && pass == "") {
+//     startWPS();
+//     //should be connected at the end of WPS
+//     connRes = waitForConnectResult();
+//   }
+//   return connRes;
+// }
 
-      WiFi.begin();
-    } else {
-      DEBUG_WM(F("No saved credentials"));
-    }
-  }
-
-  int connRes = waitForConnectResult();
-  DEBUG_WM (F("Connection result: "));
-  DEBUG_WM ( connRes );
-  //not connected, WPS enabled, no pass - first attempt
-  if (_tryWPS && connRes != WL_CONNECTED && pass == "") {
-    startWPS();
-    //should be connected at the end of WPS
-    connRes = waitForConnectResult();
-  }
-  return connRes;
-}
-
-uint8_t WiFiManager::waitForConnectResult() {
-  if (_connectTimeout == 0) {
-    return WiFi.waitForConnectResult();
-  } else {
-    DEBUG_WM (F("Waiting for connection result with time out"));
-    unsigned long start = millis();
-    boolean keepConnecting = true;
-    uint8_t status;
-    while (keepConnecting) {
-      status = WiFi.status();
-      if (millis() > start + _connectTimeout) {
-        keepConnecting = false;
-        DEBUG_WM (F("Connection timed out"));
-      }
-      if (status == WL_CONNECTED || status == WL_CONNECT_FAILED) {
-        keepConnecting = false;
-      }
-      delay(100);
-    }
-    return status;
-  }
-}
+// uint8_t WiFiManager::waitForConnectResult() {
+//   if (_connectTimeout == 0) {
+//     return WiFi.waitForConnectResult();
+//   } else {
+//     DEBUG_WM (F("Waiting for connection result with time out"));
+//     unsigned long start = millis();
+//     boolean keepConnecting = true;
+//     uint8_t status;
+//     while (keepConnecting) {
+//       status = WiFi.status();
+//       if (millis() > start + _connectTimeout) {
+//         keepConnecting = false;
+//         DEBUG_WM (F("Connection timed out"));
+//       }
+//       if (status == WL_CONNECTED || status == WL_CONNECT_FAILED) {
+//         keepConnecting = false;
+//       }
+//       delay(100);
+//     }
+//     return status;
+//   }
+// }
 
 void WiFiManager::startWPS() {
   DEBUG_WM(F("START WPS"));
@@ -588,13 +589,18 @@ void WiFiManager::handleWifiSave() {
     optionalIPFromString(&_sta_static_sn, sn.c_str());
   }
 
+  String saved = FPSTR(HTTP_SAVED);
+  String host = F("http://config.vair-monitor.com/t/?host=");
+  host += _apName;
+  saved.replace(F("{n}"), host);
+
   String page = FPSTR(HTTP_HEAD);
   page.replace(F("{v}"), F("Credentials Saved"));
   page += FPSTR(HTTP_SCRIPT);
   page += FPSTR(HTTP_STYLE);
   page += _customHeadElement;
   page += FPSTR(HTTP_HEAD_END);
-  page += FPSTR(HTTP_SAVED);
+  page += saved;
   page += FPSTR(HTTP_END);
 
   server->send(200, F("text/html"), page);

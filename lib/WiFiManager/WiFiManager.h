@@ -32,7 +32,7 @@ const char HTTP_FORM_START[] PROGMEM      = "<form method='get' action='wifisave
 const char HTTP_FORM_PARAM[] PROGMEM      = "<br/><input id='{i}' name='{n}' length={l} placeholder='{p}' value='{v}' {c}>";
 const char HTTP_FORM_END[] PROGMEM        = "<br/><button type='submit'>save</button></form>";
 const char HTTP_SCAN_LINK[] PROGMEM       = "<br/><div class=\"c\"><a href=\"/wifi\">Scan</a></div>";
-const char HTTP_SAVED[] PROGMEM           = "<div>Credentials Saved<br />Trying to connect ESP to network.<br />If it fails reconnect to AP to try again</div>";
+const char HTTP_SAVED[] PROGMEM           = "<div>Credentials Saved<br />Trying to connect to network.<br />LED will blink 3x blue on success, or stay blue on failure and AP mode activated again<br/>If it was successfull, you can proceed to setup the device via WiFi by going to <a href={n}>{n}</a></div>";
 const char HTTP_END[] PROGMEM             = "</div></body></html>";
 
 #define WIFI_MANAGER_MAX_PARAMS 10
@@ -66,8 +66,8 @@ class WiFiManager
   public:
     WiFiManager();
 
-    boolean       autoConnect();
-    boolean       autoConnect(char const *apName, char const *apPassword = NULL);
+//    boolean       autoConnect();
+//    boolean       autoConnect(char const *apName, char const *apPassword = NULL);
 
     //if you want to always start the config portal, without trying to connect first
     boolean       startConfigPortal(char const *apName, char const *apPassword = NULL);
@@ -153,8 +153,8 @@ class WiFiManager
     //void          setEEPROMString(int start, int len, String string);
 
     int           status = WL_IDLE_STATUS;
-    int           connectWifi(String ssid, String pass);
-    uint8_t       waitForConnectResult();
+  //  int           connectWifi(String ssid, String pass);
+  //  uint8_t       waitForConnectResult();
 
     void          handleRoot();
     void          handleWifi(boolean scan);
@@ -174,7 +174,7 @@ class WiFiManager
     String        toStringIp(IPAddress ip);
 
     boolean       connect;
-    boolean       _debug = true;
+    boolean       _debug = false;
 
     void (*_apcallback)(WiFiManager*) = NULL;
     void (*_savecallback)(void) = NULL;

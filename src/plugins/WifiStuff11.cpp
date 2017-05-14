@@ -1,4 +1,7 @@
 #include "plugins/WifiStuff.hpp"
+#include <ESP8266NetBIOS.h>
+#include <ESP8266mDNS.h>
+
 #define PROP_WIFI_STATIC_IP F("wifi.staticip")
 #define PROP_WIFI_GATEWAY F("wifi.gateway")
 #define PROP_WIFI_SUBNET F("wifi.subnet")
@@ -13,6 +16,11 @@ extern WifiStuffClass WifiStuff;
 extern NeopixelVE neopixel; // there was a reason to put it here and not in commons
 void registerPlugin(Plugin *plugin);
 WifiStuffClass::WifiStuffClass() {
+  if (WiFi.getMode() != WIFI_OFF) {
+    WiFi.persistent(true);
+    WiFi.disconnect(true);
+    WiFi.persistent(false);
+  }
   registerPlugin(this);
 }
 
@@ -69,6 +77,11 @@ void WifiStuffClass::handleWifi() {
     storeStaticWifiInRTC();
     //wifiAlreadyWaited = millis();
     autoCfgDisable = true;
+    String hostname = PropertyList.readProperty(PROP_ESP_HOSTNAME);
+    if (hostname.length() != 0) {
+      NBNS.begin(hostname.c_str());
+    }
+
 
     //fireEvent("wifiConnected");
 
@@ -380,6 +393,7 @@ void WifiStuffClass::cbOnSaveConfigCallback() {
 void WifiStuffClass::cbOnSaveConfigCallbackInst() {
   PropertyList.putProperty(EE_WIFI_SSID, (wifiManager->_ssid).c_str());
   PropertyList.putProperty(EE_WIFI_P1, (wifiManager->_pass).c_str());
+  PropertyList.putProperty(PROP_ESP_HOSTNAME, (wifiManager->getConfigPortalSSID()).c_str());
   WifiStuff.stopAutoWifiConfig();
 }
 
@@ -396,7 +410,7 @@ void WifiStuffClass::stopAutoWifiConfig() {
 void WifiStuffClass::startAutoWifiConfig(const char *ch) {
   if (WifiStuff.wifiManager) return;
   shouldSend = false;
-  neopixel.cmdLedHandleColorInst(F("ledcolor seq1m"));
+  neopixel.cmdLedHandleColorInst(F("ledcolor seq80m"));
   WifiStuff.colorAfterWifiAutoConfig = neopixel.getCurrentColor();
 
   WiFi.persistent(false);
@@ -405,7 +419,7 @@ void WifiStuffClass::startAutoWifiConfig(const char *ch) {
   String chipId = String(ESP.getChipId(), HEX);
   chipId.toUpperCase();
 
-  String name = String(F("vAirMonitor_")) + chipId;
+  String name = String(F("vThing_")) + chipId;
   //wifiManager.autoConnect(name.c_str());
   WifiStuff.wifiManager->setConnectTimeout(14);
   WifiStuff.wifiManager->setSaveConfigCallback(WifiStuffClass::cbOnSaveConfigCallback);

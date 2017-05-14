@@ -79,7 +79,7 @@ void RGBLedDest::mapColor(int current, int minVal, int maxVal) {
   // int maxVal = 3400; //3000  ... /4 = 750
   //int current = 1300; // divv = 900
   current = constrain(current, minVal, maxVal-1);
-  Serial << "Current = " << current;
+  //Serial << "Current = " << current;
   int steps = colorRange.length() - 1;
   int numPerVal = abs ((maxVal - minVal)) / steps; // = 750
   int colorIdx = abs(current - minVal) / numPerVal; // = 1
@@ -88,7 +88,7 @@ void RGBLedDest::mapColor(int current, int minVal, int maxVal) {
   int rangeStart = minVal + numPerVal * colorIdx;
   int currentX = current - rangeStart;
   float place = (float)currentX/numPerVal;
-  Serial << "place = " << place << ", colorIdx = " << colorIdx << endl;
+  //Serial << "place = " << place << ", colorIdx = " << colorIdx << endl;
   RgbColor cStart = neopixel.getColorMapping(colorStart);
   RgbColor cEnd   = neopixel.getColorMapping(colorEnd);
 
