@@ -34,17 +34,17 @@ bool TGS8100::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("tg8test"), CMD_EXACT, &TGS8100::test, F("TGS8100 toggle testSesnor")));
   handler->registerCommand(new MenuEntry(F("tg8rst"), CMD_EXACT, &TGS8100::reset, F("TGS8100 reset")));
 //  enabled = PropertyList.readBoolProperty(F("test.sensor"));
-Serial <<"TGS8 " <<  I2CHelper::i2cSDA<<I2CHelper::i2cSCL<<endl;
+  Serial <<"TGS8 " <<  I2CHelper::i2cSDA<<I2CHelper::i2cSCL<<endl;
   if (I2CHelper::i2cSDA == -1) {
     enabled = false;
     return false;
   }
-  if (I2CHelper::i2cSDA != -1 && I2CHelper::checkI2CDevice(0x8)) enabled = true;
+  if (I2CHelper::i2cSDA != -1 && I2CHelper::checkI2CDevice(TGS8100_I2C_ADDR) && sensorActive()) enabled = true;
   if (!enabled) {
     LOGGER << F("Scanning for TGS8100 ");
-    for (int i=0; i < 100; i++) {
+    for (int i=0; i < 20; i++) {
       if ((i%10) == 0) LOGGER << ".";
-      if (enabled = I2CHelper::checkI2CDevice(0x8)) break;
+      if (enabled = (I2CHelper::checkI2CDevice(TGS8100_I2C_ADDR) && sensorActive())) break;
     }
     LOGGER << endl;
   }
@@ -54,10 +54,10 @@ Serial <<"TGS8 " <<  I2CHelper::i2cSDA<<I2CHelper::i2cSCL<<endl;
 void TGS8100::reset(const char *ignore) {
   Wire.setClock(10000L);
   //bool x = I2CHelper::checkI2CDevice(0x8);
-  Wire.beginTransmission(0x8);
+  Wire.beginTransmission(TGS8100_I2C_ADDR);
   Wire.endTransmission();
   delay(10);
-  Wire.beginTransmission(0x8);
+  Wire.beginTransmission(TGS8100_I2C_ADDR);
   Wire.write(MSG_RESET);
   Wire.write(42);
   Wire.endTransmission();
@@ -71,15 +71,20 @@ uint8_t TGS8100::getCrc(uint8_t *data, int len) {
   return crc;
 }
 
+bool TGS8100::sensorActive() {
+  uint16_t raw, rs, rsa, r0, vcc;
+  double ppm;
+  return (0 != readSensorValue(raw, rs, ppm, vcc));
+}
 
 int TGS8100::readSensorValue(uint16_t &raw, uint16_t &rs, double &ppm, uint16_t &vcc) {
   Wire.setClock(10000L);
   //bool x = I2CHelper::checkI2CDevice(0x8);
-  Wire.beginTransmission(0x8);
+  Wire.beginTransmission(TGS8100_I2C_ADDR);
   Wire.endTransmission();
   uint32_t x = millis();
   while (millis() - x < 50);
-  Wire.beginTransmission(0x8);
+  Wire.beginTransmission(TGS8100_I2C_ADDR);
   Wire.write(MSG_READ);
   Wire.write(42);
   Wire.endTransmission();

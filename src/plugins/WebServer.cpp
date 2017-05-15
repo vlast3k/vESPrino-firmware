@@ -13,13 +13,17 @@ WebServerClass::WebServerClass() {
   registerPlugin(this);
 }
 
+void WebServerClass::onProperty(String &key, String &value) {
+  if (key == PROP_WEBSERVER_STARTONBOOT) autoStart = PropertyList.toBool(value);
+}
+
+
 bool WebServerClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("webserver_start"), CMD_BEGIN, WebServerClass::cmdStartWebServer, F("webserver_start")));
-  if (PropertyList.readBoolProperty(PROP_WEBSERVER_STARTONBOOT)) {
+  if (autoStart) {
     menuHandler.scheduleCommand("webserver_start");
   }
   return false;
-
 }
 
 void WebServerClass::cmdStartWebServer(const char *ignore) {

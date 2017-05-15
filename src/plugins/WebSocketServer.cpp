@@ -11,18 +11,23 @@ extern WifiStuffClass WifiStuff;
 //http://randomkeygen.com/
 
 #define PROP_WSS_STOP_AFTER_MIN F("wss.stop_after_min")
+#define PROP_WSS_AUTOSTART F("wss.autostart")
+
 WebSocketServerClass::WebSocketServerClass() {
   registerPlugin(this);
+}
+
+void WebSocketServerClass::onProperty(String &key, String &value) {
+  if (key == PROP_WSS_AUTOSTART) autoStart = PropertyList.toBool(value);
 }
 
 bool WebSocketServerClass::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("wss_start"), CMD_BEGIN, WebSocketServerClass::cmdStartServer, F("wss_start")));
   handler->registerCommand(new MenuEntry(F("wss_stop"), CMD_EXACT, WebSocketServerClass::cmdStopServer, F("wss_stop")));
-  // if (!PowerManager.isWokeFromDeepSleep()) {
-  //   menuHandler.scheduleCommand("wss_start");
-  // }
+  if (autoStart) {
+    menuHandler.scheduleCommand("wss_start");
+  }
   return false;
-
 }
 
 void WebSocketServerClass::cmdStartServer(const char *ignore) {

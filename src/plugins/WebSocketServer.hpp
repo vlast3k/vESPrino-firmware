@@ -19,6 +19,7 @@ public:
     return "WebSocketServer";
   }
   void loop();
+  void onProperty(String &key, String &value);
   // static void onCommand();
   // void onCommandInst();
   static void cmdStartServer(const char *ignore);
@@ -32,6 +33,7 @@ public:
   WebSocketsServer *server;
   uint32_t lastActivity = 0;
   uint8_t stopAfterMin = 5;
+  bool autoStart = false;
 };
 
 extern WebSocketServerClass myWSS;

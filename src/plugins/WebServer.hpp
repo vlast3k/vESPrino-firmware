@@ -21,7 +21,10 @@ public:
   void onCommandInst();
   static void cmdStartWebServer(const char *ignore);
   void cmdStartWebServerInst();
+  void onProperty(String &key, String &value);
   ESP8266WebServer *server;
+
+  bool autoStart = false;
 
 };
 

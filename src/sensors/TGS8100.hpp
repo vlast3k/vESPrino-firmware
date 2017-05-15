@@ -4,6 +4,7 @@
 #include "interfaces/Sensor.hpp"
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
+#define TGS8100_I2C_ADDR 0x8
 
 class TGS8100 : public Sensor {
 public:
@@ -26,6 +27,7 @@ private:
   uint32_t sensorStarted = 0;
   uint32_t iterationStarted = 0;
 
+  bool sensorActive();
   void onIteration(uint32_t iterations);
   void processData(uint16_t value, uint16_t vcc, uint16_t &rs, double &ppm);
   double getHumAdj(float from, float to);
