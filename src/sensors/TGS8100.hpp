@@ -4,7 +4,7 @@
 #include "interfaces/Sensor.hpp"
 #include <LinkedList.h>
 #include "interfaces/Pair.h"
-#define TGS8100_I2C_ADDR 0x8
+#define TGS8100_I2C_ADDR 0x81
 
 class TGS8100 : public Sensor {
 public:

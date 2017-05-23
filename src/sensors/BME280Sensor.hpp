@@ -18,9 +18,9 @@ public:
   }
   bool initSensor();
   void closeSensor();
+  Adafruit_BME280 *bme = NULL;
 private:
   static void onCmdInit(const char *ignore);
-  Adafruit_BME280 *bme = NULL;
 
 
 };

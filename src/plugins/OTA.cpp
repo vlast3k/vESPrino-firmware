@@ -6,8 +6,8 @@
 #include "plugins/WifiStuff.hpp"
 extern WifiStuffClass WifiStuff;
 
-void autoUpdateIfForced(const char *ignore);
-String getForceUpdateBuild();
+// void autoUpdateIfForced(const char *ignore);
+// String getForceUpdateBuild();
 
 void doHttpUpdate(int mode, const char *url) {
   if (!url) {
@@ -64,51 +64,51 @@ void OTA_registerCommands(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("otahtest"), CMD_BEGIN, ota_otahtest, F("HCP Cfg 1")));
   handler->registerCommand(new MenuEntry(F("otah"), CMD_EXACT, ota_otah, F("HCP Cfg 2")));
   handler->registerCommand(new MenuEntry(F("otau"), CMD_BEGIN, ota_otau, F("HCP Cfg 2")));
-  handler->registerCommand(new MenuEntry(F("fupd"), CMD_EXACT, autoUpdateIfForced, F("HCP Cfg 2")));
+//  handler->registerCommand(new MenuEntry(F("fupd"), CMD_EXACT, autoUpdateIfForced, F("HCP Cfg 2")));
 }
 
-String getHTTPFile(String url) {
-    HTTPClient http;
-    String payload;
-  //  LOGGER << "Retriving HTTP: " << url << endl;
-    http.begin(url); //HTTP
-    int httpCode = http.GET();
-    if(httpCode > 0) {
-        if (DEBUG) LOGGER << F("[HTTP] GET... code:") << httpCode << endl;
-        if(httpCode == HTTP_CODE_OK) payload = http.getString();
-    } else {
-        if (DEBUG) LOGGER << F("[HTTP] GET... failed, error:") << http.errorToString(httpCode).c_str() << endl;
-    }
-
-    http.end();
-    return payload;
-}
-
-void autoUpdateIfForced(const char *ignore) {
-  //LOGGER << F("Waiting for Wifi connection\n");
-  if (WifiStuff.waitForWifi(F("OTA")) != WL_CONNECTED) return;
-  String urlGen = String(F("http://anker-bg.com/vlast3k/vesprino/"));
-  String chipid =  String(ESP.getChipId(), 16);
-  chipid.toUpperCase();
-#ifdef HARDCODED_SENSORS
-  String urlChip = String(F("http://anker-bg.com/vlast3k/vesprino/hardcoded/"));
-#else
-  String urlChip = String(F("http://anker-bg.com/vlast3k/vesprino/")) + chipid + String(F("/"));
-#endif
-  String forcedUpdateGen  = getHTTPFile(urlGen + F("forced.txt"));
-  String forcedUpdateChip = getHTTPFile(urlChip + F("forced.txt"));
-  uint32_t fc = atol(forcedUpdateChip.c_str());
-  uint32_t fg = atol(forcedUpdateGen.c_str());
-  uint32_t bn = atol(BUILD_NUM);
-  LOGGER.printf("fg: %d, fc: %d, bn:%d\n", fg, fc, bn);
-  if (bn >= fc && bn >= fg) return;
-  String forcedUpdate = (fc >= fg) ? forcedUpdateChip : forcedUpdateGen;
-  String urlUpdate    = (fc >= fg) ? urlChip : urlGen;
-  if (DEBUG) {
-    LOGGER << F("OTA: current Build: ") << atol(BUILD_NUM) << endl;
-    LOGGER << F("OTA: forced  Build: ") << atol(forcedUpdate.c_str()) << endl;
-  }
-  //if (atol(BUILD_NUM) >= atol(forcedUpdateGen.c_str())) return;
-  String url = urlUpdate + F("firmware") + forcedUpdate + F(".bin");
-  doHttpUpdate(0, url.c_str());
-}
+// String getHTTPFile(String url) {
+//     HTTPClient http;
+//     String payload;
+//   //  LOGGER << "Retriving HTTP: " << url << endl;
+//     http.begin(url); //HTTP
+//     int httpCode = http.GET();
+//     if(httpCode > 0) {
+//         if (DEBUG) LOGGER << F("[HTTP] GET... code:") << httpCode << endl;
+//         if(httpCode == HTTP_CODE_OK) payload = http.getString();
+//     } else {
+//         if (DEBUG) LOGGER << F("[HTTP] GET... failed, error:") << http.errorToString(httpCode).c_str() << endl;
+//     }
+//
+//     http.end();
+//     return payload;
+// }
+//
+// void autoUpdateIfForced(const char *ignore) {
+//   //LOGGER << F("Waiting for Wifi connection\n");
+//   if (WifiStuff.waitForWifi(F("OTA")) != WL_CONNECTED) return;
+//   String urlGen = String(F("http://anker-bg.com/vlast3k/vesprino/"));
+//   String chipid =  String(ESP.getChipId(), 16);
+//   chipid.toUpperCase();
+// #ifdef HARDCODED_SENSORS
+//   String urlChip = String(F("http://anker-bg.com/vlast3k/vesprino/hardcoded/"));
+// #else
+//   String urlChip = String(F("http://anker-bg.com/vlast3k/vesprino/")) + chipid + String(F("/"));
+// #endif
+//   String forcedUpdateGen  = getHTTPFile(urlGen + F("forced.txt"));
+//   String forcedUpdateChip = getHTTPFile(urlChip + F("forced.txt"));
+//   uint32_t fc = atol(forcedUpdateChip.c_str());
+//   uint32_t fg = atol(forcedUpdateGen.c_str());
+//   uint32_t bn = atol(BUILD_NUM);
+//   LOGGER.printf("fg: %d, fc: %d, bn:%d\n", fg, fc, bn);
+//   if (bn >= fc && bn >= fg) return;
+//   String forcedUpdate = (fc >= fg) ? forcedUpdateChip : forcedUpdateGen;
+//   String urlUpdate    = (fc >= fg) ? urlChip : urlGen;
+//   if (DEBUG) {
+//     LOGGER << F("OTA: current Build: ") << atol(BUILD_NUM) << endl;
+//     LOGGER << F("OTA: forced  Build: ") << atol(forcedUpdate.c_str()) << endl;
+//   }
+//   //if (atol(BUILD_NUM) >= atol(forcedUpdateGen.c_str())) return;
+//   String url = urlUpdate + F("firmware") + forcedUpdate + F(".bin");
+//   doHttpUpdate(0, url.c_str());
+// }

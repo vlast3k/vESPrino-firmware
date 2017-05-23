@@ -94,7 +94,7 @@ int TGS8100::readSensorValue(uint16_t &raw, uint16_t &rs, double &ppm, uint16_t 
   //delay(50);
   //Serial << "tgs811 state: " << x << endl;
   delay(1);
-  int len = Wire.requestFrom((uint8_t)8, (size_t)15, true);    // request 6 bytes from slave device #8
+  int len = Wire.requestFrom((uint8_t)TGS8100_I2C_ADDR, (size_t)15, true);    // request 6 bytes from slave device #8
   Serial << "Received " << len << " bytes\n";
   uint8_t rcv[20];
   int i = 0;
@@ -193,6 +193,10 @@ void TGS8100::processData(uint16_t value, uint16_t vcc, uint16_t &rs, double &pp
   double tempF = (double)globalTemp/10;
   double adjFactor = 100.0F + getTempAdj(20, tempF) + getHumAdj(40, globalHum);
   adjFactor /= (double)100;
+  if (globalHum == 0) {
+    //the case on initial start, or in general when there is no temp and hum
+    adjFactor = 1;
+  }
   cRsAdj = cRs * adjFactor;
   double rsr0 = cRsAdj/getMaxR0();
   //ppm = pow(1.0F/rsr0, GRAD);
@@ -200,15 +204,15 @@ void TGS8100::processData(uint16_t value, uint16_t vcc, uint16_t &rs, double &pp
 
 //  uint16_t ppm100 = ppm*100;
   rs = cRs;
-  uint16_t rsuadj = cRsAdj;
-  Serial << "cTemp: " << tempF;
-  Serial.flush();
-  Serial << ", chum: " << globalHum << ", adjF:" << adjFactor << ", cRsAdj: " << cRsAdj << ", rs:" << cRs << endl;
-  Serial.flush();
-  Serial << "rsuadj: " << rsuadj << ", vcc: " << vcc << ", cMaxR0: " << cMaxR0 << endl;
-  Serial << "TempAdj: " << getTempAdj(20, tempF) << endl;
-  Serial << "HumAdj:  " << getHumAdj(40, globalHum)   << endl;
-  Serial << "adjf: " << adjFactor << endl;
+  // uint16_t rsuadj = cRsAdj;
+  // Serial << "cTemp: " << tempF;
+  // Serial.flush();
+  // Serial << ", chum: " << globalHum << ", adjF:" << adjFactor << ", cRsAdj: " << cRsAdj << ", rs:" << cRs << endl;
+  // Serial.flush();
+  // Serial << "rsuadj: " << rsuadj << ", vcc: " << vcc << ", cMaxR0: " << cMaxR0 << endl;
+  // Serial << "TempAdj: " << getTempAdj(20, tempF) << endl;
+  // Serial << "HumAdj:  " << getHumAdj(40, globalHum)   << endl;
+  // Serial << "adjf: " << adjFactor << endl;
 }
 
 extern TGS8100 _TGS8100;
@@ -233,10 +237,18 @@ void TGS8100::onIteration(uint32_t iterations) {
   // one iteration is 8 sec
   // 75 iterations are 10 min
   // 600 = 1 hour
-  if (iterations < 600 * 1) return;
-  if (iterationStarted + 600*24 < iterations) {
+  if (iterationStarted > iterations) {
     iterationStarted = iterations;
-    if (cMaxR0prv > 0) cMaxR0prv = (cMaxR0prv + cMaxR0)/2;
+    PropertyList.putProperty(PROP_TGS8100_IT_STARTED, iterationStarted);
+  }
+  if (iterations < 600 * 4) return;
+
+  if (iterationStarted + 650*24*3 < iterations) {
+    iterationStarted = iterations;
+    if (cMaxR0prv > 0) {
+      if (cMaxR0prv > cMaxR0) cMaxR0prv = (3*cMaxR0prv + cMaxR0)/4;
+      else cMaxR0prv = (cMaxR0prv + cMaxR0)/2;
+    }
     cMaxR0prv = cMaxR0;
     cMaxR0 = 0;
     PropertyList.putProperty(PROP_TGS8100_IT_STARTED, iterationStarted);

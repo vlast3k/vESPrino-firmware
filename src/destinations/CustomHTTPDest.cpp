@@ -60,7 +60,7 @@ void CustomHTTPDest::cmdCallUrl(const char *line) {
   customHTTPDest.invokeURL(s, values);
 }
 
-bool CustomHTTPDest::parseJSONUrl(String &s, String &url, String &method, String &ct, String &pay) {
+bool CustomHTTPDest::parseJSONUrl(String &s, String &url, String &method, String &ct, String &pay, String &hn1, String &hv1) {
   StaticJsonBuffer<400> jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(s.c_str());
   if (!root.success()) {
@@ -71,6 +71,8 @@ bool CustomHTTPDest::parseJSONUrl(String &s, String &url, String &method, String
   if (root.containsKey("method")) method = root["method"].asString();
   if (root.containsKey("ct"))     ct     = root["ct"].asString();
   if (root.containsKey("pay"))    pay    = root["pay"].asString();
+  if (root.containsKey("hv1"))    hv1    = root["hv1"].asString();
+  if (root.containsKey("hn1"))    hn1    = root["hn1"].asString();
   return true;
 }
 
@@ -103,20 +105,21 @@ void CustomHTTPDest::replaceValuesInURL(LinkedList<Pair *> &data, String &s) {
 
 int CustomHTTPDest::invokeURL(String &s, LinkedList<Pair *> &data) {
   if (!s.length()) return -11;
-  String url, method = "GET", contentType = "", pay = "";
+  String url, method = "GET", contentType = "", pay = "", header_name1 = "", header_value1 = "";
+
   if (s.charAt(0) == '#') s = s.substring(1);
   if (s.charAt(0) == '{') {
-    if (!parseJSONUrl(s, url, method, contentType, pay)) return -12;
+    if (!parseJSONUrl(s, url, method, contentType, pay, header_name1, header_value1)) return -12;
   } else {
     url = s;
   }
   replaceValuesInURL(data, url);
   replaceValuesInURL(data, pay);
   if (hasPlaceholders(url) || hasPlaceholders(pay)) return -13;
-  return invokeURL(url, method, contentType, pay);
+  return invokeURL(url, method, contentType, pay, header_name1, header_value1);
 }
 
-int CustomHTTPDest::invokeURL(String &url, String &method, String &contentType, String &pay) {
+int CustomHTTPDest::invokeURL(String &url, String &method, String &contentType, String &pay, String &hn1, String &hv1) {
   if (WifiStuff.waitForWifi(F("HTTP")) != WL_CONNECTED) return -10;
   LOGGER << F("Calling HTTP: [") << url << "]" << endl;
   if (pay.length()) LOGGER << F("CustomHTTPDest::payload = ") << pay << endl;
@@ -124,5 +127,6 @@ int CustomHTTPDest::invokeURL(String &url, String &method, String &contentType, 
   HTTPClient http;
   http.begin(url);
   if (contentType.length()) http.addHeader(F("Content-Type"), contentType);
+  if (hn1.length()) http.addHeader(hn1, hv1);
   return AT_FW_Plugin::processResponseCodeATFW(&http, http.sendRequest(method.c_str(), pay));
 }

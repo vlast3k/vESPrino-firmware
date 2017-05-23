@@ -21,8 +21,8 @@ public:
   bool process(LinkedList<Pair*> &data);
   void replaceValuesInURL(LinkedList<Pair *> &data, String &s);
   int invokeURL(String &url, LinkedList<Pair *> &data);
-  int invokeURL(String &url, String &method, String &contentType, String &pay);
-  bool parseJSONUrl(String &s, String &url, String &method, String &ct, String &pay);
+  int invokeURL(String &url, String &method, String &contentType, String &pay, String &hn1, String &hv1);
+  bool parseJSONUrl(String &s, String &url, String &method, String &ct, String &pay, String &hn1, String &hv1);
   bool isOKResponse(int resp);
   const char* getName() {
     return "CustomHTTP";
