@@ -19,10 +19,18 @@ bool BME280Sensor::setup(MenuHandler *handler) {
 }
 
 void BME280Sensor::onCmdInit(const char *ignore) {
+  if (!bme280Sensor.initSensor()) return;
   for (int i=0; i < 20; i++) {
-    Serial << i << ':' << bme280Sensor.bme->readTemperature() << endl;
+    //Serial << bme280Sensor.bme->readTemperature()  << endl;
+    //delay(100);
+    //LOGGER << bme280Sensor.bme->readTemperature()  << endl;
+    //delay(100);
+    //Serial << "done" << endl;
+    //delay(100);
+    LOGGER << i << ':' << bme280Sensor.bme->readTemperature() << endl;
     delay(1000);
   }
+  bme280Sensor.closeSensor();
 }
 
 void BME280Sensor::getData(LinkedList<Pair *> *data) {

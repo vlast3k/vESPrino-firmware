@@ -1,5 +1,5 @@
 //#define panic() __panic_func("", __LINE__, __func__)
-#define BUILD_NUM "20170519"
+#define BUILD_NUM "20170523"
 
 //H801 build with 1mb / 256k
 //#define VTHING_H801_LED

@@ -22,6 +22,14 @@
 #endif
 #include "Adafruit_BME280.h"
 
+// Oversampling: 1x P, 1x T, forced
+#define BME280_CONTROL_SETTING             0x25
+
+// Oversampling: 1x H
+#define BME280_CONTROL_SETTING_HUMIDITY    0x01
+
+// Tstandby 1000ms, filter off, 3-wire SPI Disable
+#define BME280_CONFIG_SETTING              0xA0
 
 /***************************************************************************
  PRIVATE FUNCTIONS
@@ -69,10 +77,16 @@ bool Adafruit_BME280::begin(uint8_t a) {
 
   readCoefficients();
 
+  // Set the Sensor in sleep to be make sure that the following configs will be stored
+  write8(BME280_REGISTER_CONTROL, 0x00);
   //Set before CONTROL_meas (DS 5.4.3)
-  write8(BME280_REGISTER_CONTROLHUMID, 0x05); //16x oversampling
+  //write8(BME280_REGISTER_CONTROLHUMID, 0x05); //16x oversampling
 
-  write8(BME280_REGISTER_CONTROL, 0xB7); // 16x ovesampling, normal mode
+  //write8(BME280_REGISTER_CONTROL, 0xB7); // 16x ovesampling, normal mode
+
+  write8(BME280_REGISTER_CONFIG, BME280_CONFIG_SETTING);
+  write8(BME280_REGISTER_CONTROLHUMID, BME280_CONTROL_SETTING_HUMIDITY);
+  write8(BME280_REGISTER_CONTROL, BME280_CONTROL_SETTING);
   return true;
 }
 
