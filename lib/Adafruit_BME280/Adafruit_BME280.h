@@ -65,6 +65,7 @@
       BME280_REGISTER_CAL26              = 0xE1,  // R calibration stored in 0xE1-0xF0
 
       BME280_REGISTER_CONTROLHUMID       = 0xF2,
+      BME280_REGISTER_STATUS             = 0xF3,
       BME280_REGISTER_CONTROL            = 0xF4,
       BME280_REGISTER_CONFIG             = 0xF5,
       BME280_REGISTER_PRESSUREDATA       = 0xF7,

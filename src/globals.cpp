@@ -46,7 +46,7 @@
 //boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
 //boolean hasPIR = false;
 bool shouldSend = false;
-bool DEBUG = false;
+bool DEBUG = true;
 bool SLAVE = false;
 bool SKIP_LOOP = false;
 MenuHandler menuHandler;

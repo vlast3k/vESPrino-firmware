@@ -11,12 +11,104 @@ PMS7003Sensor::PMS7003Sensor() {
   registerSensor(this);
 }
 
+void dump(uint8_t *r) {
+  for (int i=0; i<24; i++) Serial << _HEX(*(r++)) << ",";
+  Serial.println();
+}
+
+bool sendCmd(uint8_t *cmd, uint8_t *resp) {
+  int rx = D6, tx = D7;
+  #ifdef ESP8266
+    SoftwareSerialESP PM1106_swSer(rx, tx, 128);
+  #else
+    SoftwareSerial PM1106_swSer(rx, tx);
+  #endif
+  PM1106_swSer.begin(9600);
+  uint16_t sum = 0;
+  for (int i=1; i <= cmd[0]; i++) sum+= cmd[i];
+  cmd[cmd[0]+1] = sum>> 8;
+  cmd[cmd[0]+2] = sum & 0xFF;
+
+
+  PM1106_swSer.write(&cmd[1], cmd[0]+2);
+  uint32_t start = millis();
+  uint8_t buf[100];
+  while (millis() - start > 5000) {
+    if (PM1106_swSer.available()) {
+      for (int i=0; i < 100 && PM1106_swSer.available(); i++) {
+        buf[i] = PM1106_swSer.read();
+      }
+      Serial << "Received: ";
+      dump(buf);
+    }
+  }
+}
+
+#define PMS7003_OPERATION_MODE_PASSIVE 0
+#define PMS7003_OPERATION_MODE_ACTIVE 1
+void changeMode(int mode) {
+  Serial << "Setting mode to: " << mode << endl;
+  uint8_t cmd[20];
+  cmd[0] = 5;
+  cmd[1] = 0x42;
+  cmd[2] = 0x4D;
+  cmd[3] = 0xE1;
+  cmd[4] = 0;
+  cmd[5] = mode;
+  sendCmd(cmd, cmd);
+}
+
+#define PMS7003_SLEEP_MODE_SLEEP 0
+#define PMS7003_SLEEP_MODE_WAKEUP 1
+void changeSleep(int sleep) {
+  Serial << "Setting sleep to: " << sleep << endl;
+  uint8_t cmd[20];
+  cmd[0] = 5;
+  cmd[1] = 0x42;
+  cmd[2] = 0x4D;
+  cmd[3] = 0xE4;
+  cmd[4] = 0;
+  cmd[5] = sleep;
+  sendCmd(cmd, cmd);
+}
+
+void doRead() {
+  uint8_t cmd[20];
+  cmd[0] = 5;
+  cmd[1] = 0x42;
+  cmd[2] = 0x4D;
+  cmd[3] = 0xE2;
+  cmd[4] = 0;
+  cmd[5] = 0;
+  sendCmd(cmd, cmd);
+}
+
+
 void PMS7003Sensor::onProperty(String &key, String &value) {
   if (key == PROP_PMS7003_ENABLE) enabled = PropertyList.toBool(value);
 }
 
+void cmd_pms_sleep(const char *line) {
+  char *s = strchr(line, ' ');
+  changeSleep(s[1] - '0');
+}
+void cmd_pms_mode(const char *line) {
+  char *s = strchr(line, ' ');
+  changeMode(s[1] - '0');
+}
+
+void cmd_pms_read(const char *line) {
+  char *s = strchr(line, ' ');
+  doRead();
+}
+
 bool PMS7003Sensor::setup(MenuHandler *handler) {
-  if (enabled) handler->registerCommand(new MenuEntry(F("pmstest"), CMD_EXACT, &PMS7003Sensor::test, F("testSensor toggle testSesnor")));
+  if (enabled) {
+    handler->registerCommand(new MenuEntry(F("pmstest"), CMD_EXACT, &PMS7003Sensor::test, F("testSensor toggle testSesnor")));
+    handler->registerCommand(new MenuEntry(F("pms_sleep"), CMD_BEGIN, cmd_pms_sleep, F("testSensor toggle testSesnor")));
+    handler->registerCommand(new MenuEntry(F("pms_mode"),  CMD_BEGIN, cmd_pms_mode, F("testSensor toggle testSesnor")));
+    handler->registerCommand(new MenuEntry(F("pms_read"),  CMD_BEGIN, cmd_pms_read, F("testSensor toggle testSesnor")));
+  }
   return enabled;
 
 }

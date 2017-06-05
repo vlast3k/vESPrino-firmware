@@ -306,6 +306,12 @@ void Adafruit_BME280::readCoefficients(void)
 /**************************************************************************/
 float Adafruit_BME280::readTemperature(void)
 {
+
+  write8(BME280_REGISTER_CONTROL, BME280_CONTROL_SETTING);
+  // wait until measurement has been completed, otherwise we would read
+  // the values from the last measurement
+  while (read8(BME280_REGISTER_STATUS) & 0x08)
+  delay(1);
   int32_t var1, var2;
 
   int32_t adc_T = read24(BME280_REGISTER_TEMPDATA);
