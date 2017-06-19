@@ -34,9 +34,20 @@ public:
     return "PMS7003";
   }
   static void test(const char *ig);
-  bool pms7003_read(PMS7003_framestruct &thisFrame);
+  bool pms7003_read(int rx, int tx, PMS7003_framestruct &thisFrame);
   void onProperty(String &key, String &value);
 private:
+  bool sendCmd(uint8_t *cmd, uint8_t *resp) ;
+  void dump1(uint8_t *r, int len = 24);
+  void changeMode(int mode);
+  void changeSleep(int sleep);
+  void doRead() ;
+  static void cmd_pms_sleep(const char *line);
+  static void cmd_pms_mode(const char *line);
+  static void cmd_pms_read(const char *line);
   bool enabled = false;
+  int8_t _RX = -2;
+  int8_t _TX = -2;
+  //uint16_t _RX_TX = 0;
 };
 #endif

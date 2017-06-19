@@ -247,7 +247,7 @@ void TGS8100::onIteration(uint32_t iterations) {
     iterationStarted = iterations;
     if (cMaxR0prv > 0) {
       if (cMaxR0prv > cMaxR0) cMaxR0prv = (3*cMaxR0prv + cMaxR0)/4;
-      else cMaxR0prv = (cMaxR0prv + cMaxR0)/2;
+      else cMaxR0prv = (cMaxR0prv + 3*cMaxR0)/4;
     }
     cMaxR0prv = cMaxR0;
     cMaxR0 = 0;

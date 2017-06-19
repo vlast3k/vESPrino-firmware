@@ -46,7 +46,7 @@
 //boolean hasSSD1306 = false, hasSI7021 = false, hasPN532=false, hasBMP180=false, hasBH1750=false, hasAPDS9960=false;
 //boolean hasPIR = false;
 bool shouldSend = false;
-bool DEBUG = true;
+bool DEBUG = false;
 bool SLAVE = false;
 bool SKIP_LOOP = false;
 MenuHandler menuHandler;
@@ -81,7 +81,7 @@ BMP085Sensor bmp085Sensor;
 PM2005Sensor pm2005Sensor;
 CDM7160Sensor cdm7160Sensor;
 DS18B20Sensor _DS18B20Sensor;
-TGS8100 _TGS8100;
+//TGS8100 _TGS8100;
 LDR _LDR;
 PMS7003Sensor _PMS7003Sensor;
 

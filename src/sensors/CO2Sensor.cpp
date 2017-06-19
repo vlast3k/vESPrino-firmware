@@ -41,8 +41,8 @@ bool CO2Sensor::setup(MenuHandler *handler) {
   }
   Serial << F("Turning on CM110x Sensor") << endl;
   PERF("Turn on")
-  pinMode(D8, OUTPUT);    //enable power via D8
-  digitalWrite(D8, HIGH);
+  // pinMode(D8, OUTPUT);    //enable power via D8
+  // digitalWrite(D8, HIGH);
   delay(2000);
   //this is needed as if the LOGGER Port querries the port of the servo, then servo no longer wifiScanNetworks
   //maybe due to the timers...

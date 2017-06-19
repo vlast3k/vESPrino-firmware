@@ -6,18 +6,19 @@
 #include <SoftwareSerialESP.h>
 extern PMS7003Sensor _PMS7003Sensor;
 #define PROP_PMS7003_ENABLE F("pms7003.enable")
+#define PROP_PMS7003_PORT F("pms7003.port")
 PMS7003Sensor::PMS7003Sensor() {
   //enabled = true;
   registerSensor(this);
 }
 
-void dump(uint8_t *r) {
-  for (int i=0; i<24; i++) Serial << _HEX(*(r++)) << ",";
+void PMS7003Sensor::dump1(uint8_t *r, int len) {
+  for (int i=0; i<len; i++) Serial << _HEX(*(r++)) << ",";
   Serial.println();
 }
 
-bool sendCmd(uint8_t *cmd, uint8_t *resp) {
-  int rx = D6, tx = D7;
+bool PMS7003Sensor::sendCmd(uint8_t *cmd, uint8_t *resp) {
+  int rx = _RX, tx = _TX;
   #ifdef ESP8266
     SoftwareSerialESP PM1106_swSer(rx, tx, 128);
   #else
@@ -25,29 +26,38 @@ bool sendCmd(uint8_t *cmd, uint8_t *resp) {
   #endif
   PM1106_swSer.begin(9600);
   uint16_t sum = 0;
-  for (int i=1; i <= cmd[0]; i++) sum+= cmd[i];
+  Serial << F("Sending command: ") << endl;
+//  dump(cmd);
+  for (int i=1; i <= cmd[0]; i++) {
+     sum+= cmd[i];
+     Serial << F("sum is: ") << sum << endl;
+   }
   cmd[cmd[0]+1] = sum>> 8;
   cmd[cmd[0]+2] = sum & 0xFF;
 
 
+  _PMS7003Sensor.dump1(cmd+1, cmd[0]+2);
   PM1106_swSer.write(&cmd[1], cmd[0]+2);
   uint32_t start = millis();
   uint8_t buf[100];
-  while (millis() - start > 5000) {
+  while (millis() - start <5000) {
     if (PM1106_swSer.available()) {
-      for (int i=0; i < 100 && PM1106_swSer.available(); i++) {
+      int i=0;
+      for (; i < 100 && PM1106_swSer.available(); i++) {
         buf[i] = PM1106_swSer.read();
       }
-      Serial << "Received: ";
-      dump(buf);
+      Serial << F("Received: ");
+      _PMS7003Sensor.dump1(buf, i);
     }
+    delay(1);
   }
+  Serial << F("end wait") << endl;
 }
 
 #define PMS7003_OPERATION_MODE_PASSIVE 0
 #define PMS7003_OPERATION_MODE_ACTIVE 1
-void changeMode(int mode) {
-  Serial << "Setting mode to: " << mode << endl;
+void PMS7003Sensor::changeMode(int mode) {
+  Serial << F("Setting mode to: ") << mode << endl;
   uint8_t cmd[20];
   cmd[0] = 5;
   cmd[1] = 0x42;
@@ -55,13 +65,13 @@ void changeMode(int mode) {
   cmd[3] = 0xE1;
   cmd[4] = 0;
   cmd[5] = mode;
-  sendCmd(cmd, cmd);
+  _PMS7003Sensor.sendCmd(cmd, cmd);
 }
 
 #define PMS7003_SLEEP_MODE_SLEEP 0
 #define PMS7003_SLEEP_MODE_WAKEUP 1
-void changeSleep(int sleep) {
-  Serial << "Setting sleep to: " << sleep << endl;
+void PMS7003Sensor::changeSleep(int sleep) {
+  Serial << F("Setting sleep to: ") << sleep << endl;
   uint8_t cmd[20];
   cmd[0] = 5;
   cmd[1] = 0x42;
@@ -72,7 +82,7 @@ void changeSleep(int sleep) {
   sendCmd(cmd, cmd);
 }
 
-void doRead() {
+void PMS7003Sensor::doRead() {
   uint8_t cmd[20];
   cmd[0] = 5;
   cmd[1] = 0x42;
@@ -85,38 +95,64 @@ void doRead() {
 
 
 void PMS7003Sensor::onProperty(String &key, String &value) {
-  if (key == PROP_PMS7003_ENABLE) enabled = PropertyList.toBool(value);
+  //if (key == PROP_PMS7003_ENABLE) enabled = PropertyList.toBool(value);
+  if (key == PROP_PMS7003_PORT) {
+    uint16_t _RX_TX = atoi(value.c_str());
+    if (_RX_TX) {
+      _RX = _RX_TX >> 8;
+      _TX = _RX_TX & 0xFF;
+      //Serial << ">>>> rx: " << _RX << _TX << endl;
+    }
+  }
 }
 
-void cmd_pms_sleep(const char *line) {
+void PMS7003Sensor::cmd_pms_sleep(const char *line) {
   char *s = strchr(line, ' ');
-  changeSleep(s[1] - '0');
+  _PMS7003Sensor.changeSleep(s[1] - '0');
 }
-void cmd_pms_mode(const char *line) {
+void PMS7003Sensor::cmd_pms_mode(const char *line) {
   char *s = strchr(line, ' ');
-  changeMode(s[1] - '0');
+  _PMS7003Sensor.changeMode(s[1] - '0');
 }
 
-void cmd_pms_read(const char *line) {
+void PMS7003Sensor::cmd_pms_read(const char *line) {
   char *s = strchr(line, ' ');
-  doRead();
+  _PMS7003Sensor.doRead();
 }
+
 
 bool PMS7003Sensor::setup(MenuHandler *handler) {
-  if (enabled) {
-    handler->registerCommand(new MenuEntry(F("pmstest"), CMD_EXACT, &PMS7003Sensor::test, F("testSensor toggle testSesnor")));
-    handler->registerCommand(new MenuEntry(F("pms_sleep"), CMD_BEGIN, cmd_pms_sleep, F("testSensor toggle testSesnor")));
-    handler->registerCommand(new MenuEntry(F("pms_mode"),  CMD_BEGIN, cmd_pms_mode, F("testSensor toggle testSesnor")));
-    handler->registerCommand(new MenuEntry(F("pms_read"),  CMD_BEGIN, cmd_pms_read, F("testSensor toggle testSesnor")));
+  //nt rx, tx;
+  PMS7003_framestruct thisFrame;
+  if (_RX == -2) {
+    if (!_PMS7003Sensor.pms7003_read(_RX=D7, _TX=D6, thisFrame) &&
+        !_PMS7003Sensor.pms7003_read(_RX=D6, _TX=D7, thisFrame) &&
+        !_PMS7003Sensor.pms7003_read(_RX=D2, _TX=D8, thisFrame) &&
+        !_PMS7003Sensor.pms7003_read(_RX=D8, _TX=D2, thisFrame) ) {
+          _RX = _TX = -1;
+    }
+    //Serial <<"storing PMS: " << _RX << "," << _TX << endl;
+    uint16_t port = (_RX << 8) + _TX;
+    PropertyList.putProperty(PROP_PMS7003_PORT, port);
   }
-  return enabled;
+
+  if (_RX > -1) {
+    handler->registerCommand(new MenuEntry(F("pmstest"), CMD_EXACT, &PMS7003Sensor::test, F("testSensor toggle testSesnor")));
+    handler->registerCommand(new MenuEntry(F("pms_sleep"), CMD_BEGIN, &PMS7003Sensor::cmd_pms_sleep, F("testSensor toggle testSesnor")));
+    handler->registerCommand(new MenuEntry(F("pms_mode"),  CMD_BEGIN, &PMS7003Sensor::cmd_pms_mode, F("testSensor toggle testSesnor")));
+    handler->registerCommand(new MenuEntry(F("pms_read"),  CMD_BEGIN, &PMS7003Sensor::cmd_pms_read, F("testSensor toggle testSesnor")));
+    return true;
+  } else {
+    return false;
+  }
 
 }
 void PMS7003Sensor::test(const char *ig) {
   PMS7003_framestruct thisFrame;
-  _PMS7003Sensor.pms7003_read(thisFrame);
+  _PMS7003Sensor.pms7003_read(0, 0, thisFrame);
 }
-bool PMS7003Sensor::pms7003_read(PMS7003_framestruct &thisFrame) {
+
+bool PMS7003Sensor::pms7003_read(int rx, int tx, PMS7003_framestruct &thisFrame) {
     int incomingByte = 0; // for incoming serial data
     char frameBuf[MAX_FRAME_LEN];
     int detectOff = 0;
@@ -130,10 +166,16 @@ bool PMS7003Sensor::pms7003_read(PMS7003_framestruct &thisFrame) {
     // send data only when you receive data:
 //    Serial.println("-- Reading PMS7003");
     //D7-rx, D6, Tx
-    SoftwareSerialESP pms(D7,D6,128); // RX, TX
+    if (rx == 0 && tx == 0) {
+      rx = _RX;
+      tx = _TX;
+    }
+    //Serial << F("PMS RX: ") << rx << F(", tx: ") << tx << endl;
+    SoftwareSerialESP pms(rx, tx, 128); // RX, TX
     pms.begin(9600);
     bool packetReceived = false;
-    while (!packetReceived) {
+    uint32_t st = millis();
+    while (!packetReceived && millis() - st < 2000) {
         delay(1);
         if (pms.available() > 32) {
             int drain = pms.available();
@@ -270,10 +312,10 @@ bool PMS7003Sensor::pms7003_read(PMS7003_framestruct &thisFrame) {
 
 
 void PMS7003Sensor::getData(LinkedList<Pair *> *data) {
- if (!enabled) return;
-  LOGGER << F("PMS7003Sensor::getData") << endl;
+ if (_RX < 0) return;
+  //LOGGER << F("PMS7003Sensor::getData") << endl;
   PMS7003_framestruct thisFrame;
-  if (pms7003_read(thisFrame)) {
+  if (pms7003_read(0, 0, thisFrame)) {
     data->add(new Pair("PM10", String(thisFrame.concPM10_0_amb)));
     data->add(new Pair("PM25", String(thisFrame.concPM2_5_amb)));
     data->add(new Pair("PM1", String(thisFrame.concPM1_0_amb)));
