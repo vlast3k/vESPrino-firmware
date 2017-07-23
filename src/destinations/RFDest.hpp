@@ -23,7 +23,7 @@ public:
   void loop() {};
 
   bool process(LinkedList<Pair*> &data);
-  void sendPing(int num);
+  void sendPing(int num, int port);
   const char* getName() {
     return "RFX10";
   }

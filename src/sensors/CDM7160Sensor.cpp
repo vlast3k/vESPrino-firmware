@@ -18,6 +18,9 @@ bool CDM7160Sensor::setup(MenuHandler *handler) {
   handler->registerCommand(new MenuEntry(F("cdmreg"), CMD_BEGIN, &CDM7160Sensor::onChangeReg, F("cdmreg \"regid\" \"value\"")));
   handler->registerCommand(new MenuEntry(F("cdmperf"), CMD_BEGIN, &CDM7160Sensor::onPerf, F("cdmreg \"regid\" \"value\"")));
   if (I2CHelper::i2cSDA > -1 && I2CHelper::checkI2CDevice(CDM_ADDR_WRITE)) {
+    int a = readCO2Raw();
+    Serial << "read co2 raw: " << a << endl;
+    if (a <0) return false;
     //LOGGER << F("Found CDM7160 CO2 Sensor") << endl;
     if (!PowerManager.isWokeFromDeepSleep()) configureSensor();
     hasSensor = true;

@@ -8,8 +8,10 @@
 #include "plugins/PropertyList.hpp"
 #include "plugins/AT_FW_Plugin.hpp"
 #include "sensors/CO2Sensor.hpp"
+#include "sensors/PMS7003Sensor.hpp"
 
 extern CO2Sensor co2Sensor;
+extern PMS7003Sensor _PMS7003Sensor;
 #define PROP_RF_ENABLED F("rf.enabled")
 
 RFDest::RFDest() {
@@ -39,15 +41,19 @@ void RFDest::cmdSetAddr(const char *line) {
 }
 
 void RFDest::cmdTest(const char *line) {
-  rfDest.sendPing(1000);
-  rfDest.sendPing(1001);
-  rfDest.sendPing(1002);
+  int port = -1;
+  if (strchr(line, ' ') != NULL) port = atoi(strchr(line, ' ') + 1);
+  Serial << "check p: " << port << endl;
+  rfDest.sendPing(1000, port);
+  rfDest.sendPing(1001, port);
+  rfDest.sendPing(1002, port);
 }
 
-void RFDest::sendPing(int num) {
+void RFDest::sendPing(int num, int port) {
   if (!enabled) return;
-  Serial << F("Ping: ") << num << endl;
-  rfBegin(getGPIO(), 0, 3);
+  int gpio = (port == -1 ? getGPIO() : port);
+  Serial << F("Ping: ") <<gpio<< " " << num << endl;
+  rfBegin(gpio, 0, 3);
   delay(1);
   RFXmeter(0x42, 0, num);
   delay(200);
@@ -55,8 +61,8 @@ void RFDest::sendPing(int num) {
 
 int RFDest::getGPIO() {
 // return D8;
-  if (co2Sensor.hasSensor && I2CHelper::i2cSDA != D1 &&  I2CHelper::i2cSCL != D1) return D1;
-  else if (co2Sensor.hasSensor) return D8;
+  if ((co2Sensor.hasSensor || _PMS7003Sensor.hasSensor()) && I2CHelper::i2cSDA != D1 &&  I2CHelper::i2cSCL != D1) return D1;
+  else if ((co2Sensor.hasSensor || _PMS7003Sensor.hasSensor())) return D8;
   else return D6;
 }
 

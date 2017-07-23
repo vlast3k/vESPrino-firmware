@@ -120,18 +120,22 @@ void PMS7003Sensor::cmd_pms_read(const char *line) {
   _PMS7003Sensor.doRead();
 }
 
-
+bool PMS7003Sensor::hasSensor() {
+  return _RX > -1;
+}
 bool PMS7003Sensor::setup(MenuHandler *handler) {
   //nt rx, tx;
   PMS7003_framestruct thisFrame;
   if (_RX == -2) {
     if (!_PMS7003Sensor.pms7003_read(_RX=D7, _TX=D6, thisFrame) &&
         !_PMS7003Sensor.pms7003_read(_RX=D6, _TX=D7, thisFrame) &&
+        !_PMS7003Sensor.pms7003_read(_RX=D5, _TX=D1, thisFrame) &&
+        !_PMS7003Sensor.pms7003_read(_RX=D1, _TX=D5, thisFrame) &&
         !_PMS7003Sensor.pms7003_read(_RX=D2, _TX=D8, thisFrame) &&
         !_PMS7003Sensor.pms7003_read(_RX=D8, _TX=D2, thisFrame) ) {
           _RX = _TX = -1;
     }
-    //Serial <<"storing PMS: " << _RX << "," << _TX << endl;
+    Serial <<"storing PMS: " << _RX << "," << _TX << endl;
     uint16_t port = (_RX << 8) + _TX;
     PropertyList.putProperty(PROP_PMS7003_PORT, port);
   }
@@ -170,12 +174,12 @@ bool PMS7003Sensor::pms7003_read(int rx, int tx, PMS7003_framestruct &thisFrame)
       rx = _RX;
       tx = _TX;
     }
-    //Serial << F("PMS RX: ") << rx << F(", tx: ") << tx << endl;
+    Serial << F("PMS RX: ") << rx << F(", tx: ") << tx << endl;
     SoftwareSerialESP pms(rx, tx, 128); // RX, TX
     pms.begin(9600);
     bool packetReceived = false;
     uint32_t st = millis();
-    while (!packetReceived && millis() - st < 2000) {
+    while (!packetReceived && millis() - st < 3000) {
         delay(1);
         if (pms.available() > 32) {
             int drain = pms.available();
@@ -213,11 +217,11 @@ bool PMS7003Sensor::pms7003_read(int rx, int tx, PMS7003_framestruct &thisFrame)
                     detectOff++;
                 }
                 else {
-                    Serial.print(F("-- Frame syncing... "));
-                    Serial.print(incomingByte, HEX);
                     if (DEBUG) {
+                      Serial.print(F("-- Frame syncing... "));
+                      Serial.print(incomingByte, HEX);
+                      Serial.println();
                     }
-                    Serial.println();
                 }
             }
             else {
@@ -307,7 +311,7 @@ bool PMS7003Sensor::pms7003_read(int rx, int tx, PMS7003_framestruct &thisFrame)
         }
     }
     //pms.end();
-    return (calcChecksum == thisFrame.checksum);
+    return packetReceived;
 }
 
 

@@ -36,6 +36,7 @@ public:
   static void test(const char *ig);
   bool pms7003_read(int rx, int tx, PMS7003_framestruct &thisFrame);
   void onProperty(String &key, String &value);
+  bool hasSensor();
 private:
   bool sendCmd(uint8_t *cmd, uint8_t *resp) ;
   void dump1(uint8_t *r, int len = 24);
