@@ -295,13 +295,13 @@ uint32_t TSL2561::getFullLuminosity (void)
   switch (_integration)
   {
     case TSL2561_INTEGRATIONTIME_13MS:
-      delay(14);
+      delay(17);
       break;
     case TSL2561_INTEGRATIONTIME_101MS:
-      delay(102);
+      delay(152);
       break;
     default:
-      delay(403);
+      delay(453);
       break;
   }
 
