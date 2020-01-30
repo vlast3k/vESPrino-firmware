@@ -12,10 +12,6 @@
 #include <EEPROM.h>
 #include <Arduino.h>
 
-#ifdef ESP8266
- #include <I2CHelper.hpp>
-#endif
-
 
 
 //#ifndef SERIAL_PORT
@@ -35,10 +31,12 @@ class CubicGasSensors
 {
   // user-accessible "public" interface
   public:
+    CubicGasSensors(uint8_t port1, uint8_t port2);
     CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, Stream *_LOGGER, uint8_t _rx=100, uint8_t _tx=100 );
     //CubicGasSensors( CubicStatusCb _cb, uint16_t _eepromReset, Stream *_LOGGER, uint8_t rx, uint8_t tx) {}
     CubicGasSensors() {}
   #ifdef ESP8266
+    bool init();
     bool init(bool DEBUG, uint32_t disabledPorts);
   #endif
     int getCO2(bool dbg=false);
@@ -58,9 +56,12 @@ class CubicGasSensors
     uint16_t eepromReset;
     boolean startedCO2Monitoring = false;
     boolean DEBUG = false;
-    CubicStatusCb statusCb;
+    CubicStatusCb statusCb = NULL;
     CubicStatus currentStatus = CB_INIT;
     bool sentResetCmd = false;
+    bool isBitSet(uint32_t val, int bit) {
+      return ((val >> bit) &1);
+    }
     //uint8_t ports[4][2] ={{5,12},{12,5},{14,13},{13,14}};
 #ifdef ESP8266
     uint8_t ports[6][2] ={ {D6, D7},{D7, D6},  {D5, D1}, {D1, D5},  {D5, D7},{D7, D5}};

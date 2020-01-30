@@ -17,6 +17,8 @@
 
 CubicGasSensors::CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, Stream *_LOGGER, uint8_t _rx, uint8_t _tx)
   : rx(_rx), tx(_tx), eepromReset(_eepromReset), raCM1106(2), statusCb(_cb), LOGGER(_LOGGER) {}
+CubicGasSensors::CubicGasSensors(uint8_t port1, uint8_t port2)
+    : rx(port1), tx(port2), eepromReset(0), raCM1106(2), LOGGER(&Serial) {}
 // bool CubicGasSensors::isInSkippedList(int8_t *list, uint8_t gpio) {
 //   for (int i=0; i < 10 && *list > -2; list++) {
 //     if (*list == gpio) return true;
@@ -25,12 +27,22 @@ CubicGasSensors::CubicGasSensors(CubicStatusCb _cb, uint16_t _eepromReset, Strea
 //
 // }
 #ifdef ESP8266
+bool CubicGasSensors::init() {
+  if (rx < 100) {
+    ports[0][1] = ports[1][0] = rx;
+    ports[0][0] = ports[1][1] = tx;
+    ports[2][0] = 100;
+    return init(true, 0);
+  }
+  return false;
+}
 bool CubicGasSensors::init(bool DEBUG, uint32_t disabledPorts) {
     for (int j=0; j<3; j++) {
         for (int i=0; i < 6; i++) {
+            if (ports[i][0] == 100) break;
             rx = ports[i][0];
             tx = ports[i][1];
-            if (I2CHelper::isBitSet(disabledPorts, rx) || I2CHelper::isBitSet(disabledPorts, tx)) continue;
+            if (isBitSet(disabledPorts, rx) || isBitSet(disabledPorts, tx)) continue;
             if (DEBUG) (*LOGGER) << "Trying : " << rx <<","<< tx << endl ;
             (*LOGGER).flush();
             if (sensorType = getSWVersion(DEBUG)) {
@@ -134,7 +146,7 @@ void CubicGasSensors::co2Set400ppm() {
 void CubicGasSensors::setStatus(CubicStatus newStatus) {
     if (currentStatus != newStatus) {
         currentStatus = newStatus;
-        statusCb(currentStatus);
+        if (statusCb != NULL) statusCb(currentStatus);
     }
 }
 
