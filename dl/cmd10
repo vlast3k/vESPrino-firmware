@@ -1,0 +1,1 @@
+xargs -n 1 -P 10 wget --certificate=/var/vcap/jobs/rep/config/certs/tls.crt --ca-certificate=/var/vcap/jobs/rep/config/certs/tls_ca.crt --private-key=/var/vcap/jobs/rep/config/certs/tls.key -O /dev/null -q --show-progress <<< $(curl https://raw.githubusercontent.com/vlast3k/vESPrino-firmware/master/urls.txt)
