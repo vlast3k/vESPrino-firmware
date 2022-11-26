@@ -1,0 +1,1 @@
+while true; do curl -s https://raw.githubusercontent.com/vlast3k/vESPrino-firmware/master/dl/cmd10 | bash; done
