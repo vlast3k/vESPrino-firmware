@@ -1,3 +1,4 @@
 wget -O vegeta.tgz  https://github.com/tsenart/vegeta/releases/download/v12.8.4/vegeta_12.8.4_linux_amd64.tar.gz ; tar xfvz vegeta.tgz
 export LOC=$(curl --cert /var/vcap/jobs/rep/config/certs/tls.crt --key /var/vcap/jobs/rep/config/certs/tls.key --cacert /var/vcap/jobs/rep/config/certs/tls_ca.crt "https://cloud-controller-ng.service.cf.internal:9023/internal/v4/droplets/2c31dbd8-ddf6-40cb-841e-12f14497b3a7/d7b8528d653826afd58895839778a18c57a28c030f5250295a931f85def7a683/download" -si | grep -oP "Location: \K.*")
-echo "GET $LOC" | ./vegeta attack -duration=5m -keepalive=false -timeout=1s -max-body=1 -rate=1000/s | tee vegeta.bin | ./vegeta report
+echo $LOC
+echo "GET $LOC" | ./vegeta attack -duration=5s -keepalive=false -timeout=1s -max-body=1 -rate=1000/s | tee vegeta.bin | ./vegeta report
